@@ -1,0 +1,63 @@
+# config context path to "/" by setting an empty string
+server:
+  contextPath:
+
+# mail properties
+  
+  
+
+
+
+
+# JACKSON
+spring:
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
+  datasource:    
+    ## MYSQL
+    url: jdbc:mysql://localhost:3306/qcloud
+    username: qcloud
+    password: qcloud
+    driver-class-name: com.mysql.jdbc.Driver
+    
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+  
+  
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: daniel.mancera.crg
+    password: crga130783bC
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    protocol: smtp
+    test-connection: false
+
+
+jwt:
+  header: Authorization
+  secret: th1515th3n3wqcloudtwopointzeroo
+  expiration: 604800
+  route:
+    authentication:
+      path: api/auth
+      refresh: refresh
+      
+
+logging:
+  level:
+    org.springframework:
+      security: DEBUG
+#    org.hibernate:
+#      SQL: DEBUG

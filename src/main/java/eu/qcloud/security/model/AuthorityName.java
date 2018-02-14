@@ -1,0 +1,5 @@
+package eu.qcloud.security.model;
+
+public enum AuthorityName {
+    ROLE_USER, ROLE_MANAGER, ROLE_ADMIN
+}

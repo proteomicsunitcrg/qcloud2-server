@@ -1,0 +1,289 @@
+/**
+ * NodeController
+ * Main controller for node related operations
+ * @author Daniel Mancera <daniel.mancera@crg.eu> 
+ */
+package eu.qcloud.node;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import javax.persistence.PersistenceException;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.CannotCreateTransactionException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.helper.PasswordGenerator;
+import eu.qcloud.mail.EmailService;
+import eu.qcloud.mail.Mail;
+import eu.qcloud.security.model.Authority;
+import eu.qcloud.security.model.AuthorityName;
+import eu.qcloud.security.model.User;
+import eu.qcloud.security.repository.UserRepository.UserWithUuid;
+import eu.qcloud.security.service.UserService;
+
+@RestController
+public class NodeController {
+
+	@Autowired
+	NodeService nodeService;
+
+	@Autowired
+	UserService userService;
+
+	@Autowired
+	private EmailService emailService;
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	/**
+	 * Add a new node with a manager user to the database
+	 * 
+	 * @param n
+	 *            a JSON formed node with a user in the users array
+	 * @return <Node> the inserted node
+	 */
+	@RequestMapping(value = "/api/node", method = RequestMethod.POST)
+	public Node insertNewNode(@RequestBody Node n) {
+		UUID nodeUuid = UUID.randomUUID();
+		UUID userUuid = UUID.randomUUID();
+
+		n.getUsers().get(0).setLastPasswordResetDate(new Date());
+		n.getUsers().get(0).setEnabled(true);
+		n.getUsers().get(0).setPassword(passwordEncoder().encode(n.getUsers().get(0).getPassword()));
+
+		n.setApiKey(nodeUuid);
+		n.getUsers().get(0).setApiKey(userUuid);
+
+		Authority manager = new Authority();
+		manager.setId(2L);
+		manager.setName(AuthorityName.ROLE_MANAGER);
+		Authority userRole = new Authority();
+		userRole.setId(1L);
+		userRole.setName(AuthorityName.ROLE_USER);
+		n.getUsers().get(0).setAuthorities(Arrays.asList(userRole, manager));
+		n.getUsers().get(0).setNode(n);
+		Node insertedNode = null;
+		try {
+			insertedNode = nodeService.createNode(n);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataIntegrityViolationException(e.getMostSpecificCause().getMessage());
+
+		} catch (PersistenceException ee) {
+
+			throw new PersistenceException("No connection to the database");
+		} catch (CannotCreateTransactionException eee) {
+			throw new PersistenceException("No connection to the database");
+		}
+		return insertedNode;
+	}
+
+	/**
+	 * Add a new user to the current node
+	 * 
+	 * @param newUser
+	 *            the user to add
+	 * @return A list of the current node users
+	 */
+	@PreAuthorize("hasRole('MANAGER')")
+	@RequestMapping(value = "/api/node/newmember", method = RequestMethod.POST)
+	public List<UserWithUuid> addNewUserToNode(@RequestBody User newUser) {
+		// get the current node from the user
+		User manager = getManagerFromSecurityContext();
+		UUID userUuid = UUID.randomUUID();
+		newUser.setNode(manager.getNode());
+		PasswordGenerator passwordGenerator = new PasswordGenerator.PasswordGeneratorBuilder().useDigits(true)
+				.useLower(true).useUpper(true).build();
+		String password = passwordGenerator.generate(8);
+		// newUser.setPassword(passwordEncoder().encode(newUser.getPassword()));
+		System.out.println("pw: " + password);
+		newUser.setPassword(passwordEncoder().encode(password));
+
+		Authority userRole = new Authority();
+		userRole.setId(1L);
+		userRole.setName(AuthorityName.ROLE_USER);
+		newUser.setAuthorities(Arrays.asList(userRole));
+		newUser.setLastPasswordResetDate(new Date());
+		newUser.setEnabled(true);
+		newUser.setApiKey(userUuid);
+		try {
+			userService.saveUser(newUser);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataIntegrityViolationException("Email already in use");
+		} catch (ConstraintViolationException ee) {
+			throw new DataIntegrityViolationException("User information do not meet the requeriments");
+		}
+
+		return userService.getUsersByNodeId(manager.getNode().getId());
+	}
+
+	/**
+	 * Add a new manager to the current node
+	 * 
+	 * @param newUser
+	 *            the user to add
+	 * @return A list of the current node users
+	 */
+	@PreAuthorize("hasRole('MANAGER')")
+	@RequestMapping(value = "/node/newmanager", method = RequestMethod.POST)
+	public List<UserWithUuid> addNewManagerToNode(@RequestBody User newUser) {
+		// get the current node from the user
+		User manager = getManagerFromSecurityContext();
+		UUID userUuid = UUID.randomUUID();
+		newUser.setNode(manager.getNode());
+
+		newUser.setPassword(passwordEncoder().encode(newUser.getPassword()));
+
+		Authority userRole = new Authority();
+		userRole.setId(1L);
+		userRole.setName(AuthorityName.ROLE_USER);
+
+		Authority managerRole = new Authority();
+		managerRole.setId(2L);
+		managerRole.setName(AuthorityName.ROLE_MANAGER);
+
+		newUser.setAuthorities(Arrays.asList(userRole, managerRole));
+		newUser.setLastPasswordResetDate(new Date());
+		newUser.setEnabled(true);
+		newUser.setApiKey(userUuid);
+		try {
+			userService.saveUser(newUser);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataIntegrityViolationException("Username already in use");
+		}
+
+		return userService.getUsersByNodeId(manager.getNode().getId());
+	}
+
+	/**
+	 * Delete a node member from the database
+	 * 
+	 * @param userUuid
+	 *            the user apikey
+	 * @return the list of node members
+	 */
+	@PreAuthorize("hasRole('MANAGER')")
+	@RequestMapping(value = "/api/node/user/{userUuid}", method = RequestMethod.DELETE)
+	public List<UserWithUuid> deleteLabMember(@PathVariable UUID userUuid) {
+		User manager = getManagerFromSecurityContext();
+		if(manager.getApiKey().equals(userUuid)) {
+			throw new InvalidActionException("You can not remove yourself. Ask another lab manager to do it.");
+		}
+		if (userService.deleteUser(userUuid, manager)) {
+			// return list
+			return userService.getUsersByNodeId(manager.getNode().getId());
+		} else {
+			// throw exception
+			throw new DataIntegrityViolationException("Can not delete user");
+		}
+
+	}
+
+	@PreAuthorize("hasRole('MANAGER')")
+	@RequestMapping(value = "/api/node/user/change/{userUuid}", method = RequestMethod.PUT)
+	public UserWithUuid changeMemberRole(@PathVariable UUID userUuid) {
+		User manager = getManagerFromSecurityContext();
+		if(manager.getApiKey().equals(userUuid)) {
+			throw new InvalidActionException("You can not change your role. Ask another lab manager to do it.");
+		}
+		
+		return userService.changeMemberRole(userUuid, manager.getNode().getId());
+	}
+
+	@PreAuthorize("hasRole('MANAGER')")
+	@RequestMapping(value = "/api/node/users", method = RequestMethod.GET)
+	public List<UserWithUuid> getUsers() {
+		User manager = getManagerFromSecurityContext();
+		return userService.findAllNodeUsers(manager.getNode().getId());
+	}
+
+	/*
+	 * Development functions
+	 */
+	@RequestMapping(value = "/api/email", method = RequestMethod.GET)
+	public void sendEmail() {
+		System.out.println("hola");
+		Mail mail = new Mail();
+		mail.setFrom("daniel.mancera.crg@gmail.com");
+		mail.setTo("daniel.mancera@crg.eu");
+		mail.setSubject("Sending Simple Email with JavaMailSender Example");
+		mail.setContent("This tutorial demonstrates how to send a simple email using Spring Framework.");
+
+		emailService.sendSimpleMessage(mail);
+	}
+
+	@PreAuthorize("hasRole('MANAGER')")
+	@RequestMapping(value = "/node/info/{nodeUuidString}", method = RequestMethod.GET)
+	public Node getNodeByUuid(@PathVariable UUID nodeUuidString) {
+
+		return nodeService.getNodeByNodeUuid(nodeUuidString);
+	}
+
+	@PreAuthorize("hasRole('MANAGER')")
+	@RequestMapping(value = "/api/nodes", method = RequestMethod.GET)
+	public List<Node> getAllNodes() {
+		return nodeService.getAllNodes();
+	}
+
+	@PreAuthorize("hasRole('MANAGER')")
+	@RequestMapping(value = "/node/user/{userUuidString}", method = RequestMethod.GET)
+	public User getUserByUuid(@PathVariable UUID userUuidString) {
+		return userService.getUserByUuid(userUuidString);
+	}
+
+	/*
+	 * Helper classes
+	 */
+	/**
+	 * Get the current user from the security context
+	 * 
+	 * @return the logged user
+	 */
+	private User getManagerFromSecurityContext() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User manager = userService.getUserByUsername(authentication.getName());
+		return manager;
+	}
+
+	/*
+	 * Exception handlers
+	 */
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
+	}
+
+	@ExceptionHandler(PersistenceException.class)
+	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), e.getMessage());
+	}
+	@ExceptionHandler(InvalidActionException.class)
+	void handleBadAction(HttpServletResponse response, Exception e) throws IOException{
+		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
+	}
+
+
+}
