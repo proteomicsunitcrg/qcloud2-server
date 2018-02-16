@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -25,13 +26,22 @@ public class CV {
     private Long id;
 
     @Column(name = "NAME", length = 50, unique = true)
-    @NotNull
-    @Size(min = 4, max = 50)
+    @NotNull    
     private String name;
     
     @ManyToOne(cascade={CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH})    
     @JoinColumn(name="category_id")    
     private Category category;
+    
+    @Lob
+    @Column(name="definition")
+    private String definition;
+    
+    @Column(name="cv_id")
+    private String CVId;
+    
+    @Column(name="enabled")
+    private boolean enabled;
 
 /*    
     @OneToMany(mappedBy="cv")
@@ -45,6 +55,14 @@ public class CV {
 		this.dataSource = dataSource;
 	}
 	*/
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	public CV() {}
     
@@ -70,6 +88,22 @@ public class CV {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	public String getDefinition() {
+		return definition;
+	}
+
+	public void setDefinition(String definition) {
+		this.definition = definition;
+	}
+
+	public String getCVId() {
+		return CVId;
+	}
+
+	public void setCVId(String cVId) {
+		CVId = cVId;
 	}    
     
 }
