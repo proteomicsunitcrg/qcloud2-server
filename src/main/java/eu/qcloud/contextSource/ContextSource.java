@@ -8,7 +8,7 @@ import javax.persistence.InheritanceType;
 
 import org.hibernate.annotations.GenericGenerator;
 
-@Entity(name="quantificationsource")
+@Entity(name="context_source")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class ContextSource {
 	@Id

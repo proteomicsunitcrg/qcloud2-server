@@ -1,14 +1,23 @@
 package eu.qcloud.sampleType;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import eu.qcloud.contextSource.peptide.Peptide;
 
 @Entity
 @Table(name = "sample_type")
@@ -24,7 +33,7 @@ public class SampleType {
     @Size(min = 3, max = 50)
     private String name;
     
-    /*
+    
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "sample_composition", joinColumns = {
 			@JoinColumn(name = "sample_id", nullable = false, updatable = false) },
@@ -40,7 +49,7 @@ public class SampleType {
 	public void setPeptides(List<Peptide> peptides) {
 		this.peptides = peptides;
 	}
-	*/
+	
 
 	public Long getId() {
 		return id;

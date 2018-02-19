@@ -4,7 +4,7 @@ import javax.persistence.Entity;
 
 import eu.qcloud.contextSource.ContextSource;
 
-@Entity(name="element")
+@Entity(name="instrument_sample")
 public class InstrumentSample extends ContextSource{
 
 	private String abbreviatedName;
