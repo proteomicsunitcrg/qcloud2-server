@@ -1,35 +1,34 @@
-/**
- * Node class
- * @author Daniel Mancera <daniel.mancera@crg.eu>
- */
-package eu.qcloud.node;
+package eu.qcloud.dataSource;
 
-import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
-import eu.qcloud.dataSource.DataSource;
-import eu.qcloud.security.model.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import eu.qcloud.CV.CV;
+import eu.qcloud.node.Node;
 
 @Entity
-@Table(name="node")
-public class Node {
-		
+@Table(name="data_source")
+public class DataSource {
+	
 	@Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "node_seq")
     @SequenceGenerator(name = "node_seq", sequenceName = "node_seq", allocationSize = 1)
 	private Long id;
+	
+	@Column(name = "NAME", length = 50, unique = false)	
+	private String name;
 	
 	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
@@ -38,40 +37,29 @@ public class Node {
 	public UUID getApiKey() {
 		return apiKey;
 	}
-
 	
 	public void setApiKey(UUID apiKey) {
 		this.apiKey = apiKey;
 	}
-
-	@Column(name = "NAME", length = 50, unique = true)
-    @NotNull
-	private String name;
+	
+	@ManyToOne
+	@JoinColumn(name="cv_id")
+	private CV cv;
+	
+	@ManyToOne
+	@JoinColumn(name="node_id")
+	private Node node;
 	
 	
-	@OneToMany(mappedBy="node")
-	private List<DataSource> dataSource;
-	
-	@OneToMany(mappedBy="node", cascade=CascadeType.ALL)
-	private List<User> users;
-	
-	public List<User> getUsers() {
-		return users;
+	@JsonIgnore
+	public Node getNode() {
+		return node;
 	}
 
-	public void setUsers(List<User> users) {
-		this.users = users;
+	public void setNode(Node node) {
+		this.node = node;
 	}
-	
-	public List<DataSource> getDataSource() {
-		return dataSource;
-	}
-	
-	public void setDataSource(List<DataSource> dataSource) {
-		this.dataSource = dataSource;
-	}
-	
-	 
+
 	public Long getId() {
 		return id;
 	}
@@ -86,6 +74,19 @@ public class Node {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public CV getCv() {
+		return cv;
+	}
+
+	public void setCv(CV cv) {
+		this.cv = cv;
+	}
+
+	@Override
+	public String toString() {
+		return "DataSource [id=" + id + ", name=" + name + ", cv=" + cv + ", node=" + node + "]";
 	}
 	
 	

@@ -1,5 +1,7 @@
 package eu.qcloud.CV;
 
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,12 +11,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.category.Category;
+import eu.qcloud.dataSource.DataSource;
 
 @Entity
 @Table(name = "cv")
@@ -43,7 +48,7 @@ public class CV {
     @Column(name="enabled")
     private boolean enabled;
 
-/*    
+    @JsonIgnore
     @OneToMany(mappedBy="cv")
     private List<DataSource> dataSource;
     
@@ -54,7 +59,7 @@ public class CV {
 	public void setDataSource(List<DataSource> dataSource) {
 		this.dataSource = dataSource;
 	}
-	*/
+
 
 	public boolean isEnabled() {
 		return enabled;

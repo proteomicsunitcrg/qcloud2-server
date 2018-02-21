@@ -50,6 +50,14 @@ public class CVService {
 		return cv;
 		
 	}
+
+	public List<CV> getAllEnabledCV() {
+		return cvRepository.findByEnabled(true);
+	}
+
+	public List<CV> getAllEnabledCVByCategory(Long categoryId) {
+		return cvRepository.findByCategoryIdAndEnabled(categoryId,true);		
+	}
 	
 
 	

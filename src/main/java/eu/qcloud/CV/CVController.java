@@ -17,25 +17,31 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@PreAuthorize("hasRole('ADMIN')")
 public class CVController {
 	
 	@Autowired
 	private CVService cvService;
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/api/cv/category/{categoryId}", method = RequestMethod.POST)
 	public CV addCV(@RequestBody CV cv, @PathVariable Long categoryId) {
 		return cvService.addCV(cv, categoryId);
 	}
+	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value="/api/cv", method = RequestMethod.GET)
 	public List<CV> getAllCV() {
 		return cvService.getAllCV();
 		
 	}
-	
+	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value="/api/cv/category/{categoryId}", method = RequestMethod.GET)
-	public List<CV> getAllCVByCategory(@PathVariable Long categoryId) {
+	public List<CV> getAllCVByCategory(@PathVariable Long categoryId) {		
 		return cvService.getAllCVbyCategory(categoryId);
+	}
+	@PreAuthorize("hasRole('MANAGER')")
+	@RequestMapping(value="/api/cv/category/{categoryId}/enabled", method = RequestMethod.GET)
+	public List<CV> getAllEnabledCV(@PathVariable Long categoryId) {
+		return cvService.getAllEnabledCVByCategory(categoryId);
 	}
 	
 	@RequestMapping(value="/api/cv/{cvId}", method = RequestMethod.PUT)

@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 public interface CVRepository extends JpaRepository<CV, Long> {
     public CV findByName(String name);
     public List<CV> findByCategoryId(Long categoryId);
+    public List<CV> findByEnabled(Boolean enabled);
     
+    public List<CV> findByCategoryIdAndEnabled(Long categoryId,Boolean enabled);
     
     
     

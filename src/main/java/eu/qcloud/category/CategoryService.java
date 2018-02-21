@@ -22,4 +22,10 @@ public class CategoryService {
 		
 		return categoryRepository.save(category);
 	}
+
+	public Category getCategoryByName(String categoryName) {
+		return categoryRepository.findByName(categoryName);
+
+		
+	}
 }
