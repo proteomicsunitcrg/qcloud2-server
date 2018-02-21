@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class InstrumentSampleController {
 	@Autowired
-	private InstrumentSampleService elementService;
+	private InstrumentSampleService instrumentSampleService;
 	
-	@RequestMapping(value="/element",method= RequestMethod.POST)
+	@RequestMapping(value="/instrumentsample",method= RequestMethod.POST)
 	public InstrumentSample addElement(@RequestBody InstrumentSample element) {
-		return elementService.addElement(element);
+		return instrumentSampleService.addElement(element);
 	}
 }

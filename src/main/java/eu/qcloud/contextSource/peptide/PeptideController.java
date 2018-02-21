@@ -14,12 +14,12 @@ public class PeptideController {
 	@Autowired
 	private PeptideService peptideService;
 	
-	@RequestMapping(value="/peptide",method= RequestMethod.POST)
+	@RequestMapping(value="/api/contextsource/peptide",method= RequestMethod.POST)
 	public Peptide addPeptide(@RequestBody Peptide peptide) {
 		return peptideService.addPeptide(peptide);
 	}
 	
-	@RequestMapping(value="/peptide",method= RequestMethod.GET)
+	@RequestMapping(value="/api/contextsource/peptide",method= RequestMethod.GET)
 	public List<Peptide> getAllPeptides() {
 		return peptideService.getAllPeptides();
 	}
