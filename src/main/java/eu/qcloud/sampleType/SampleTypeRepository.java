@@ -5,15 +5,30 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
+import eu.qcloud.contextSource.peptide.PeptideRepository.OnlyPeptide;
 @Repository
 public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
     @Query("select name from SampleType")
 	public List<String> findAllMini();
     
-    public interface OnlyName {
+    public SampleTypeOnlyName findById(Long id);
+    
+    @Query("select s from SampleType s")
+    public List<WithPeptide> findAllSampleType();
+    
+    interface WithPeptide {
     	String getName();
-    	Long getId();
+    	List<OnlyPeptide> getPeptides();
     }
     
-    public OnlyName findById(Long id);
+    
+    public interface SampleTypeOnlyName {
+    	Long getId();
+    	String getName();
+    }
+    
+    @Query("select s from SampleType s")
+	public Iterable<SampleTypeOnlyName> findAllSampleTypes();
+    
 }

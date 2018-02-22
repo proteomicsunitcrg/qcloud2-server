@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.contextSource.peptide.Peptide;
 import eu.qcloud.contextSource.peptide.PeptideService;
-import eu.qcloud.sampleType.SampleTypeRepository.OnlyName;
+import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
+import eu.qcloud.sampleType.SampleTypeRepository.WithPeptide;
 
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
@@ -26,9 +27,16 @@ public class SampleTypeController {
 	public SampleType addElement(@RequestBody SampleType sampleType) {
 		return sampleTypeService.addSampleType(sampleType);
 	}
-	@RequestMapping(value="/sample", method=RequestMethod.GET)
-	public List<SampleType> getAllSampleType() {
+	
+	@RequestMapping(value="/api/sample", method=RequestMethod.GET)
+	public List<SampleTypeOnlyName> getAllSampleType() {
 		return sampleTypeService.getAllSampleType();
+	}
+	
+	
+	@RequestMapping(value="/api/sample/composition", method=RequestMethod.GET)
+	public List<WithPeptide> getFullSampleType() {
+		return sampleTypeService.getAllSampleTypeWithPeptide();
 	}
 	
 	
@@ -41,7 +49,7 @@ public class SampleTypeController {
 		//return sampleTypeService.addSampleType(s);
 	}
 	@RequestMapping(value="/sample/{sampleId}", method=RequestMethod.GET)
-	public OnlyName getById(@PathVariable Long sampleId) {
+	public SampleTypeOnlyName getById(@PathVariable Long sampleId) {
 		return sampleTypeService.getSampleById(sampleId);
 	}
 	

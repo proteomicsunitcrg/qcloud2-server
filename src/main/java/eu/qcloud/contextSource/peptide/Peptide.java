@@ -21,7 +21,7 @@ public class Peptide extends ContextSource{
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "peptides")
 	private List<SampleType> samples;
 	
-	@JsonIgnore
+	//@JsonIgnore
 	public List<SampleType> getSample() {
 		return samples;
 	}

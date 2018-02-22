@@ -8,6 +8,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.contextSource.peptide.PeptideRepository.PeptideWithSampleType;
+
 @Service
 @Transactional
 public class PeptideService {
@@ -19,11 +21,16 @@ public class PeptideService {
 	}
 	
 	public List<Peptide> getAllPeptides() {
-		List<Peptide> peptides = new ArrayList<>();		
-		
+		List<Peptide> peptides = new ArrayList<>();
 		peptideRepository.findAll().forEach(peptides::add);
 		return peptides;
 	}
+	
+	public List<PeptideWithSampleType> getOnlyPeptides() {
+		return peptideRepository.findAllPeptides();
+		
+	}
+	
 	
 	public Peptide getPeptideById(Long peptideId) {
 		return peptideRepository.findOne(peptideId);

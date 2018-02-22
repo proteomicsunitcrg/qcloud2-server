@@ -1,5 +1,7 @@
 package eu.qcloud.contextSource.instrumentSample;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,8 +13,12 @@ public class InstrumentSampleController {
 	@Autowired
 	private InstrumentSampleService instrumentSampleService;
 	
-	@RequestMapping(value="/instrumentsample",method= RequestMethod.POST)
+	@RequestMapping(value="/api/contextsource/instrumentsample",method= RequestMethod.POST)
 	public InstrumentSample addElement(@RequestBody InstrumentSample element) {
 		return instrumentSampleService.addElement(element);
+	}
+	@RequestMapping(value="/api/contextsource/instrumentsample",method= RequestMethod.GET)
+	public List<InstrumentSample> getAllInstrumentSamples() {
+		return instrumentSampleService.getAllInstrumentSample();
 	}
 }

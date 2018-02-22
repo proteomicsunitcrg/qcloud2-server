@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.contextSource.peptide.Peptide;
-import eu.qcloud.sampleType.SampleTypeRepository.OnlyName;
+import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
+import eu.qcloud.sampleType.SampleTypeRepository.WithPeptide;
 
 @Service
 @Transactional
@@ -21,9 +22,11 @@ public class SampleTypeService {
 		return sampleTypeRepository.save(s);		
 	}
 	
-	public List<SampleType> getAllSampleType() {
-		List<SampleType> samples = new ArrayList<>();
-		sampleTypeRepository.findAll().forEach(samples::add);
+	public List<SampleTypeOnlyName> getAllSampleType() {
+		List<SampleTypeOnlyName> samples = new ArrayList<>();
+		
+		sampleTypeRepository.findAllSampleTypes().forEach(samples::add);
+		
 		return samples;
 	}
 	
@@ -38,8 +41,12 @@ public class SampleTypeService {
 		
 	}
 	
-	public OnlyName getSampleById(Long id) {
+	public SampleTypeOnlyName getSampleById(Long id) {
 		return sampleTypeRepository.findById(id);
+	}
+
+	public List<WithPeptide> getAllSampleTypeWithPeptide() {
+		return sampleTypeRepository.findAllSampleType();
 	}
 	
 }
