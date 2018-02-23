@@ -25,6 +25,6 @@ public interface PeptideRepository extends CrudRepository<Peptide, Long> {
 		String getName();
 		String getSequence();
 		String getAbbreviatedSequence();
-		List<SampleTypeOnlyName> getSample();
+		List<SampleTypeOnlyName> getSampleTypes();
 	}
 }

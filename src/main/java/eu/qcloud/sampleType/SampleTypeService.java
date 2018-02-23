@@ -29,11 +29,12 @@ public class SampleTypeService {
 		
 		return samples;
 	}
-	
+	/*
 	public SampleType addPeptideToSampleType(SampleType s, List<Peptide> peptides) {		
 		s.setPeptides(peptides);
 		return sampleTypeRepository.save(s);
 	}
+	*/
 	
 	
 	public SampleType getSampleTypeById(Long id) {

@@ -33,7 +33,4 @@ public class ContextSource {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
-	
 }

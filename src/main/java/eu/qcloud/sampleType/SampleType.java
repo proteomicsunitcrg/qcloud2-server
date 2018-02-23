@@ -33,7 +33,6 @@ public class SampleType {
     @Size(min = 3, max = 50)
     private String name;
     
-    
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "sample_composition", joinColumns = {
 			@JoinColumn(name = "sample_id", nullable = false, updatable = false) },

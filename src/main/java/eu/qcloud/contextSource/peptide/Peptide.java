@@ -6,8 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.sampleType.SampleType;
 
@@ -19,15 +17,14 @@ public class Peptide extends ContextSource{
 	private String abbreviatedSequence;
 	
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "peptides")
-	private List<SampleType> samples;
+	private List<SampleType> sampleTypes;
 	
-	//@JsonIgnore
-	public List<SampleType> getSample() {
-		return samples;
+	public List<SampleType> getSampleTypes() {
+		return sampleTypes;
 	}
 	
-	public void setSample(List<SampleType> sample) {
-		this.samples = sample;
+	public void setSampleTypes(List<SampleType> sampleTypes) {
+		this.sampleTypes = sampleTypes;
 	}
 	
 	public String getSequence() {
