@@ -3,11 +3,12 @@ package eu.qcloud.contextSource.peptide;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.contextSource.ContextSource;
-import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.sampleComposition.SampleComposition;
 
 @Entity(name="peptide")
 public class Peptide extends ContextSource{
@@ -16,16 +17,8 @@ public class Peptide extends ContextSource{
 	
 	private String abbreviatedSequence;
 	
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "peptides")
-	private List<SampleType> sampleTypes;
-	
-	public List<SampleType> getSampleTypes() {
-		return sampleTypes;
-	}
-	
-	public void setSampleTypes(List<SampleType> sampleTypes) {
-		this.sampleTypes = sampleTypes;
-	}
+	@OneToMany(mappedBy = "peptide")
+	private List<SampleComposition> peptide;
 	
 	public String getSequence() {
 		return sequence;
