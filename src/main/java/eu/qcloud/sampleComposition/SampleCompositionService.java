@@ -16,6 +16,11 @@ public class SampleCompositionService {
 	
 	
 	public SampleComposition addSampleComposition(SampleComposition sampleComposition) {
+		SampleCompositionId scId = new SampleCompositionId();
+		scId.setPeptideId(sampleComposition.getPeptide().getId());
+		scId.setSampleTypeId(sampleComposition.getSampleType().getId());
+		sampleComposition.setSampleCompositionId(scId);
+		
 		return sampleCompositionRepository.save(sampleComposition);
 	}
 	
@@ -24,4 +29,20 @@ public class SampleCompositionService {
 		sampleCompositionRepository.findAll().forEach(samples::add);
 		return samples;
 	}
+
+	public List<SampleComposition> getAllSampleCompositionByPeptideId(Long peptideId) {
+		return sampleCompositionRepository.findByPeptideId(peptideId);
+	}
+	
+	public SampleComposition getSampleCompositionById(SampleCompositionId scId) {
+		return sampleCompositionRepository.findOne(scId);
+	}
+
+	public boolean deleteSampleComposition(SampleComposition sc) {
+		sampleCompositionRepository.delete(sc);
+		return true;
+	}
+	
+	
+
 }

@@ -21,15 +21,10 @@ public class PeptideService {
 	}
 	
 	public List<Peptide> getAllPeptides() {
-		List<Peptide> peptides = new ArrayList<>();
-		peptideRepository.findAll().forEach(peptides::add);
-		return peptides;
-	}
-	
-	public List<PeptideWithSampleType> getOnlyPeptides() {
 		return peptideRepository.findAllPeptides();
-		
 	}
+
+
 	
 	
 	public Peptide getPeptideById(Long peptideId) {
@@ -51,6 +46,14 @@ public class PeptideService {
 
 	public Peptide findPeptideBySequence(String quantificationSourceSequence) {
 		return peptideRepository.findBySequence(quantificationSourceSequence);		
+	}
+
+	public Peptide findPeptideById(Long peptideId) {
+		return peptideRepository.findOne(peptideId);
+	}
+	
+	public Peptide findePeptideByName(String name) {
+		return peptideRepository.findByName(name);
 	}
 	
 }

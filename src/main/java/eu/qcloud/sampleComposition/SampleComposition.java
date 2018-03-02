@@ -6,8 +6,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import eu.qcloud.contextSource.peptide.Peptide;
 import eu.qcloud.sampleType.SampleType;
 
@@ -28,6 +26,14 @@ public class SampleComposition {
 	
 	private int concentration;
 	
+	
+	
+	public SampleCompositionId getSampleCompositionId() {
+		return sampleCompositionId;
+	}
+	public void setSampleCompositionId(SampleCompositionId sampleCompositionId) {
+		this.sampleCompositionId = sampleCompositionId;
+	}
 	public int getConcentration() {
 		return concentration;
 	}

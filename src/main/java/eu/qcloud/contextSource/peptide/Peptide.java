@@ -5,8 +5,6 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.sampleComposition.SampleComposition;
 
@@ -33,7 +31,7 @@ public class Peptide extends ContextSource{
 	}
 
 	public void setAbbreviatedSequence(String abbreviatedSequence) {
-		this.abbreviatedSequence = abbreviatedSequence;
+		this.abbreviatedSequence = abbreviatedSequence;		
 	}
 	
 }

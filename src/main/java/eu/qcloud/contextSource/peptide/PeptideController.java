@@ -1,15 +1,23 @@
 package eu.qcloud.contextSource.peptide;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.persistence.PersistenceException;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import eu.qcloud.contextSource.peptide.PeptideRepository.PeptideWithSampleType;
+import eu.qcloud.exceptions.InvalidActionException;
 
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
@@ -19,19 +27,64 @@ public class PeptideController {
 	
 	@RequestMapping(value="/api/contextsource/peptide",method= RequestMethod.POST)
 	public Peptide addPeptide(@RequestBody Peptide peptide) {		
-		return peptideService.addPeptide(peptide);
+		if(peptideService.findePeptideByName(peptide.getName())==null) {
+			return peptideService.addPeptide(peptide);			
+		}else {
+			throw new DataIntegrityViolationException("This peptide already exists");
+		}
+		
 	}
 	
-	
-	/*
-	@RequestMapping(value="/api/contextsource/peptide",method= RequestMethod.GET)
-	public List<OnlyPeptide> getAllPeptides() {
-		return peptideService.getAllPeptides();
+	@RequestMapping(value="/api/contextsource/peptide/{peptideId}",method= RequestMethod.GET)
+	public Peptide findPeptide(@PathVariable Long peptideId) {
+		return peptideService.findPeptideById(peptideId);
 	}
-	*/
+	/*	
 	@RequestMapping(value="/api/contextsource/peptide",method= RequestMethod.GET)
 	public List<PeptideWithSampleType> getAllPeptides() {
 		return peptideService.getOnlyPeptides();
 	}
+	*/
+	@RequestMapping(value="/api/contextsource/peptide",method= RequestMethod.GET)
+	public List<Peptide> getAllPeptides() {
+		return peptideService.getAllPeptides();
+	}
+	@RequestMapping(value="/api/contextsource/peptide/{peptideId}",method= RequestMethod.PUT)
+	public Peptide updatePeptide(@RequestBody Peptide peptide,@PathVariable Long peptideId) {
+		Peptide p = peptideService.getPeptideById(peptideId);
+		if(peptide.getId() == p.getId()) {
+			if(checkIfPeptideNameExists(peptide.getName()) && !peptide.getName().equals(p.getName())) {
+				throw new DataIntegrityViolationException("This peptide already exists");
+			}else {
+				return peptideService.addPeptide(peptide);				
+			}			
+		}else {
+			throw new DataIntegrityViolationException("Invalid peptide");
+		}
+	}
 	
+	private boolean checkIfPeptideNameExists(String name) {
+		if(peptideService.findePeptideByName(name)!=null) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	/*
+	 * Exception handlers
+	 */
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
+	}
+
+	@ExceptionHandler(PersistenceException.class)
+	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), e.getMessage());
+	}
+	@ExceptionHandler(InvalidActionException.class)
+	void handleBadAction(HttpServletResponse response, Exception e) throws IOException{
+		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
+	}
 }

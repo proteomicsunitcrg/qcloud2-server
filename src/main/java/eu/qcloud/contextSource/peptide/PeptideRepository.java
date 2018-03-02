@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
-
 public interface PeptideRepository extends CrudRepository<Peptide, Long> {
 	Peptide findBySequence(String sequence);
 	
-	@Query("select p from peptide p")
-	List<PeptideWithSampleType> findAllPeptides();
+	@Query("select p from peptide p order by p.abbreviatedSequence")
+	List<Peptide> findAllPeptides();
+	
+	// public List<Peptide> findAllOrderByAbbreviatedSequence();
 	
 	public interface OnlyPeptide {
 		Long getId();
@@ -25,6 +25,8 @@ public interface PeptideRepository extends CrudRepository<Peptide, Long> {
 		String getName();
 		String getSequence();
 		String getAbbreviatedSequence();
-		List<SampleTypeOnlyName> getSampleTypes();
+		//List<SampleTypeOnlyName> getSampleTypes();
 	}
+
+	Peptide findByName(String name);
 }

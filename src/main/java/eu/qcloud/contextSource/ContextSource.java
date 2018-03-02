@@ -1,5 +1,6 @@
 package eu.qcloud.contextSource;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -14,9 +15,10 @@ public class ContextSource {
 	@Id
 	@GeneratedValue(generator="increment")
 	@GenericGenerator(name="increment", strategy = "increment")
-	private Long id;
+	protected Long id;
 	
-	private String name;
+	@Column(unique = true)
+	protected String name;
 
 	public Long getId() {
 		return id;
