@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
 
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
@@ -50,6 +51,10 @@ public class SampleCompositionController {
 		}
 		
 		return sampleCompositionService.deleteSampleComposition(sc);
+	}
+	@RequestMapping(value="/api/samplecomposition/sample/{sampleTypeName}", method=RequestMethod.GET)
+	public List<PeptidesFromSample> findAllPeptidesBySampleTypeName(@PathVariable String sampleTypeName) {
+		return sampleCompositionService.findAllPeptidesBySampleTypeName(sampleTypeName);
 		
 	}
 	

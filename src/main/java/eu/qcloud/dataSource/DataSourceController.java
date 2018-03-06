@@ -66,9 +66,16 @@ public class DataSourceController {
 		User u = getManagerFromSecurityContext();
 		// get the requested to delete datasource
 		DataSource dataSource = dataSourceService.findByApiKey(apiKey);
+		if(dataSource== null) {
+			throw new PersistenceException("What is going on...");
+		}
+		Long idToDelete = dataSource.getId();
+		Long categoryId = dataSource.getCv().getCategory().getId();
 		// Check if node has this instrument
-		if(dataSourceService.checkIfNodeHasDataSource(u.getNode().getId(), dataSource.getId())) {						
+		// if(dataSourceService.checkIfNodeHasDataSource(u.getNode().getId(), dataSource.getId())) {
+		if(dataSourceService.checkIfNodeHasDataSource(u.getNode().getId(), idToDelete)) {
 			dataSourceService.deleteDataSource(dataSource);
+			System.out.println(idToDelete + " " + categoryId + " " + apiKey);
 			if(dataSourceService.findById(dataSource.getId()) != null) {
 				// not deleted throw error
 				throw new PersistenceException("Instrument not delete due a server error.");
@@ -77,7 +84,7 @@ public class DataSourceController {
 			//not node owner, throw error
 			throw new InvalidActionException("You do not own this instrument.");
 		}
-		return dataSourceService.getAllDataSourceByNodeIdAndCategoryId(u.getNode().getId(), dataSource.getCv().getCategory().getId());
+		return dataSourceService.getAllDataSourceByNodeIdAndCategoryId(u.getNode().getId(), categoryId);
 	}
 	@RequestMapping(value="/api/datasource",method= RequestMethod.PUT)
 	public DataSource updateDataSource(@RequestBody DataSource dataSource) {

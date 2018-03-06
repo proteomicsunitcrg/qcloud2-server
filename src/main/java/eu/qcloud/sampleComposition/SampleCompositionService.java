@@ -8,6 +8,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
+
 @Service
 @Transactional
 public class SampleCompositionService {
@@ -41,6 +43,12 @@ public class SampleCompositionService {
 	public boolean deleteSampleComposition(SampleComposition sc) {
 		sampleCompositionRepository.delete(sc);
 		return true;
+	}
+
+	public List<PeptidesFromSample> findAllPeptidesBySampleTypeName(String sampleTypeName) {
+		return sampleCompositionRepository.findBySampleTypeName(sampleTypeName);
+
+		
 	}
 	
 	
