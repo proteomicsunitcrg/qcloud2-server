@@ -19,6 +19,16 @@ public class Param {
 	
 	@Column(name="name")
 	private String name;
+	
+	private String isFor;
+	
+	public String getIsFor() {
+		return isFor;
+	}
+
+	public void setIsFor(String isFor) {
+		this.isFor = isFor;
+	}
 
 	public Long getId() {
 		return id;
