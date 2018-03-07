@@ -1,0 +1,31 @@
+package eu.qcloud.data;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+@Embeddable
+public class DataId implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 17785L;
+	
+	@Column(nullable = false, updatable = false)
+	private Long paramId;
+	@Column(nullable = false, updatable = false)
+	private Long quantificationSourceId;
+	@Column(nullable = false, updatable = false)
+	private Long fileId;
+	
+	public DataId() {}
+	
+	public DataId(Long paramId, Long quantificationSourceId, Long fileId) {		
+		this.paramId = paramId;
+		this.quantificationSourceId = quantificationSourceId;
+		this.fileId = fileId;
+	}
+	
+	
+}
