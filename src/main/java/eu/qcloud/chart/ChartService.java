@@ -7,16 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.chart.ChartRepository.ChartDescription;
+import eu.qcloud.chart.chartParams.ChartParams;
+import eu.qcloud.chart.chartParams.ChartParamsId;
+import eu.qcloud.chart.chartParams.ChartParamsRepository;
+import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
 
 @Service
 public class ChartService {
 	
 	@Autowired
 	private ChartRepository chartRepository;
-	/*
+	
 	@Autowired
 	private ChartParamsRepository chartParamsRepository;
-	*/
+
 	public Chart addNewChart(Chart chart) {
 		return chartRepository.save(chart);		
 	}
@@ -26,22 +30,36 @@ public class ChartService {
 		chartRepository.findAll().forEach(charts::add);
 		return charts;
 	}
-	/*
-	
-	public ChartParams addParamsToChart(ChartParams chartParams) {
-		ChartParamsId id = new ChartParamsId();
-		id.setChartId(chartParams.getChart().getId());
-		id.setParamId(chartParams.getParam().getId());
-		id.setQuantificationSourceId(chartParams.getQuantificationSource().getId());
-		chartParams.setChartParamsId(id);
-		chartParamsRepository.save(chartParams);
-		return chartParams;
+	public boolean addParamsToChart(List<ChartParams> chartParams, Long chartId) {
+		List<ChartParams> chartParamsList = new ArrayList<>();
+		for(ChartParams chartParam: chartParams) {
+			ChartParamsId id = new ChartParamsId();
+			id.setChartId(chartId);
+			id.setParamId(chartParam.getParam().getId());
+			id.setContextSourceId(chartParam.getContextSource().getId());
+			chartParam.setChartParamsId(id);
+			if(chartParamsRepository.save(chartParams) !=null) {
+				chartParamsList.add(chartParam);				
+			}
+		}
+		if(chartParamsList.size()!=chartParams.size()) {
+			// something went wrong, delete previous inserted
+			deleteChartParams(chartParamsList);
+			chartRepository.delete(chartId);
+			return false;
+		}
+		return true;
+	}
+	private void deleteChartParams(List<ChartParams> chartParamsList) {
+		for(ChartParams c: chartParamsList) {
+			chartParamsRepository.delete(c);
+		}
 	}
 	
 	public List<FullParams> getChartParamsByChartId(Long chartId) {
 		return chartParamsRepository.findByChartParamsIdChartId(chartId);		
 	}
-	*/
+
 	public List<ChartDescription> getChartById(Long chartId) {
 		return chartRepository.findById(chartId);
 		

@@ -24,11 +24,11 @@ public class Chart {
     
     
     @ManyToOne
-	@JoinColumn(name="cvId",insertable=true, updatable= false)
+	@JoinColumn(name="cvId",insertable=true, updatable= false, nullable=false)
     private CV cv;
     
     @ManyToOne
-	@JoinColumn(name="sampleTypeId",insertable=true, updatable= false)
+	@JoinColumn(name="sampleTypeId",insertable=true, updatable= false,nullable=false)
     private SampleType sampleType;
     
     @Column(name="name")

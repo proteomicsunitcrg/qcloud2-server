@@ -1,8 +1,15 @@
 package eu.qcloud.chart;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.persistence.PersistenceException;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.chart.ChartRepository.ChartDescription;
+import eu.qcloud.chart.chartParams.ChartParams;
+import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
+import eu.qcloud.exceptions.InvalidActionException;
 
 @RestController
 public class ChartController {
@@ -26,29 +36,40 @@ public class ChartController {
 	public List<Chart> allCharts() {
 		return chartService.getAllCharts();
 	}
-	/*
-	@RequestMapping(value="/chart/{chartId}", method = RequestMethod.POST)
-	public ChartParams addParamToChart(@RequestBody ChartParams chartParams,@PathVariable Long chartId) {
-		Chart c = new Chart();
-		c.setId(chartId);
-		chartParams.setChart(c);
-		ChartParamsId chartParamsId = new ChartParamsId();
-		chartParamsId.setChartId(chartId);
-		chartParamsId.setParamId(chartParams.getParam().getId());
-		chartParamsId.setQuantificationSourceId(chartParams.getQuantificationSource().getId());
-		chartParams.setChartParamsId(chartParamsId);
-		return chartService.addParamsToChart(chartParams);		
-	}
 	
-	@RequestMapping(value="/chart/params/{chartId}")
+	@RequestMapping(value="/api/chart/{chartId}", method = RequestMethod.POST)
+	public List<ChartParams> addParamToChart(@RequestBody List<ChartParams> chartParams,@PathVariable Long chartId) {
+		if(chartService.addParamsToChart(chartParams, chartId)) {
+			return chartParams;
+		}else {
+			throw new DataIntegrityViolationException("Error adding chart parameters. Aborting");
+		}
+	}
+
+	@RequestMapping(value="/api/chart/params/{chartId}")
 	public List<FullParams> getChartParamsByChartId(@PathVariable Long chartId) {
 		return chartService.getChartParamsByChartId(chartId);
 	}
-	*/
 	
 	@RequestMapping(value="/api/chart/{chartId}", method = RequestMethod.GET)
 	public List<ChartDescription> getChartByChartId(@PathVariable Long chartId) {
 		return chartService.getChartById(chartId);
+	}
+	/*
+	 * Exception handlers
+	 */
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
+	}
+
+	@ExceptionHandler(PersistenceException.class)
+	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), e.getMessage());
+	}
+	@ExceptionHandler(InvalidActionException.class)
+	void handleBadAction(HttpServletResponse response, Exception e) throws IOException{
+		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
 	}
 	
 }
