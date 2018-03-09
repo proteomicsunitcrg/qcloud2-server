@@ -61,6 +61,10 @@ public class ChartParams {
 		this.contextSource = contextSource;
 	}
 
+	public ChartParamsId getChartParamsId() {
+		return chartParamsId;
+	}
+
 	
 	
 	

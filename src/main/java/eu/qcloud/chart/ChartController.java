@@ -1,6 +1,7 @@
 package eu.qcloud.chart;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.PersistenceException;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.chart.ChartRepository.ChartDescription;
 import eu.qcloud.chart.chartParams.ChartParams;
+import eu.qcloud.chart.chartParams.ChartParamsId;
 import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
 import eu.qcloud.exceptions.InvalidActionException;
 
@@ -39,11 +41,21 @@ public class ChartController {
 	
 	@RequestMapping(value="/api/chart/{chartId}", method = RequestMethod.POST)
 	public List<ChartParams> addParamToChart(@RequestBody List<ChartParams> chartParams,@PathVariable Long chartId) {
-		if(chartService.addParamsToChart(chartParams, chartId)) {
-			return chartParams;
-		}else {
-			throw new DataIntegrityViolationException("Error adding chart parameters. Aborting");
+		
+		List<ChartParams> chartParamsList = new ArrayList<>();		
+		for(ChartParams chartParam: chartParams) {
+			chartParamsList.add(chartService.addParamToChart(chartParam));
+			
 		}
+		if(chartParamsList.size()!=chartParams.size()) {
+			// delete previous
+			chartService.deleteChartParams(chartParamsList);
+			chartService.deleteChartById(chartId);
+			throw new DataIntegrityViolationException("There were a problem inserting the chart. Try again later");
+		}
+		return chartParams;
+		
+		
 	}
 
 	@RequestMapping(value="/api/chart/params/{chartId}")

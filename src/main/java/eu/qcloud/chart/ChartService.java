@@ -34,12 +34,13 @@ public class ChartService {
 		List<ChartParams> chartParamsList = new ArrayList<>();
 		for(ChartParams chartParam: chartParams) {
 			ChartParamsId id = new ChartParamsId();
-			id.setChartId(chartId);
+			// id.setChartId(chartId);
+			id.setChartId(chartParam.getChart().getId());
 			id.setParamId(chartParam.getParam().getId());
 			id.setContextSourceId(chartParam.getContextSource().getId());
 			chartParam.setChartParamsId(id);
 			if(chartParamsRepository.save(chartParams) !=null) {
-				chartParamsList.add(chartParam);				
+				chartParamsList.add(chartParam);
 			}
 		}
 		if(chartParamsList.size()!=chartParams.size()) {
@@ -50,7 +51,18 @@ public class ChartService {
 		}
 		return true;
 	}
-	private void deleteChartParams(List<ChartParams> chartParamsList) {
+	public ChartParams addParamToChart(ChartParams chartParam) {
+		ChartParamsId id = new ChartParamsId();
+		// id.setChartId(chartId);
+		id.setChartId(chartParam.getChart().getId());
+		id.setParamId(chartParam.getParam().getId());
+		id.setContextSourceId(chartParam.getContextSource().getId());
+		chartParam.setChartParamsId(id);
+		return chartParamsRepository.save(chartParam);
+	}
+	
+	
+	public void deleteChartParams(List<ChartParams> chartParamsList) {
 		for(ChartParams c: chartParamsList) {
 			chartParamsRepository.delete(c);
 		}
@@ -62,6 +74,11 @@ public class ChartService {
 
 	public List<ChartDescription> getChartById(Long chartId) {
 		return chartRepository.findById(chartId);
+		
+	}
+
+	public void deleteChartById(Long chartId) {
+		chartRepository.delete(chartId);
 		
 	}
 	
