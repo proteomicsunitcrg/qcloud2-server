@@ -87,7 +87,7 @@ public class DataController {
 		
 		//Check if current user has the requested node		
 		User user = getManagerFromSecurityContext();
-		if(!dataSourceService.checkIfNodeHasDataSource(user.getNode().getId(), dataSourceId)) {
+		if(!dataSourceService.checkIfNodeHasDataSource(dataSourceId,user.getNode().getId())) {
 			throw new IllegalArgumentException("Algo haces mal binguero.");
 		}
 		

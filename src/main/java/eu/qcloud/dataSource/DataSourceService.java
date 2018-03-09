@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.dataSource.DataSourceRepository.OnlyDataSource;
+
 @Service
 public class DataSourceService {
 	@Autowired
@@ -31,8 +33,8 @@ public class DataSourceService {
 		return dataSourceRepository.findByNode(dataSource.getNode());
 	}
 	
-	public boolean checkIfNodeHasDataSource(Long nodeId, Long dataSourceId) {
-		DataSource check = dataSourceRepository.findByNodeIdAndId(nodeId, dataSourceId);
+	public boolean checkIfNodeHasDataSource(Long dataSourceId,Long nodeId) {
+		DataSource check = dataSourceRepository.findByIdAndNodeId(dataSourceId,nodeId);
 		return check!=null;
 		
 	}
@@ -43,7 +45,6 @@ public class DataSourceService {
 	
 	public DataSource findById(Long id) {
 		return dataSourceRepository.findOne(id);
-		
 	}
 
 	public void deleteDataSource(DataSource dataSource) {

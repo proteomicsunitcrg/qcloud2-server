@@ -3,6 +3,7 @@ package eu.qcloud.dataSource;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,13 +14,20 @@ public interface DataSourceRepository extends CrudRepository<DataSource, Long> {
 		
 	List<DataSource> findByNodeId(Long nodeId);
 	
-	DataSource findByNodeIdAndId(Long nodeId, Long id);
+	DataSource findByIdAndNodeId(Long id, Long nodeId);
 
 	List<DataSource> findByNode(Node node);
 	
 	List<DataSource> findByNodeIdAndCvCategoryId(Long nodeId, Long categoryId);
 
 	DataSource findByApiKey(UUID apiKey);
+	
+	interface OnlyDataSource {
+		Long getId();
+		String getName();
+		
+	}
+	
 	
 
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.qcloud.dataSource.DataSourceRepository.OnlyDataSource;
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
@@ -43,6 +44,7 @@ public class DataSourceController {
 	public List<DataSource> getDataSourcesByNodeId(@PathVariable Long nodeId) {
 		return dataSourceService.getAllDataSourceByNodeId(nodeId);
 	}
+	
 	
 	@RequestMapping(value="/api/datasource/category/{categoryId}",method= RequestMethod.GET)
 	public List<DataSource> getDataSourcesByNode(@PathVariable Long categoryId) {
