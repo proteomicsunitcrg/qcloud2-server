@@ -37,7 +37,7 @@ public class File {
 	@JoinColumn(name="data_source_id")
 	private DataSource dataSource;
 	
-	@JsonFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern="yyyy-MM-dd hh:mm:ss")
 	@Column(name="creation_date", columnDefinition="DATETIME")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationDate;

@@ -19,19 +19,19 @@ public class FileController {
 	@Autowired
 	private FileService fileService;
 	
-	@RequestMapping(value="/file", method = RequestMethod.POST)
+	@RequestMapping(value="/api/file", method = RequestMethod.POST)
 	public File addFile(@RequestBody File file) {
 		return fileService.addNewFile(file);
 	}
-	@RequestMapping(value="/file", method = RequestMethod.GET)
+	@RequestMapping(value="/api/file", method = RequestMethod.GET)
 	public List<File> getAllFiles() {
 		return fileService.getAllFiles();
 	}
-	@RequestMapping(value="/file/{fileId}", method = RequestMethod.GET)
+	@RequestMapping(value="/api/file/{fileId}", method = RequestMethod.GET)
 	public OnlySmalls getFileById(@PathVariable Long fileId) {
 		return fileService.getFileById(fileId);
 	}
-	@RequestMapping(value="/file/{sampleTypeId}/{dataSourceId}", method = RequestMethod.POST)
+	@RequestMapping(value="/api/file/{sampleTypeId}/{dataSourceId}", method = RequestMethod.POST)
 	public File addFileSpecial(@RequestBody File file,@PathVariable Long sampleTypeId,@PathVariable Long dataSourceId) {
 		return fileService.addSpecial(file, dataSourceId, sampleTypeId);
 				

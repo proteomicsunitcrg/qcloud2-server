@@ -43,20 +43,20 @@ public class DataController {
 	private UserService userService;
 	
 	
-	@RequestMapping(value="/data",method= RequestMethod.GET)
+	@RequestMapping(value="/api/data",method= RequestMethod.GET)
 	public List<Data> getData() {
 		return dataService.getAllData();
 	}
 	
-	@RequestMapping(value="/data",method= RequestMethod.POST)	
+	@RequestMapping(value="/api/data",method= RequestMethod.POST)	
 	public Data addData(@RequestBody Data data) {
 		return dataService.addData(data);
 	}
-	@RequestMapping(value="/data/{fileId}",method= RequestMethod.GET)
+	@RequestMapping(value="/api/data/{fileId}",method= RequestMethod.GET)
 	public MiniData getSomeData(@PathVariable Long fileId) {
 		return dataService.getMiniData(fileId);
 	}
-	@RequestMapping(value="/data/{paramId}/{quantificationSourceSequence}/{checksum}",method = RequestMethod.POST)
+	@RequestMapping(value="/api/data/{paramId}/{quantificationSourceSequence}/{checksum}",method = RequestMethod.POST)
 	public Data insertData(@PathVariable Long paramId,
 			@PathVariable String quantificationSourceSequence,
 			@PathVariable String checksum,@RequestBody Data data) {
@@ -71,7 +71,7 @@ public class DataController {
 		
 	}
 	
-	@RequestMapping(value="/data/{startDate}/{endDate}", method=RequestMethod.GET)
+	@RequestMapping(value="/api/data/{startDate}/{endDate}", method=RequestMethod.GET)
 	public List<MiniData> getDataBetweenDates(@PathVariable String startDate,@PathVariable  String endDate) {
 		//Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		
@@ -80,7 +80,7 @@ public class DataController {
 		return dataService.getDataBetweenDates(start, end);
 	}
 	
-	@RequestMapping(value="/data/{startDate}/{endDate}/{dataSourceId}", method=RequestMethod.GET)
+	@RequestMapping(value="/api/data/{startDate}/{endDate}/{dataSourceId}", method=RequestMethod.GET)
 	public List<MiniData> getDataBetweenDatesByDataSourceId(@PathVariable String startDate,
 			@PathVariable  String endDate,
 			@PathVariable Long dataSourceId) {
