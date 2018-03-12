@@ -26,5 +26,7 @@ public interface DataRepository extends CrudRepository<Data, DataId>{
 		String getContextSourceName();
 		
 		Float getValue();
+		
+		
 	}
 }

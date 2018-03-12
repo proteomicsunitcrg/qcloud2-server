@@ -34,7 +34,7 @@ public class DataService {
 	}
 
 	public List<MiniData> getDataBetweenDatesByDataSourceId(Date start, Date end, Long dataSourceId) {
-		return dataRepository.findByFileCreationDateBetweenAndFileDataSourceId(start, end, dataSourceId);
-		
+		return dataRepository.findByFileCreationDateBetweenAndFileDataSourceId(start, end, dataSourceId); 
 	}
+	
 }
