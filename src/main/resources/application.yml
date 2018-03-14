@@ -4,7 +4,8 @@ server:
 
 # mail properties
   
-  
+application:
+  version: dev0.0.1(March demo)  
 
 
 
@@ -59,5 +60,5 @@ logging:
   level:
     org.springframework:
       security: DEBUG
-#    org.hibernate:
-#      SQL: DEBUG
+    org.hibernate:
+      SQL: DEBUG

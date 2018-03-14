@@ -45,4 +45,14 @@ public class FileService {
 		return fileRepository.findByChecksum(checksum);
 		
 	}
+
+	public List<OnlySmalls> getLastFilesByDataSourceIdAndSampleTypeId(Long dataSourceId, Long sampleTypeId) {
+		List<OnlySmalls> initials = new ArrayList<>();
+		fileRepository.findTop10ByDataSourceIdAndSampleTypeIdOrderByCreationDateDesc(dataSourceId, sampleTypeId)
+			.forEach(initials:: add);
+		List<OnlySmalls> initialAndFinalDate = new ArrayList<>();
+		initialAndFinalDate.add(initials.get(initials.size()-1));
+		initialAndFinalDate.add(initials.get(0));
+		return initialAndFinalDate;
+	}
 }

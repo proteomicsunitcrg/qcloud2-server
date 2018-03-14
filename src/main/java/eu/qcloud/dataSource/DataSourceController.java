@@ -79,7 +79,7 @@ public class DataSourceController {
 		Long categoryId = dataSource.getCv().getCategory().getId();
 		// Check if node has this instrument
 		// if(dataSourceService.checkIfNodeHasDataSource(u.getNode().getId(), dataSource.getId())) {
-		if(dataSourceService.checkIfNodeHasDataSource(u.getNode().getId(), idToDelete)) {
+		if(dataSourceService.checkIfNodeHasDataSource(idToDelete,u.getNode().getId())) {
 			dataSourceService.deleteDataSource(dataSource);
 			System.out.println(idToDelete + " " + categoryId + " " + apiKey);
 			if(dataSourceService.findById(dataSource.getId()) != null) {
@@ -95,9 +95,9 @@ public class DataSourceController {
 	@RequestMapping(value="/api/datasource",method= RequestMethod.PUT)
 	public DataSource updateDataSource(@RequestBody DataSource dataSource) {
 		// Get the current node
-		User u = getManagerFromSecurityContext();		
+		User u = getManagerFromSecurityContext();
 		// Check if node has this instrument
-		if(dataSourceService.checkIfNodeHasDataSource(u.getNode().getId(), dataSource.getId())) {
+		if(dataSourceService.checkIfNodeHasDataSource(dataSource.getId(),u.getNode().getId())) {
 			DataSource ds = dataSourceService.findByApiKey(dataSource.getApiKey());
 			if(ds == null) {
 				throw new InvalidActionException("Instrument not found.");

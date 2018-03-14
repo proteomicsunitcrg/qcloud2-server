@@ -35,7 +35,7 @@ public class NodeService {
 	 */	
 	public boolean deleteNode(Node n) {
 		nodeRepository.delete(n);
-		if(nodeRepository.findOne(n.getId()) == null) {
+		if(nodeRepository.findOneById(n.getId()) == null) {
 			return true;
 		}else {
 			return false;
@@ -48,7 +48,7 @@ public class NodeService {
 	}
 	
 	public Node getNodeByNodeId(Long nodeId) {
-		return nodeRepository.findOne(nodeId);
+		return nodeRepository.findOneById(nodeId);
 	}
 
 	public List<Node> getAllNodes() {

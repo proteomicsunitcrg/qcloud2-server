@@ -29,6 +29,10 @@ public class DataService {
 		return dataRepository.findByDataIdFileId(fileId);
 	}
 	
+	public List<MiniData> getPlotData(Date start, Date end, Long chartId, Long dataSourceId) {
+		return dataRepository.findPlotData(chartId, start, end, dataSourceId);
+	}
+	
 	public List<MiniData> getDataBetweenDates(Date start, Date end) {
 		return dataRepository.findByFileCreationDateBetween(start, end);
 	}

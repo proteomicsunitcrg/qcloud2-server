@@ -80,6 +80,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.png",
                         "/**/*.js",
                         "/api/email",
+                        "/assets/**",
                         "/login",
                         "/application/**"
                 ).permitAll()

@@ -25,7 +25,7 @@ public class Data {
 	private Param param;
 		
 	@ManyToOne
-	@JoinColumn(name="quantificationSourceId",insertable=false, updatable= false)
+	@JoinColumn(name="contextSourceId",insertable=false, updatable= false)
 	private ContextSource contextSource;
 	
 	@ManyToOne

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,10 +53,12 @@ public class DataController {
 	public Data addData(@RequestBody Data data) {
 		return dataService.addData(data);
 	}
+	/*
 	@RequestMapping(value="/api/data/{fileId}",method= RequestMethod.GET)
 	public MiniData getSomeData(@PathVariable Long fileId) {
 		return dataService.getMiniData(fileId);
 	}
+	*/
 	@RequestMapping(value="/api/data/{paramId}/{quantificationSourceSequence}/{checksum}",method = RequestMethod.POST)
 	public Data insertData(@PathVariable Long paramId,
 			@PathVariable String quantificationSourceSequence,
@@ -70,16 +73,24 @@ public class DataController {
 		throw new IllegalArgumentException("The 'name' parameter must not be null or empty");			
 		
 	}
-	
+	/*
 	@RequestMapping(value="/api/data/{startDate}/{endDate}", method=RequestMethod.GET)
 	public List<MiniData> getDataBetweenDates(@PathVariable String startDate,@PathVariable  String endDate) {
-		//Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		
 		Date start = Date.valueOf(startDate);
 		Date end = Date.valueOf(endDate);
 		return dataService.getDataBetweenDates(start, end);
 	}
+	*/
+	@PreAuthorize("hasRole('USER')")
+	@RequestMapping(value="/api/data/{startDate}/{endDate}/{chartId}/{dataSourceId}", method=RequestMethod.GET)
+	public List<MiniData> getPlotData(@PathVariable String startDate,@PathVariable  String endDate,@PathVariable Long chartId, @PathVariable Long dataSourceId) {
+		Date start = Date.valueOf(startDate);
+		Date end = Date.valueOf(endDate);
+		return dataService.getPlotData(start, end, chartId, dataSourceId);
+	}
 	
+	
+	/*
 	@RequestMapping(value="/api/data/{startDate}/{endDate}/{dataSourceId}", method=RequestMethod.GET)
 	public List<MiniData> getDataBetweenDatesByDataSourceId(@PathVariable String startDate,
 			@PathVariable  String endDate,
@@ -95,7 +106,7 @@ public class DataController {
 		Date end = Date.valueOf(endDate);
 		return dataService.getDataBetweenDatesByDataSourceId(start, end, dataSourceId);
 	}
-	
+	*/
 	/*
 	 * Helper classes
 	 */

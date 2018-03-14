@@ -34,6 +34,10 @@ public class FileController {
 	@RequestMapping(value="/api/file/{sampleTypeId}/{dataSourceId}", method = RequestMethod.POST)
 	public File addFileSpecial(@RequestBody File file,@PathVariable Long sampleTypeId,@PathVariable Long dataSourceId) {
 		return fileService.addSpecial(file, dataSourceId, sampleTypeId);
-				
+	}
+	@RequestMapping(value="/api/file/{sampleTypeId}/{dataSourceId}", method = RequestMethod.GET)
+	public List<OnlySmalls> getLastFiles(@PathVariable Long dataSourceId,@PathVariable  Long sampleTypeId) {
+		return fileService.getLastFilesByDataSourceIdAndSampleTypeId(dataSourceId,sampleTypeId);
+		
 	}
 }

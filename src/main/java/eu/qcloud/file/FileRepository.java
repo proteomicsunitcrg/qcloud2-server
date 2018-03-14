@@ -1,6 +1,7 @@
 package eu.qcloud.file;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.config.Projection;
@@ -13,6 +14,8 @@ public interface FileRepository extends CrudRepository<File, Long>{
 	public OnlySmalls findFileById(Long idFile);
 	
 	public File findByChecksum(String checksum);
+	
+	public List<OnlySmalls> findTop10ByDataSourceIdAndSampleTypeIdOrderByCreationDateDesc(Long dataSourceId,Long sampleTypeId);
 	
 	@Projection(name = "file_mini", types = File.class)
 	public interface OnlySmalls {
