@@ -15,15 +15,15 @@ public class DataId implements Serializable{
 	@Column(nullable = false, updatable = false)
 	private Long paramId;
 	@Column(nullable = false, updatable = false)
-	private Long quantificationSourceId;
+	private Long contextSourceId;
 	@Column(nullable = false, updatable = false)
 	private Long fileId;
 	
 	public DataId() {}
 	
-	public DataId(Long paramId, Long quantificationSourceId, Long fileId) {		
+	public DataId(Long paramId, Long contextSourceId, Long fileId) {		
 		this.paramId = paramId;
-		this.quantificationSourceId = quantificationSourceId;
+		this.contextSourceId = contextSourceId;
 		this.fileId = fileId;
 	}
 	

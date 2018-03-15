@@ -29,8 +29,13 @@ public class DataService {
 		return dataRepository.findByDataIdFileId(fileId);
 	}
 	
-	public List<MiniData> getPlotData(Date start, Date end, Long chartId, Long dataSourceId) {
-		return dataRepository.findPlotData(chartId, start, end, dataSourceId);
+	public List<DataForPlot> getPlotData(Date start, Date end, Long chartId, Long dataSourceId) {		
+		List<DataForPlot> dataForPlot = new ArrayList<>();
+		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chartId, start, end, dataSourceId); 
+		for(Data data: dataFromDb) {
+			dataForPlot.add(new DataForPlot(data.getFile().getFilename(),data.getFile().getCreationDate(),data.getContextSource().getName(),data.getValue()));
+		}
+		return dataForPlot;
 	}
 	
 	public List<MiniData> getDataBetweenDates(Date start, Date end) {

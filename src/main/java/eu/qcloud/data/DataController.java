@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.contextSource.peptide.Peptide;
 import eu.qcloud.contextSource.peptide.PeptideService;
-import eu.qcloud.data.DataRepository.MiniData;
 import eu.qcloud.dataSource.DataSourceService;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileService;
@@ -83,7 +82,7 @@ public class DataController {
 	*/
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value="/api/data/{startDate}/{endDate}/{chartId}/{dataSourceId}", method=RequestMethod.GET)
-	public List<MiniData> getPlotData(@PathVariable String startDate,@PathVariable  String endDate,@PathVariable Long chartId, @PathVariable Long dataSourceId) {
+	public List<DataForPlot> getPlotData(@PathVariable String startDate,@PathVariable  String endDate,@PathVariable Long chartId, @PathVariable Long dataSourceId) {
 		Date start = Date.valueOf(startDate);
 		Date end = Date.valueOf(endDate);
 		return dataService.getPlotData(start, end, chartId, dataSourceId);

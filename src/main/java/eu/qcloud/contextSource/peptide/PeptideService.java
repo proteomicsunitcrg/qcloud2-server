@@ -44,8 +44,8 @@ public class PeptideService {
 		
 	}
 
-	public Peptide findPeptideBySequence(String quantificationSourceSequence) {
-		return peptideRepository.findBySequence(quantificationSourceSequence);		
+	public Peptide findPeptideBySequence(String contextSourceSequence) {
+		return peptideRepository.findBySequence(contextSourceSequence);		
 	}
 
 	public Peptide findPeptideById(Long peptideId) {

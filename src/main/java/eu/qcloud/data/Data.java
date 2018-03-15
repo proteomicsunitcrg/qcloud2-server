@@ -66,11 +66,11 @@ public class Data {
 		this.param = param;
 	}
 
-	public ContextSource getQuantificationSource() {
+	public ContextSource getContextSource() {
 		return contextSource;
 	}
 
-	public void setQuantificationSource(ContextSource contextSource) {
+	public void setContextSource(ContextSource contextSource) {
 		this.contextSource = contextSource;
 	}
 
