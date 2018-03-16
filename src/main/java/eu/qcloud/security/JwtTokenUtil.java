@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -104,7 +103,7 @@ public class JwtTokenUtil implements Serializable {
     private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
-
+/*
     private String generateAudience(Device device) {
         String audience = AUDIENCE_UNKNOWN;
         if (device.isNormal()) {
@@ -116,17 +115,18 @@ public class JwtTokenUtil implements Serializable {
         }
         return audience;
     }
+    */
 
     private Boolean ignoreTokenExpiration(String token) {
         String audience = getAudienceFromToken(token);
         return (AUDIENCE_TABLET.equals(audience) || AUDIENCE_MOBILE.equals(audience));
     }
 
-    public String generateToken(UserDetails userDetails, Device device) {        
+    public String generateToken(UserDetails userDetails) {        
     	Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
         claims.put(CLAIM_KEY_AUTHORITIES, userDetails.getAuthorities());
-        claims.put(CLAIM_KEY_AUDIENCE, generateAudience(device));
+        claims.put(CLAIM_KEY_AUDIENCE, AUDIENCE_WEB);
         claims.put(CLAIM_KEY_CREATED, new Date());
         return generateToken(claims);
     }
@@ -168,11 +168,11 @@ public class JwtTokenUtil implements Serializable {
                         && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()));
     }
 
-	public String generateToken(UserDetails userDetails, Device device, Date generateExpirationDate) {
+	public String generateToken(UserDetails userDetails, Date generateExpirationDate) {
 		Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
         claims.put(CLAIM_KEY_AUTHORITIES, userDetails.getAuthorities());
-        claims.put(CLAIM_KEY_AUDIENCE, generateAudience(device));
+        claims.put(CLAIM_KEY_AUDIENCE, AUDIENCE_WEB);
         claims.put(CLAIM_KEY_CREATED, new Date());
         return generateToken(claims, generateExpirationDate);
 		
