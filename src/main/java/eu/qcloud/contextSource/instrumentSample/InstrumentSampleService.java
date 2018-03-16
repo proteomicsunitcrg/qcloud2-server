@@ -2,6 +2,7 @@ package eu.qcloud.contextSource.instrumentSample;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,10 @@ public class InstrumentSampleService {
 		List<InstrumentSample> instrumentSamples = new ArrayList<>();
 		elementRepository.findAll().forEach(instrumentSamples::add);;
 		return instrumentSamples;
-
+	}
+	
+	public Optional<InstrumentSample> findById(Long instrumentSampleId) {
+		return elementRepository.findById(instrumentSampleId);
 	}
 	
 }

@@ -2,6 +2,7 @@ package eu.qcloud.sampleComposition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -36,8 +37,8 @@ public class SampleCompositionService {
 		return sampleCompositionRepository.findByPeptideId(peptideId);
 	}
 	
-	public SampleComposition getSampleCompositionById(SampleCompositionId scId) {
-		return sampleCompositionRepository.findOne(scId);
+	public Optional<SampleComposition> getSampleCompositionById(SampleCompositionId scId) {
+		return sampleCompositionRepository.findById(scId);
 	}
 
 	public boolean deleteSampleComposition(SampleComposition sc) {

@@ -12,7 +12,7 @@ public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
     @Query("select name from SampleType")
 	public List<String> findAllMini();
     
-    public SampleTypeOnlyName findById(Long id);
+    public SampleTypeOnlyName findOnlyNameById(Long id);
     
     @Query("select s from SampleType s")
     public List<WithPeptide> findAllSampleType();

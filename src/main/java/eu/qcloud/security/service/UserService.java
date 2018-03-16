@@ -1,18 +1,12 @@
 package eu.qcloud.security.service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.security.model.Authority;
 import eu.qcloud.security.model.AuthorityName;
 import eu.qcloud.security.model.User;
@@ -103,7 +97,7 @@ public class UserService {
 		u.setAuthorities(newAuthorities);
 		userRepository.save(u);		
 		
-		return userRepository.findById(u.getId());		
+		return userRepository.findWithUuidById(u.getId());		
 	}
 
 

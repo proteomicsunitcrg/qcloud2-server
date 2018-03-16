@@ -2,12 +2,11 @@ package eu.qcloud.dataSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import eu.qcloud.dataSource.DataSourceRepository.OnlyDataSource;
 
 @Service
 public class DataSourceService {
@@ -43,8 +42,8 @@ public class DataSourceService {
 		return dataSourceRepository.findByNodeIdAndCvCategoryId(nodeId, categoryId);
 	}
 	
-	public DataSource findById(Long id) {
-		return dataSourceRepository.findOne(id);
+	public Optional<DataSource> findById(Long id) {
+		return dataSourceRepository.findById(id);
 	}
 
 	public void deleteDataSource(DataSource dataSource) {

@@ -29,9 +29,9 @@ public class DataService {
 		return dataRepository.findByDataIdFileId(fileId);
 	}
 	
-	public List<DataForPlot> getPlotData(Date start, Date end, Long chartId, Long dataSourceId) {		
+	public List<DataForPlot> getPlotData(Date start, Date end, Long chartId, Long dataSourceId, Long sampleTypeId) {		
 		List<DataForPlot> dataForPlot = new ArrayList<>();
-		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chartId, start, end, dataSourceId); 
+		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chartId, start, end, dataSourceId, sampleTypeId); 
 		for(Data data: dataFromDb) {
 			dataForPlot.add(new DataForPlot(data.getFile().getFilename(),data.getFile().getCreationDate(),data.getContextSource().getName(),data.getValue()));
 		}

@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     User findOneByApiKeyAndNodeId(UUID apiKey, Long nodeId);
     
-    UserWithUuid findById(Long id);
+    UserWithUuid findWithUuidById(Long id);
     
     User findUserById(Long id);
     

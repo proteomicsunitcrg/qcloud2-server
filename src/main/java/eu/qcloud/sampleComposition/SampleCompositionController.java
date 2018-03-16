@@ -2,6 +2,7 @@ package eu.qcloud.sampleComposition;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
@@ -45,12 +46,12 @@ public class SampleCompositionController {
 		SampleCompositionId scId = new SampleCompositionId();
 		scId.setPeptideId(peptideId);
 		scId.setSampleTypeId(sampleTypeId);
-		SampleComposition sc = sampleCompositionService.getSampleCompositionById(scId);
-		if(sc==null) {
+		Optional<SampleComposition> sc = sampleCompositionService.getSampleCompositionById(scId);
+		if(!sc.isPresent()) {
 			throw new DataIntegrityViolationException("Sample composition does not exist.");
 		}
 		
-		return sampleCompositionService.deleteSampleComposition(sc);
+		return sampleCompositionService.deleteSampleComposition(sc.get());
 	}
 	@RequestMapping(value="/api/samplecomposition/sample/{sampleTypeName}", method=RequestMethod.GET)
 	public List<PeptidesFromSample> findAllPeptidesBySampleTypeName(@PathVariable String sampleTypeName) {

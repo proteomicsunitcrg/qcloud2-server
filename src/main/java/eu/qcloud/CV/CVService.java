@@ -1,16 +1,11 @@
 package eu.qcloud.CV;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import eu.qcloud.category.Category;
 
@@ -29,8 +24,8 @@ public class CVService {
 		return cvRepository.findAll();
 	}
 	
-	public CV getCVbyId(Long id) {
-		return cvRepository.findOne(id);
+	public Optional<CV> getCVbyId(Long id) {
+		return cvRepository.findById(id);
 	}
 	
 	public List<CV> getAllCVbyCategory(Long categoryId) {

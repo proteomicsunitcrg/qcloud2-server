@@ -3,6 +3,7 @@ package eu.qcloud.chart;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
@@ -17,9 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import eu.qcloud.chart.ChartRepository.ChartDescription;
 import eu.qcloud.chart.chartParams.ChartParams;
-import eu.qcloud.chart.chartParams.ChartParamsId;
 import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
 import eu.qcloud.exceptions.InvalidActionException;
 
@@ -64,7 +63,7 @@ public class ChartController {
 	}
 	
 	@RequestMapping(value="/api/chart/{chartId}", method = RequestMethod.GET)
-	public List<ChartDescription> getChartByChartId(@PathVariable Long chartId) {
+	public Optional<Chart> getChartByChartId(@PathVariable Long chartId) {
 		return chartService.getChartById(chartId);
 	}
 	/*

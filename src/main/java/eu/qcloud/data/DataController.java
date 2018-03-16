@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.qcloud.contextSource.instrumentSample.InstrumentSample;
+import eu.qcloud.contextSource.instrumentSample.InstrumentSampleService;
 import eu.qcloud.contextSource.peptide.Peptide;
 import eu.qcloud.contextSource.peptide.PeptideService;
 import eu.qcloud.dataSource.DataSourceService;
@@ -41,6 +43,8 @@ public class DataController {
 	private DataSourceService dataSourceService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private InstrumentSampleService instrumentSampleService;
 	
 	
 	@RequestMapping(value="/api/data",method= RequestMethod.GET)
@@ -67,6 +71,17 @@ public class DataController {
 		data.setDataId(new DataId(paramId,p.getId(),f.getId()));
 		return dataService.addData(data);
 	}
+	@RequestMapping(value="/api/data/simple/{paramId}/{instrumentSampleId}/{checksum}",method = RequestMethod.POST)
+	public Data insertSimpleData(@PathVariable Long paramId,
+			@PathVariable Long instrumentSampleId,
+			@PathVariable String checksum,@RequestBody Data data) {
+		InstrumentSample is = instrumentSampleService.findById(instrumentSampleId).get();		
+		File f = fileService.getFileByChecksum(checksum);
+		data.setDataId(new DataId(paramId,is.getId(),f.getId()));
+		return dataService.addData(data);
+	}
+	
+	
 	@RequestMapping(value="/testing")
 	public void test() {
 		throw new IllegalArgumentException("The 'name' parameter must not be null or empty");			
@@ -81,11 +96,11 @@ public class DataController {
 	}
 	*/
 	@PreAuthorize("hasRole('USER')")
-	@RequestMapping(value="/api/data/{startDate}/{endDate}/{chartId}/{dataSourceId}", method=RequestMethod.GET)
-	public List<DataForPlot> getPlotData(@PathVariable String startDate,@PathVariable  String endDate,@PathVariable Long chartId, @PathVariable Long dataSourceId) {
+	@RequestMapping(value="/api/data/{startDate}/{endDate}/{chartId}/{dataSourceId}/{sampleTypeId}", method=RequestMethod.GET)
+	public List<DataForPlot> getPlotData(@PathVariable String startDate,@PathVariable  String endDate,@PathVariable Long chartId, @PathVariable Long dataSourceId,@PathVariable Long sampleTypeId) {
 		Date start = Date.valueOf(startDate);
 		Date end = Date.valueOf(endDate);
-		return dataService.getPlotData(start, end, chartId, dataSourceId);
+		return dataService.getPlotData(start, end, chartId, dataSourceId, sampleTypeId);
 	}
 	
 	

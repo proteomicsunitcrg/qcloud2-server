@@ -39,7 +39,7 @@ public class DataSourceController {
 	}
 	*/
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value="/api/datasource/{nodeId}",method= RequestMethod.GET)
+	@RequestMapping(value="/api/datasource/node/{nodeId}",method= RequestMethod.GET)
 	public List<DataSource> getDataSourcesByNodeId(@PathVariable Long nodeId) {
 		return dataSourceService.getAllDataSourceByNodeId(nodeId);
 	}
@@ -55,7 +55,11 @@ public class DataSourceController {
 		User u = getManagerFromSecurityContext();
 		return dataSourceService.getAllDataSourceByNodeIdAndCategoryId(u.getNode().getId(),categoryId);
 	}
-	
+	@RequestMapping(value="/api/datasource/{apiKey}",method= RequestMethod.GET)
+	public DataSource getDataSourceByApikey(@PathVariable UUID apiKey) {
+		return dataSourceService.findByApiKey(apiKey);
+		
+	}
 	
 	@RequestMapping(value="/api/datasource",method= RequestMethod.POST)
 	public List<DataSource> addDataSource(@RequestBody DataSource dataSource) {

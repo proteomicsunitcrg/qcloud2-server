@@ -2,13 +2,13 @@ package eu.qcloud.sampleType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import eu.qcloud.contextSource.peptide.Peptide;
 import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
 import eu.qcloud.sampleType.SampleTypeRepository.WithPeptide;
 
@@ -37,13 +37,13 @@ public class SampleTypeService {
 	*/
 	
 	
-	public SampleType getSampleTypeById(Long id) {
-		return sampleTypeRepository.findOne(id);
+	public Optional<SampleType> getSampleTypeById(Long id) {
+		return sampleTypeRepository.findById(id);
 		
 	}
 	
 	public SampleTypeOnlyName getSampleById(Long id) {
-		return sampleTypeRepository.findById(id);
+		return sampleTypeRepository.findOnlyNameById(id);
 	}
 
 	public List<WithPeptide> getAllSampleTypeWithPeptide() {

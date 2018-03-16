@@ -2,11 +2,11 @@ package eu.qcloud.chart;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import eu.qcloud.chart.ChartRepository.ChartDescription;
 import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsId;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
@@ -39,14 +39,14 @@ public class ChartService {
 			id.setParamId(chartParam.getParam().getId());
 			id.setContextSourceId(chartParam.getContextSource().getId());
 			chartParam.setChartParamsId(id);
-			if(chartParamsRepository.save(chartParams) !=null) {
+			if(chartParamsRepository.saveAll(chartParams) !=null) {
 				chartParamsList.add(chartParam);
 			}
 		}
 		if(chartParamsList.size()!=chartParams.size()) {
 			// something went wrong, delete previous inserted
 			deleteChartParams(chartParamsList);
-			chartRepository.delete(chartId);
+			chartRepository.deleteById(chartId);
 			return false;
 		}
 		return true;
@@ -72,13 +72,13 @@ public class ChartService {
 		return chartParamsRepository.findByChartParamsIdChartId(chartId);		
 	}
 
-	public List<ChartDescription> getChartById(Long chartId) {
+	public Optional<Chart> getChartById(Long chartId) {
 		return chartRepository.findById(chartId);
 		
 	}
 
 	public void deleteChartById(Long chartId) {
-		chartRepository.delete(chartId);
+		chartRepository.deleteById(chartId);
 		
 	}
 	

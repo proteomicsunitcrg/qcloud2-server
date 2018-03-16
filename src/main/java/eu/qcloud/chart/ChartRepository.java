@@ -1,6 +1,6 @@
 package eu.qcloud.chart;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChartRepository extends CrudRepository<Chart, Long>{
 
-	List<ChartDescription> findById(Long chartId);
+	Optional<Chart> findById(Long chartId);
 	
 	interface ChartDescription {
 		Long getId();

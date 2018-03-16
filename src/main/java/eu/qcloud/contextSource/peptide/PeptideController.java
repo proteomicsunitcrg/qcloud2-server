@@ -2,6 +2,7 @@ package eu.qcloud.contextSource.peptide;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +37,7 @@ public class PeptideController {
 	}
 	
 	@RequestMapping(value="/api/contextsource/peptide/{peptideId}",method= RequestMethod.GET)
-	public Peptide findPeptide(@PathVariable Long peptideId) {
+	public Optional<Peptide> findPeptide(@PathVariable Long peptideId) {
 		return peptideService.findPeptideById(peptideId);
 	}
 	/*	
@@ -51,9 +52,9 @@ public class PeptideController {
 	}
 	@RequestMapping(value="/api/contextsource/peptide/{peptideId}",method= RequestMethod.PUT)
 	public Peptide updatePeptide(@RequestBody Peptide peptide,@PathVariable Long peptideId) {
-		Peptide p = peptideService.getPeptideById(peptideId);
-		if(peptide.getId() == p.getId()) {
-			if(checkIfPeptideNameExists(peptide.getName()) && !peptide.getName().equals(p.getName())) {
+		Optional<Peptide> p = peptideService.getPeptideById(peptideId);
+		if(peptide.getId() == p.get().getId()) {
+			if(checkIfPeptideNameExists(peptide.getName()) && !peptide.getName().equals(p.get().getName())) {
 				throw new DataIntegrityViolationException("This peptide already exists");
 			}else {
 				return peptideService.addPeptide(peptide);				

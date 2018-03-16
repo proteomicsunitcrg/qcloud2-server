@@ -2,6 +2,7 @@ package eu.qcloud.CV;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,11 +47,11 @@ public class CVController {
 	
 	@RequestMapping(value="/api/cv/{cvId}", method = RequestMethod.PUT)
 	public CV changeEnabled(@PathVariable Long cvId) {
-		CV cv = cvService.getCVbyId(cvId);
-		if(cv == null) {
+		Optional<CV> cv = cvService.getCVbyId(cvId);
+		if(!cv.isPresent()) {
 			throw new DataIntegrityViolationException("Controlled vocabulary id not found.");
 		}
-		return cvService.changeEnabled(cv);
+		return cvService.changeEnabled(cv.get());
 	}
 	
 	/*
