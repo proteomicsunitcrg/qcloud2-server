@@ -61,11 +61,19 @@ public class ChartService {
 		return chartParamsRepository.save(chartParam);
 	}
 	
+	public List<ChartParams> getChartParamsByChart(Long chartId) {
+		return chartParamsRepository.getByChartParamsIdChartId(chartId);
+	}
+	
 	
 	public void deleteChartParams(List<ChartParams> chartParamsList) {
 		for(ChartParams c: chartParamsList) {
 			chartParamsRepository.delete(c);
 		}
+	}
+	
+	public void deleteChartParamsByChartId(Long chartId) {
+		chartParamsRepository.deleteByChartId(chartId);
 	}
 	
 	public List<FullParams> getChartParamsByChartId(Long chartId) {
@@ -80,6 +88,10 @@ public class ChartService {
 	public void deleteChartById(Long chartId) {
 		chartRepository.deleteById(chartId);
 		
+	}
+
+	public List<Chart> getChartsByCVId(Long cvId) {
+		return chartRepository.findByCvId(cvId);
 	}
 	
 }

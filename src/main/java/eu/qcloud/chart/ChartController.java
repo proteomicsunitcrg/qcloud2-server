@@ -33,9 +33,39 @@ public class ChartController {
 	public Chart addNewChart(@RequestBody Chart chart) {
 		return chartService.addNewChart(chart);
 	}
+	
+	@RequestMapping(value="/api/chart", method = RequestMethod.PUT)
+	public Chart updateChart(@RequestBody Chart chart) {
+		return chartService.addNewChart(chart);
+	}
+	
 	@RequestMapping(value="/api/chart", method = RequestMethod.GET)
 	public List<Chart> allCharts() {
 		return chartService.getAllCharts();
+	}
+	@RequestMapping(value="/api/chart/cv/{cvId}", method = RequestMethod.GET)
+	public List<Chart> getChartByCVId(@PathVariable Long cvId) {
+		return chartService.getChartsByCVId(cvId);
+	}
+	
+	@RequestMapping(value="/api/chart/{chartId}", method = RequestMethod.PUT)
+	public List<ChartParams> updateParamToChart(@RequestBody List<ChartParams> chartParams,@PathVariable Long chartId) {
+		// Delete previous chartparams
+		List<ChartParams> previous = chartService.getChartParamsByChart(chartId);
+		chartService.deleteChartParams(previous);
+		// Add new ones
+		List<ChartParams> chartParamsList = new ArrayList<>();		
+		for(ChartParams chartParam: chartParams) {
+			chartParamsList.add(chartService.addParamToChart(chartParam));
+			
+		}
+		if(chartParamsList.size()!=chartParams.size()) {
+			// delete previous
+			chartService.deleteChartParams(chartParamsList);
+			chartService.deleteChartById(chartId);
+			throw new DataIntegrityViolationException("There were a problem inserting the chart. Try again later");
+		}
+		return chartParams;
 	}
 	
 	@RequestMapping(value="/api/chart/{chartId}", method = RequestMethod.POST)
@@ -53,9 +83,9 @@ public class ChartController {
 			throw new DataIntegrityViolationException("There were a problem inserting the chart. Try again later");
 		}
 		return chartParams;
-		
-		
 	}
+	
+	
 
 	@RequestMapping(value="/api/chart/params/{chartId}")
 	public List<FullParams> getChartParamsByChartId(@PathVariable Long chartId) {
