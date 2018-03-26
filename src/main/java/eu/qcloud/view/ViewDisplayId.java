@@ -6,19 +6,19 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class UserViewId implements Serializable{
+public class ViewDisplayId implements Serializable{
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 34231L;
+	private static final long serialVersionUID = 342321L;
 	
 	@Column(nullable = false, updatable = false)
 	private Long chartId;
 	@Column(nullable = false, updatable = false)
 	private Long viewId;
 	
-	public UserViewId() {}
+	public ViewDisplayId() {}
 
 	public Long getChartId() {
 		return chartId;
@@ -53,7 +53,7 @@ public class UserViewId implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		UserViewId other = (UserViewId) obj;
+		ViewDisplayId other = (ViewDisplayId) obj;
 		if (chartId == null) {
 			if (other.chartId != null)
 				return false;

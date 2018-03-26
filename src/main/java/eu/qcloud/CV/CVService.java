@@ -53,6 +53,11 @@ public class CVService {
 	public List<CV> getAllEnabledCVByCategory(Long categoryId) {
 		return cvRepository.findByCategoryIdAndEnabled(categoryId,true);		
 	}
+
+	public CV getCvByCVId(String cvId) {
+		return cvRepository.getByCVId(cvId);
+		
+	}
 	
 
 	

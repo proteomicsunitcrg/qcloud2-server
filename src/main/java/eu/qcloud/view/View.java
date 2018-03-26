@@ -23,39 +23,36 @@ public class View {
 	
 	private String name;
 	
+	@Column(name ="is_default",nullable= false,columnDefinition="tinyint(1) default 0")
+	boolean isDefault;
+
 	@ManyToOne
 	@JoinColumn(name="userId",insertable=true, updatable= false,nullable=true)
 	private User user;
 	
-	@Column(name ="is_default",nullable= false,columnDefinition="tinyint(1) default 0")
-	boolean isDefault;
-
 	public Long getId() {
 		return id;
 	}
-
+	
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+	
 	public String getName() {
 		return name;
 	}
-
+	
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
+	
 	public User getUser() {
 		return user;
 	}
-
+	
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
-	
-	
-	
 	
 }

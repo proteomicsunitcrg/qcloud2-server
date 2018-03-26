@@ -1,5 +1,7 @@
 package eu.qcloud.CV;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +45,11 @@ public class CVController {
 	@RequestMapping(value="/api/cv/category/{categoryId}/enabled", method = RequestMethod.GET)
 	public List<CV> getAllEnabledCV(@PathVariable Long categoryId) {
 		return cvService.getAllEnabledCVByCategory(categoryId);
+	}
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="/api/cv/{cvId}", method = RequestMethod.GET)
+	public CV getCvByCvId(@PathVariable String cvId) {
+		return cvService.getCvByCVId(cvId);
 	}
 	
 	@RequestMapping(value="/api/cv/{cvId}", method = RequestMethod.PUT)
