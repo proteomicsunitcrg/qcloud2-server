@@ -14,7 +14,7 @@ public class ViewService {
 
 	@Autowired
 	private ViewDisplayRepository viewDisplayRepository;
-
+	
 	public List<View> getAllViews() {
 		List<View> views = new ArrayList<>();
 		viewRepository.findAll().forEach(views::add);
@@ -39,5 +39,15 @@ public class ViewService {
 		}
 		return saved;
 	}
+	
+	public View getDefaultViewByCV(Long cvId) {
+		return viewRepository.findByCvId(cvId);
+	}
+	
+	public List<DefaultView> getDefaultViewDisplayByViewId(Long viewId) {
+		return viewDisplayRepository.findByViewId(viewId);
+	}
+	
+	
 
 }

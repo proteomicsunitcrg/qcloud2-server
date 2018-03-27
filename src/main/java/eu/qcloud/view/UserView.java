@@ -5,7 +5,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import eu.qcloud.dataSource.DataSource;
-import eu.qcloud.security.model.User;
 @Entity(name="user_view")
 public class UserView extends ViewDisplay {
 	
