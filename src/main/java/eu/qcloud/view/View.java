@@ -1,5 +1,8 @@
 package eu.qcloud.view;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,9 +10,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.CV.CV;
 import eu.qcloud.security.model.User;
@@ -33,8 +39,20 @@ public class View {
 	private User user;
 	
 	@OneToOne
-	@JoinColumn(name="cvId",insertable=true, updatable= false,nullable=true)
+	@JoinColumn(name="cvId",insertable=true, updatable= false,nullable=true,unique=true)
 	private CV cv;
+	
+	@JsonIgnore
+	@OneToMany(cascade= CascadeType.ALL)
+	private List<ViewDisplay> viewDisplay;
+	
+	public List<ViewDisplay> getViewDisplay() {
+		return viewDisplay;
+	}
+
+	public void setViewDisplay(List<ViewDisplay> viewDisplay) {
+		this.viewDisplay = viewDisplay;
+	}
 
 	public CV getCv() {
 		return cv;

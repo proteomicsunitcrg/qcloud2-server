@@ -15,7 +15,7 @@ import eu.qcloud.chart.Chart;
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class ViewDisplay {
 	@ManyToOne
-	@JoinColumn(name="chartId",insertable=false, updatable= false)
+	@JoinColumn(name="chartId",insertable=false, updatable= false, nullable = false)
 	private Chart chart;
 	
 	@ManyToOne
