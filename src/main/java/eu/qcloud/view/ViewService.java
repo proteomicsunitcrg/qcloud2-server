@@ -28,10 +28,6 @@ public class ViewService {
 	public List<ViewDisplay> addDefaultViewDisplay(List<DefaultView> layout) {
 		List<ViewDisplay> saved = new ArrayList<>();
 		for (ViewDisplay vd : layout) {
-			ViewDisplayId id = new ViewDisplayId();
-			id.setChartId(vd.getChart().getId());
-			id.setViewId(vd.getView().getId());
-			vd.setViewDisplayId(id);
 			saved.add(viewDisplayRepository.save(vd));
 		}
 		if(saved.size() != layout.size()) {

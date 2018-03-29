@@ -28,13 +28,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        dialect: MySQL57InnoDB
   
   
   mail:
     default-encoding: UTF-8
     host: smtp.gmail.com
     username: daniel.mancera.crg
-    password: crga130783bC
+    password: c
     port: 587
     properties:
       mail:

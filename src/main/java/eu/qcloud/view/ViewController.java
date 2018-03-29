@@ -38,6 +38,7 @@ public class ViewController {
 	 * @param cvId
 	 * @return
 	 */
+	
 	@RequestMapping(value="/api/views/default/{cvId}", method=RequestMethod.GET)
 	public View getViewByCVId(@PathVariable Long cvId) {
 		View v =viewService.getDefaultViewByCV(cvId); 

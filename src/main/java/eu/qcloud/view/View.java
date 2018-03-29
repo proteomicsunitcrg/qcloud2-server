@@ -2,7 +2,6 @@ package eu.qcloud.view;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,8 +14,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import eu.qcloud.CV.CV;
 import eu.qcloud.security.model.User;
 
@@ -26,7 +23,7 @@ public class View {
 	@Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "view_seq")
-    @SequenceGenerator(name = "view_seq", sequenceName = "chart_seq", allocationSize = 1)
+    @SequenceGenerator(name = "view_seq", sequenceName = "view_seq", allocationSize = 1)
 	private Long id;
 	
 	private String name;
@@ -42,18 +39,9 @@ public class View {
 	@JoinColumn(name="cvId",insertable=true, updatable= false,nullable=true,unique=true)
 	private CV cv;
 	
-	@JsonIgnore
-	@OneToMany(cascade= CascadeType.ALL)
+	@OneToMany(mappedBy="view")
 	private List<ViewDisplay> viewDisplay;
 	
-	public List<ViewDisplay> getViewDisplay() {
-		return viewDisplay;
-	}
-
-	public void setViewDisplay(List<ViewDisplay> viewDisplay) {
-		this.viewDisplay = viewDisplay;
-	}
-
 	public CV getCv() {
 		return cv;
 	}

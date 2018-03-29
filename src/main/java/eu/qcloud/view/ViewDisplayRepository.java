@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface ViewDisplayRepository extends CrudRepository<ViewDisplay, ViewDisplayId> {
+public interface ViewDisplayRepository extends CrudRepository<ViewDisplay, Long> {
 	
 	List<DefaultView> findByViewId(Long viewId);
 		
