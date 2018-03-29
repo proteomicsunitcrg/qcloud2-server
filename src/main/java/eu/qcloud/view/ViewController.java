@@ -32,13 +32,16 @@ public class ViewController {
 	public List<ViewDisplay> addViewDisplayToView(@RequestBody List<DefaultView> layout) {
 		return viewService.addDefaultViewDisplay(layout);
 	}
+	@RequestMapping(value="/api/views/default", method=RequestMethod.GET)
+	public List<View> findAllDefaultViews() {
+		return viewService.findAllDefaultViews();
+	}
 	
 	/**
 	 * This method returns the view object by CV
 	 * @param cvId
 	 * @return
-	 */
-	
+	 */	
 	@RequestMapping(value="/api/views/default/{cvId}", method=RequestMethod.GET)
 	public View getViewByCVId(@PathVariable Long cvId) {
 		View v =viewService.getDefaultViewByCV(cvId); 

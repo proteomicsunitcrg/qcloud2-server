@@ -44,6 +44,12 @@ public class ViewService {
 		return viewDisplayRepository.findByViewId(viewId);
 	}
 	
+	public List<View> findAllDefaultViews() {
+		List<View> defaultViews = new ArrayList<>();
+		viewRepository.findByIsDefaultTrue().forEach(defaultViews::add);
+		return defaultViews;
+	}
+	
 	
 
 }
