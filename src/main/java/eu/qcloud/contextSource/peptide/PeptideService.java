@@ -8,7 +8,11 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+/**
+ * Service for peptides
+ * @author dmancera
+ *
+ */
 @Service
 @Transactional
 public class PeptideService {
@@ -22,9 +26,6 @@ public class PeptideService {
 	public List<Peptide> getAllPeptides() {
 		return peptideRepository.findAllPeptides();
 	}
-
-
-	
 	
 	public Optional<Peptide> getPeptideById(Long peptideId) {
 		return peptideRepository.findById(peptideId);

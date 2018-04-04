@@ -22,7 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
-
+/**
+ * Data source controller.
+ * @author dmancera
+ *
+ */
 @RestController
 @PreAuthorize("hasRole('MANAGER')")
 public class DataSourceController {
@@ -32,12 +36,6 @@ public class DataSourceController {
 	@Autowired
 	private UserService userService;
 	
-	/*
-	@RequestMapping(value="/api/datasource",method= RequestMethod.GET)
-	public List<DataSource> getAllDataSources() {
-		return dataSourceService.getAllDataSource();
-	}
-	*/
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/api/datasource/node/{nodeId}",method= RequestMethod.GET)
 	public List<DataSource> getDataSourcesByNodeId(@PathVariable Long nodeId) {
@@ -49,7 +47,6 @@ public class DataSourceController {
 		return dataSourceService.getAllDataSourceByNodeId(u.getNode().getId());
 	}
 	
-	
 	@RequestMapping(value="/api/datasource/category/{categoryId}",method= RequestMethod.GET)
 	public List<DataSource> getDataSourcesByNode(@PathVariable Long categoryId) {
 		User u = getManagerFromSecurityContext();
@@ -58,9 +55,13 @@ public class DataSourceController {
 	@RequestMapping(value="/api/datasource/{apiKey}",method= RequestMethod.GET)
 	public DataSource getDataSourceByApikey(@PathVariable UUID apiKey) {
 		return dataSourceService.findByApiKey(apiKey);
-		
 	}
 	
+	/**
+	 * Add a new data source. It will generate an UUID
+	 * @param dataSource
+	 * @return a list with the node current datasources
+	 */
 	@RequestMapping(value="/api/datasource",method= RequestMethod.POST)
 	public List<DataSource> addDataSource(@RequestBody DataSource dataSource) {
 		// Get the current node
@@ -70,6 +71,12 @@ public class DataSourceController {
 		dataSource.setApiKey(dataSourceUuid);
 		return dataSourceService.addNewDataSource(dataSource);
 	}
+	/**
+	 * Delete a data source from the server. It will perform some
+	 * checks before delete.
+	 * @param apiKey
+	 * @return
+	 */
 	@RequestMapping(value="/api/datasource/{apiKey}",method= RequestMethod.DELETE)
 	public List<DataSource> deleteDataSource(@PathVariable UUID apiKey) {
 		// Get the current node
@@ -82,7 +89,6 @@ public class DataSourceController {
 		Long idToDelete = dataSource.getId();
 		Long categoryId = dataSource.getCv().getCategory().getId();
 		// Check if node has this instrument
-		// if(dataSourceService.checkIfNodeHasDataSource(u.getNode().getId(), dataSource.getId())) {
 		if(dataSourceService.checkIfNodeHasDataSource(idToDelete,u.getNode().getId())) {
 			dataSourceService.deleteDataSource(dataSource);
 			System.out.println(idToDelete + " " + categoryId + " " + apiKey);

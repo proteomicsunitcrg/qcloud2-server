@@ -11,7 +11,11 @@ import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsId;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
 import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
-
+/**
+ * Service for charts and chart params
+ * @author dmancera
+ *
+ */
 @Service
 public class ChartService {
 	
@@ -30,11 +34,17 @@ public class ChartService {
 		chartRepository.findAll().forEach(charts::add);
 		return charts;
 	}
+	/**
+	 * Add the params to a chart. If it fails in some point it will remove
+	 * the inserted chart params in case there is any.
+	 * @param chartParams
+	 * @param chartId
+	 * @return
+	 */
 	public boolean addParamsToChart(List<ChartParams> chartParams, Long chartId) {
 		List<ChartParams> chartParamsList = new ArrayList<>();
 		for(ChartParams chartParam: chartParams) {
 			ChartParamsId id = new ChartParamsId();
-			// id.setChartId(chartId);
 			id.setChartId(chartParam.getChart().getId());
 			id.setParamId(chartParam.getParam().getId());
 			id.setContextSourceId(chartParam.getContextSource().getId());
@@ -53,7 +63,6 @@ public class ChartService {
 	}
 	public ChartParams addParamToChart(ChartParams chartParam) {
 		ChartParamsId id = new ChartParamsId();
-		// id.setChartId(chartId);
 		id.setChartId(chartParam.getChart().getId());
 		id.setParamId(chartParam.getParam().getId());
 		id.setContextSourceId(chartParam.getContextSource().getId());

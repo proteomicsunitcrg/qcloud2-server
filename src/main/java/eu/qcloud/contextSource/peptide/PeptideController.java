@@ -19,13 +19,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.exceptions.InvalidActionException;
-
+/**
+ * Peptide controller. A peptide is an extension
+ * of contextSource.
+ * @author dmancera
+ *
+ */
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
 public class PeptideController {
 	@Autowired
 	private PeptideService peptideService;
 	
+	/**
+	 * Add a new peptide into the database. If there
+	 * is already a peptide with the same name it will 
+	 * throw an exception. It should be catched in the client.
+	 * @param peptide the peptide to add
+	 * @return the added peptide
+	 */
 	@RequestMapping(value="/api/contextsource/peptide",method= RequestMethod.POST)
 	public Peptide addPeptide(@RequestBody Peptide peptide) {		
 		if(peptideService.findePeptideByName(peptide.getName())==null) {
@@ -33,23 +45,24 @@ public class PeptideController {
 		}else {
 			throw new DataIntegrityViolationException("This peptide already exists");
 		}
-		
 	}
 	
 	@RequestMapping(value="/api/contextsource/peptide/{peptideId}",method= RequestMethod.GET)
 	public Optional<Peptide> findPeptide(@PathVariable Long peptideId) {
 		return peptideService.findPeptideById(peptideId);
 	}
-	/*	
-	@RequestMapping(value="/api/contextsource/peptide",method= RequestMethod.GET)
-	public List<PeptideWithSampleType> getAllPeptides() {
-		return peptideService.getOnlyPeptides();
-	}
-	*/
+
 	@RequestMapping(value="/api/contextsource/peptide",method= RequestMethod.GET)
 	public List<Peptide> getAllPeptides() {
 		return peptideService.getAllPeptides();
 	}
+	/**
+	 * Update a peptide in the database. If the updated peptide shares the name with
+	 * another peptide it will throw an error.
+	 * @param peptide
+	 * @param peptideId
+	 * @return
+	 */
 	@RequestMapping(value="/api/contextsource/peptide/{peptideId}",method= RequestMethod.PUT)
 	public Peptide updatePeptide(@RequestBody Peptide peptide,@PathVariable Long peptideId) {
 		Optional<Peptide> p = peptideService.getPeptideById(peptideId);

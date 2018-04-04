@@ -6,7 +6,11 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+/**
+ * Instrument sample service
+ * @author dmancera
+ *
+ */
 @Service
 public class InstrumentSampleService {
 	@Autowired

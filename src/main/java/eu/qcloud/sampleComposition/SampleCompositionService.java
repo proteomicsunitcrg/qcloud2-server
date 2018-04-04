@@ -10,14 +10,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
-
+/**
+ * Service for sampleComposition
+ * @author dmancera
+ *
+ */
 @Service
 @Transactional
 public class SampleCompositionService {
 	@Autowired
 	private SampleCompositionRepository sampleCompositionRepository;
 	
-	
+	/**
+	 * Before add the sample composition an id(composite) must be generated. 
+	 * @param sampleComposition
+	 * @return
+	 */
 	public SampleComposition addSampleComposition(SampleComposition sampleComposition) {
 		SampleCompositionId scId = new SampleCompositionId();
 		scId.setPeptideId(sampleComposition.getPeptide().getId());

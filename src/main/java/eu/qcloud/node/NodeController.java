@@ -1,8 +1,4 @@
-/**
- * NodeController
- * Main controller for node related operations
- * @author Daniel Mancera <daniel.mancera@crg.eu> 
- */
+
 package eu.qcloud.node;
 
 import java.io.IOException;
@@ -41,7 +37,11 @@ import eu.qcloud.security.model.AuthorityName;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.repository.UserRepository.UserWithUuid;
 import eu.qcloud.security.service.UserService;
-
+/**
+ * NodeController
+ * Main controller for node related operations
+ * @author Daniel Mancera <daniel.mancera@crg.eu> 
+ */
 @RestController
 public class NodeController {
 

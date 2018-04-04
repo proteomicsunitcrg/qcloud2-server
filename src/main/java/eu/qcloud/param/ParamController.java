@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.contextSource.ContextSource;
 
+/**
+ * Parameter controller
+ * @author dmancera
+ *
+ */
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
 public class ParamController {
@@ -35,6 +40,11 @@ public class ParamController {
 	public Param updateParam(@RequestBody Param param) {
 		return paramService.updateParam(param);
 	}
+	/**
+	 * Return the names of the extended classes of
+	 * the context source parent class.
+	 * @return a list with the names
+	 */
 	@RequestMapping(value="/api/param/types", method = RequestMethod.GET)
 	public List<String> getPossibleContextSourceTypes() {
 		Reflections reflections = new Reflections("eu.qcloud.contextSource");

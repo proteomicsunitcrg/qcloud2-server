@@ -1,8 +1,3 @@
-/**
- * Main service for node
- * @author Daniel Mancera <daniel.mancera@crg.eu>
- */
-
 package eu.qcloud.node;
 
 import java.util.ArrayList;
@@ -11,6 +6,11 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+/**
+ * Main service for node
+ * @author Daniel Mancera <daniel.mancera@crg.eu>
+ */
+
 @Service
 public class NodeService {
 	

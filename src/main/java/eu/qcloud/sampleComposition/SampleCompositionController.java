@@ -20,7 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
-
+/**
+ * Sample composition controller.
+ * @author dmancera
+ *
+ */
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
 public class SampleCompositionController {

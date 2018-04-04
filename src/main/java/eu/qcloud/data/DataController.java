@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,14 +20,16 @@ import eu.qcloud.contextSource.instrumentSample.InstrumentSample;
 import eu.qcloud.contextSource.instrumentSample.InstrumentSampleService;
 import eu.qcloud.contextSource.peptide.Peptide;
 import eu.qcloud.contextSource.peptide.PeptideService;
-import eu.qcloud.dataSource.DataSourceService;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileService;
-import eu.qcloud.security.model.User;
-import eu.qcloud.security.service.UserService;
 
 
-
+/**
+ * Data controller. It handles the add new data and
+ * recover data.
+ * @author dmancera
+ *
+ */
 @RestController
 public class DataController {
 
@@ -39,10 +39,7 @@ public class DataController {
 	private PeptideService peptideService;
 	@Autowired
 	private FileService fileService;
-	@Autowired
-	private DataSourceService dataSourceService;
-	@Autowired
-	private UserService userService;
+
 	@Autowired
 	private InstrumentSampleService instrumentSampleService;
 	
@@ -56,12 +53,16 @@ public class DataController {
 	public Data addData(@RequestBody Data data) {
 		return dataService.addData(data);
 	}
-	/*
-	@RequestMapping(value="/api/data/{fileId}",method= RequestMethod.GET)
-	public MiniData getSomeData(@PathVariable Long fileId) {
-		return dataService.getMiniData(fileId);
-	}
-	*/
+	/**
+	 * Insert new data into the database. Before add new data there
+	 * must be a file of reference. Use this function if your parameter
+	 * holds more than one context source
+	 * @param paramId
+	 * @param quantificationSourceSequence
+	 * @param checksum
+	 * @param data
+	 * @return
+	 */
 	@RequestMapping(value="/api/data/{paramId}/{quantificationSourceSequence}/{checksum}",method = RequestMethod.POST)
 	public Data insertData(@PathVariable Long paramId,
 			@PathVariable String quantificationSourceSequence,
@@ -71,6 +72,16 @@ public class DataController {
 		data.setDataId(new DataId(paramId,p.getId(),f.getId()));
 		return dataService.addData(data);
 	}
+	/**
+	 * Insert new data into the database. Before add new data there
+	 * must be a file of reference. Use this function only if your
+	 * parameter has only one context source.
+	 * @param paramId
+	 * @param instrumentSampleId
+	 * @param checksum
+	 * @param data
+	 * @return
+	 */
 	@RequestMapping(value="/api/data/simple/{paramId}/{instrumentSampleId}/{checksum}",method = RequestMethod.POST)
 	public Data insertSimpleData(@PathVariable Long paramId,
 			@PathVariable Long instrumentSampleId,
@@ -81,20 +92,15 @@ public class DataController {
 		return dataService.addData(data);
 	}
 	
-	
-	@RequestMapping(value="/testing")
-	public void test() {
-		throw new IllegalArgumentException("The 'name' parameter must not be null or empty");			
-		
-	}
-	/*
-	@RequestMapping(value="/api/data/{startDate}/{endDate}", method=RequestMethod.GET)
-	public List<MiniData> getDataBetweenDates(@PathVariable String startDate,@PathVariable  String endDate) {
-		Date start = Date.valueOf(startDate);
-		Date end = Date.valueOf(endDate);
-		return dataService.getDataBetweenDates(start, end);
-	}
-	*/
+	/**
+	 * This function retrieves data between two dates.
+	 * @param startDate
+	 * @param endDate
+	 * @param chartId
+	 * @param dataSourceId
+	 * @param sampleTypeId
+	 * @return a list of data in a form of a DataForPlot, another class.
+	 */
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value="/api/data/{startDate}/{endDate}/{chartId}/{dataSourceId}/{sampleTypeId}", method=RequestMethod.GET)
 	public List<DataForPlot> getPlotData(@PathVariable String startDate,@PathVariable  String endDate,@PathVariable Long chartId, @PathVariable Long dataSourceId,@PathVariable Long sampleTypeId) {
@@ -103,39 +109,10 @@ public class DataController {
 		return dataService.getPlotData(start, end, chartId, dataSourceId, sampleTypeId);
 	}
 	
-	
-	/*
-	@RequestMapping(value="/api/data/{startDate}/{endDate}/{dataSourceId}", method=RequestMethod.GET)
-	public List<MiniData> getDataBetweenDatesByDataSourceId(@PathVariable String startDate,
-			@PathVariable  String endDate,
-			@PathVariable Long dataSourceId) {
-		
-		//Check if current user has the requested node		
-		User user = getManagerFromSecurityContext();
-		if(!dataSourceService.checkIfNodeHasDataSource(dataSourceId,user.getNode().getId())) {
-			throw new IllegalArgumentException("Algo haces mal binguero.");
-		}
-		
-		Date start = Date.valueOf(startDate);
-		Date end = Date.valueOf(endDate);
-		return dataService.getDataBetweenDatesByDataSourceId(start, end, dataSourceId);
-	}
-	*/
 	/*
 	 * Helper classes
 	 */
-	/**
-	 * Get the current user from the security context
-	 * 
-	 * @return the logged user
-	 */
-	private User getManagerFromSecurityContext() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User manager = userService.getUserByUsername(authentication.getName());
-		return manager;
-	}
-	
-	
+		
 	@ExceptionHandler(IllegalArgumentException.class)
 	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
 	    response.sendError(HttpStatus.FORBIDDEN.value(), e.getMessage());

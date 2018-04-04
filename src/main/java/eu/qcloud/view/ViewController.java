@@ -18,7 +18,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.exceptions.InvalidActionException;
-
+/**
+ * View controller.
+ * It handles the views and the displays.
+ * There are 2 types of displays, default displays
+ * limited to a CV and user views with any available
+ * chart to the node.
+ * @author dmancera
+ *
+ */
 @RestController
 public class ViewController {
 	
@@ -33,7 +41,6 @@ public class ViewController {
 	@RequestMapping(value="/api/views/default", method=RequestMethod.POST)
 	public View addDefaultView(@RequestBody View view) {
 		view.setDefault(true);
-		//return viewService.addView(view);
 		try {
 			return viewService.addView(view);
 		}catch(Exception e) {

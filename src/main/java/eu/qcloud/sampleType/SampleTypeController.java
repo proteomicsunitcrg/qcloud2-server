@@ -12,13 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
 import eu.qcloud.sampleType.SampleTypeRepository.WithPeptide;
-
+/**
+ * Sample type service
+ * @author dmancera
+ *
+ */
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
 public class SampleTypeController {
 	@Autowired
 	private SampleTypeService sampleTypeService;
-	
 	
 	@RequestMapping(value="/api/sample",method= RequestMethod.POST)
 	public SampleType addSampleType(@RequestBody SampleType sampleType) {
@@ -29,7 +32,6 @@ public class SampleTypeController {
 	public List<SampleTypeOnlyName> getAllSampleType() {
 		return sampleTypeService.getAllSampleType();
 	}
-	
 	
 	@RequestMapping(value="/api/sample/composition", method=RequestMethod.GET)
 	public List<WithPeptide> getFullSampleType() {

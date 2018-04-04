@@ -8,7 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.category.Category;
-
+/**
+ * Controlled vocabulary service
+ * @author dmancera
+ *
+ */
 @Service
 public class CVService {
 	@Autowired

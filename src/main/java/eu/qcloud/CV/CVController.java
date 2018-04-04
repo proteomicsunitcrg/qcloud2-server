@@ -1,7 +1,5 @@
 package eu.qcloud.CV;
 
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controlled vocabulary controller
+ * @author dmancera
+ *
+ */
 @RestController
 public class CVController {
 	

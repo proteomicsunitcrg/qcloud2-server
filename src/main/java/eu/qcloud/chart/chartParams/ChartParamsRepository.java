@@ -21,8 +21,13 @@ public interface ChartParamsRepository extends CrudRepository<ChartParams, Chart
 	@Query("select c from ChartParams c where c.chartParamsId.chartId=?1")
 	public List<ChartParams> getByChartParamsIdChartId(Long chartId);
 	
+	/**
+	 * This interface is used to avoid returning
+	 * circular and extra information to the user.
+	 * @author dmancera
+	 *
+	 */
 	interface FullParams {
-		//String getParamName();
 		Param getParam();
 		ContextSource getContextSource();
 	}

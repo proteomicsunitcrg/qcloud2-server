@@ -8,7 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.data.DataRepository.MiniData;
-
+/**
+ * Service for the data
+ * @author dmancera
+ *
+ */
 @Service
 public class DataService {
 	
@@ -28,7 +32,16 @@ public class DataService {
 	public MiniData getMiniData(Long fileId) {		
 		return dataRepository.findByDataIdFileId(fileId);
 	}
-	
+	/**
+	 * Recover data from the server by parameters. Note the usage of
+	 * a class named DataForPlot.
+	 * @param start
+	 * @param end
+	 * @param chartId
+	 * @param dataSourceId
+	 * @param sampleTypeId
+	 * @return
+	 */
 	public List<DataForPlot> getPlotData(Date start, Date end, Long chartId, Long dataSourceId, Long sampleTypeId) {		
 		List<DataForPlot> dataForPlot = new ArrayList<>();
 		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chartId, start, end, dataSourceId, sampleTypeId); 

@@ -9,7 +9,11 @@ import org.springframework.stereotype.Service;
 import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.file.FileRepository.OnlySmalls;
 import eu.qcloud.sampleType.SampleType;
-
+/**
+ * File service
+ * @author dmancera
+ *
+ */
 @Service
 public class FileService {
 	
