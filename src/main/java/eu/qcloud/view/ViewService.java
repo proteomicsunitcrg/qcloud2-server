@@ -3,6 +3,8 @@ package eu.qcloud.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +50,20 @@ public class ViewService {
 		List<View> defaultViews = new ArrayList<>();
 		viewRepository.findByIsDefaultTrue().forEach(defaultViews::add);
 		return defaultViews;
+	}
+	/**
+	 * Delete the view_display rows by view id.
+	 * 
+	 * @return
+	 */
+	@Transactional
+	public boolean deleteLayoutByViewId(Long viewId) {
+		int actual = viewDisplayRepository.countByViewId(viewId);
+		viewDisplayRepository.deleteByViewId(viewId);
+		int afterDelete = viewDisplayRepository.countByViewId(viewId);
+		
+		return actual!=afterDelete;
+		
 	}
 	
 	
