@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -34,6 +35,18 @@ public class DataSource {
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
 	
+	@OneToOne
+    @JoinColumn(name = "guide_set")
+	private GuideSet guideSet;
+	
+	public GuideSet getGuideSet() {
+		return guideSet;
+	}
+
+	public void setGuideSet(GuideSet guideSet) {
+		this.guideSet = guideSet;
+	}
+
 	public UUID getApiKey() {
 		return apiKey;
 	}

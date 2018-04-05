@@ -13,7 +13,7 @@ import eu.qcloud.file.File;
 import eu.qcloud.param.Param;
 
 @Entity
-@Table(name="data")		
+@Table(name="data")
 public class Data {
 	
 	@JsonIgnore

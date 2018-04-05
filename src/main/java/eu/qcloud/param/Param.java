@@ -22,6 +22,17 @@ public class Param {
 	
 	private String isFor;
 	
+	@Column(name="processor",nullable= true)
+	private String processor;
+	
+	public String getProcessor() {
+		return processor;
+	}
+
+	public void setProcessor(String processor) {
+		this.processor = processor;
+	}
+
 	public String getIsFor() {
 		return isFor;
 	}

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.contextSource.ContextSource;
+import eu.qcloud.data.processor.processors.Processor;
 
 /**
  * Parameter controller
@@ -60,6 +61,21 @@ public class ParamController {
     	}
     	return types;
     	
+	}
+	@RequestMapping(value="/api/param/processors", method = RequestMethod.GET)
+	public List<String> getDataProcessors() {
+		Reflections reflections = new Reflections("eu.qcloud.data.processor");
+    	Set<Class<? extends Processor>> subTypes = reflections.getSubTypesOf(Processor.class);
+    	String classesName = subTypes.toString();
+    	classesName = classesName.replaceAll("\\[", "");
+    	classesName = classesName.replaceAll("\\]", "");
+    	String[] classes = classesName.split(",");
+    	List<String> types = new ArrayList<>();
+    	for(int i = 0 ; i < classes.length; i++) {
+    		String[] parts = classes[i].split(Pattern.quote("."));    		
+    		types.add(parts[parts.length-1]);
+    	}
+    	return types;
 	}
 
 }
