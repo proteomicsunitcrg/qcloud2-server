@@ -34,7 +34,9 @@ public class DataService {
 	}
 	/**
 	 * Recover data from the server by parameters. Note the usage of
-	 * a class named DataForPlot.
+	 * a class named DataForPlot and its extensions.
+	 * There is a switch for process specially some type of data like
+	 * retention time
 	 * @param start
 	 * @param end
 	 * @param chartId

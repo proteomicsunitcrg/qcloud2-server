@@ -11,13 +11,12 @@ import java.util.Date;
  */
 public class DataForPlot {
 	
-	private String fileFilename;
+	protected String fileFilename;
+	protected Date fileCreationDate;
 	
-	private Date fileCreationDate;
+	protected String contextSourceName;
 	
-	private String contextSourceName;
-	
-	private float value;
+	protected float value;
 	
 	public DataForPlot() {}
 	
