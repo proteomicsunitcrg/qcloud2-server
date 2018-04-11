@@ -92,7 +92,7 @@ public class DataSourceController {
 		if(dataSourceService.checkIfNodeHasDataSource(idToDelete,u.getNode().getId())) {
 			dataSourceService.deleteDataSource(dataSource);
 			System.out.println(idToDelete + " " + categoryId + " " + apiKey);
-			if(dataSourceService.findById(dataSource.getId()) != null) {
+			if(dataSourceService.findById(dataSource.getId()).isPresent()) {
 				// not deleted throw error
 				throw new PersistenceException("Instrument not delete due a server error.");
 			}
