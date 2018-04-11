@@ -34,6 +34,9 @@ public class ParamController {
 	}
 	@RequestMapping(value="/api/param", method = RequestMethod.POST)
 	public Param addNewParam(@RequestBody Param param) {
+		if(param.getProcessor().equals("No processor")) {
+			param.setProcessor(null);
+		}
 		return paramService.addNewParam(param);
 	}
 	

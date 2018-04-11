@@ -3,12 +3,15 @@ package eu.qcloud.dataSource;
 import java.util.List;
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import eu.qcloud.node.Node;
 
 @Repository
+@Transactional
 public interface DataSourceRepository extends CrudRepository<DataSource, Long> {
 		
 	List<DataSource> findByNodeId(Long nodeId);

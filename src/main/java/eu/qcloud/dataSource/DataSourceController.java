@@ -113,11 +113,25 @@ public class DataSourceController {
 				throw new InvalidActionException("Instrument not found.");
 			}			
 			ds.setName(dataSource.getName());
+			ds.setGuideSet(dataSource.getGuideSet());
 			return dataSourceService.updateDataSource(ds);
 		}else {
 			throw new InvalidActionException("You do not own this instrument.");
 		}
 	}
+	@RequestMapping(value="/api/datasource/guideset/{apiKey}",method= RequestMethod.POST)
+	public DataSource addGuideSetToDataSource(@PathVariable UUID apiKey, @RequestBody GuideSet guideSet) {
+		User u = getManagerFromSecurityContext();
+		DataSource dataSource = dataSourceService.findByApiKey(apiKey);
+		if(dataSourceService.checkIfNodeHasDataSource(dataSource.getId(), u.getNode().getId())) {
+			guideSet.setDataSource(dataSource);
+			
+			dataSource.setGuideSet(dataSourceService.saveGuideSet(guideSet));
+			return dataSourceService.updateDataSource(dataSource);
+		}
+		return null;
+	}
+	
 	
 	
 	/*

@@ -17,6 +17,9 @@ public class DataSourceService {
 	@Autowired
 	private DataSourceRepository dataSourceRepository;
 	
+	@Autowired
+	private GuideSetRepository guideSetRepository;
+	
 	public List<DataSource> getAllDataSource() {
 		List<DataSource> dataSources = new ArrayList<>();
 		dataSourceRepository.findAll().forEach(dataSources::add);
@@ -35,7 +38,11 @@ public class DataSourceService {
 		dataSourceRepository.save(dataSource);
 		return dataSourceRepository.findByNode(dataSource.getNode());
 	}
-	
+	/**
+	 * Checks if the current user has the requested
+	 * data source
+	 * @return true or false
+	 */
 	public boolean checkIfNodeHasDataSource(Long dataSourceId,Long nodeId) {
 		DataSource check = dataSourceRepository.findByIdAndNodeId(dataSourceId,nodeId);
 		return check!=null;
@@ -62,6 +69,10 @@ public class DataSourceService {
 	public DataSource updateDataSource(DataSource ds) {
 		return dataSourceRepository.save(ds);
 
+	}
+	
+	public GuideSet saveGuideSet(GuideSet gs) {
+		return guideSetRepository.save(gs);
 	}
 			
 }

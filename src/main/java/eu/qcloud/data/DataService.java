@@ -13,7 +13,6 @@ import eu.qcloud.data.DataRepository.MiniData;
 import eu.qcloud.data.processor.processors.Processor;
 import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.dataSource.DataSourceRepository;
-import eu.qcloud.dataSource.GuideSet;
 import eu.qcloud.param.Param;
 
 /**
@@ -72,11 +71,12 @@ public class DataService {
 		}
 		// Get the param
 		Param param = chartParamRepository.findTopByChartParamsIdChartId(chartId).getParam();
-		Optional<DataSource> guideSet = dataSourceRepository.findById(dataSourceId);
 		if(param.getProcessor()==null) {
 			return dataForPlot;	
 		}else {
 			try {
+				Optional<DataSource> guideSet = dataSourceRepository.findById(dataSourceId);
+				
 				Class<?> processor = Class.forName("eu.qcloud.data.processor.processors."+param.getProcessor());
 				Processor processorInstance = (Processor) processor.newInstance();
 				processorInstance.setData(dataForPlot);
