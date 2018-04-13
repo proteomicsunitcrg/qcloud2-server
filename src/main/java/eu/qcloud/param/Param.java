@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import eu.qcloud.data.ProcessorType;
+
 @Entity
 @Table(name="param")
 public class Param {
@@ -22,14 +24,14 @@ public class Param {
 	
 	private String isFor;
 	
-	@Column(name="processor",nullable= true)
-	private String processor;
+	@Column(name="processor",nullable= true)	
+	private ProcessorType processor;
 	
-	public String getProcessor() {
+	public ProcessorType getProcessor() {
 		return processor;
 	}
 
-	public void setProcessor(String processor) {
+	public void setProcessor(ProcessorType processor) {
 		this.processor = processor;
 	}
 

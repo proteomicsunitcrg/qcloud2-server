@@ -28,6 +28,12 @@ public class CVController {
 	@Autowired
 	private CVService cvService;
 	
+	/**
+	 * Add a CV to the database by category id
+	 * @param cv
+	 * @param categoryId
+	 * @return the inserted CV
+	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/api/cv/category/{categoryId}", method = RequestMethod.POST)
 	public CV addCV(@RequestBody CV cv, @PathVariable Long categoryId) {

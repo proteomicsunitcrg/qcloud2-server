@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.contextSource.ContextSource;
-import eu.qcloud.data.processor.processors.Processor;
+import eu.qcloud.data.ProcessorType;
 
 /**
  * Parameter controller
@@ -34,9 +34,7 @@ public class ParamController {
 	}
 	@RequestMapping(value="/api/param", method = RequestMethod.POST)
 	public Param addNewParam(@RequestBody Param param) {
-		if(param.getProcessor().equals("No processor")) {
-			param.setProcessor(null);
-		}
+		
 		return paramService.addNewParam(param);
 	}
 	
@@ -51,6 +49,7 @@ public class ParamController {
 	 */
 	@RequestMapping(value="/api/param/types", method = RequestMethod.GET)
 	public List<String> getPossibleContextSourceTypes() {
+		
 		Reflections reflections = new Reflections("eu.qcloud.contextSource");
     	Set<Class<? extends ContextSource>> subTypes = reflections.getSubTypesOf(ContextSource.class);
     	String classesName = subTypes.toString();
@@ -67,18 +66,23 @@ public class ParamController {
 	}
 	@RequestMapping(value="/api/param/processors", method = RequestMethod.GET)
 	public List<String> getDataProcessors() {
-		Reflections reflections = new Reflections("eu.qcloud.data.processor");
-    	Set<Class<? extends Processor>> subTypes = reflections.getSubTypesOf(Processor.class);
-    	String classesName = subTypes.toString();
-    	classesName = classesName.replaceAll("\\[", "");
-    	classesName = classesName.replaceAll("\\]", "");
-    	String[] classes = classesName.split(",");
-    	List<String> types = new ArrayList<>();
-    	for(int i = 0 ; i < classes.length; i++) {
-    		String[] parts = classes[i].split(Pattern.quote("."));    		
-    		types.add(parts[parts.length-1]);
-    	}
-    	return types;
+//		Reflections reflections = new Reflections("eu.qcloud.data.processor");
+//    	Set<Class<? extends Processor>> subTypes = reflections.getSubTypesOf(Processor.class);
+//    	String classesName = subTypes.toString();
+//    	classesName = classesName.replaceAll("\\[", "");
+//    	classesName = classesName.replaceAll("\\]", "");
+//    	String[] classes = classesName.split(",");
+//    	List<String> types = new ArrayList<>();
+//    	for(int i = 0 ; i < classes.length; i++) {
+//    		String[] parts = classes[i].split(Pattern.quote("."));    		
+//    		types.add(parts[parts.length-1]);
+//    	}
+//    	return types;
+		List<String> processors = new ArrayList<>();
+		for(ProcessorType s : ProcessorType.values()) {
+			processors.add(s.name());
+		}
+		return processors;
 	}
 
 }

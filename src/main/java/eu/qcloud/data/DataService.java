@@ -8,11 +8,15 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.chart.Chart;
+import eu.qcloud.chart.ChartRepository;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
 import eu.qcloud.data.DataRepository.MiniData;
+import eu.qcloud.data.processor.processorfactory.ProcessorFactory;
 import eu.qcloud.data.processor.processors.Processor;
 import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.dataSource.DataSourceRepository;
+import eu.qcloud.dataSource.GuideSet;
 import eu.qcloud.param.Param;
 
 /**
@@ -71,33 +75,20 @@ public class DataService {
 		}
 		// Get the param
 		Param param = chartParamRepository.findTopByChartParamsIdChartId(chartId).getParam();
-		if(param.getProcessor()==null) {
-			return dataForPlot;	
-		}else {
-			try {
-				Optional<DataSource> guideSet = dataSourceRepository.findById(dataSourceId);
-				
-				Class<?> processor = Class.forName("eu.qcloud.data.processor.processors."+param.getProcessor());
-				Processor processorInstance = (Processor) processor.newInstance();
-				processorInstance.setData(dataForPlot);
-				return processorInstance.processData();
-			} catch (ClassNotFoundException e) {
-
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
+		
+		Optional<DataSource> dataSource = dataSourceRepository.findById(dataSourceId); 
+		if(processor.isGuideSetRequired()) {
+			// get the guide set of the instrument
+			GuideSet gs = dataSource.get().getGuideSet();
+			processor.setGuideSet(dataSource.get().getGuideSet());
+			processor.setData(dataForPlot);
+			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chartId, gs.getStartDate(), gs.getEndDate(), dataSourceId,
+					sampleTypeId);
+			processor.setGuideSetData(dataToProcess);
+			return processor.processData();
 		}
+
 
 		return dataForPlot;
 	}

@@ -34,12 +34,12 @@ public class ChartController {
 	private ChartService chartService;
 	
 	
-	@RequestMapping(value="/api/chart", method = RequestMethod.POST)
 	/**
 	 * Add a new chart into the database
 	 * @param chart the chart to add
 	 * @return the saved chart
 	 */
+	@RequestMapping(value="/api/chart", method = RequestMethod.POST)
 	public Chart addNewChart(@RequestBody Chart chart) {
 		return chartService.addNewChart(chart);
 	}
@@ -59,7 +59,8 @@ public class ChartController {
 	 */
 	@RequestMapping(value="/api/chart", method = RequestMethod.GET)
 	public List<Chart> allCharts() {
-		return chartService.getAllCharts();
+		List<Chart> charts =chartService.getAllCharts(); 
+		return charts;
 	}
 	/**
 	 * Return a list of charts by controlled vocabulary id
