@@ -91,7 +91,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/email",
                         "/assets/**",
                         "/login",
-                        "/application/**"
+                        "/application/**",
+                        "/actuator/**"
                 ).permitAll()
                 .antMatchers(HttpMethod.POST,"/user","/api/node").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
