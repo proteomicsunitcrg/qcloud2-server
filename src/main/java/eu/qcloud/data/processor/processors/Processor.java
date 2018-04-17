@@ -55,7 +55,7 @@ public abstract class Processor implements DataProcessor{
 	
 	@Override
 	public List<DataForPlot> processData() {
-		return null;
+		return data;
 	}
 
 	@Override

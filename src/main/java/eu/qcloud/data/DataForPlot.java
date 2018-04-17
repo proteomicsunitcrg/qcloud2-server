@@ -2,6 +2,8 @@ package eu.qcloud.data;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * This is a helper class I had to do because the projection does not seems
  * to work properly when there are tuple queries to the database.
@@ -12,15 +14,16 @@ import java.util.Date;
 public class DataForPlot {
 	
 	protected String fileFilename;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")	
 	protected Date fileCreationDate;
 	
 	protected String contextSourceName;
 	
-	protected float value;
+	protected Float value;
 	
 	public DataForPlot() {}
 	
-	public DataForPlot(String filename, Date fileCreationDate, String contextSourceName, float value) {
+	public DataForPlot(String filename, Date fileCreationDate, String contextSourceName, Float value) {
 		super();
 		this.fileFilename = filename;
 		this.fileCreationDate = fileCreationDate;
@@ -53,11 +56,11 @@ public class DataForPlot {
 		this.contextSourceName = contextSourceName;
 	}
 
-	public float getValue() {
+	public Float getValue() {
 		return value;
 	}
 
-	public void setValue(float value) {
+	public void setValue(Float value) {
 		this.value = value;
 	}
 	

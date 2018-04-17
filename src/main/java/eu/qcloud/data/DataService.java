@@ -8,8 +8,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import eu.qcloud.chart.Chart;
-import eu.qcloud.chart.ChartRepository;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
 import eu.qcloud.data.DataRepository.MiniData;
 import eu.qcloud.data.processor.processorfactory.ProcessorFactory;
@@ -74,23 +72,26 @@ public class DataService {
 					data.getContextSource().getName(), data.getValue()));
 		}
 		// Get the param
-		Param param = chartParamRepository.findTopByChartParamsIdChartId(chartId).getParam();
+		Param param = chartParamRepository.findTopByChartId(chartId).getParam();
 		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 		
 		Optional<DataSource> dataSource = dataSourceRepository.findById(dataSourceId); 
+		processor.setData(dataForPlot);
+		/**
+		 * If data from a guide set is required then call the db for the
+		 * data and set it in the processor
+		 */
 		if(processor.isGuideSetRequired()) {
 			// get the guide set of the instrument
 			GuideSet gs = dataSource.get().getGuideSet();
 			processor.setGuideSet(dataSource.get().getGuideSet());
-			processor.setData(dataForPlot);
 			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chartId, gs.getStartDate(), gs.getEndDate(), dataSourceId,
 					sampleTypeId);
 			processor.setGuideSetData(dataToProcess);
 			return processor.processData();
-		}
-
-
-		return dataForPlot;
+		}else {
+			return processor.processData();
+		}		
 	}
 
 	public List<MiniData> getDataBetweenDates(Date start, Date end) {
