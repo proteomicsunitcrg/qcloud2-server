@@ -13,13 +13,15 @@ application:
 # JACKSON
 spring:
   jackson:
+    time-zone:
+      Europe/Madrid
     serialization:
       INDENT_OUTPUT: true
   datasource:    
     ## MYSQL
-    url: jdbc:mysql://localhost:3306/qcloud
-    username: qcloud
-    password: qcloud
+    url: jdbc:mysql://localhost:3306/qcloudd
+    username: root
+    password: root
     driver-class-name: com.mysql.jdbc.Driver
     
   h2:
