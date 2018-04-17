@@ -12,7 +12,7 @@ public interface ChartParamsRepository extends CrudRepository<ChartParams, Chart
 	
 	public List<FullParams> findByChartParamsIdChartId(Long chartId);
 	
-	public ChartParams findTopByChartParamsIdChartId(Long chartId);
+	public ChartParams findTopByChartId(Long chartId);
 	
 	interface OnlyParams {
 		Long getChartId();
