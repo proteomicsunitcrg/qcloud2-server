@@ -52,7 +52,7 @@ public class NodeController {
 	UserService userService;
 
 	@Autowired
-	private EmailService emailService;
+	// private EmailService emailService;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -223,6 +223,7 @@ public class NodeController {
 	/*
 	 * Development functions
 	 */
+	/*
 	@RequestMapping(value = "/api/email", method = RequestMethod.GET)
 	public void sendEmail() {
 		System.out.println("hola");
@@ -234,6 +235,7 @@ public class NodeController {
 
 		emailService.sendSimpleMessage(mail);
 	}
+	*/
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/node/info/{nodeUuidString}", method = RequestMethod.GET)
