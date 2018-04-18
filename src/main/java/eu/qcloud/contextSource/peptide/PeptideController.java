@@ -46,6 +46,20 @@ public class PeptideController {
 			throw new DataIntegrityViolationException("This peptide already exists");
 		}
 	}
+	/**
+	 * Add a new peptide into the database. THis function
+	 * will be used only with the db migrator
+	 * @param peptide the peptide to add
+	 * @return the added peptide
+	 */
+	@RequestMapping(value="/api/contextsource/peptideauto",method= RequestMethod.POST)
+	public Peptide addPeptideAuto(@RequestBody Peptide peptide) {		
+		if(peptideService.findePeptideByName(peptide.getName())==null) {
+			return peptideService.addPeptide(peptide);			
+		}else {
+			return peptideService.findPeptideBySequence(peptide.getSequence());
+		}
+	}
 	
 	@RequestMapping(value="/api/contextsource/peptide/{peptideId}",method= RequestMethod.GET)
 	public Optional<Peptide> findPeptide(@PathVariable Long peptideId) {
