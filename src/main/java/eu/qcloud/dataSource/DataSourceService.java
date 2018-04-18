@@ -7,6 +7,10 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import eu.qcloud.CV.CV;
+import eu.qcloud.CV.CVRepository;
+import eu.qcloud.category.CategoryRepository;
 /**
  * Data source service
  * @author dmancera
@@ -19,6 +23,12 @@ public class DataSourceService {
 	
 	@Autowired
 	private GuideSetRepository guideSetRepository;
+	
+	@Autowired
+	private CVRepository cvRepository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
 	
 	public List<DataSource> getAllDataSource() {
 		List<DataSource> dataSources = new ArrayList<>();
@@ -73,6 +83,12 @@ public class DataSourceService {
 	
 	public GuideSet saveGuideSet(GuideSet gs) {
 		return guideSetRepository.save(gs);
+	}
+
+	public DataSource addNewDataSourceAuto(DataSource dataSource) {
+		CV cv = cvRepository.getByCVId(dataSource.getCv().getCVId());
+		dataSource.setCv(cv);
+		return dataSourceRepository.save(dataSource);
 	}
 			
 }
