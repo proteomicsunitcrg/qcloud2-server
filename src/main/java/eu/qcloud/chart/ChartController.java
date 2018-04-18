@@ -59,7 +59,7 @@ public class ChartController {
 	 */
 	@RequestMapping(value="/api/chart", method = RequestMethod.GET)
 	public List<Chart> allCharts() {
-		List<Chart> charts =chartService.getAllCharts(); 
+		List<Chart> charts =chartService.getAllCharts();
 		return charts;
 	}
 	/**

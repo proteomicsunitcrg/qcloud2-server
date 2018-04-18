@@ -16,7 +16,4 @@ public interface CVRepository extends JpaRepository<CV, Long> {
     
     @Query("select c from CV c where cv_id= ?1")
     public CV getByCVId(String cvId);
-    
-    
-    
 }
