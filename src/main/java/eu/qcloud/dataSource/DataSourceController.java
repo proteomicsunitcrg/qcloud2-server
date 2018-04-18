@@ -130,6 +130,21 @@ public class DataSourceController {
 		}
 		return null;
 	}
+	/**
+	 * This endpoint is for migration purposes. The data from the old 
+	 * database is not enought to use the current addSource function.
+	 * @param dataSource
+	 * @return
+	 */
+	@RequestMapping(value="/api/datasourceauto",method= RequestMethod.POST)
+	public DataSource addDataSourceAuto(@RequestBody DataSource dataSource) {
+		// Get the current node
+		User u = getManagerFromSecurityContext();
+		dataSource.setNode(u.getNode());		
+		UUID dataSourceUuid = UUID.randomUUID();
+		dataSource.setApiKey(dataSourceUuid);
+		return dataSourceService.addNewDataSourceAuto(dataSource);
+	}
 	
 	
 	
