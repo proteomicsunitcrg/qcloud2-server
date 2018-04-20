@@ -7,13 +7,18 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import eu.qcloud.sampleComposition.SampleComposition;
+import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
 
 @Entity
 @Table(name = "sample_type")
@@ -31,6 +36,10 @@ public class SampleType {
     
     @OneToMany(mappedBy="sampleType")
     private List<SampleComposition> sampleType;
+    
+    @ManyToOne
+	@JoinColumn(name="sampleTypeCategory",insertable=true, updatable= true)
+    private SampleTypeCategory sampleTypeCategory;
 
 	public Long getId() {
 		return id;
@@ -47,4 +56,14 @@ public class SampleType {
 	public void setName(String name) {
 		this.name = name;
 	}
+	@JsonIgnore
+	public SampleTypeCategory getSampleTypeCategory() {
+		return sampleTypeCategory;
+	}
+
+	public void setSampleTypeCategory(SampleTypeCategory sampleTypeCategory) {
+		this.sampleTypeCategory = sampleTypeCategory;
+	}
+	
+	
 }

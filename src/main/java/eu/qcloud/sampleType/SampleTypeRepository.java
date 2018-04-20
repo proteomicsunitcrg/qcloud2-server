@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import eu.qcloud.contextSource.peptide.PeptideRepository.OnlyPeptide;
+import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
 @Repository
 public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
     @Query("select name from SampleType")
@@ -26,6 +27,7 @@ public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
     public interface SampleTypeOnlyName {
     	Long getId();
     	String getName();
+    	SampleTypeCategory getSampleTypeCategory();
     }
     
     @Query("select s from SampleType s")

@@ -7,10 +7,13 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
 import eu.qcloud.sampleType.SampleTypeRepository.WithPeptide;
+import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
+import eu.qcloud.sampleTypeCategory.SampleTypeCategoryRepository;
 
 @Service
 @Transactional
@@ -18,8 +21,17 @@ public class SampleTypeService {
 	@Autowired
 	private SampleTypeRepository sampleTypeRepository;
 	
-	public SampleType addSampleType(SampleType s) {
-		return sampleTypeRepository.save(s);		
+	@Autowired
+	private SampleTypeCategoryRepository sampleTypeCategoryRepository;
+	
+	public SampleType addSampleType(SampleType s, Long sampleTypeCategoryId) {
+		Optional<SampleTypeCategory> stc = sampleTypeCategoryRepository.findById(sampleTypeCategoryId);
+		if(stc.isPresent()) {
+			s.setSampleTypeCategory(stc.get());
+			return sampleTypeRepository.save(s);			
+		}else {
+			throw new DataIntegrityViolationException("Category does not exists");
+		}
 	}
 	
 	public List<SampleTypeOnlyName> getAllSampleType() {

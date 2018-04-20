@@ -23,9 +23,9 @@ public class SampleTypeController {
 	@Autowired
 	private SampleTypeService sampleTypeService;
 	
-	@RequestMapping(value="/api/sample",method= RequestMethod.POST)
-	public SampleType addSampleType(@RequestBody SampleType sampleType) {
-		return sampleTypeService.addSampleType(sampleType);
+	@RequestMapping(value="/api/sample/{sampleTypeCategoryId}",method= RequestMethod.POST)
+	public SampleType addSampleType(@RequestBody SampleType sampleType,@PathVariable Long sampleTypeCategoryId) {
+		return sampleTypeService.addSampleType(sampleType,sampleTypeCategoryId);
 	}
 	
 	@RequestMapping(value="/api/sample", method=RequestMethod.GET)
