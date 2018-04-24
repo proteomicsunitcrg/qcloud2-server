@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.CV.CV;
 import eu.qcloud.CV.CVRepository;
+import eu.qcloud.labsystem.GuideSet;
+import eu.qcloud.labsystem.GuideSetRepository;
 /**
  * Data source service
  * @author dmancera

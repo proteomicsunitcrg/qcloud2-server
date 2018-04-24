@@ -101,6 +101,7 @@ public class DataSourceController {
 		}
 		return dataSourceService.getAllDataSourceByNodeIdAndCategoryId(u.getNode().getId(), categoryId);
 	}
+	
 	@RequestMapping(value="/api/datasource",method= RequestMethod.PUT)
 	public DataSource updateDataSource(@RequestBody DataSource dataSource) {
 		// Get the current node
@@ -112,12 +113,13 @@ public class DataSourceController {
 				throw new InvalidActionException("Instrument not found.");
 			}			
 			ds.setName(dataSource.getName());
-			ds.setGuideSet(dataSource.getGuideSet());
+			//ds.setGuideSet(dataSource.getGuideSet());
 			return dataSourceService.updateDataSource(ds);
 		}else {
 			throw new InvalidActionException("You do not own this instrument.");
 		}
 	}
+	/*
 	@RequestMapping(value="/api/datasource/guideset/{apiKey}",method= RequestMethod.POST)
 	public DataSource addGuideSetToDataSource(@PathVariable UUID apiKey, @RequestBody GuideSet guideSet) {
 		User u = getManagerFromSecurityContext();
@@ -130,6 +132,7 @@ public class DataSourceController {
 		}
 		return null;
 	}
+	*/
 	/**
 	 * This endpoint is for migration purposes. The data from the old 
 	 * database is not enought to use the current addSource function.
