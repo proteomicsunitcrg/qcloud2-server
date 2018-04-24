@@ -1,4 +1,4 @@
-package eu.qcloud.system;
+package eu.qcloud.labsystem;
 
 import java.util.List;
 
@@ -29,12 +29,12 @@ import eu.qcloud.dataSource.DataSource;
  *
  */
 @Entity
-@Table(name = "system")
-public class System {
+@Table(name = "labsystem")
+public class LabSystem {
 	@Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "system_seq")
-    @SequenceGenerator(name = "system_seq", sequenceName = "system_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "labsystem_seq")
+    @SequenceGenerator(name = "labsystem_seq", sequenceName = "labsystem_seq", allocationSize = 1)
 	private Long id;
 	
 	@Column(name = "NAME", length = 50)

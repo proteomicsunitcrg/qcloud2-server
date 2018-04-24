@@ -1,4 +1,4 @@
-package eu.qcloud.system;
+package eu.qcloud.labsystem;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,25 +11,25 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
-public class SystemService {
+public class LabSystemService {
 	
 	@Autowired
-	private SystemRepository systemRepository;
+	private LabSystemRepository systemRepository;
 	
 
 	
-	public System saveSystem(System system) {
+	public LabSystem saveSystem(LabSystem system) {
 		return systemRepository.save(system);
 	}
 
 
 
-	public List<System> findAllByNode(Long nodeId) {
+	public List<LabSystem> findAllByNode(Long nodeId) {
 		return systemRepository.findAllByNode(nodeId);
 
 	}
 
-	public Optional<System> findSystemBySystemId(Long systemId) {
+	public Optional<LabSystem> findSystemBySystemId(Long systemId) {
 		return systemRepository.findById(systemId);
 		
 	}

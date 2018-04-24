@@ -1,4 +1,4 @@
-package eu.qcloud.system;
+package eu.qcloud.labsystem;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,10 +30,10 @@ import eu.qcloud.security.service.UserService;
  *
  */
 @RestController
-public class SystemController {
+public class LabSystemController {
 	
 	@Autowired
-	private SystemService systemService;
+	private LabSystemService systemService;
 	
 	@Autowired
 	private UserService userService;
@@ -44,7 +44,7 @@ public class SystemController {
 	 */
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value="/api/system",method= RequestMethod.POST)
-	public System saveSystem(@RequestBody System system) {
+	public LabSystem saveSystem(@RequestBody LabSystem system) {
 		return systemService.saveSystem(system);
 	}
 	
@@ -52,11 +52,10 @@ public class SystemController {
 	@RequestMapping(value="/api/system/datasources/{systemId}",method= RequestMethod.POST)
 	public void saveDataSourcesToSystem(@PathVariable Long systemId, @RequestBody List<DataSource> dataSources) {
 		// get the system
-		Optional<System> s = systemService.findSystemBySystemId(systemId);
+		Optional<LabSystem> s = systemService.findSystemBySystemId(systemId);
 		if(s.isPresent()) {
 			// add the data sources
-			System system = s.get();
-			
+			LabSystem system = s.get();
 			system.setDataSources(dataSources);
 			// save the system
 			systemService.saveSystem(system);
@@ -69,8 +68,8 @@ public class SystemController {
 	
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value="/api/system/{systemId}",method= RequestMethod.GET)
-	public System getSystemById(@PathVariable Long systemId) {
-		Optional<System> system = systemService.findSystemBySystemId(systemId);
+	public LabSystem getSystemById(@PathVariable Long systemId) {
+		Optional<LabSystem> system = systemService.findSystemBySystemId(systemId);
 		if(system.isPresent()) {
 			return system.get();
 		}else {
@@ -86,7 +85,7 @@ public class SystemController {
 	 * @return a list of systems
 	 */
 	@RequestMapping(value="/api/system",method= RequestMethod.GET)
-	public List<System> findAllNodeSystems() {		
+	public List<LabSystem> findAllNodeSystems() {		
 		User u = getManagerFromSecurityContext();
 		return systemService.findAllByNode(u.getNode().getId());
 	}
