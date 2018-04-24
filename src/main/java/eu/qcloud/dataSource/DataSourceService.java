@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.CV.CV;
 import eu.qcloud.CV.CVRepository;
-import eu.qcloud.category.CategoryRepository;
 /**
  * Data source service
  * @author dmancera
