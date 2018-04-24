@@ -27,9 +27,6 @@ public class DataSourceService {
 	@Autowired
 	private CVRepository cvRepository;
 	
-	@Autowired
-	private CategoryRepository categoryRepository;
-	
 	public List<DataSource> getAllDataSource() {
 		List<DataSource> dataSources = new ArrayList<>();
 		dataSourceRepository.findAll().forEach(dataSources::add);
