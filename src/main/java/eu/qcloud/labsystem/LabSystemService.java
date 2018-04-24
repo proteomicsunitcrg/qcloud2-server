@@ -2,6 +2,7 @@ package eu.qcloud.labsystem;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,10 @@ public class LabSystemService {
 
 	public Optional<LabSystem> findSystemBySystemId(Long systemId) {
 		return systemRepository.findById(systemId);
-		
+	}
+	
+	public Optional<LabSystem> findSystemByApiKey(UUID apikey) {
+		return systemRepository.findByApiKey(apikey);		
 	}
 
 }

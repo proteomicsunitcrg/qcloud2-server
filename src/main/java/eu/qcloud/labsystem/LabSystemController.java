@@ -3,6 +3,7 @@ package eu.qcloud.labsystem;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +34,7 @@ import eu.qcloud.security.service.UserService;
 public class LabSystemController {
 	
 	@Autowired
-	private LabSystemService systemService;
+	private LabSystemService labSystemService;
 	
 	@Autowired
 	private UserService userService;
@@ -45,31 +46,49 @@ public class LabSystemController {
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value="/api/system",method= RequestMethod.POST)
 	public LabSystem saveSystem(@RequestBody LabSystem system) {
-		return systemService.saveSystem(system);
+		UUID labSystemUuid = UUID.randomUUID();
+		system.setApiKey(labSystemUuid);
+		return labSystemService.saveSystem(system);
 	}
 	
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="/api/system/datasources/{systemId}",method= RequestMethod.POST)
-	public void saveDataSourcesToSystem(@PathVariable Long systemId, @RequestBody List<DataSource> dataSources) {
+	@RequestMapping(value="/api/system/datasources/{apiKey}",method= RequestMethod.POST)
+	public void saveDataSourcesToSystem(@PathVariable UUID apiKey, @RequestBody List<DataSource> dataSources) {
 		// get the system
-		Optional<LabSystem> s = systemService.findSystemBySystemId(systemId);
+		Optional<LabSystem> s = labSystemService.findSystemByApiKey(apiKey);
 		if(s.isPresent()) {
 			// add the data sources
 			LabSystem system = s.get();
 			system.setDataSources(dataSources);
 			// save the system
-			systemService.saveSystem(system);
+			labSystemService.saveSystem(system);
 		}else {
 			throw new InvalidActionException("System not found");
+		}
+	}
+	
+	public void updateLabSystem(LabSystem labsystem) {
+		
+		
+	}
+	@PreAuthorize("hasRole('MANAGER')")
+	@RequestMapping(value="/api/system/guideset/{apikey}",method= RequestMethod.POST)
+	public void addGuideSetToLabSystem(@PathVariable UUID apikey,@RequestBody GuideSet guideSet) {
+		Optional<LabSystem> labSystem = labSystemService.findSystemByApiKey(apikey);
+		if(labSystem.isPresent()) {
+			LabSystem ls = labSystem.get();
+			guideSet.setLabSystem(ls);
+			ls.setGuideSet(guideSet);
+			labSystemService.saveSystem(ls);			
 		}
 	}
 	
 	
 	
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="/api/system/{systemId}",method= RequestMethod.GET)
-	public LabSystem getSystemById(@PathVariable Long systemId) {
-		Optional<LabSystem> system = systemService.findSystemBySystemId(systemId);
+	@RequestMapping(value="/api/system/{apikey}",method= RequestMethod.GET)
+	public LabSystem getSystemById(@PathVariable UUID apikey) {
+		Optional<LabSystem> system = labSystemService.findSystemByApiKey(apikey);
 		if(system.isPresent()) {
 			return system.get();
 		}else {
@@ -87,7 +106,7 @@ public class LabSystemController {
 	@RequestMapping(value="/api/system",method= RequestMethod.GET)
 	public List<LabSystem> findAllNodeSystems() {		
 		User u = getManagerFromSecurityContext();
-		return systemService.findAllByNode(u.getNode().getId());
+		return labSystemService.findAllByNode(u.getNode().getId());
 	}
 	
 	/**

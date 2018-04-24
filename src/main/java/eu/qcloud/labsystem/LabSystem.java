@@ -1,16 +1,17 @@
 package eu.qcloud.labsystem;
 
 import java.util.List;
+import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -43,6 +44,31 @@ public class LabSystem {
 	
 	@ManyToMany
 	private List<DataSource> dataSources;
+	
+	@OneToOne(cascade= CascadeType.ALL)
+    @JoinColumn(name = "guide_set")
+	private GuideSet guideSet;
+	
+	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+	private UUID apiKey;
+	
+	
+	public UUID getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(UUID apiKey) {
+		this.apiKey = apiKey;
+	}
+
+	public GuideSet getGuideSet() {
+		return guideSet;
+	}
+
+	public void setGuideSet(GuideSet guideSet) {
+		this.guideSet = guideSet;
+	}
 
 	public Long getId() {
 		return id;
