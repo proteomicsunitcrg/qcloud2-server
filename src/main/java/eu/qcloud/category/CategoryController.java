@@ -31,4 +31,14 @@ public class CategoryController {
 	public Category getCategoryByName(@PathVariable String categoryName) {
 		return categoryService.getCategoryByName(categoryName);
 	}
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="/api/category/makemain/{categoryId}", method = RequestMethod.PUT)
+	public void makeMainCategory(@PathVariable Long categoryId) {
+		categoryService.makeCategoryMain(categoryId);
+	}
+	
+	@RequestMapping(value="/api/category/main", method = RequestMethod.GET)
+	public Category getMainCategory() {
+		return categoryService.getMainCategory();		
+	}
 }

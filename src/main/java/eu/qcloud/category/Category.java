@@ -25,7 +25,25 @@ public class Category {
     @Size(min = 4, max = 50)
     private String name;
     
-    public Category() {}
+    @Column(name="MAIN", columnDefinition="boolean default false")
+    private boolean isMainDataSource;
+    
+    public boolean isMainDataSource() {
+		return isMainDataSource;
+	}
+
+	public void setMainDataSource(boolean isMainDataSource) {
+		this.isMainDataSource = isMainDataSource;
+	}
+
+
+
+
+	public Category() {}
+    
+    
+    
+    
     /*
     @JsonIgnore
     @OneToMany(mappedBy="category",

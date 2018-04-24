@@ -25,7 +25,23 @@ public class CategoryService {
 
 	public Category getCategoryByName(String categoryName) {
 		return categoryRepository.findByName(categoryName);
-
+	}
+	
+	public void makeCategoryMain(Long categoryId) {
+		List<Category> categories = new ArrayList<>();
+		categoryRepository.findAll().forEach(categories::add);
+		for(Category c: categories) {
+			if(c.getId()==categoryId) {
+				c.setMainDataSource(true);
+			}else {
+				c.setMainDataSource(false);
+			}
+			categoryRepository.save(c);
+		}
 		
+	}
+
+	public Category getMainCategory() {
+		return categoryRepository.findTop1ByIsMainDataSourceTrue();
 	}
 }
