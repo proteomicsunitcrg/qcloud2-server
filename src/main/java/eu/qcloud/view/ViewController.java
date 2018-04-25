@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.view.ViewDisplayRepository.WithOutViewDisplay;
 /**
  * View controller.
  * It handles the views and the displays.
@@ -82,7 +83,7 @@ public class ViewController {
 	}
 	
 	@RequestMapping(value="/api/views/default/view/{viewId}", method=RequestMethod.GET)
-	public List<DefaultView> getDefaultViewDisplayByViewId(@PathVariable Long viewId) {
+	public List<WithOutViewDisplay> getDefaultViewDisplayByViewId(@PathVariable Long viewId) {
 		return viewService.getDefaultViewDisplayByViewId(viewId);
 	}
 	

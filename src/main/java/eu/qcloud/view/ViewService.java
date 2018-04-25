@@ -8,6 +8,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.view.ViewDisplayRepository.WithOutViewDisplay;
+
 @Service
 public class ViewService {
 
@@ -42,7 +44,7 @@ public class ViewService {
 		return viewRepository.findByCvId(cvId);
 	}
 	
-	public List<DefaultView> getDefaultViewDisplayByViewId(Long viewId) {
+	public List<WithOutViewDisplay> getDefaultViewDisplayByViewId(Long viewId) {
 		return viewDisplayRepository.findByViewId(viewId);
 	}
 	

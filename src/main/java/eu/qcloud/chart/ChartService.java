@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.chart.ChartRepository.NoView;
 import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsId;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
@@ -101,6 +102,15 @@ public class ChartService {
 
 	public List<Chart> getChartsByCVId(Long cvId) {
 		return chartRepository.findByCvId(cvId);
+	}
+
+	public List<NoView> getAllChartsWithoutView() {
+		return chartRepository.findAllCharts();
+
+	}
+
+	public List<NoView> getChartsByCVIdWithoutView(Long cvId) {
+		return chartRepository.findByCvIdWithoutView(cvId);
 	}
 	
 }

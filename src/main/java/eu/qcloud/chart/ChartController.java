@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.qcloud.chart.ChartRepository.NoView;
 import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
 import eu.qcloud.exceptions.InvalidActionException;
@@ -58,8 +59,9 @@ public class ChartController {
 	 * @return a List with the charts found
 	 */
 	@RequestMapping(value="/api/chart", method = RequestMethod.GET)
-	public List<Chart> allCharts() {
-		List<Chart> charts =chartService.getAllCharts();
+	public List<NoView> allCharts() {
+		//List<Chart> charts =chartService.getAllCharts();
+		List<NoView> charts =chartService.getAllChartsWithoutView();
 		return charts;
 	}
 	/**
@@ -68,8 +70,9 @@ public class ChartController {
 	 * @return a list with the results
 	 */
 	@RequestMapping(value="/api/chart/cv/{cvId}", method = RequestMethod.GET)
-	public List<Chart> getChartByCVId(@PathVariable Long cvId) {
-		return chartService.getChartsByCVId(cvId);
+	public List<NoView> getChartByCVId(@PathVariable Long cvId) {
+		return chartService.getChartsByCVIdWithoutView(cvId);
+		//return chartService.getChartsByCVId(cvId);
 	}
 	
 	/**
