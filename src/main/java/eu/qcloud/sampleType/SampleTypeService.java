@@ -61,5 +61,17 @@ public class SampleTypeService {
 	public List<WithPeptide> getAllSampleTypeWithPeptide() {
 		return sampleTypeRepository.findAllSampleType();
 	}
+
+	public void makeMainSampleType(Long sampleTypeCategoryId, Long sampleTypeId) {
+		sampleTypeRepository.findBySampleTypeCategoryId(sampleTypeCategoryId)
+		.forEach(s-> {
+			if(s.getId()!= sampleTypeId) {
+				s.setMainSampleType(false);					
+			}else {
+				s.setMainSampleType(true);
+			}
+			sampleTypeRepository.save(s);
+		});
+	}
 	
 }

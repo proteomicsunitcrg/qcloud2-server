@@ -35,11 +35,22 @@ public class SampleType {
     private String name;
     
     @OneToMany(mappedBy="sampleType")
-    private List<SampleComposition> sampleType;
+    private List<SampleComposition> sampleCompositions;
     
     @ManyToOne
 	@JoinColumn(name="sampleTypeCategory",insertable=true, updatable= true)
     private SampleTypeCategory sampleTypeCategory;
+    
+    @Column(name="is_main_sample_type")
+    private boolean isMainSampleType;
+    
+	public boolean isMainSampleType() {
+		return isMainSampleType;
+	}
+
+	public void setMainSampleType(boolean isMainSampleType) {
+		this.isMainSampleType = isMainSampleType;
+	}
 
 	public Long getId() {
 		return id;

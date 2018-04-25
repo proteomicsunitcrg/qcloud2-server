@@ -23,6 +23,8 @@ public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
     	List<OnlyPeptide> getPeptides();
     }
     
+    public List<SampleType> findBySampleTypeCategoryId(Long id);
+    
     
     public interface SampleTypeOnlyName {
     	Long getId();

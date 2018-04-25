@@ -42,5 +42,14 @@ public class SampleTypeController {
 	public SampleTypeOnlyName getById(@PathVariable Long sampleId) {
 		return sampleTypeService.getSampleById(sampleId);
 	}
+	/**
+	 * Make the given sample as main in its category
+	 * Only a sample type per category can be main
+	 * @param sampleType
+	 */
+	@RequestMapping(value="/api/sample/makemain/{sampleTypeCategoryId}/{sampleTypeId}", method=RequestMethod.PUT)
+	public void doMainSampleType(@PathVariable Long sampleTypeCategoryId,@PathVariable Long sampleTypeId) {
+		sampleTypeService.makeMainSampleType(sampleTypeCategoryId,sampleTypeId);
+	}
 	
 }
