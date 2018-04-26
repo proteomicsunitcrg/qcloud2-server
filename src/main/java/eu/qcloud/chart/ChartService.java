@@ -113,4 +113,8 @@ public class ChartService {
 		return chartRepository.findByCvIdWithoutView(cvId);
 	}
 	
+	public List<NoView> getChartsByCVIdAndSampleTypeCategoryId(Long cvId, Long sampleTypeId) {
+		return chartRepository.findByCvIdAndSampleTypeId(cvId, sampleTypeId);
+	}
+	
 }

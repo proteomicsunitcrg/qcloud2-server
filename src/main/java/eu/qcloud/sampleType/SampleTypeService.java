@@ -61,7 +61,17 @@ public class SampleTypeService {
 	public List<WithPeptide> getAllSampleTypeWithPeptide() {
 		return sampleTypeRepository.findAllSampleType();
 	}
-
+	
+	public SampleType getMainSampleTypeBySampleTypeCategory(Long sampleTypeCategoryId) {
+		return sampleTypeRepository.findByIsMainSampleTypeTrueAndSampleTypeCategoryId(sampleTypeCategoryId);
+	}
+	
+	/**
+	 * This function makes a sample type the main of its category
+	 * while makes the other sample types of the category non-main
+	 * @param sampleTypeCategoryId
+	 * @param sampleTypeId
+	 */
 	public void makeMainSampleType(Long sampleTypeCategoryId, Long sampleTypeId) {
 		sampleTypeRepository.findBySampleTypeCategoryId(sampleTypeCategoryId)
 		.forEach(s-> {

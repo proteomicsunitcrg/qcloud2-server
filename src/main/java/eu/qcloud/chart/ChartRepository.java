@@ -23,6 +23,8 @@ public interface ChartRepository extends CrudRepository<Chart, Long>{
 	@Query("select c from Chart c")
 	List<NoView> findAllCharts();
 	
+	List<NoView> findByCvIdAndSampleTypeId(Long cvId,Long sampleTypeId);
+	
 	interface ChartDescription {
 		Long getId();
 		String getName();

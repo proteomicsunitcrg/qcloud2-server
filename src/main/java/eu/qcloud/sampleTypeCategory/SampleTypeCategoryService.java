@@ -81,6 +81,10 @@ public class SampleTypeCategoryService {
 		}else {
 			throw new DataIntegrityViolationException("Wrong values");
 		}
+	}
+	
+	public Optional<SampleTypeCategory> getSampleTypeCategoryById(Long sampleTypeCategoryId) {
+		return sampleTypeCategoryRepository.findById(sampleTypeCategoryId);
 		
 	}
 }

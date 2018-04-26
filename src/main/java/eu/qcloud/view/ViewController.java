@@ -81,6 +81,19 @@ public class ViewController {
 		View v =viewService.getDefaultViewByCV(cvId); 
 		return v;
 	}
+	/**
+	 * Returns a view by cv and sample type category
+	 * @param cvId
+	 * @param sampleTypeCategoryId
+	 * @return
+	 */
+	@RequestMapping(value="/api/views/default/{cvId}/{sampleTypeCategoryId}", method=RequestMethod.GET)
+	public View getViewByCVIdAndSampleTypeCategoryId(Long cvId, Long sampleTypeCategoryId) {
+		View v = viewService.getDefaultViewByCVIdAndSampleTypeCategoryId(cvId,sampleTypeCategoryId);
+		return v;
+	}
+	
+	
 	
 	@RequestMapping(value="/api/views/default/view/{viewId}", method=RequestMethod.GET)
 	public List<WithOutViewDisplay> getDefaultViewDisplayByViewId(@PathVariable Long viewId) {

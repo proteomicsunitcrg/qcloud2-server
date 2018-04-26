@@ -67,6 +67,10 @@ public class ViewService {
 		return actual!=afterDelete;
 		
 	}
+
+	public View getDefaultViewByCVIdAndSampleTypeCategoryId(Long cvId, Long sampleTypeCategoryId) {
+		return viewRepository.findByCvIdAndSampleTypeCategoryId(cvId, sampleTypeCategoryId);
+	}
 	
 	
 

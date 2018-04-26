@@ -34,5 +34,7 @@ public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
     
     @Query("select s from SampleType s")
 	public Iterable<SampleTypeOnlyName> findAllSampleTypes();
+
+	public SampleType findByIsMainSampleTypeTrueAndSampleTypeCategoryId(Long sampleTypeCategoryId);
     
 }

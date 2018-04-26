@@ -13,12 +13,21 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import eu.qcloud.CV.CV;
+import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
 import eu.qcloud.security.model.User;
-
+/**
+ * This is the view class representing both default views
+ * and user views.
+ * @author dmancera
+ *
+ */
 @Entity
-@Table(name="view")
+@Table(name="view", uniqueConstraints= {
+		@UniqueConstraint(columnNames= {"cvId","sampleTypeCategoryId"})
+})
 public class View {
 	@Id
     @Column(name = "ID")
@@ -36,12 +45,24 @@ public class View {
 	private User user;
 	
 	@OneToOne
-	@JoinColumn(name="cvId",insertable=true, updatable= false,nullable=true,unique=true)
+	@JoinColumn(name="cvId",insertable=true, updatable= false,nullable=true,unique=false)
 	private CV cv;
 	
 	@OneToMany(mappedBy="view")
 	private List<ViewDisplay> viewDisplay;
 	
+	@ManyToOne
+	@JoinColumn(name="sampleTypeCategoryId", insertable=true, updatable=false, nullable=true, unique = false)
+	private SampleTypeCategory sampleTypeCategory;
+	
+	public SampleTypeCategory getSampleTypeCategory() {
+		return sampleTypeCategory;
+	}
+
+	public void setSampleTypeCategory(SampleTypeCategory sampleTypeCategory) {
+		this.sampleTypeCategory = sampleTypeCategory;
+	}
+
 	public CV getCv() {
 		return cv;
 	}

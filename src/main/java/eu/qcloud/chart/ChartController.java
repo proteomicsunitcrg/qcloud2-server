@@ -22,6 +22,8 @@ import eu.qcloud.chart.ChartRepository.NoView;
 import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
 import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.sampleType.SampleTypeService;
 /**
  * Controller for charts.
  * It will handle also the chart params. 
@@ -33,6 +35,9 @@ public class ChartController {
 	
 	@Autowired
 	private ChartService chartService;
+	
+	@Autowired
+	private SampleTypeService sampleTypeService;
 	
 	
 	/**
@@ -73,6 +78,18 @@ public class ChartController {
 	public List<NoView> getChartByCVId(@PathVariable Long cvId) {
 		return chartService.getChartsByCVIdWithoutView(cvId);
 		//return chartService.getChartsByCVId(cvId);
+	}
+	/**
+	 * Get a list of charts of the main sample type of a sample type category
+	 * @param cvId
+	 * @param sampleTypeCategoryId
+	 * @return
+	 */
+	@RequestMapping(value="/api/chart/cv/{cvId}/category/{sampleTypeCategoryId}", method = RequestMethod.GET)
+	public List<NoView> getChartsByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,@PathVariable Long sampleTypeCategoryId) {
+		// get the main sample type of the given category
+		SampleType sampleType = sampleTypeService.getMainSampleTypeBySampleTypeCategory(sampleTypeCategoryId);
+		return chartService.getChartsByCVIdAndSampleTypeCategoryId(cvId, sampleType.getId());
 	}
 	
 	/**

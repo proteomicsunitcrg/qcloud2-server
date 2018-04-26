@@ -15,6 +15,8 @@ public interface ViewRepository extends CrudRepository<View, Long> {
 	
 	List<View> findByIsDefaultTrue();
 	
+	View findByCvIdAndSampleTypeCategoryId(Long cvId, Long sampleTypeCategoryId);
+	
 	interface ViewWithoutDisplay {
 		Long getId();
 		String getName();

@@ -2,6 +2,7 @@ package eu.qcloud.sampleTypeCategory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.exceptions.NotFoundException;
 import eu.qcloud.sampleType.SampleType;
 
 /**
@@ -48,6 +50,15 @@ public class SampleTypeCategoryController {
 	@RequestMapping(value="/api/samplecategory",method= RequestMethod.GET)
 	public List<SampleTypeCategory> getSampleTypeCategories() {
 		return sampleTypeCategoryService.getAll();
+	}
+	@RequestMapping(value="/api/samplecategory/{sampleTypeCategoryId}",method= RequestMethod.GET)
+	public SampleTypeCategory getSampleTypeCategoryById(@PathVariable Long sampleTypeCategoryId) {
+		Optional<SampleTypeCategory> stc = sampleTypeCategoryService.getSampleTypeCategoryById(sampleTypeCategoryId);
+		if(stc.isPresent()) {
+			return stc.get();
+		}else {
+			throw new NotFoundException("Sample type category does not exists");
+		}
 	}
 	
 	/**
@@ -97,6 +108,10 @@ public class SampleTypeCategoryController {
 	@ExceptionHandler(InvalidActionException.class)
 	void handleBadAction(HttpServletResponse response, Exception e) throws IOException{
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
+	}
+	@ExceptionHandler(NotFoundException.class)
+	void handleNotFound(HttpServletResponse response, Exception e) throws IOException{
+		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
 
 }
