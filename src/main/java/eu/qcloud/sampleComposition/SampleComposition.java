@@ -26,8 +26,6 @@ public class SampleComposition {
 	
 	private int concentration;
 	
-	
-	
 	public SampleCompositionId getSampleCompositionId() {
 		return sampleCompositionId;
 	}
