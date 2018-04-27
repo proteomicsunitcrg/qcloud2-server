@@ -39,10 +39,17 @@ public class ViewService {
 		}
 		return saved;
 	}
-	
+	@Deprecated
 	public View getDefaultViewByCV(Long cvId) {
-		return viewRepository.findByCvId(cvId);
+		//return viewRepository.findByCvId(cvId);
+		return null;
 	}
+	
+	public List<View> getDefaultViewsByCV(String cvId) {
+		return viewRepository.findByCvCVId(cvId);
+	}
+	
+	
 	
 	public List<WithOutViewDisplay> getDefaultViewDisplayByViewId(Long viewId) {
 		return viewDisplayRepository.findByViewId(viewId);

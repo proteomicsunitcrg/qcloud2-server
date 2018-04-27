@@ -72,14 +72,13 @@ public class ViewController {
 	}
 	
 	/**
-	 * This method returns the view object by CV
+	 * This method returns the views by CV
 	 * @param cvId
 	 * @return
 	 */	
 	@RequestMapping(value="/api/views/default/{cvId}", method=RequestMethod.GET)
-	public View getViewByCVId(@PathVariable Long cvId) {
-		View v =viewService.getDefaultViewByCV(cvId); 
-		return v;
+	public List<View> getViewByCVId(@PathVariable String cvId) {
+		return viewService.getDefaultViewsByCV(cvId); 
 	}
 	/**
 	 * Returns a view by cv and sample type category
@@ -88,12 +87,10 @@ public class ViewController {
 	 * @return
 	 */
 	@RequestMapping(value="/api/views/default/{cvId}/{sampleTypeCategoryId}", method=RequestMethod.GET)
-	public View getViewByCVIdAndSampleTypeCategoryId(Long cvId, Long sampleTypeCategoryId) {
+	public View getViewByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,@PathVariable Long sampleTypeCategoryId) {
 		View v = viewService.getDefaultViewByCVIdAndSampleTypeCategoryId(cvId,sampleTypeCategoryId);
 		return v;
 	}
-	
-	
 	
 	@RequestMapping(value="/api/views/default/view/{viewId}", method=RequestMethod.GET)
 	public List<WithOutViewDisplay> getDefaultViewDisplayByViewId(@PathVariable Long viewId) {

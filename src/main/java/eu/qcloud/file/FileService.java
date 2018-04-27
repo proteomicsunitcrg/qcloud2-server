@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.file.FileRepository.OnlySmalls;
+import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.sampleType.SampleType;
 /**
  * File service
@@ -35,12 +35,12 @@ public class FileService {
 		return fileRepository.findFileById(idFile);
 	}
 	
-	public File addSpecial(File file, Long dataSourceId, Long sampleTypeId) {
+	public File addSpecial(File file, Long labSystemId, Long sampleTypeId) {
 		SampleType s = new SampleType();
 		s.setId(sampleTypeId);
-		DataSource d = new DataSource();
-		d.setId(dataSourceId);
-		file.setDataSource(d);
+		LabSystem ls = new LabSystem(); 
+		ls.setId(labSystemId);
+		file.setLabSystem(ls);;
 		file.setSampleType(s);
 		return fileRepository.save(file);
 	}
@@ -52,7 +52,7 @@ public class FileService {
 
 	public List<OnlySmalls> getLastFilesByDataSourceIdAndSampleTypeId(Long dataSourceId, Long sampleTypeId) {
 		List<OnlySmalls> initials = new ArrayList<>();
-		fileRepository.findTop10ByDataSourceIdAndSampleTypeIdOrderByCreationDateDesc(dataSourceId, sampleTypeId)
+		fileRepository.findTop10ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(dataSourceId, sampleTypeId)
 			.forEach(initials:: add);
 		List<OnlySmalls> initialAndFinalDate = new ArrayList<>();
 		initialAndFinalDate.add(initials.get(initials.size()-1));

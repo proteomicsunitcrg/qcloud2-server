@@ -12,13 +12,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public interface DataRepository extends CrudRepository<Data, DataId>{
 
 	MiniData findByDataIdFileId(Long fileId);
-	
+	/*
+	 * old query that works for datasources
 	@Query("SELECT d as d from Data d where (d.contextSource, d.param) in (select c.contextSource, c.param from ChartParams c where c.chart.id=?1 ) and d.file in (select f from File f where f.creationDate between ?2 and ?3 and f.dataSource.id=?4 and f.sampleType.id=?5) order by d.file.id asc")
 	List<Data> findPlotData(Long chartId, java.util.Date start, java.util.Date end, Long dataSourceId, Long sampleTypeId);
+	*/
+	@Query("SELECT d as d from Data d where (d.contextSource, d.param) in (select c.contextSource, c.param from ChartParams c where c.chart.id=?1 ) and d.file in (select f from File f where f.creationDate between ?2 and ?3 and f.labSystem.id=?4 and f.sampleType.id=?5) order by d.file.id asc")
+	List<Data> findPlotData(Long chartId, java.util.Date start, java.util.Date end, Long labSystemId, Long sampleTypeId);
 	
 	List<MiniData> findByFileCreationDateBetween(java.sql.Date start, java.sql.Date end);
 	
-	List<MiniData> findByFileCreationDateBetweenAndFileDataSourceId(java.sql.Date start, java.sql.Date end, Long dataSourceId);
+	List<MiniData> findByFileCreationDateBetweenAndFileLabSystemId(java.sql.Date start, java.sql.Date end, Long labSystemId);
 	
 	public interface MiniData {
 		

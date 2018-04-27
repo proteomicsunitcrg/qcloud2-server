@@ -12,9 +12,9 @@ import eu.qcloud.chart.chartParams.ChartParamsRepository;
 import eu.qcloud.data.DataRepository.MiniData;
 import eu.qcloud.data.processor.processorfactory.ProcessorFactory;
 import eu.qcloud.data.processor.processors.Processor;
-import eu.qcloud.dataSource.DataSource;
-import eu.qcloud.dataSource.DataSourceRepository;
-import eu.qcloud.dataSource.GuideSet;
+import eu.qcloud.labsystem.GuideSet;
+import eu.qcloud.labsystem.LabSystem;
+import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.param.Param;
 
 /**
@@ -31,9 +31,9 @@ public class DataService {
 	
 	@Autowired
 	private ChartParamsRepository chartParamRepository;
-	
+		
 	@Autowired
-	private DataSourceRepository dataSourceRepository;
+	private LabSystemRepository labSystemRepository;
 	
 	public List<Data> getAllData() {
 		List<Data> data = new ArrayList<>();
@@ -62,9 +62,9 @@ public class DataService {
 	 * @param sampleTypeId
 	 * @return
 	 */
-	public List<DataForPlot> getPlotData(Date start, Date end, Long chartId, Long dataSourceId, Long sampleTypeId) {
+	public List<DataForPlot> getPlotData(Date start, Date end, Long chartId, Long labSystemId, Long sampleTypeId) {
 		List<DataForPlot> dataForPlot = new ArrayList<>();
-		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chartId, start, end, dataSourceId,
+		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chartId, start, end, labSystemId,
 				sampleTypeId);
 
 		for (Data data : dataFromDb) {
@@ -75,7 +75,8 @@ public class DataService {
 		Param param = chartParamRepository.findTopByChartId(chartId).getParam();
 		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 		
-		Optional<DataSource> dataSource = dataSourceRepository.findById(dataSourceId); 
+		// Optional<DataSource> dataSource = dataSourceRepository.findById(dataSourceId);
+		Optional<LabSystem> labSystem = labSystemRepository.findById(labSystemId);
 		processor.setData(dataForPlot);
 		/**
 		 * If data from a guide set is required then call the db for the
@@ -83,9 +84,9 @@ public class DataService {
 		 */
 		if(processor.isGuideSetRequired()) {
 			// get the guide set of the instrument
-			GuideSet gs = dataSource.get().getGuideSet();
-			processor.setGuideSet(dataSource.get().getGuideSet());
-			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chartId, gs.getStartDate(), gs.getEndDate(), dataSourceId,
+			GuideSet gs = labSystem.get().getGuideSet();
+			processor.setGuideSet(gs);
+			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chartId, gs.getStartDate(), gs.getEndDate(), labSystemId,
 					sampleTypeId);
 			processor.setGuideSetData(dataToProcess);
 			return processor.processData();
@@ -99,7 +100,7 @@ public class DataService {
 	}
 
 	public List<MiniData> getDataBetweenDatesByDataSourceId(Date start, Date end, Long dataSourceId) {
-		return dataRepository.findByFileCreationDateBetweenAndFileDataSourceId(start, end, dataSourceId);
+		return dataRepository.findByFileCreationDateBetweenAndFileLabSystemId(start, end, dataSourceId);
 	}
 
 }

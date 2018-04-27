@@ -16,7 +16,7 @@ import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import eu.qcloud.dataSource.DataSource;
+import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.sampleType.SampleType;
 
 @Entity
@@ -32,10 +32,10 @@ public class File {
 	@ManyToOne
 	@JoinColumn(name="sample_type_id")
 	private SampleType sampleType;
-	
+		
 	@ManyToOne
-	@JoinColumn(name="data_source_id")
-	private DataSource dataSource;
+	@JoinColumn(name="labsystem_id")
+	private LabSystem labSystem;
 	
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	@Column(name="creation_date", columnDefinition="DATETIME")
@@ -72,14 +72,6 @@ public class File {
 		this.sampleType = sampleType;
 	}
 
-	public DataSource getDataSource() {
-		return dataSource;
-	}
-
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
-
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -95,5 +87,14 @@ public class File {
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
+
+	public LabSystem getLabSystem() {
+		return labSystem;
+	}
+
+	public void setLabSystem(LabSystem labSystem) {
+		this.labSystem = labSystem;
+	}
+
 	
 }

@@ -15,13 +15,13 @@ public interface FileRepository extends CrudRepository<File, Long>{
 	
 	public File findByChecksum(String checksum);
 	
-	public List<OnlySmalls> findTop10ByDataSourceIdAndSampleTypeIdOrderByCreationDateDesc(Long dataSourceId,Long sampleTypeId);
+	public List<OnlySmalls> findTop10ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(Long labSystemId,Long sampleTypeId);
 	
 	@Projection(name = "file_mini", types = File.class)
 	public interface OnlySmalls {
 		String getFilename();
-		Long getDataSourceId();
-		String getDataSourceName();
+		Long getLabSystemId();
+		String getLabSystemName();
 		
 		@JsonFormat(pattern="yyyy-MM-dd hh:mm")
 		Date getCreationDate();
