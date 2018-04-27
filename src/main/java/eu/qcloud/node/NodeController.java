@@ -30,8 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.helper.PasswordGenerator;
-import eu.qcloud.mail.EmailService;
-import eu.qcloud.mail.Mail;
 import eu.qcloud.security.model.Authority;
 import eu.qcloud.security.model.AuthorityName;
 import eu.qcloud.security.model.User;
