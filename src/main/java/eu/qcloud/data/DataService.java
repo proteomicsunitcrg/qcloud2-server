@@ -1,12 +1,18 @@
 package eu.qcloud.data;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
 import eu.qcloud.data.DataRepository.MiniData;
@@ -85,9 +91,15 @@ public class DataService {
 		if(processor.isGuideSetRequired()) {
 			// get the guide set of the instrument
 			GuideSet gs = labSystem.get().getGuideSet();
+			if(gs == null) {
+				throw new DataRetrievalFailureException("A guide set is required for this plot.");
+			}
 			processor.setGuideSet(gs);
 			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chartId, gs.getStartDate(), gs.getEndDate(), labSystemId,
 					sampleTypeId);
+			if(dataToProcess.size()==0) {
+				throw new DataRetrievalFailureException("Your selected guide has no results. Please, choose another date range.");
+			}
 			processor.setGuideSetData(dataToProcess);
 			return processor.processData();
 		}else {
@@ -102,5 +114,7 @@ public class DataService {
 	public List<MiniData> getDataBetweenDatesByDataSourceId(Date start, Date end, Long dataSourceId) {
 		return dataRepository.findByFileCreationDateBetweenAndFileLabSystemId(start, end, dataSourceId);
 	}
+	
+
 
 }

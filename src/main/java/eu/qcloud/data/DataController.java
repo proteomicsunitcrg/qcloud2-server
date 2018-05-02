@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -116,6 +117,10 @@ public class DataController {
 	@ExceptionHandler(IllegalArgumentException.class)
 	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
 	    response.sendError(HttpStatus.FORBIDDEN.value(), e.getMessage());
+	}
+	@ExceptionHandler(DataRetrievalFailureException.class)
+	void handleConflict(HttpServletResponse response, Exception e) throws IOException {
+	    response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
 	}
 	
 }
