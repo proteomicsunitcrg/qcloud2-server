@@ -67,8 +67,15 @@ public class LabSystemController {
 		}
 	}
 	
-	public void updateLabSystem(LabSystem labsystem) {
-		
+	@PreAuthorize("hasRole('MANAGER')")
+	@RequestMapping(value="/api/system/{apiKey}",method= RequestMethod.PUT)
+	public void updateLabSystem(@PathVariable UUID apiKey, @RequestBody LabSystem labSystem) {
+		Optional<LabSystem> s = labSystemService.findSystemByApiKey(apiKey);
+		if(s.isPresent()) {
+			LabSystem ss = s.get();
+			ss.setName(labSystem.getName());
+			labSystemService.saveSystem(s.get());
+		}
 		
 	}
 	@PreAuthorize("hasRole('MANAGER')")

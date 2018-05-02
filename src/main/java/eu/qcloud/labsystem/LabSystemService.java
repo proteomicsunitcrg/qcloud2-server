@@ -37,5 +37,9 @@ public class LabSystemService {
 	public Optional<LabSystem> findSystemByApiKey(UUID apikey) {
 		return systemRepository.findByApiKey(apikey);		
 	}
+	
+	public List<LabSystem> findLabSystemByDataSourceId(Long dataSourceId) {
+		return systemRepository.findAllByDataSourcesId(dataSourceId);
+	}
 
 }

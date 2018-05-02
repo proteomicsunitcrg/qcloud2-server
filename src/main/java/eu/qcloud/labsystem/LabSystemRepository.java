@@ -14,4 +14,6 @@ public interface LabSystemRepository extends CrudRepository<LabSystem, Long> {
 
 	Optional<LabSystem> findByApiKey(UUID apikey);
 	
+	List<LabSystem> findAllByDataSourcesId(Long dataSourceId);
+	
 }
