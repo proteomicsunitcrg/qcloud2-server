@@ -42,7 +42,7 @@ public class DataSourceService {
 		return dataSources;
 	}
 	
-	public List<DataSource> addNewDataSource(DataSource dataSource) {		
+	public List<DataSource> addNewDataSource(DataSource dataSource) {
 		dataSourceRepository.save(dataSource);
 		return dataSourceRepository.findByNode(dataSource.getNode());
 	}

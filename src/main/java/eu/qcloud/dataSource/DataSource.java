@@ -34,13 +34,8 @@ public class DataSource {
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
 	
-	public UUID getApiKey() {
-		return apiKey;
-	}
-	
-	public void setApiKey(UUID apiKey) {
-		this.apiKey = apiKey;
-	}
+	@Column(name="enabled",columnDefinition="tinyint(1) default 1")
+	private boolean enabled;
 	
 	@ManyToOne
 	@JoinColumn(name="cv_id")
@@ -82,6 +77,22 @@ public class DataSource {
 
 	public void setCv(CV cv) {
 		this.cv = cv;
+	}
+	
+	public UUID getApiKey() {
+		return apiKey;
+	}
+	
+	public void setApiKey(UUID apiKey) {
+		this.apiKey = apiKey;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	@Override

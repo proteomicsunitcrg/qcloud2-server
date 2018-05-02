@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.labsystem.LabSystem;
+import eu.qcloud.labsystem.LabSystemService;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
 /**
@@ -35,6 +37,8 @@ public class DataSourceController {
 	private DataSourceService dataSourceService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private LabSystemService labSystemService;
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/api/datasource/node/{nodeId}",method= RequestMethod.GET)
@@ -86,6 +90,11 @@ public class DataSourceController {
 		if(dataSource== null) {
 			throw new PersistenceException("What is going on...");
 		}
+		// Check if the datasource belongs to any lab system
+		List<LabSystem> labSystems = labSystemService.findLabSystemByDataSourceId(dataSource.getId());
+		if(labSystems.size()>0) {
+			throw new InvalidActionException("This instrument belongs to an instrument system. Remove the system before remove a single instrument.");
+		}
 		Long idToDelete = dataSource.getId();
 		Long categoryId = dataSource.getCv().getCategory().getId();
 		// Check if node has this instrument
@@ -99,6 +108,7 @@ public class DataSourceController {
 			//not node owner, throw error
 			throw new InvalidActionException("You do not own this instrument.");
 		}
+		
 		return dataSourceService.getAllDataSourceByNodeIdAndCategoryId(u.getNode().getId(), categoryId);
 	}
 	
