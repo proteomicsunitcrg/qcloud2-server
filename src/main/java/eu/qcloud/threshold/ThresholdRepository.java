@@ -1,9 +1,53 @@
 package eu.qcloud.threshold;
 
+import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.NoRepositoryBean;
 
-@Repository
-public interface ThresholdRepository extends CrudRepository<Threshold, Long> {
+import eu.qcloud.CV.CV;
+import eu.qcloud.labsystem.LabSystem;
+import eu.qcloud.param.Param;
+import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.threshold.constraint.ThresholdConstraint;
+import eu.qcloud.threshold.params.ThresholdParamsRepository.paramsNoThreshold;
 
+@NoRepositoryBean
+public interface ThresholdRepository<T extends Threshold> extends CrudRepository<T, Long> {
+
+	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(Long sampleTypeId,Long paramId, Long cvId, Long labSystemId);
+	
+	public withParamsWithoutThreshold findBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(Long sampleTypeId,Long paramId, Long cvId, Long labSystemId);
+
+	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndCvId(Long sampleTypeId, Long paramId, Long cvId);
+	
+	public withParamsWithoutThreshold findBySampleTypeIdAndParamIdAndCvId(Long sampleTypeId, Long paramId, Long cvId);
+	
+	@Query("select t from Threshold t where t.id =?1")
+	public withParamsWithoutThreshold findThresholdById(Long thresholdId);
+	
+	@Query("select t from Threshold t")
+	public List<withParamsWithoutThreshold> findMini();
+	
+	interface withParamsWithoutThreshold {
+		Long getId();
+		String getName();
+		ThresholdType getThresholdType();
+		SampleType getSampleType();
+		Param getParam();
+		CV getCv();
+		int getSteps();
+		LabSystem getLabSystem();
+		ThresholdConstraint getAdminThresholdConstraint();
+		ThresholdConstraint getManagerThresholdConstraint();
+		List<paramsNoThreshold> getThresholdParams();
+	}
+	
+	interface onlyConstraints {
+		ThresholdConstraint getThresholdConstraint();
+	}
 }

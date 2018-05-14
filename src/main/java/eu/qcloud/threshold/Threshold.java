@@ -7,76 +7,88 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import eu.qcloud.CV.CV;
-import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.param.Param;
 import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.threshold.constraint.ThresholdConstraint;
+import eu.qcloud.threshold.params.ThresholdParams;
 /**
  * This class represents a threshold. There are two ENUMS used
  * to hold what direction has the threshold and what type of threshold
  * it is.
- * The unique contraint of the table will prevent a user to have 
+ * The unique constraint of the table will prevent a user to have 
  * more than one threshold at one instrument per sample type and param.
  * Lab system can be null in order to save the DEFAULT threshold in case
  * of the MANUAL type of threshold has not user values yet.
  * @author dmancera
  *
  */
+import eu.qcloud.threshold.processor.ThresholdProcessor;
 @Entity
 @Table(name="threshold",
 	uniqueConstraints= {@UniqueConstraint(columnNames= {"sample_type_id","param_id","cv_id","lab_system_id"})})
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class Threshold {
 	
 	@Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "threshold_seq")
     @SequenceGenerator(name = "threshold_seq", sequenceName = "threshold_seq", allocationSize = 1)
-	private Long id;
+	protected Long id;
 	
 	@Column(name="name")
-	private String name;
+	protected String name;
 	
-	@Column(name="direction",nullable= true)
-	private Direction direction;
+	@Transient
+	protected ThresholdConstraint adminThresholdConstraint;
 	
-	@Column(name="type",nullable= true)
-	private ThresholdType thresholdType;
+	@Transient
+	protected ThresholdConstraint managerThresholdConstraint;
 	
-	@Column(name="steps")
-	private int steps;
+	@Transient
+	protected Direction direction;
 	
-	@Column(name="step_value")
-	private float stepValue;
+	@Transient
+	protected ThresholdType thresholdType;
+	
+	@Transient
+	protected ThresholdProcessor processor;	
 	
 	@ManyToOne
 	@JoinColumn(name="sample_type_id", nullable= false)
-	private SampleType sampleType;
+	protected SampleType sampleType;
 	
 	@ManyToOne
 	@JoinColumn(name="param_id", nullable= false)
-	private Param param;
+	protected Param param;
 	
 	@ManyToOne
 	@JoinColumn(name="cv_id", nullable= false)
-	private CV cv;
+	protected CV cv;
 	
-	@ManyToMany	
-	@JoinTable(name="threshold_params",uniqueConstraints= {@UniqueConstraint(columnNames= {"threshold_id","context_sources_id"})})
-	private List<ContextSource> contextSources;
+	@Column(name="steps")
+	protected int steps;
 	
 	@OneToOne(optional = true)
 	@JoinColumn(name="lab_system_id")
-	private LabSystem labSystem;
+	protected LabSystem labSystem;
+	
+	@OneToMany(mappedBy="threshold")
+	protected List<ThresholdParams> thresholdParams;
 	
 	public LabSystem getLabSystem() {
 		return labSystem;
@@ -100,14 +112,6 @@ public class Threshold {
 
 	public void setCv(CV cv) {
 		this.cv = cv;
-	}
-
-	public List<ContextSource> getContextSources() {
-		return contextSources;
-	}
-
-	public void setContextSources(List<ContextSource> contextSources) {
-		this.contextSources = contextSources;
 	}
 
 	public Long getId() {
@@ -134,6 +138,22 @@ public class Threshold {
 		this.direction = direction;
 	}
 
+	public SampleType getSampleType() {
+		return sampleType;
+	}
+
+	public void setSampleType(SampleType sampleType) {
+		this.sampleType = sampleType;
+	}
+	
+	public ThresholdType getThresholdType() {
+		return thresholdType;
+	}
+
+	public void setThresholdType(ThresholdType thresholdType) {
+		this.thresholdType = thresholdType;
+	}
+
 	public int getSteps() {
 		return steps;
 	}
@@ -142,28 +162,35 @@ public class Threshold {
 		this.steps = steps;
 	}
 
-	public float getStepValue() {
-		return stepValue;
+	public List<ThresholdParams> getThresholdParams() {
+		return thresholdParams;
 	}
 
-	public void setStepValue(float stepValue) {
-		this.stepValue = stepValue;
+	public void setThresholdParams(List<ThresholdParams> thresholdParams) {
+		this.thresholdParams = thresholdParams;
+	}
+	@JsonIgnore
+	public ThresholdProcessor getProcessor() {
+		return processor;
 	}
 
-	public SampleType getSampleType() {
-		return sampleType;
+	public void setProcessor(ThresholdProcessor processor) {
+		this.processor = processor;
 	}
 
-	public void setSampleType(SampleType sampleType) {
-		this.sampleType = sampleType;
+	public ThresholdConstraint getAdminThresholdConstraint() {
+		return adminThresholdConstraint;
 	}
 
-	public ThresholdType getThresholdType() {
-		return thresholdType;
+	public void setAdminThresholdConstraint(ThresholdConstraint adminThresholdConstraint) {
+		this.adminThresholdConstraint = adminThresholdConstraint;
 	}
 
-	public void setThresholdType(ThresholdType thresholdType) {
-		this.thresholdType = thresholdType;
+	public ThresholdConstraint getManagerThresholdConstraint() {
+		return managerThresholdConstraint;
 	}
-	
+
+	public void setManagerThresholdConstraint(ThresholdConstraint managerThresholdConstraint) {
+		this.managerThresholdConstraint = managerThresholdConstraint;
+	}
 }
