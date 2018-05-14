@@ -5,15 +5,18 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.config.Projection;
+import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-
+@Repository
 public interface FileRepository extends CrudRepository<File, Long>{
 	
 	public OnlySmalls findFileById(Long idFile);
 	
 	public File findByChecksum(String checksum);
+	
+	public File findTop1ByLabSystemIdOrderByCreationDateDesc(Long labSystemId);
 	
 	public List<OnlySmalls> findTop10ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(Long labSystemId,Long sampleTypeId);
 	
