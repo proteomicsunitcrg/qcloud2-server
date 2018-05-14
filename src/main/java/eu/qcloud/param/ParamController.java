@@ -66,18 +66,6 @@ public class ParamController {
 	}
 	@RequestMapping(value="/api/param/processors", method = RequestMethod.GET)
 	public List<String> getDataProcessors() {
-//		Reflections reflections = new Reflections("eu.qcloud.data.processor");
-//    	Set<Class<? extends Processor>> subTypes = reflections.getSubTypesOf(Processor.class);
-//    	String classesName = subTypes.toString();
-//    	classesName = classesName.replaceAll("\\[", "");
-//    	classesName = classesName.replaceAll("\\]", "");
-//    	String[] classes = classesName.split(",");
-//    	List<String> types = new ArrayList<>();
-//    	for(int i = 0 ; i < classes.length; i++) {
-//    		String[] parts = classes[i].split(Pattern.quote("."));    		
-//    		types.add(parts[parts.length-1]);
-//    	}
-//    	return types;
 		List<String> processors = new ArrayList<>();
 		for(ProcessorType s : ProcessorType.values()) {
 			processors.add(s.name());
