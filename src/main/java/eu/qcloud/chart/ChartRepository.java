@@ -35,6 +35,7 @@ public interface ChartRepository extends CrudRepository<Chart, Long>{
 		String getName();
 		SampleType getSampleType();
 		CV getCv();
+		boolean getIsThresholdEnabled();
 	}
 
 }

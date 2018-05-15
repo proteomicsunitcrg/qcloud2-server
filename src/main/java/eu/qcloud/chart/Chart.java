@@ -40,7 +40,15 @@ public class Chart {
     @Column(name="name")
     private String name;
     
-    @OneToMany(mappedBy="chart")
+    @Column(name="is_threshold", columnDefinition="tinyint(1) default 0")
+    private boolean isThresholdEnabled;
+
+	/*
+     * 3/5/18 i've commented this and still works with the
+     * current database. If a new database is used mind this
+     * line comment
+     */
+    //@OneToMany(mappedBy="chart")
     public List<ViewDisplay> getViewDisplay() {
 		return viewDisplay;
 	}
@@ -89,6 +97,14 @@ public class Chart {
 		this.sampleType = sampleType;
 		this.name = name;
 		this.viewDisplay = display;
+	}
+	
+	public boolean isThresholdEnabled() {
+		return isThresholdEnabled;
+	}
+
+	public void setThresholdEnabled(boolean isThresholdEnabled) {
+		this.isThresholdEnabled = isThresholdEnabled;
 	}
     
     

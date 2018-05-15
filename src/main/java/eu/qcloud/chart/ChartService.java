@@ -86,8 +86,12 @@ public class ChartService {
 		chartParamsRepository.deleteByChartId(chartId);
 	}
 	
-	public List<FullParams> getChartParamsByChartId(Long chartId) {
+	public List<FullParams> getFullChartParamsByChartId(Long chartId) {
 		return chartParamsRepository.findByChartParamsIdChartId(chartId);		
+	}
+	
+	public ChartParams getChartParamByChartId(Long chartId) {
+		return chartParamsRepository.findTopByChartId(chartId);
 	}
 
 	public Optional<Chart> getChartById(Long chartId) {

@@ -151,7 +151,7 @@ public class ChartController {
 	 */
 	@RequestMapping(value="/api/chart/params/{chartId}")
 	public List<FullParams> getChartParamsByChartId(@PathVariable Long chartId) {
-		return chartService.getChartParamsByChartId(chartId);
+		return chartService.getFullChartParamsByChartId(chartId);
 	}
 	
 	/**
