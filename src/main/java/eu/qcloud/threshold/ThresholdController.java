@@ -1,16 +1,26 @@
 package eu.qcloud.threshold;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.qcloud.chart.ChartService;
+import eu.qcloud.chart.chartParams.ChartParams;
+import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
 import eu.qcloud.threshold.constraint.ThresholdConstraint;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
@@ -33,6 +43,9 @@ public class ThresholdController {
 
 	@Autowired
 	private ThresholdService thresholdService;
+	
+	@Autowired
+	private ChartService chartService;
 	
 	/**
 	 * Get all thresholds
@@ -81,6 +94,14 @@ public class ThresholdController {
 	 */
 	@RequestMapping(value="/api/threshold/{type}", method= RequestMethod.POST)
 	public Threshold addNewThreshold(@PathVariable ThresholdType type, @RequestBody Threshold threshold) {
+		// Check if a threshold of that param already exists
+		
+		Optional<Threshold> t = thresholdService.findThresholdBySampleTypeIdAndParamIdAndCvId(threshold.sampleType.getId(),
+				threshold.getParam().getId(),threshold.getCv().getId());
+		if(t.isPresent()) {
+			throw new DataIntegrityViolationException("Threshold already exists");
+		}
+		
 		/**
 		 * I had to this because I could not do a downcast from threshold
 		 * to a more specific son.
@@ -107,13 +128,29 @@ public class ThresholdController {
 	}
 	
 	@RequestMapping(value="/api/threshold/{sampleTypeId}/{paramId}/{cvId}/{labSystemId}", method = RequestMethod.GET)
-	public withParamsWithoutThreshold getThreshold(@PathVariable Long sampleTypeId, @PathVariable Long paramId, @PathVariable Long cvId, @PathVariable Long labSystemId) {
+	public ThresholdForPlot getThreshold(@PathVariable Long sampleTypeId, @PathVariable Long paramId, @PathVariable Long cvId, @PathVariable Long labSystemId) {
 		Threshold t = thresholdService.findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(sampleTypeId,paramId,cvId,labSystemId);
 		// calculate threshold
 		thresholdService.processThreshold(t);			
 		return thresholdService.getThreshold(t.getId());
+	}
+	
+	@RequestMapping(value="/api/threshold/plot/{chartId}/{labSystemId}", method = RequestMethod.GET)
+	public ThresholdForPlot getPlotThreshold(@PathVariable Long chartId,@PathVariable Long labSystemId) {
+		// get the param
+		ChartParams chartParam = chartService.getChartParamByChartId(chartId);
+		Threshold t = thresholdService.findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
+				chartParam.getChart().getSampleType().getId(),
+				chartParam.getParam().getId(),
+				chartParam.getChart().getCv().getId(),labSystemId);
+		// calculate threshold
 		
-		// return t;
+		if(t!=null) {
+			thresholdService.processThreshold(t);		
+			return thresholdService.getThreshold(t.getId());	
+		}else {
+			return null;
+		}
 	}
 	
 	public paramsNoThreshold getThresholdParams(Long thresholdId) {
@@ -142,5 +179,13 @@ public class ThresholdController {
 	public ThresholdConstraint getThresholdConstraint(@PathVariable ThresholdType thresholdType) {
 		return ThresholdFactory.getAdminConstraints(thresholdType);
 		
+	}
+	
+	/*
+	 * Exception handlers
+	 */
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
 	}
 }

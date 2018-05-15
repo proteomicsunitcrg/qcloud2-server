@@ -12,14 +12,32 @@ public class ThresholdConstraint {
 	private boolean isStepValueEditable;
 	
 	private boolean isStepsEditable;
+
+	private boolean isSingleContextSource;
 	
 	public ThresholdConstraint() {}
-
-	public ThresholdConstraint(boolean isInitialValueEditable, boolean isStepValueEditable, boolean isStepsEditable) {
+	
+	/**
+	 * Defines the threshold constraints
+	 * @param isSingleContextSource
+	 * @param isInitialValueEditable
+	 * @param isStepValueEditable
+	 * @param isStepsEditable
+	 */
+	public ThresholdConstraint(boolean isSingleContextSource, boolean isInitialValueEditable, boolean isStepValueEditable, boolean isStepsEditable) {
 		super();
 		this.isInitialValueEditable = isInitialValueEditable;
 		this.isStepValueEditable = isStepValueEditable;
 		this.isStepsEditable = isStepsEditable;
+		this.isSingleContextSource = isSingleContextSource;
+	}	
+	
+	public boolean isSingleContextSource() {
+		return isSingleContextSource;
+	}
+
+	public void setSingleContextSource(boolean isSingleContextSource) {
+		this.isSingleContextSource = isSingleContextSource;
 	}
 
 	public boolean isInitialValueEditable() {

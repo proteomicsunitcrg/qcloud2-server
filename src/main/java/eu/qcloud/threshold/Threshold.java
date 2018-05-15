@@ -63,6 +63,9 @@ public class Threshold {
 	protected Direction direction;
 	
 	@Transient
+	protected Direction nonConformityDirection;
+	
+	@Transient
 	protected ThresholdType thresholdType;
 	
 	@Transient

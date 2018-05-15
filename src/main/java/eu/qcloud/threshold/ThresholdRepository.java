@@ -3,8 +3,6 @@ package eu.qcloud.threshold;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -30,6 +28,9 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	@Query("select t from Threshold t where t.id =?1")
 	public withParamsWithoutThreshold findThresholdById(Long thresholdId);
 	
+	@Query("select t from Threshold t where t.id =?1")
+	public ThresholdForPlot getThresholdForPlot(Long thresholdId);
+	
 	@Query("select t from Threshold t")
 	public List<withParamsWithoutThreshold> findMini();
 	
@@ -49,5 +50,13 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	
 	interface onlyConstraints {
 		ThresholdConstraint getThresholdConstraint();
+	}
+	
+	interface ThresholdForPlot {
+		ThresholdType getThresholdType();
+		Direction getDirection();
+		Direction getNonConformityDirection();
+		int getSteps();
+		List<paramsNoThreshold> getThresholdParams();
 	}
 }

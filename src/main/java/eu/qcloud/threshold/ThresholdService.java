@@ -15,6 +15,7 @@ import eu.qcloud.data.DataRepository;
 import eu.qcloud.labsystem.GuideSet;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
+import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThresholdRepository;
@@ -67,6 +68,16 @@ public class ThresholdService {
 	public Threshold saveHardLimitThreshold(HardLimitThreshold threshold) {
 		return hardLimitThresholdRepository.save(threshold);
 	}
+	/**
+	 * Find a threshold in the database
+	 * @param sampleTypeId
+	 * @param paramId
+	 * @param cvId
+	 * @return
+	 */
+	public Optional<Threshold> findThresholdBySampleTypeIdAndParamIdAndCvId(Long sampleTypeId, Long paramId, Long cvId) {
+		return thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvId(sampleTypeId, paramId, cvId);
+	}
 
 	/**
 	 * Returns a labsystem threshold. In case the labsystem do not have a threshold
@@ -91,26 +102,29 @@ public class ThresholdService {
 			// create and return
 			Optional<LabSystem> ls = labSystemRepository.findById(labSystemId);
 			t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvId(sampleTypeId, paramId, cvId);
-			t.get().setLabSystem(ls.get());
-			switch (t.get().getThresholdType()) {
-			case SIGMA:
-				entityManager.detach(t.get());
-				t.get().setId(null);
-				// save threshold params for new labsystem threshold				
-				Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaThreshold) t.get());
-				entityManager.detach(labSystemSigmaThreshold);
-				saveThresholdParams(labSystemSigmaThreshold);
-				return labSystemSigmaThreshold;
-			case HARDLIMIT:
-				entityManager.detach(t.get());
-				t.get().setId(null);
-				Threshold labSystemHardLimitThreshold = saveHardLimitThreshold((HardLimitThreshold) t.get());
-				entityManager.detach(labSystemHardLimitThreshold);
-				saveThresholdParams(labSystemHardLimitThreshold);
-				return labSystemHardLimitThreshold;
-			default:
-				break;
+			if(t.isPresent()) {
+				t.get().setLabSystem(ls.get());
+				switch (t.get().getThresholdType()) {
+				case SIGMA:
+					entityManager.detach(t.get());
+					t.get().setId(null);
+					// save threshold params for new labsystem threshold				
+					Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaThreshold) t.get());
+					entityManager.detach(labSystemSigmaThreshold);
+					saveThresholdParams(labSystemSigmaThreshold);
+					return labSystemSigmaThreshold;
+				case HARDLIMIT:
+					entityManager.detach(t.get());
+					t.get().setId(null);
+					Threshold labSystemHardLimitThreshold = saveHardLimitThreshold((HardLimitThreshold) t.get());
+					entityManager.detach(labSystemHardLimitThreshold);
+					saveThresholdParams(labSystemHardLimitThreshold);
+					return labSystemHardLimitThreshold;
+				default:
+					break;
+				}
 			}
+			
 		}
 		return null;
 	}
@@ -185,8 +199,8 @@ public class ThresholdService {
 		return thresholdRepository.findMini();
 	}
 
-	public withParamsWithoutThreshold getThreshold(Long thresholdId) {
-		return thresholdRepository.findThresholdById(thresholdId);
+	public ThresholdForPlot getThreshold(Long thresholdId) {
+		return thresholdRepository.getThresholdForPlot(thresholdId);
 	}
 
 }
