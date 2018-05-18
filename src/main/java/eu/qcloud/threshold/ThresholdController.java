@@ -89,7 +89,9 @@ public class ThresholdController {
 	}
 	
 	/**
-	 * Save a new threshold in the database
+	 * Save a new threshold in the database.
+	 * It will also create the threshold for all the
+	 * current labsystems in the database.
 	 * @param threshold the threshold to be saved
 	 */
 	@RequestMapping(value="/api/threshold/{type}", method= RequestMethod.POST)
@@ -146,7 +148,7 @@ public class ThresholdController {
 		// calculate threshold
 		
 		if(t!=null) {
-			thresholdService.processThreshold(t);		
+			thresholdService.processThreshold(t);
 			return thresholdService.getThreshold(t.getId());	
 		}else {
 			return null;
