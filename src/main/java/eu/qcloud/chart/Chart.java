@@ -99,11 +99,11 @@ public class Chart {
 		this.viewDisplay = display;
 	}
 	
-	public boolean isThresholdEnabled() {
+	public boolean getIsThresholdEnabled() {
 		return isThresholdEnabled;
 	}
 
-	public void setThresholdEnabled(boolean isThresholdEnabled) {
+	public void setIsThresholdEnabled(boolean isThresholdEnabled) {
 		this.isThresholdEnabled = isThresholdEnabled;
 	}
     
