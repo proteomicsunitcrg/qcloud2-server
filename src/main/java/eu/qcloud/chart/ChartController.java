@@ -57,6 +57,7 @@ public class ChartController {
 	 */
 	@RequestMapping(value="/api/chart", method = RequestMethod.PUT)
 	public Chart updateChart(@RequestBody Chart chart) {
+		
 		return chartService.addNewChart(chart);
 	}
 	/**
@@ -163,6 +164,7 @@ public class ChartController {
 	public Optional<Chart> getChartByChartId(@PathVariable Long chartId) {
 		return chartService.getChartById(chartId);
 	}
+	
 	/*
 	 * Exception handlers
 	 */
