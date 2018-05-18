@@ -15,8 +15,8 @@ public class HardLimitThreshold extends Threshold {
 		this.direction = Direction.UPDOWN;
 		this.nonConformityDirection = Direction.UPDOWN;
 		this.processor = new NoProcessor();
-		this.adminThresholdConstraint = new ThresholdConstraint(false,true,true,true);
-		this.managerThresholdConstraint = new ThresholdConstraint(false,true,false,false);
+		this.adminThresholdConstraint = new ThresholdConstraint(false,false,false,true,true,true);
+		this.managerThresholdConstraint = new ThresholdConstraint(false,false,false,false,true,true);
 		this.thresholdType = ThresholdType.HARDLIMIT;
 	}
 
