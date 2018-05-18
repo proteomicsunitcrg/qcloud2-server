@@ -15,6 +15,10 @@ public class ThresholdConstraint {
 
 	private boolean isSingleContextSource;
 	
+	private boolean isGlobalStepValue;
+	
+	private boolean isGlobalInitialValue;
+	
 	public ThresholdConstraint() {}
 	
 	/**
@@ -23,15 +27,39 @@ public class ThresholdConstraint {
 	 * @param isInitialValueEditable
 	 * @param isStepValueEditable
 	 * @param isStepsEditable
+	 * @param isGlobalStepValue
+	 * @param isGlobalInitialValue
 	 */
-	public ThresholdConstraint(boolean isSingleContextSource, boolean isInitialValueEditable, boolean isStepValueEditable, boolean isStepsEditable) {
-		super();
+	public ThresholdConstraint(boolean isSingleContextSource, 
+			boolean isInitialValueEditable, 
+			boolean isStepValueEditable, 
+			boolean isStepsEditable,
+			boolean isGlobalStepValue,
+			boolean isGlobalInitialValue) {
 		this.isInitialValueEditable = isInitialValueEditable;
 		this.isStepValueEditable = isStepValueEditable;
 		this.isStepsEditable = isStepsEditable;
 		this.isSingleContextSource = isSingleContextSource;
+		this.isGlobalStepValue = isGlobalStepValue;
+		this.isGlobalInitialValue = isGlobalInitialValue;
 	}	
 	
+	public boolean isGlobalInitialValue() {
+		return isGlobalInitialValue;
+	}
+
+	public void setGlobalInitialValue(boolean isGlobalInitialValue) {
+		this.isGlobalInitialValue = isGlobalInitialValue;
+	}
+
+	public boolean isGlobalStepValue() {
+		return isGlobalStepValue;
+	}
+
+	public void setGlobalStepValue(boolean isGlobalStepValue) {
+		this.isGlobalStepValue = isGlobalStepValue;
+	}
+
 	public boolean isSingleContextSource() {
 		return isSingleContextSource;
 	}
