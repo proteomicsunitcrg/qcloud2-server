@@ -31,7 +31,7 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	@Query("select t from Threshold t where t.id =?1")
 	public ThresholdForPlot getThresholdForPlot(Long thresholdId);
 	
-	@Query("select t from Threshold t")
+	@Query("select t from Threshold t where t.labSystem = null")
 	public List<withParamsWithoutThreshold> findMini();
 	
 	interface withParamsWithoutThreshold {
@@ -46,6 +46,7 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 		ThresholdConstraint getAdminThresholdConstraint();
 		ThresholdConstraint getManagerThresholdConstraint();
 		List<paramsNoThreshold> getThresholdParams();
+		Direction getNonConformityDirection();
 	}
 	
 	interface onlyConstraints {
