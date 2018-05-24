@@ -16,6 +16,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import eu.qcloud.dataSource.DataSource;
 
 /**
@@ -92,6 +94,15 @@ public class LabSystem {
 
 	public void setDataSources(List<DataSource> dataSources) {
 		this.dataSources = dataSources;
+	}
+	@JsonIgnore
+	public DataSource getMainDataSource() {
+		for(DataSource ds: this.dataSources) {
+			if(ds.getCv().getCategory().isMainDataSource()) {
+				return ds;
+			}
+		}
+		return null;
 	}
 
 

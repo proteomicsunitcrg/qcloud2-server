@@ -12,6 +12,7 @@ import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsId;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
 import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
+import eu.qcloud.sampleType.SampleType;
 /**
  * Service for charts and chart params
  * @author dmancera
@@ -121,4 +122,15 @@ public class ChartService {
 		return chartRepository.findByCvIdAndSampleTypeId(cvId, sampleTypeId);
 	}
 	
+	/**
+	 * Get a list of the sample types of the charts by cv
+	 * @param cvId the id of the CV
+	 * @return
+	 */
+	public List<SampleType> getSampleTypesOfChartsByCV(Long cvId) {
+		List<SampleType> sampleTypes = new ArrayList<>();
+		chartRepository.findChartSampleTypesByCvId(cvId)
+			.forEach(sampleTypes::add);
+		return sampleTypes;
+	}
 }

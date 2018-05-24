@@ -3,15 +3,18 @@ package eu.qcloud.threshold;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataRepository;
+import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.labsystem.GuideSet;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
@@ -51,6 +54,7 @@ public class ThresholdService {
 	
 	@Autowired
 	private ThresholdUtils thresholdUtils;
+
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -188,9 +192,54 @@ public class ThresholdService {
 			p.setThresholdParamsId(pId);
 			thresholdParamsRepository.save(p);
 		}
-
 	}
-
+	
+	public List<withParamsWithoutThreshold> findAllNodeThreshold(Long nodeId) {
+		// if labsystem does not have the threshold yet create then
+		List<Threshold> defaultThresholds = new ArrayList<>();
+		List<Threshold> nodeThresholds = new ArrayList<>();
+		thresholdRepository.findAllDefaultThresholds().forEach(defaultThresholds::add);
+		List<LabSystem> labSystems = labSystemRepository.findAllByNode(nodeId);
+		for(Threshold t: defaultThresholds) {			
+			for(LabSystem ls: labSystems) {
+				DataSource mainDataSource =ls.getMainDataSource(); 
+				if(mainDataSource.getCv().getId()==t.getCv().getId()) {
+					nodeThresholds.add(findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(t.sampleType.getId(),t.param.getId(),t.cv.getId(),ls.getId()));
+				}
+			}
+		}
+		List<withParamsWithoutThreshold> thresholds = new ArrayList<>();
+		for(Threshold t: nodeThresholds) {
+			thresholds.add(thresholdRepository.findThresholdById(t.getId()));
+		}
+		return thresholds;
+	}
+	
+	public List<withParamsWithoutThreshold> findAllThresholdsByLabSystemApiKey(UUID labSystemApiKey) {
+		Optional<LabSystem> nodeLabSystem = labSystemRepository.findByApiKey(labSystemApiKey);
+		if(nodeLabSystem.isPresent()) {
+			List<Threshold> defaultThresholds = new ArrayList<>();
+			List<Threshold> nodeThresholds = new ArrayList<>();
+			thresholdRepository.findAllDefaultThresholdsByThresholdCVId(nodeLabSystem.get().getMainDataSource().getCv().getId()).forEach(defaultThresholds::add);
+			for(Threshold t: defaultThresholds) {
+					DataSource mainDataSource =nodeLabSystem.get().getMainDataSource(); 
+					if(mainDataSource.getCv().getId()==t.getCv().getId()) {
+						nodeThresholds.add(processThreshold(findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(t.sampleType.getId(),t.param.getId(),t.cv.getId(),nodeLabSystem.get().getId())));
+					}
+			}
+			List<withParamsWithoutThreshold> thresholds = new ArrayList<>();
+			for(Threshold t: nodeThresholds) {
+				thresholds.add(thresholdRepository.findThresholdById(t.getId()));
+			}
+			return thresholds;			
+		}else {
+			throw new DataRetrievalFailureException("Lab system not found.");
+		}
+		
+		//return null;
+	}
+	
+	
 	public List<paramsNoThreshold> getAllThresholdParams() {
 		return thresholdParamsRepository.getAll();
 	}

@@ -34,6 +34,18 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	@Query("select t from Threshold t where t.labSystem = null")
 	public List<withParamsWithoutThreshold> findMini();
 	
+	@Query("select t from Threshold t where t.labSystem = null")
+	public List<Threshold> findAllDefaultThresholds();
+	
+	@Query("select t from Threshold t where t.labSystem = null and t.cv.id = ?1")
+	public List<Threshold> findAllDefaultThresholdsByThresholdCVId(Long cvId);
+	
+	@Query("select t from Threshold t where t.labSystem.id = ?1")
+	public List<withParamsWithoutThreshold> findLabSystemThresholds(Long labSystemId);
+	
+	@Query("select t from Threshold t where t.id = ?1")
+	public List<withParamsWithoutThreshold> findTresholdById(Long thresholdId);
+	
 	interface withParamsWithoutThreshold {
 		Long getId();
 		String getName();

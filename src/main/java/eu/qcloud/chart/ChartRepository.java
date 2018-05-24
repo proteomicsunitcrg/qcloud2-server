@@ -25,6 +25,9 @@ public interface ChartRepository extends CrudRepository<Chart, Long>{
 	
 	List<NoView> findByCvIdAndSampleTypeId(Long cvId,Long sampleTypeId);
 	
+	@Query("select distinct c.sampleType from Chart c where c.cv.id = ?1")
+	List<SampleType> findChartSampleTypesByCvId(Long cvId);
+	
 	interface ChartDescription {
 		Long getId();
 		String getName();

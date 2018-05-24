@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.chart.ChartService;
 import eu.qcloud.chart.chartParams.ChartParams;
+import eu.qcloud.security.model.User;
+import eu.qcloud.security.service.UserService;
 import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
 import eu.qcloud.threshold.constraint.ThresholdConstraint;
@@ -46,6 +52,9 @@ public class ThresholdController {
 	
 	@Autowired
 	private ChartService chartService;
+	
+	@Autowired
+	private UserService userService;
 	
 	/**
 	 * Get all thresholds
@@ -157,20 +166,17 @@ public class ThresholdController {
 	
 	public paramsNoThreshold getThresholdParams(Long thresholdId) {
 		return null;
-		
+	}
+	
+	@RequestMapping(value="/api/threshold/node", method = RequestMethod.GET)
+	public List<withParamsWithoutThreshold> getNodeThresholds() {
+		return thresholdService.findAllNodeThreshold(getManagerFromSecurityContext().getNode().getId());
 	}
 	
 	@RequestMapping(value="/api/threshold/params", method= RequestMethod.POST)
 	public void saveThresholdParams(@RequestBody List<ThresholdParams> thresholdParams) {
 		thresholdService.saveThresholdParams(thresholdParams);
 	}
-	
-	@RequestMapping(value="/api/threshold/params", method= RequestMethod.GET)
-	public List<paramsNoThreshold> getAllParams() {
-		return thresholdService.getAllThresholdParams();
-	}
-	
-	
 	
 	/**
 	 * Return the constraints for a given threshold type
@@ -180,7 +186,31 @@ public class ThresholdController {
 	@RequestMapping(value="/api/threshold/constraints/admin/{thresholdType}", method = RequestMethod.GET)
 	public ThresholdConstraint getThresholdConstraint(@PathVariable ThresholdType thresholdType) {
 		return ThresholdFactory.getAdminConstraints(thresholdType);
+	}
+	
+	/**
+	 * Return all the thresholds by labsystem apikey
+	 * @param labSystemApiKey
+	 * @return an array with the thresholds of a given labsystem
+	 */
+	@RequestMapping(value="/api/threshold/node/{labSystemApiKey}", method = RequestMethod.GET)
+	public List<withParamsWithoutThreshold> getNodeThresholdsBySystemApiKey(@PathVariable UUID labSystemApiKey) {
+		return thresholdService.findAllThresholdsByLabSystemApiKey(labSystemApiKey);
 		
+	} 
+	
+	/*
+	 * Helper classes
+	 */
+	/**
+	 * Get the current user from the security context
+	 * 
+	 * @return the logged user
+	 */
+	private User getManagerFromSecurityContext() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User manager = userService.getUserByUsername(authentication.getName());
+		return manager;
 	}
 	
 	/*
@@ -188,6 +218,10 @@ public class ThresholdController {
 	 */
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
+	}
+	@ExceptionHandler(DataRetrievalFailureException.class)
+	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
 	}
 }

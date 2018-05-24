@@ -54,7 +54,7 @@ spring:
 jwt:
   header: Authorization
   secret: th1515th3n3wqcloudtwopointzeroo
-  expiration: 604800
+  expiration: 604800  
   route:
     authentication:
       path: api/auth
