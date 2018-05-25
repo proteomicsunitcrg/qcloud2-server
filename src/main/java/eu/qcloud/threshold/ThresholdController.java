@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.chart.ChartService;
 import eu.qcloud.chart.chartParams.ChartParams;
+import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
 import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
@@ -38,8 +39,8 @@ import eu.qcloud.threshold.sigmathreshold.SigmaThreshold;
 @PreAuthorize("hasRole('ADMIN')")
 /**
  * Thresholds have different parameters that are configured
- * in each Threshold.class extension.
- * A threshold must have a threshold processor implemeting the Processor interface.
+ * in each Threshold.class extended classes.
+ * A threshold must have a threshold processor implementing the Processor interface.
  * Also, a threshold must have a direction and some constraints. Please check this classes
  * to know how it work.
  * @author dmancera
@@ -99,20 +100,16 @@ public class ThresholdController {
 	
 	/**
 	 * Save a new threshold in the database.
-	 * It will also create the threshold for all the
-	 * current labsystems in the database.
 	 * @param threshold the threshold to be saved
 	 */
 	@RequestMapping(value="/api/threshold/{type}", method= RequestMethod.POST)
 	public Threshold addNewThreshold(@PathVariable ThresholdType type, @RequestBody Threshold threshold) {
-		// Check if a threshold of that param already exists
-		
+		// Check if a threshold of that param already exists		
 		Optional<Threshold> t = thresholdService.findThresholdBySampleTypeIdAndParamIdAndCvId(threshold.sampleType.getId(),
 				threshold.getParam().getId(),threshold.getCv().getId());
 		if(t.isPresent()) {
 			throw new DataIntegrityViolationException("Threshold already exists");
 		}
-		
 		/**
 		 * I had to this because I could not do a downcast from threshold
 		 * to a more specific son.
@@ -124,6 +121,8 @@ public class ThresholdController {
 			st.setSteps(threshold.getSteps());
 			st.setParam(threshold.getParam());
 			st.setSampleType(threshold.getSampleType());
+			st.setEnabled(true);
+			st.setMonitored(true);
 			return thresholdService.saveSigmaThreshold(st);
 		case HARDLIMIT:
 			HardLimitThreshold ht = new HardLimitThreshold();
@@ -131,6 +130,8 @@ public class ThresholdController {
 			ht.setSteps(threshold.getSteps());
 			ht.setParam(threshold.getParam());
 			ht.setSampleType(threshold.getSampleType());
+			ht.setEnabled(true);
+			ht.setMonitored(true);
 			return thresholdService.saveHardLimitThreshold(ht);
 		default:
 			return null;
@@ -168,6 +169,11 @@ public class ThresholdController {
 		return null;
 	}
 	
+	/**
+	 * Deprecated function
+	 * @return
+	 * @deprecated do not use it, use getNodeThresholdsBySystemApiKey() instead
+	 */
 	@RequestMapping(value="/api/threshold/node", method = RequestMethod.GET)
 	public List<withParamsWithoutThreshold> getNodeThresholds() {
 		return thresholdService.findAllNodeThreshold(getManagerFromSecurityContext().getNode().getId());
@@ -196,8 +202,18 @@ public class ThresholdController {
 	@RequestMapping(value="/api/threshold/node/{labSystemApiKey}", method = RequestMethod.GET)
 	public List<withParamsWithoutThreshold> getNodeThresholdsBySystemApiKey(@PathVariable UUID labSystemApiKey) {
 		return thresholdService.findAllThresholdsByLabSystemApiKey(labSystemApiKey);
-		
-	} 
+	}
+	
+	@RequestMapping(value="/api/threshold/switchmonitor/{thresholdId}", method = RequestMethod.PUT)
+	public void switchThresholdMonitoring(@PathVariable Long thresholdId) {
+		thresholdService.switchThresholdMonitoring(thresholdId);		
+	}
+	
+	@RequestMapping(value="/api/threshold/{thresholdId}", method = RequestMethod.PUT)
+	public void updateThresholdParams(@PathVariable Long thresholdId, @RequestBody List<ThresholdParams> thresholdParams) {
+		// get threshold
+		thresholdService.updateThresholdParams(thresholdId, thresholdParams);
+	}
 	
 	/*
 	 * Helper classes
@@ -222,6 +238,11 @@ public class ThresholdController {
 	}
 	@ExceptionHandler(DataRetrievalFailureException.class)
 	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+	}
+	@ExceptionHandler(InvalidActionException.class)
+	void handleBadAction(HttpServletResponse response, Exception e) throws IOException{
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
 	}
+
 }
