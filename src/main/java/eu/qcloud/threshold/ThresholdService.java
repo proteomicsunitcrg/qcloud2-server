@@ -9,12 +9,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataRepository;
 import eu.qcloud.dataSource.DataSource;
+import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.labsystem.GuideSet;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
@@ -51,10 +53,9 @@ public class ThresholdService {
 
 	@Autowired
 	private ThresholdParamsRepository thresholdParamsRepository;
-	
+
 	@Autowired
 	private ThresholdUtils thresholdUtils;
-
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -72,15 +73,18 @@ public class ThresholdService {
 	public Threshold saveHardLimitThreshold(HardLimitThreshold threshold) {
 		return hardLimitThresholdRepository.save(threshold);
 	}
+
 	/**
 	 * Find a threshold in the database
+	 * 
 	 * @param sampleTypeId
 	 * @param paramId
 	 * @param cvId
 	 * @return
 	 */
-	public Optional<Threshold> findThresholdBySampleTypeIdAndParamIdAndCvId(Long sampleTypeId, Long paramId, Long cvId) {
-		return thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvId(sampleTypeId, paramId, cvId);
+	public Optional<Threshold> findThresholdBySampleTypeIdAndParamIdAndCvId(Long sampleTypeId, Long paramId,
+			Long cvId) {
+		return thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(sampleTypeId, paramId, cvId);
 	}
 
 	/**
@@ -99,20 +103,20 @@ public class ThresholdService {
 			Long cvId, Long labSystemId) {
 		// check if exists for the current labSystem, if not, create
 		Optional<Threshold> t = thresholdRepository
-				.findOptionalBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(sampleTypeId, paramId, cvId, labSystemId);
+				.findOptionalBySampleTypeIdAndParamIdAndCvIdAndLabSystemIdAndIsEnabledTrue(sampleTypeId, paramId, cvId, labSystemId);
 		if (t.isPresent()) {
 			return t.get();
 		} else {
 			// create and return
 			Optional<LabSystem> ls = labSystemRepository.findById(labSystemId);
-			t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvId(sampleTypeId, paramId, cvId);
-			if(t.isPresent()) {
+			t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(sampleTypeId, paramId, cvId);
+			if (t.isPresent()) {
 				t.get().setLabSystem(ls.get());
 				switch (t.get().getThresholdType()) {
 				case SIGMA:
 					entityManager.detach(t.get());
 					t.get().setId(null);
-					// save threshold params for new labsystem threshold				
+					// save threshold params for new labsystem threshold
 					Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaThreshold) t.get());
 					entityManager.detach(labSystemSigmaThreshold);
 					saveThresholdParams(labSystemSigmaThreshold);
@@ -128,22 +132,22 @@ public class ThresholdService {
 					break;
 				}
 			}
-			
+
 		}
 		return null;
 	}
-	
+
 	/**
-	 * Save the params of a new labsystem threshold
-	 * It is necessary to detach the entity in order to persist
-	 * because it still hold the threshold, and the threshold id 
-	 * of the parent (default) threshold.
+	 * Save the params of a new labsystem threshold It is necessary to detach the
+	 * entity in order to persist because it still hold the threshold, and the
+	 * threshold id of the parent (default) threshold.
+	 * 
 	 * @param labSystemThreshold
 	 */
 	private void saveThresholdParams(Threshold labSystemThreshold) {
-		for(ThresholdParams p : labSystemThreshold.getThresholdParams()) {
+		for (ThresholdParams p : labSystemThreshold.getThresholdParams()) {
 			entityManager.detach(p);
-			p.setThresholdParamsId(null);					
+			p.setThresholdParamsId(null);
 			p.setThreshold(labSystemThreshold);
 			ThresholdParamsId pid = new ThresholdParamsId();
 			pid.setContextSourceId(p.getContextSource().getId());
@@ -153,16 +157,24 @@ public class ThresholdService {
 		}
 	}
 
+	/**
+	 * Get the defined threshold processor and process the data in order to store,
+	 * if the case, the generated values into the corresponding threshold
+	 * parameters.
+	 * 
+	 * @param t
+	 * @return
+	 */
 	public Threshold processThreshold(Threshold t) {
 		ThresholdProcessor thresholdProcessor = t.getProcessor();
 		if (thresholdProcessor.isGuideSetRequired()) {
 			if (t.getLabSystem() == null) {
 				// throw error
 			} else {
-				GuideSet gs = t.getLabSystem().getGuideSet();				
-				if(gs == null) {
+				GuideSet gs = t.getLabSystem().getGuideSet();
+				if (gs == null) {
 					gs = thresholdUtils.getTwoWeeksGuideSet(t.getLabSystem().getId());
-				}				
+				}
 				thresholdProcessor.setGuideSet(gs);
 				// get the data for the processor
 				for (ThresholdParams p : t.getThresholdParams()) {
@@ -193,53 +205,77 @@ public class ThresholdService {
 			thresholdParamsRepository.save(p);
 		}
 	}
-	
+
+	/**
+	 * Find all the threshold of a given node
+	 * 
+	 * @param nodeId
+	 * @return
+	 * @deprecated This function has been deprecated since it was not working as
+	 *             intended, instead of this function use the
+	 *             findAllThresholdsByLabSystemApiKey() function and use the
+	 *             labsystem apikey param to get the thresholds
+	 */
 	public List<withParamsWithoutThreshold> findAllNodeThreshold(Long nodeId) {
 		// if labsystem does not have the threshold yet create then
 		List<Threshold> defaultThresholds = new ArrayList<>();
 		List<Threshold> nodeThresholds = new ArrayList<>();
 		thresholdRepository.findAllDefaultThresholds().forEach(defaultThresholds::add);
 		List<LabSystem> labSystems = labSystemRepository.findAllByNode(nodeId);
-		for(Threshold t: defaultThresholds) {			
-			for(LabSystem ls: labSystems) {
-				DataSource mainDataSource =ls.getMainDataSource(); 
-				if(mainDataSource.getCv().getId()==t.getCv().getId()) {
-					nodeThresholds.add(findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(t.sampleType.getId(),t.param.getId(),t.cv.getId(),ls.getId()));
+		for (Threshold t : defaultThresholds) {
+			for (LabSystem ls : labSystems) {
+				DataSource mainDataSource = ls.getMainDataSource();
+				if (mainDataSource.getCv().getId() == t.getCv().getId()) {
+					nodeThresholds.add(findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(t.sampleType.getId(),
+							t.param.getId(), t.cv.getId(), ls.getId()));
 				}
 			}
 		}
 		List<withParamsWithoutThreshold> thresholds = new ArrayList<>();
-		for(Threshold t: nodeThresholds) {
+		for (Threshold t : nodeThresholds) {
 			thresholds.add(thresholdRepository.findThresholdById(t.getId()));
 		}
 		return thresholds;
 	}
-	
+
 	public List<withParamsWithoutThreshold> findAllThresholdsByLabSystemApiKey(UUID labSystemApiKey) {
 		Optional<LabSystem> nodeLabSystem = labSystemRepository.findByApiKey(labSystemApiKey);
-		if(nodeLabSystem.isPresent()) {
+		if (nodeLabSystem.isPresent()) {
 			List<Threshold> defaultThresholds = new ArrayList<>();
 			List<Threshold> nodeThresholds = new ArrayList<>();
-			thresholdRepository.findAllDefaultThresholdsByThresholdCVId(nodeLabSystem.get().getMainDataSource().getCv().getId()).forEach(defaultThresholds::add);
-			for(Threshold t: defaultThresholds) {
-					DataSource mainDataSource =nodeLabSystem.get().getMainDataSource(); 
-					if(mainDataSource.getCv().getId()==t.getCv().getId()) {
-						nodeThresholds.add(processThreshold(findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(t.sampleType.getId(),t.param.getId(),t.cv.getId(),nodeLabSystem.get().getId())));
-					}
+			thresholdRepository
+					.findAllDefaultThresholdsByThresholdCVId(nodeLabSystem.get().getMainDataSource().getCv().getId())
+					.forEach(defaultThresholds::add);
+			for (Threshold t : defaultThresholds) {
+				DataSource mainDataSource = nodeLabSystem.get().getMainDataSource();
+				if (mainDataSource.getCv().getId() == t.getCv().getId()) {
+					nodeThresholds.add(processThreshold(findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
+							t.sampleType.getId(), t.param.getId(), t.cv.getId(), nodeLabSystem.get().getId())));
+				}
 			}
 			List<withParamsWithoutThreshold> thresholds = new ArrayList<>();
-			for(Threshold t: nodeThresholds) {
+			for (Threshold t : nodeThresholds) {
 				thresholds.add(thresholdRepository.findThresholdById(t.getId()));
 			}
-			return thresholds;			
-		}else {
+			return thresholds;
+		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");
 		}
-		
-		//return null;
 	}
-	
-	
+
+	public void switchThresholdMonitoring(Long thresholdId) {
+		Optional<Threshold> threshold = thresholdRepository.findById(thresholdId);
+		if (threshold.isPresent()) {
+			Threshold t = threshold.get();
+			// switching
+			t.setMonitored(!t.isMonitored());
+			// saving
+			thresholdRepository.save(t);
+		} else {
+			throw new DataRetrievalFailureException("Threshold not found");
+		}
+	}
+
 	public List<paramsNoThreshold> getAllThresholdParams() {
 		return thresholdParamsRepository.getAll();
 	}
@@ -250,6 +286,113 @@ public class ThresholdService {
 
 	public ThresholdForPlot getThreshold(Long thresholdId) {
 		return thresholdRepository.getThresholdForPlot(thresholdId);
+	}
+
+	public void updateThresholdParams(Long thresholdId, List<ThresholdParams> thresholdParams) {
+		// get the threshold
+		Optional<Threshold> t = thresholdRepository.findById(thresholdId);
+		if (t.isPresent()) {
+			Threshold threshold = t.get();
+			// compare both thresholdparams
+			switch (threshold.getThresholdType()) {
+			case HARDLIMIT:
+				if (compareParams(threshold.getThresholdParams(), thresholdParams)) {
+					// check for constraints
+					if (threshold.getManagerThresholdConstraint().isGlobalInitialValue()) {
+						// check if all the values are equal
+						if (checkGlobalInitialValues(thresholdParams)) {
+							if (threshold.getManagerThresholdConstraint().isGlobalStepValue()) {
+								if (checkGlobalStepValue(thresholdParams)) {
+									// disable current threshold and create a new one
+									threshold.setEnabled(false);
+									thresholdRepository.save(threshold);
+									entityManager.detach(threshold);
+									threshold.setEnabled(true);
+									threshold.setId(null);
+									threshold = thresholdRepository.save(threshold);
+									for(ThresholdParams p : thresholdParams) {
+										p.setThreshold(threshold);
+										ThresholdParamsId tid = new ThresholdParamsId();
+										tid.setContextSourceId(p.getContextSource().getId());
+										tid.setThresholdId(threshold.getId());
+										p.setThresholdParamsId(tid);
+										thresholdParamsRepository.save(p);
+									}
+								} else {
+									throw new DataIntegrityViolationException(
+											"Invalid threshold parameters. Constraint validation failed");
+								}
+							}
+
+						} else {
+							throw new DataIntegrityViolationException(
+									"Invalid threshold parameters. Constraint validation failed");
+						}
+					}
+				}
+
+				break;
+			default:
+				throw new InvalidActionException("This threshold parameters can not be updated.");
+			}
+
+		} else {
+			throw new DataRetrievalFailureException("Threshold not found");
+		}
+
+		// check if constraints match with the received params
+
+		// save or send error
+	}
+
+	private boolean checkGlobalStepValue(List<ThresholdParams> thresholdParams) {
+		float value = thresholdParams.get(0).getStepValue();
+		boolean ok = true;
+		for (ThresholdParams t : thresholdParams) {
+			if (t.getStepValue() != value) {
+				ok = false;
+			}
+		}
+		return ok;
+	}
+
+	private boolean checkGlobalInitialValues(List<ThresholdParams> thresholdParams) {
+		float value = thresholdParams.get(0).getInitialValue();
+		boolean ok = true;
+		for (ThresholdParams t : thresholdParams) {
+			if (t.getInitialValue() != value) {
+				ok = false;
+			}
+		}
+		return ok;
+	}
+
+	/**
+	 * Compare two threshold params by size and by CV.
+	 * 
+	 * @param thresholdParams
+	 * @param thresholdParams2
+	 * @return
+	 */
+	private boolean compareParams(List<ThresholdParams> thresholdParams, List<ThresholdParams> thresholdParams2) {
+		if (thresholdParams.size() == thresholdParams2.size()) {
+			int matches = 0;
+			for (ThresholdParams p : thresholdParams) {
+				for (ThresholdParams p2 : thresholdParams2) {
+					if (p.getContextSource().getName().equals(p2.getContextSource().getName())
+							&& p.getContextSource().getId() == p2.getContextSource().getId()) {
+						matches++;
+					}
+				}
+			}
+			if (matches != thresholdParams.size()) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
 	}
 
 }

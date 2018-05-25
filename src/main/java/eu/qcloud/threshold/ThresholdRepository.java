@@ -17,13 +17,13 @@ import eu.qcloud.threshold.params.ThresholdParamsRepository.paramsNoThreshold;
 @NoRepositoryBean
 public interface ThresholdRepository<T extends Threshold> extends CrudRepository<T, Long> {
 
-	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(Long sampleTypeId,Long paramId, Long cvId, Long labSystemId);
+	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndCvIdAndLabSystemIdAndIsEnabledTrue(Long sampleTypeId,Long paramId, Long cvId, Long labSystemId);
 	
 	public withParamsWithoutThreshold findBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(Long sampleTypeId,Long paramId, Long cvId, Long labSystemId);
 
-	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndCvId(Long sampleTypeId, Long paramId, Long cvId);
+	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(Long sampleTypeId, Long paramId, Long cvId);
 	
-	public withParamsWithoutThreshold findBySampleTypeIdAndParamIdAndCvId(Long sampleTypeId, Long paramId, Long cvId);
+	public withParamsWithoutThreshold findBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(Long sampleTypeId, Long paramId, Long cvId);
 	
 	@Query("select t from Threshold t where t.id =?1")
 	public withParamsWithoutThreshold findThresholdById(Long thresholdId);
@@ -40,7 +40,7 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	@Query("select t from Threshold t where t.labSystem = null and t.cv.id = ?1")
 	public List<Threshold> findAllDefaultThresholdsByThresholdCVId(Long cvId);
 	
-	@Query("select t from Threshold t where t.labSystem.id = ?1")
+	@Query("select t from Threshold t where t.labSystem.id = ?1 and t.isEnabled= true")
 	public List<withParamsWithoutThreshold> findLabSystemThresholds(Long labSystemId);
 	
 	@Query("select t from Threshold t where t.id = ?1")
@@ -59,6 +59,7 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 		ThresholdConstraint getManagerThresholdConstraint();
 		List<paramsNoThreshold> getThresholdParams();
 		Direction getNonConformityDirection();
+		Boolean getIsMonitored();
 	}
 	
 	interface onlyConstraints {
@@ -71,5 +72,6 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 		Direction getNonConformityDirection();
 		int getSteps();
 		List<paramsNoThreshold> getThresholdParams();
+		boolean isMonitored();
 	}
 }
