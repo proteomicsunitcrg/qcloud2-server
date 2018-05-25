@@ -16,7 +16,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -39,8 +38,11 @@ import eu.qcloud.threshold.params.ThresholdParams;
  */
 import eu.qcloud.threshold.processor.ThresholdProcessor;
 @Entity
+/*
 @Table(name="threshold",
-	uniqueConstraints= {@UniqueConstraint(columnNames= {"sample_type_id","param_id","cv_id","lab_system_id"})})
+	uniqueConstraints= {@UniqueConstraint(columnNames= {"sample_type_id","param_id","cv_id"})})
+	*/
+@Table(name="threshold")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class Threshold {
 	
@@ -52,6 +54,12 @@ public class Threshold {
 	
 	@Column(name="name")
 	protected String name;
+	
+	@Column(name="is_monitored", columnDefinition="tinyint(1) default 1")
+    private boolean isMonitored;
+	
+	@Column(name="is_enabled", columnDefinition="tinyint(1) default 1")
+    private boolean isEnabled;
 	
 	@Transient
 	protected ThresholdConstraint adminThresholdConstraint;
@@ -196,4 +204,21 @@ public class Threshold {
 	public void setManagerThresholdConstraint(ThresholdConstraint managerThresholdConstraint) {
 		this.managerThresholdConstraint = managerThresholdConstraint;
 	}
+
+	public boolean isMonitored() {
+		return isMonitored;
+	}
+
+	public void setMonitored(boolean isMonitored) {
+		this.isMonitored = isMonitored;
+	}
+
+	public boolean isEnabled() {
+		return isEnabled;
+	}
+
+	public void setEnabled(boolean isEnabled) {
+		this.isEnabled = isEnabled;
+	}
+	
 }
