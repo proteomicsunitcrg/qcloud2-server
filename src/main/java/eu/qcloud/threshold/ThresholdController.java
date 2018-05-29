@@ -25,12 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 import eu.qcloud.chart.ChartService;
 import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.labsystem.LabSystem;
+import eu.qcloud.labsystem.LabSystemService;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
 import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
 import eu.qcloud.threshold.constraint.ThresholdConstraint;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
+import eu.qcloud.threshold.labsystemstatus.LabSystemStatus;
 import eu.qcloud.threshold.params.ThresholdParams;
 import eu.qcloud.threshold.params.ThresholdParamsRepository.paramsNoThreshold;
 import eu.qcloud.threshold.sigmathreshold.SigmaThreshold;
@@ -56,6 +59,9 @@ public class ThresholdController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private LabSystemService labSystemService;
 	
 	/**
 	 * Get all thresholds
@@ -208,12 +214,35 @@ public class ThresholdController {
 	public void switchThresholdMonitoring(@PathVariable Long thresholdId) {
 		thresholdService.switchThresholdMonitoring(thresholdId);		
 	}
-	
+	/**
+	 * Update a threshold with new threshold parameters
+	 * @param thresholdId the threshold id
+	 * @param thresholdParams the new threshold parameters
+	 */
 	@RequestMapping(value="/api/threshold/{thresholdId}", method = RequestMethod.PUT)
 	public void updateThresholdParams(@PathVariable Long thresholdId, @RequestBody List<ThresholdParams> thresholdParams) {
 		// get threshold
-		thresholdService.updateThresholdParams(thresholdId, thresholdParams);
+		thresholdService.updateThresholdParams(thresholdId, thresholdParams);		
 	}
+	
+	/**
+	 * Return the lab system status. It will check the monitores values
+	 * of the last file of the system.
+	 * @param the lab system apikey
+	 * @return the labsystem status
+	 */
+	@RequestMapping(value="/api/threshold/status/{labSystemApiKey}", method = RequestMethod.GET)
+	public List<LabSystemStatus> getLabSystemStatus(@PathVariable UUID labSystemApiKey) {
+		Optional<LabSystem> ls = labSystemService.findSystemByApiKey(labSystemApiKey);
+		if(ls.isPresent()) {
+			LabSystem labSystem = ls.get();
+			return thresholdService.getLabSystemStatus(labSystem);
+		}else {
+			throw new DataRetrievalFailureException("Lab system not found.");
+		}
+		
+	}
+	
 	
 	/*
 	 * Helper classes
