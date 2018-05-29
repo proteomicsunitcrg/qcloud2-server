@@ -17,6 +17,8 @@ import eu.qcloud.data.Data;
 import eu.qcloud.data.DataRepository;
 import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.file.File;
+import eu.qcloud.file.FileRepository;
 import eu.qcloud.labsystem.GuideSet;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
@@ -24,6 +26,7 @@ import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThresholdRepository;
+import eu.qcloud.threshold.labsystemstatus.LabSystemStatus;
 import eu.qcloud.threshold.params.ThresholdParams;
 import eu.qcloud.threshold.params.ThresholdParamsId;
 import eu.qcloud.threshold.params.ThresholdParamsRepository;
@@ -56,6 +59,9 @@ public class ThresholdService {
 
 	@Autowired
 	private ThresholdUtils thresholdUtils;
+	
+	@Autowired
+	private FileRepository fileRepository;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -237,7 +243,13 @@ public class ThresholdService {
 		}
 		return thresholds;
 	}
-
+	
+	/**
+	 * Find all threshold params by lab system. It will create new
+	 * thresholds if there is no current labsystem thresholds yet.
+	 * @param labSystemApiKey
+	 * @return
+	 */
 	public List<withParamsWithoutThreshold> findAllThresholdsByLabSystemApiKey(UUID labSystemApiKey) {
 		Optional<LabSystem> nodeLabSystem = labSystemRepository.findByApiKey(labSystemApiKey);
 		if (nodeLabSystem.isPresent()) {
@@ -256,12 +268,14 @@ public class ThresholdService {
 			List<withParamsWithoutThreshold> thresholds = new ArrayList<>();
 			for (Threshold t : nodeThresholds) {
 				thresholds.add(thresholdRepository.findThresholdById(t.getId()));
-			}
+			}			
 			return thresholds;
 		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");
 		}
 	}
+	
+	
 
 	public void switchThresholdMonitoring(Long thresholdId) {
 		Optional<Threshold> threshold = thresholdRepository.findById(thresholdId);
@@ -287,7 +301,15 @@ public class ThresholdService {
 	public ThresholdForPlot getThreshold(Long thresholdId) {
 		return thresholdRepository.getThresholdForPlot(thresholdId);
 	}
-
+	
+	/**
+	 * Update the threshold parameters creating a new one and
+	 * saving the updated one and disabling it. This is because
+	 * we need to keep a trace of the non-conformities.
+	 * @param thresholdId
+	 * @param thresholdParams
+	 * TODO: check if the threshold belongs to the current user
+	 */
 	public void updateThresholdParams(Long thresholdId, List<ThresholdParams> thresholdParams) {
 		// get the threshold
 		Optional<Threshold> t = thresholdRepository.findById(thresholdId);
@@ -339,10 +361,6 @@ public class ThresholdService {
 		} else {
 			throw new DataRetrievalFailureException("Threshold not found");
 		}
-
-		// check if constraints match with the received params
-
-		// save or send error
 	}
 
 	private boolean checkGlobalStepValue(List<ThresholdParams> thresholdParams) {
@@ -394,5 +412,70 @@ public class ThresholdService {
 			return false;
 		}
 	}
+	
+	/**
+	 * Get the status of a given lab system
+	 * @param labSystem the labsystem to check
+	 */
+	public List<LabSystemStatus> getLabSystemStatus(LabSystem labSystem) {
+		
+		List<LabSystemStatus> labSystemStatus = new ArrayList<>();
+		
+		File labSystemLastFile = fileRepository.findTop1ByLabSystemIdOrderByCreationDateDesc(labSystem.getId());
+		if(labSystemLastFile!=null) {
+			List<withParamsWithoutThreshold> thresholds = findAllThresholdsByLabSystemApiKey(labSystem.getApiKey());
+			for(withParamsWithoutThreshold tt : thresholds) {
+				if(!tt.getIsMonitored()) {
+					continue;
+				}
+				for(paramsNoThreshold tp : tt.getThresholdParams()) {
+					/*
+					 * Get the last value by param and sample type
+					 */
+					Data data = dataRepository.findByFileIdAndParamIdAndContextSourceId(
+							labSystemLastFile.getId(), tt.getParam().getId(), tp.getContextSource().getId());
+					Float value = thresholdUtils.processValueWithThresholdProcessor(
+							data.getValue(), tt.getThresholdType());
+					/*
+					 * Compare the last value with the threshold parameter value
+					 */
+					switch(tt.getNonConformityDirection()) {
+					case DOWN:
+						if(value < (tp.getInitialValue()-(tp.getStepValue()*tt.getSteps()))) {
+							// danger
+							labSystemStatus.add(new LabSystemStatus(tt.getParam(),tp.getContextSource(),InstrumentStatus.DANGER));
+						} else if(value < tp.getInitialValue()-(tp.getStepValue()*(tt.getSteps()-1)) && tt.getSteps()>1) {
+							// warning
+							labSystemStatus.add(new LabSystemStatus(tt.getParam(),tp.getContextSource(),InstrumentStatus.WARNING));
+						} else {
+							// ok
+							labSystemStatus.add(new LabSystemStatus(tt.getParam(),tp.getContextSource(),InstrumentStatus.OK));
+						}
+						
+						break;
+					case UPDOWN:
+						if(Math.abs(value)> tp.getInitialValue()+(tp.getStepValue()*tt.getSteps())) {
+							// fail 
+							labSystemStatus.add(new LabSystemStatus(tt.getParam(),tp.getContextSource(),InstrumentStatus.DANGER));
+						}else {
+							//ok
+							labSystemStatus.add(new LabSystemStatus(tt.getParam(),tp.getContextSource(),InstrumentStatus.OK));
+						}
+						break;
+					default:
+						break;
+					}
+					
+				}
+				
+			}
+			
+		}else {
+			throw new DataRetrievalFailureException("There were a problem retrieving last labsystem data");
+		}
+		return labSystemStatus;
+	}
+	
+	
 
 }
