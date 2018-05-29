@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileRepository;
 import eu.qcloud.labsystem.GuideSet;
+import eu.qcloud.threshold.ThresholdType;
 
 @Service
 public class ThresholdUtils {
@@ -35,5 +36,20 @@ public class ThresholdUtils {
 		
 		return new GuideSet(startDate,f.getCreationDate());
 		
+	}
+	
+	public Float processValueWithThresholdProcessor(float value, ThresholdType thresholdType) {
+		switch(thresholdType) {
+		case HARDLIMIT:
+			return value;
+		case SIGMA:
+			return log2(value); 
+		default:
+			return null;
+		}
+	}
+	
+	private static final float log2(float f){
+	    return (float) (Math.log(f)/Math.log(2.0));
 	}
 }
