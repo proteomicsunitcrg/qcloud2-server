@@ -115,7 +115,8 @@ public class ThresholdService {
 		} else {
 			// create and return
 			Optional<LabSystem> ls = labSystemRepository.findById(labSystemId);
-			t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(sampleTypeId, paramId, cvId);
+			// t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(sampleTypeId, paramId, cvId);
+			t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrueAndLabSystemIdIsNull(sampleTypeId, paramId, cvId);
 			if (t.isPresent()) {
 				t.get().setLabSystem(ls.get());
 				switch (t.get().getThresholdType()) {
@@ -181,13 +182,16 @@ public class ThresholdService {
 				if (gs == null) {
 					gs = thresholdUtils.getTwoWeeksGuideSet(t.getLabSystem().getId());
 				}
+				if(gs==null) {
+					throw new DataRetrievalFailureException("There are no files to process a default guide set.");
+				}
 				thresholdProcessor.setGuideSet(gs);
 				// get the data for the processor
 				for (ThresholdParams p : t.getThresholdParams()) {
 					List<Data> dataForProcessor = dataRepository.findParamData(p.getContextSource().getId(),
 							t.getParam().getId(), gs.getStartDate(), gs.getEndDate(), t.getLabSystem().getId(),
 							t.getSampleType().getId());
-					thresholdProcessor.setGuideSetData(dataForProcessor);
+					thresholdProcessor.setGuideSetData(dataForProcessor);					
 					thresholdProcessor.process(p);
 					thresholdParamsRepository.save(p);
 				}
