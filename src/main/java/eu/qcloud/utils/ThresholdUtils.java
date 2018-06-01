@@ -27,6 +27,9 @@ public class ThresholdUtils {
 	public GuideSet getTwoWeeksGuideSet(Long labSystemId) {
 		// get the last date
 		File f = fileRepository.findTop1ByLabSystemIdOrderByCreationDateDesc(labSystemId);
+		if(f==null) {
+			return null;
+		}
 		int noOfDays = -14; //i.e two weeks
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(f.getCreationDate());
