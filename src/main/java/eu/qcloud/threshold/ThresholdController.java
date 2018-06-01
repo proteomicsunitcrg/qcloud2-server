@@ -39,7 +39,7 @@ import eu.qcloud.threshold.params.ThresholdParamsRepository.paramsNoThreshold;
 import eu.qcloud.threshold.sigmathreshold.SigmaThreshold;
 
 @RestController
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 /**
  * Thresholds have different parameters that are configured
  * in each Threshold.class extended classes.
@@ -68,10 +68,12 @@ public class ThresholdController {
 	 * @return all the trhresholds
 	 */
 	@RequestMapping(value="/api/threshold", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
 	public List<withParamsWithoutThreshold> getAll() {
 		return thresholdService.getAll();
 	}
 	@RequestMapping(value="/api/threshold/mini", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
 	public List<withParamsWithoutThreshold> getAllMini() {
 		return thresholdService.getMini();
 	}
@@ -82,6 +84,7 @@ public class ThresholdController {
 	 * @return a string array with the values
 	 */
 	@RequestMapping(value="/api/threshold/types", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
 	public List<String> getThresholdTypes() {
 		List<String> thresholds = new ArrayList<>();
 		for(ThresholdType t : ThresholdType.values()) {
@@ -96,6 +99,7 @@ public class ThresholdController {
 	 * @return
 	 */
 	@RequestMapping(value="/api/threshold/directions", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
 	public List<String> getThresholdDirections() {
 		List<String> directions = new ArrayList<>();
 		for(Direction d : Direction.values()) {
@@ -109,6 +113,7 @@ public class ThresholdController {
 	 * @param threshold the threshold to be saved
 	 */
 	@RequestMapping(value="/api/threshold/{type}", method= RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public Threshold addNewThreshold(@PathVariable ThresholdType type, @RequestBody Threshold threshold) {
 		// Check if a threshold of that param already exists		
 		Optional<Threshold> t = thresholdService.findThresholdBySampleTypeIdAndParamIdAndCvId(threshold.sampleType.getId(),
@@ -146,6 +151,7 @@ public class ThresholdController {
 	}
 	
 	@RequestMapping(value="/api/threshold/{sampleTypeId}/{paramId}/{cvId}/{labSystemId}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
 	public ThresholdForPlot getThreshold(@PathVariable Long sampleTypeId, @PathVariable Long paramId, @PathVariable Long cvId, @PathVariable Long labSystemId) {
 		Threshold t = thresholdService.findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(sampleTypeId,paramId,cvId,labSystemId);
 		// calculate threshold
@@ -153,6 +159,7 @@ public class ThresholdController {
 		return thresholdService.getThreshold(t.getId());
 	}
 	
+	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value="/api/threshold/plot/{chartId}/{labSystemId}", method = RequestMethod.GET)
 	public ThresholdForPlot getPlotThreshold(@PathVariable Long chartId,@PathVariable Long labSystemId) {
 		// get the param
@@ -181,6 +188,7 @@ public class ThresholdController {
 	 * @deprecated do not use it, use getNodeThresholdsBySystemApiKey() instead
 	 */
 	@RequestMapping(value="/api/threshold/node", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('MANAGER')")
 	public List<withParamsWithoutThreshold> getNodeThresholds() {
 		return thresholdService.findAllNodeThreshold(getManagerFromSecurityContext().getNode().getId());
 	}
@@ -196,6 +204,7 @@ public class ThresholdController {
 	 * @return
 	 */
 	@RequestMapping(value="/api/threshold/constraints/admin/{thresholdType}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
 	public ThresholdConstraint getThresholdConstraint(@PathVariable ThresholdType thresholdType) {
 		return ThresholdFactory.getAdminConstraints(thresholdType);
 	}
@@ -206,11 +215,13 @@ public class ThresholdController {
 	 * @return an array with the thresholds of a given labsystem
 	 */
 	@RequestMapping(value="/api/threshold/node/{labSystemApiKey}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('MANAGER')")
 	public List<withParamsWithoutThreshold> getNodeThresholdsBySystemApiKey(@PathVariable UUID labSystemApiKey) {
 		return thresholdService.findAllThresholdsByLabSystemApiKey(labSystemApiKey);
 	}
 	
 	@RequestMapping(value="/api/threshold/switchmonitor/{thresholdId}", method = RequestMethod.PUT)
+	@PreAuthorize("hasRole('MANAGER')")
 	public void switchThresholdMonitoring(@PathVariable Long thresholdId) {
 		thresholdService.switchThresholdMonitoring(thresholdId);		
 	}
@@ -220,6 +231,7 @@ public class ThresholdController {
 	 * @param thresholdParams the new threshold parameters
 	 */
 	@RequestMapping(value="/api/threshold/{thresholdId}", method = RequestMethod.PUT)
+	@PreAuthorize("hasRole('ADMIN')")
 	public void updateThresholdParams(@PathVariable Long thresholdId, @RequestBody List<ThresholdParams> thresholdParams) {
 		// get threshold
 		thresholdService.updateThresholdParams(thresholdId, thresholdParams);		
@@ -232,6 +244,7 @@ public class ThresholdController {
 	 * @return the labsystem status
 	 */
 	@RequestMapping(value="/api/threshold/status/{labSystemApiKey}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public List<LabSystemStatus> getLabSystemStatus(@PathVariable UUID labSystemApiKey) {
 		Optional<LabSystem> ls = labSystemService.findSystemByApiKey(labSystemApiKey);
 		if(ls.isPresent()) {
