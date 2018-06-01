@@ -23,6 +23,15 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 
 	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(Long sampleTypeId, Long paramId, Long cvId);
 	
+	/**
+	 * Find a default threshold
+	 * @param sampleTypeId
+	 * @param paramId
+	 * @param cvId
+	 * @return
+	 */
+	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrueAndLabSystemIdIsNull(Long sampleTypeId, Long paramId, Long cvId);
+	
 	public withParamsWithoutThreshold findBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(Long sampleTypeId, Long paramId, Long cvId);
 	
 	@Query("select t from Threshold t where t.id =?1")
