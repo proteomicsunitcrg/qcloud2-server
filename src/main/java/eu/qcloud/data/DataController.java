@@ -102,8 +102,8 @@ public class DataController {
 	 * @param sampleTypeId
 	 * @return a list of data in a form of a DataForPlot, another class.
 	 */
-	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value="/api/data/{startDate}/{endDate}/{chartId}/{labSystemId}/{sampleTypeId}", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public List<DataForPlot> getPlotData(@PathVariable String startDate,@PathVariable  String endDate,@PathVariable Long chartId, @PathVariable Long labSystemId,@PathVariable Long sampleTypeId) {
 		Date start = Date.valueOf(startDate);
 		Date end = Date.valueOf(endDate);

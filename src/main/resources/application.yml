@@ -5,7 +5,7 @@ server:
 # mail properties
   
 application:
-  version: dev0.0.2(April demo)  
+  version: dev0.0.3(May demo)
 
 
 
@@ -19,7 +19,7 @@ spring:
       INDENT_OUTPUT: true
   datasource:    
     ## MYSQL
-    url: jdbc:mysql://localhost:3306/q2
+    url: jdbc:mysql://localhost:3306/qclouddemo
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
@@ -65,5 +65,5 @@ logging:
   level:
     org.springframework:
       security: DEBUG
-#    org.hibernate:
-#      SQL: DEBUG
+    #org.hibernate:
+    #  SQL: DEBUG
