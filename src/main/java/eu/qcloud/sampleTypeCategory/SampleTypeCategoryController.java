@@ -1,6 +1,7 @@
 package eu.qcloud.sampleTypeCategory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,6 +92,19 @@ public class SampleTypeCategoryController {
 	public void removeSampleTypeFromSampleTypeCategory(@PathVariable Long sampleTypeCategoryId, @RequestBody SampleType sampleType) {
 		sampleTypeCategoryService.deleteSampleTypeFromSampleTypeCategory(sampleTypeCategoryId, sampleType);
 		
+	}
+	
+	/**
+	 * Return the values of the complexity enumeration
+	 * @return
+	 */
+	@RequestMapping(value="/api/samplecategory/complexities",method= RequestMethod.GET)
+	public List<String> getSampleTypeComplexities() {
+		List<String> complexities = new ArrayList<>();
+		for(SampleTypeComplexity c: SampleTypeComplexity.values()) {
+			complexities.add(c.name());
+		}
+		return complexities;
 	}
 	
 	/*

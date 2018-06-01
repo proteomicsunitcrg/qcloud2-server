@@ -29,6 +29,9 @@ public class SampleTypeCategory {
     @Size(min = 3, max = 50)
     private String name;
     
+    @Column(name= "COMPLEXITY")
+    private SampleTypeComplexity sampleTypeComplexity;
+    
     @OneToMany(mappedBy="sampleTypeCategory")
     private List<SampleType> sampleTypes;
 
@@ -55,8 +58,14 @@ public class SampleTypeCategory {
 	public void setSampleTypes(List<SampleType> sampleTypes) {
 		this.sampleTypes = sampleTypes;
 	}
-    
-    
+	
+	public SampleTypeComplexity getSampleTypeComplexity() {
+		return sampleTypeComplexity;
+	}
+
+	public void setSampleTypeComplexity(SampleTypeComplexity sampleTypeComplexity) {
+		this.sampleTypeComplexity = sampleTypeComplexity;
+	}
 	
 
 }
