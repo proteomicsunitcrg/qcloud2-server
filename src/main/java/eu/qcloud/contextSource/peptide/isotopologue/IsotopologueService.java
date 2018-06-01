@@ -1,0 +1,16 @@
+package eu.qcloud.contextSource.peptide.isotopologue;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class IsotopologueService {
+	
+	@Autowired
+	private IsotopologueRepository isotopologueRepository;
+	
+	public void add(Isotopologue isotopologue) {
+		isotopologueRepository.save(isotopologue);
+	}
+
+}
