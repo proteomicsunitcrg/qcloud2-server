@@ -15,12 +15,5 @@ public interface SampleCompositionRepository extends CrudRepository<SampleCompos
 	
 	interface PeptidesFromSample {
 		Peptide getPeptide();
-		/*
-		Long getPeptideId();
-		String getPeptideName();
-		String getPeptideAbbreviatedSequence();
-		String getPeptideSequence();
-		*/
-		
 	}
 }
