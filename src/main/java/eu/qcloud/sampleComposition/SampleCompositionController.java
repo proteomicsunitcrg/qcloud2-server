@@ -32,18 +32,41 @@ public class SampleCompositionController {
 	@Autowired
 	private SampleCompositionService sampleCompositionService;
 	
+	/**
+	 * Add a new peptide to a sample type
+	 * @param sampleComposition a sample composition
+	 * @return the inserted peptide within a sample composition
+	 */
 	@RequestMapping(value="/api/samplecomposition", method=RequestMethod.POST)
 	public SampleComposition addSampleComposition(@RequestBody SampleComposition sampleComposition) {
 		return sampleCompositionService.addSampleComposition(sampleComposition);
 	}
+	
+	/**
+	 * Get all sample compositions
+	 * @return a list with all sample compositions
+	 */
 	@RequestMapping(value="/api/samplecomposition", method=RequestMethod.GET)
 	public List<SampleComposition> getAll() {
 		return sampleCompositionService.getAllSampleComposition();
 	}
+	
+	/**
+	 * Return a list of all sample composition that have a certain peptide
+	 * @param peptideId the id of the peptide
+	 * @return a list of sample composition matching the required criteria
+	 */
 	@RequestMapping(value="/api/samplecomposition/peptide/{peptideId}", method=RequestMethod.GET)
 	public List<SampleComposition> getAllSampleCompositionByPeptideId(@PathVariable Long peptideId) {
 		return sampleCompositionService.getAllSampleCompositionByPeptideId(peptideId);
 	}
+	
+	/**
+	 * Delete a peptide from a sample
+	 * @param peptideId the peptide to delete
+	 * @param sampleTypeId the sample type id to delete from
+	 * @return true if ok, false if something wrong
+	 */
 	@RequestMapping(value="/api/samplecomposition/peptide/{peptideId}/sample/{sampleTypeId}", method=RequestMethod.DELETE)
 	public boolean deleteSampleComposition(@PathVariable Long peptideId,@PathVariable  Long sampleTypeId) {
 		// Get the sample composition by id
@@ -57,6 +80,12 @@ public class SampleCompositionController {
 		
 		return sampleCompositionService.deleteSampleComposition(sc.get());
 	}
+	
+	/**
+	 * Find all peptides from a given sample type
+	 * @param sampleTypeName a list of peptides from a sample type
+	 * @return
+	 */
 	@RequestMapping(value="/api/samplecomposition/sample/{sampleTypeName}", method=RequestMethod.GET)
 	public List<PeptidesFromSample> findAllPeptidesBySampleTypeName(@PathVariable String sampleTypeName) {
 		return sampleCompositionService.findAllPeptidesBySampleTypeName(sampleTypeName);
