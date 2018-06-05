@@ -15,6 +15,10 @@ public class Peptide extends ContextSource{
 	
 	private String abbreviatedSequence;
 	
+	private Float mz;
+	
+	private Integer charge;
+	
 	@OneToMany(mappedBy = "peptide")
 	private List<SampleComposition> peptide;
 	
@@ -33,5 +37,23 @@ public class Peptide extends ContextSource{
 	public void setAbbreviatedSequence(String abbreviatedSequence) {
 		this.abbreviatedSequence = abbreviatedSequence;		
 	}
+
+	public Float getMz() {
+		return mz;
+	}
+
+	public void setMz(Float mz) {
+		this.mz = mz;
+	}
+
+	public Integer getCharge() {
+		return charge;
+	}
+
+	public void setCharge(Integer charge) {
+		this.charge = charge;
+	}
+	
+	
 	
 }
