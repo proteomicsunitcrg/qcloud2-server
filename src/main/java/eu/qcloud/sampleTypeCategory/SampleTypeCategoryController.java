@@ -99,12 +99,18 @@ public class SampleTypeCategoryController {
 	 * @return
 	 */
 	@RequestMapping(value="/api/samplecategory/complexities",method= RequestMethod.GET)
-	public List<String> getSampleTypeComplexities() {
-		List<String> complexities = new ArrayList<>();
-		for(SampleTypeComplexity c: SampleTypeComplexity.values()) {
-			complexities.add(c.name());
-		}
-		return complexities;
+	public SampleTypeComplexity[] getSampleTypeComplexitiess() {
+		return SampleTypeComplexity.values();
+	}
+	
+	/**
+	 * Get the sampletype categories by complexity
+	 * @param complexity
+	 * @return
+	 */
+	@RequestMapping(value="/api/samplecategory/complexities/{complexity}",method= RequestMethod.GET)
+	public List<SampleTypeCategory> getSampleTypeComplexity(@PathVariable SampleTypeComplexity complexity) {
+		return sampleTypeCategoryService.findByComplexity(complexity);		
 	}
 	
 	/*
