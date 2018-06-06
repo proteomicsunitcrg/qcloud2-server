@@ -87,4 +87,7 @@ public class SampleTypeCategoryService {
 		return sampleTypeCategoryRepository.findById(sampleTypeCategoryId);
 		
 	}
+	public List<SampleTypeCategory> findByComplexity(SampleTypeComplexity complexity) {
+		return sampleTypeCategoryRepository.findBySampleTypeComplexity(complexity);
+	}
 }

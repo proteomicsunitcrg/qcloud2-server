@@ -14,6 +14,7 @@ import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
 import eu.qcloud.sampleType.SampleTypeRepository.WithPeptide;
 import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
 import eu.qcloud.sampleTypeCategory.SampleTypeCategoryRepository;
+import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 
 @Service
 @Transactional
@@ -24,6 +25,12 @@ public class SampleTypeService {
 	@Autowired
 	private SampleTypeCategoryRepository sampleTypeCategoryRepository;
 	
+	/**
+	 * Add a new sample type to the database
+	 * @param s the sample type to add
+	 * @param sampleTypeCategoryId the category id of the sample type
+	 * @return inserted sample type
+	 */
 	public SampleType addSampleType(SampleType s, Long sampleTypeCategoryId) {
 		Optional<SampleTypeCategory> stc = sampleTypeCategoryRepository.findById(sampleTypeCategoryId);
 		if(stc.isPresent()) {
@@ -34,34 +41,50 @@ public class SampleTypeService {
 		}
 	}
 	
+	/**
+	 * Return all sample types in the database
+	 * @return a list with all the sample types in the database
+	 */
 	public List<SampleTypeOnlyName> getAllSampleType() {
 		List<SampleTypeOnlyName> samples = new ArrayList<>();
-		
 		sampleTypeRepository.findAllSampleTypes().forEach(samples::add);
-		
 		return samples;
 	}
-	/*
-	public SampleType addPeptideToSampleType(SampleType s, List<Peptide> peptides) {		
-		s.setPeptides(peptides);
-		return sampleTypeRepository.save(s);
-	}
-	*/
 	
-	
+	/**
+	 * Find a sample type by id. Use this method for use
+	 * inside the spring application.
+	 * @param id the id of the sample type
+	 * @return the requested sample type
+	 */
 	public Optional<SampleType> getSampleTypeById(Long id) {
 		return sampleTypeRepository.findById(id);
-		
 	}
 	
+	/**
+	 * Find a sample type by id, use this method for
+	 * return data to the client.
+	 * @param id
+	 * @return the requested sample type
+	 */
 	public SampleTypeOnlyName getSampleById(Long id) {
 		return sampleTypeRepository.findOnlyNameById(id);
 	}
 
+	/**
+	 * Get a list of all sample types with its peptides
+	 * @return a list of sample types with peptides
+	 */
 	public List<WithPeptide> getAllSampleTypeWithPeptide() {
 		return sampleTypeRepository.findAllSampleType();
 	}
 	
+	/**
+	 * Return the main sample type of a given category
+	 * @param sampleTypeCategoryId the category to look into for the 
+	 * requested main sample type
+	 * @return
+	 */
 	public SampleType getMainSampleTypeBySampleTypeCategory(Long sampleTypeCategoryId) {
 		return sampleTypeRepository.findByIsMainSampleTypeTrueAndSampleTypeCategoryId(sampleTypeCategoryId);
 	}
@@ -82,6 +105,27 @@ public class SampleTypeService {
 			}
 			sampleTypeRepository.save(s);
 		});
+	}
+
+	/**
+	 * Return a list of the sample types by sample type category complexity
+	 * @param complexity a value of the SampleTypeComplexity enumeration
+	 * @return a list with the requested sample types
+	 */
+	public List<SampleTypeOnlyName> findByCategorySampleTypeComplexity(SampleTypeComplexity complexity) {
+		return sampleTypeRepository.findBySampleTypeCategorySampleTypeComplexity(complexity);
+	}
+
+	/**
+	 * Return all sample types that are not HIGHWITHISOTOPOLOGUES complexity
+	 * @return
+	 */
+	public List<SampleTypeOnlyName> getAllSampleTypeNoIsotopologues() {
+		return sampleTypeRepository.findBySampleTypeCategorySampleTypeComplexityNot(SampleTypeComplexity.HIGHWITHISOTOPOLOGUES);
+	}
+
+	public List<SampleTypeOnlyName> getAllSampleTypeIsotopologues() {
+		return sampleTypeRepository.findBySampleTypeCategorySampleTypeComplexity(SampleTypeComplexity.HIGHWITHISOTOPOLOGUES);		
 	}
 	
 }

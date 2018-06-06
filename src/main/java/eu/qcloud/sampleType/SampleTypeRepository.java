@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import eu.qcloud.contextSource.peptide.PeptideRepository.OnlyPeptide;
 import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
+import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 @Repository
 public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
     @Query("select name from SampleType")
@@ -25,6 +26,7 @@ public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
     
     public List<SampleType> findBySampleTypeCategoryId(Long id);
     
+    public List<SampleTypeOnlyName> findBySampleTypeCategorySampleTypeComplexityNot(SampleTypeComplexity stc);
     
     public interface SampleTypeOnlyName {
     	Long getId();
@@ -36,5 +38,7 @@ public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
 	public Iterable<SampleTypeOnlyName> findAllSampleTypes();
 
 	public SampleType findByIsMainSampleTypeTrueAndSampleTypeCategoryId(Long sampleTypeCategoryId);
+	
+	public List<SampleTypeOnlyName> findBySampleTypeCategorySampleTypeComplexity(SampleTypeComplexity complexity);
     
 }

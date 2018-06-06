@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
 import eu.qcloud.sampleType.SampleTypeRepository.WithPeptide;
+import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 /**
  * Sample type service
  * @author dmancera
@@ -23,21 +24,61 @@ public class SampleTypeController {
 	@Autowired
 	private SampleTypeService sampleTypeService;
 	
+	/**
+	 * Add a new sample type to the database
+	 * @param sampleType the sample type to insert
+	 * @param sampleTypeCategoryId the id of the category
+	 * @return the inserted sample type
+	 */
 	@RequestMapping(value="/api/sample/{sampleTypeCategoryId}",method= RequestMethod.POST)
 	public SampleType addSampleType(@RequestBody SampleType sampleType,@PathVariable Long sampleTypeCategoryId) {
 		return sampleTypeService.addSampleType(sampleType,sampleTypeCategoryId);
 	}
 	
+	/**
+	 * Return all sample types
+	 * @return a list with all sample types 
+	 */
 	@RequestMapping(value="/api/sample", method=RequestMethod.GET)
 	public List<SampleTypeOnlyName> getAllSampleType() {
 		return sampleTypeService.getAllSampleType();
 	}
 	
+	/**
+	 * Return a list of all sample type that are not in a 
+	 * HIGHWITHISOTOPOLOGUE complexity
+	 * @return a list of sample types
+	 */
+	@RequestMapping(value="/api/sample/noiso", method=RequestMethod.GET)
+	public List<SampleTypeOnlyName> getAllSampleTypesNoIsotopolgues() {
+		return sampleTypeService.getAllSampleTypeNoIsotopologues();		
+	}
+	
+	/**
+	 * Return a list of all sample type that are 
+	 * HIGHWITHISOTOPOLOGUE complexity
+	 * @return a list of sample types
+	 */
+	@RequestMapping(value="/api/sample/yesiso", method=RequestMethod.GET)
+	public List<SampleTypeOnlyName> getAllSampleTypesIsotopolgues() {
+		return sampleTypeService.getAllSampleTypeIsotopologues();		
+	}
+	
+	/**
+	 * Get a list of all sample types with a list of 
+	 * the sample type peptides
+	 * @return a list of the sample types with a list its peptides
+	 */
 	@RequestMapping(value="/api/sample/composition", method=RequestMethod.GET)
 	public List<WithPeptide> getFullSampleType() {
 		return sampleTypeService.getAllSampleTypeWithPeptide();
 	}
 	
+	/**
+	 * Get a sample type by its id
+	 * @param sampleId the id of the requested sample type
+	 * @return a sample type
+	 */
 	@RequestMapping(value="/sample/{sampleId}", method=RequestMethod.GET)
 	public SampleTypeOnlyName getById(@PathVariable Long sampleId) {
 		return sampleTypeService.getSampleById(sampleId);
@@ -50,6 +91,16 @@ public class SampleTypeController {
 	@RequestMapping(value="/api/sample/makemain/{sampleTypeCategoryId}/{sampleTypeId}", method=RequestMethod.PUT)
 	public void doMainSampleType(@PathVariable Long sampleTypeCategoryId,@PathVariable Long sampleTypeId) {
 		sampleTypeService.makeMainSampleType(sampleTypeCategoryId,sampleTypeId);
+	}
+	
+	/**
+	 * Get all sample types by its complexity
+	 * @param complexity the complexity to look into
+	 * @return a list with the requested sample types
+	 */
+	@RequestMapping(value="/api/sample/type/{complexity}", method=RequestMethod.GET)
+	public List<SampleTypeOnlyName> findAllByCategoryComplexity(@PathVariable(value="complexity") SampleTypeComplexity complexity) {
+		return sampleTypeService.findByCategorySampleTypeComplexity(complexity);
 	}
 	
 }
