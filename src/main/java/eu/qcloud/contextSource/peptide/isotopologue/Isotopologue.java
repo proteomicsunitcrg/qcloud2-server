@@ -1,20 +1,15 @@
 package eu.qcloud.contextSource.peptide.isotopologue;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
 import eu.qcloud.contextSource.peptide.Peptide;
 
-@Entity(name="isotopologue")
+// @Entity(name="isotopologue")
 public class Isotopologue extends Peptide {
 	
-	@ManyToOne
-	@JoinColumn(name="peptideId",insertable=true, updatable= true)
+	// @ManyToOne
+	// @JoinColumn(name="peptideId",insertable=true, updatable= true)
 	private Peptide mainPeptide;
 	
-	@Column(name="concentration")
+	// @Column(name="concentration")
 	private Float concentration;
 	
 	public Float getConcentration() {
