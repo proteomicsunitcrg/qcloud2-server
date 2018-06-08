@@ -1,5 +1,7 @@
 package eu.qcloud.contextSource.peptide.isotopologue;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,10 @@ public class IsotopologueService {
 	
 	public void add(Isotopologue isotopologue) {
 		isotopologueRepository.save(isotopologue);
+	}
+
+	public List<Isotopologue> findByMainPeptide(Long mainPeptideId) {
+		return isotopologueRepository.findByMainPeptideId(mainPeptideId);
 	}
 
 }

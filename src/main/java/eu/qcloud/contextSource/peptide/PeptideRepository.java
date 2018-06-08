@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface PeptideRepository extends CrudRepository<Peptide, Long> {
 	Peptide findBySequence(String sequence);
 	
-	@Query("select p from peptide p order by p.abbreviatedSequence")
+	@Query("select p from peptide p where p.mainPeptide = null order by p.abbreviatedSequence")
 	List<Peptide> findAllPeptides();
 	
 	// public List<Peptide> findAllOrderByAbbreviatedSequence();
@@ -19,7 +19,9 @@ public interface PeptideRepository extends CrudRepository<Peptide, Long> {
 		String getSequence();
 		String getAbbreviatedSequence();
 	}
-
-
+	
 	Peptide findByName(String name);
+	
+	@Query("select p from peptide p where p.sequence = ?1")
+	OnlyPeptide findOnlyBySequence(String sequence);
 }

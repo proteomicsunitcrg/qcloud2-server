@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.qcloud.contextSource.peptide.PeptideRepository.OnlyPeptide;
 import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 /**
  * Peptide controller. A peptide is an extension
  * of contextSource.
@@ -61,15 +63,37 @@ public class PeptideController {
 		}
 	}
 	
+	/**
+	 * Find a peptide by its ID
+	 * @param peptideId the id to look for
+	 * @return a peptide
+	 */
 	@RequestMapping(value="/api/contextsource/peptide/{peptideId}",method= RequestMethod.GET)
 	public Optional<Peptide> findPeptide(@PathVariable Long peptideId) {
-		return peptideService.findPeptideById(peptideId);
+		return peptideService.getPeptideById(peptideId);
 	}
-
+	
+	/**
+	 * Find all peptides that are not isotopologues
+	 * @return a list of peptids
+	 */
 	@RequestMapping(value="/api/contextsource/peptide",method= RequestMethod.GET)
 	public List<Peptide> getAllPeptides() {
 		return peptideService.getAllPeptides();
 	}
+	
+	/**
+	 * Get all peptides except the given sample type complexity
+	 * @param complexity the complexity to exclude peptides from
+	 * @return a list of peptides
+	 */
+	@RequestMapping(value="/api/contextsource/peptide/not/{complexity}",method= RequestMethod.GET)
+	public List<Peptide> getAllPeptidesNotComplexity(@PathVariable(value="complexity") SampleTypeComplexity complexity) {
+		
+		return null;
+	}
+	
+	
 	/**
 	 * Update a peptide in the database. If the updated peptide shares the name with
 	 * another peptide it will throw an error.
@@ -89,6 +113,16 @@ public class PeptideController {
 		}else {
 			throw new DataIntegrityViolationException("Invalid peptide");
 		}
+	}
+	
+	/**
+	 * Find a peptide by its sequence
+	 * @param sequence
+	 * @return
+	 */
+	@RequestMapping(value="/api/contextsource/peptide/sequence/{sequence}",method= RequestMethod.GET)
+	public OnlyPeptide getPeptideBySequence(@PathVariable String sequence) {
+		return peptideService.findOnlyPeptideBySequence(sequence);
 	}
 	
 	private boolean checkIfPeptideNameExists(String name) {

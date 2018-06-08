@@ -8,6 +8,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import eu.qcloud.contextSource.peptide.PeptideRepository.OnlyPeptide;
 /**
  * Service for peptides
  * @author dmancera
@@ -19,18 +21,37 @@ public class PeptideService {
 	@Autowired
 	private PeptideRepository peptideRepository;
 	
+	/**
+	 * Add a new peptide into the database
+	 * @param p the peptide to ad
+	 * @return the inserted peptide
+	 */
 	public Peptide addPeptide(Peptide p) {
 		return peptideRepository.save(p);		
 	}
 	
+	/**
+	 * Get all peptides that are not isotopologues
+	 * @return
+	 */
 	public List<Peptide> getAllPeptides() {
 		return peptideRepository.findAllPeptides();
 	}
-	
+
+	/**
+	 * Find a peptide by its id
+	 * @param peptideId the id
+	 * @return a peptide
+	 */
 	public Optional<Peptide> getPeptideById(Long peptideId) {
 		return peptideRepository.findById(peptideId);
 	}
 
+	/**
+	 * Find peptides by its id
+	 * @param peptides a list of peptides with ids
+	 * @return a list of peptides
+	 */
 	public List<Peptide> getPeptidesByIds(List<Peptide> peptides) {
 		List<Peptide> foundPeptides = new ArrayList<>();		
 		for(Peptide pep: peptides) {			
@@ -43,15 +64,31 @@ public class PeptideService {
 		return foundPeptides;
 		
 	}
+	
+	/**
+	 * Find a peptide by its sequence.
+	 * Use this function to return a JSON
+	 * @param sequence the peptide sequence
+	 * @return a peptide
+	 */
+	public OnlyPeptide findOnlyPeptideBySequence(String sequence) {
+		return peptideRepository.findOnlyBySequence(sequence);
+	}
 
+	/**
+	 * Find a peptide by its sequence
+	 * @param contextSourceSequence
+	 * @return a full peptide object
+	 */
 	public Peptide findPeptideBySequence(String contextSourceSequence) {
 		return peptideRepository.findBySequence(contextSourceSequence);		
 	}
-
-	public Optional<Peptide> findPeptideById(Long peptideId) {
-		return peptideRepository.findById(peptideId);
-	}
 	
+	/**
+	 * Find  a peptide by name
+	 * @param name
+	 * @return
+	 */
 	public Peptide findePeptideByName(String name) {
 		return peptideRepository.findByName(name);
 	}
