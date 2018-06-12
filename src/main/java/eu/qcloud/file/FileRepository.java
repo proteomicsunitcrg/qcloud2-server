@@ -3,6 +3,7 @@ package eu.qcloud.file;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.config.Projection;
 import org.springframework.stereotype.Repository;
@@ -29,4 +30,11 @@ public interface FileRepository extends CrudRepository<File, Long>{
 		@JsonFormat(pattern="yyyy-MM-dd hh:mm")
 		Date getCreationDate();
 	}
+	
+	public interface OnlyChecksum {
+		public String getChecksum();
+	}
+
+	@Query("select f from File f where filename = ?1")
+	public OnlyChecksum getFileByFilename(String filename);
 }

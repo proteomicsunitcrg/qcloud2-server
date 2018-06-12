@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.file.FileRepository.OnlyChecksum;
 import eu.qcloud.file.FileRepository.OnlySmalls;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.sampleType.SampleType;
@@ -58,5 +59,10 @@ public class FileService {
 		initialAndFinalDate.add(initials.get(initials.size()-1));
 		initialAndFinalDate.add(initials.get(0));
 		return initialAndFinalDate;
+	}
+
+	public OnlyChecksum getFileByFilename(String filename) {
+		return fileRepository.getFileByFilename(filename);
+		
 	}
 }
