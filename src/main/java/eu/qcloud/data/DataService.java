@@ -10,13 +10,19 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
+import eu.qcloud.contextSource.peptide.Peptide;
+import eu.qcloud.contextSource.peptide.PeptideRepository;
 import eu.qcloud.data.DataRepository.MiniData;
+import eu.qcloud.data.insertmodel.PeptideList;
 import eu.qcloud.data.processor.processorfactory.ProcessorFactory;
 import eu.qcloud.data.processor.processors.Processor;
+import eu.qcloud.file.File;
+import eu.qcloud.file.FileRepository;
 import eu.qcloud.labsystem.GuideSet;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.param.Param;
+import eu.qcloud.param.ParamRepository;
 
 /**
  * Service for the data
@@ -29,13 +35,22 @@ public class DataService {
 
 	@Autowired
 	private DataRepository dataRepository;
-	
+
 	@Autowired
 	private ChartParamsRepository chartParamRepository;
-		
+
 	@Autowired
 	private LabSystemRepository labSystemRepository;
+
+	@Autowired
+	private FileRepository fileRepository;
 	
+	@Autowired
+	private ParamRepository paramRepository;
+	
+	@Autowired
+	private PeptideRepository peptideRepository;
+
 	public List<Data> getAllData() {
 		List<Data> data = new ArrayList<>();
 		dataRepository.findAll().forEach(data::add);
@@ -52,8 +67,9 @@ public class DataService {
 
 	/**
 	 * Recover data from the server by parameters. Note the usage of a class named
-	 * DataForPlot and its extensions. If there is a need for further data processing
-	 * it will do by reflections. Take a look at the processor package.
+	 * DataForPlot and its extensions. If there is a need for further data
+	 * processing it will do by reflections. Take a look at the processor package.
+	 * 
 	 * @author Daniel Mancera <daniel.mancera@crg.eu>
 	 * 
 	 * @param start
@@ -75,31 +91,33 @@ public class DataService {
 		// Get the param
 		Param param = chartParamRepository.findTopByChartId(chartId).getParam();
 		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
-		
-		// Optional<DataSource> dataSource = dataSourceRepository.findById(dataSourceId);
+
+		// Optional<DataSource> dataSource =
+		// dataSourceRepository.findById(dataSourceId);
 		Optional<LabSystem> labSystem = labSystemRepository.findById(labSystemId);
 		processor.setData(dataForPlot);
 		/**
-		 * If data from a guide set is required then call the db for the
-		 * data and set it in the processor
+		 * If data from a guide set is required then call the db for the data and set it
+		 * in the processor
 		 */
-		if(processor.isGuideSetRequired()) {
+		if (processor.isGuideSetRequired()) {
 			// get the guide set of the instrument
 			GuideSet gs = labSystem.get().getGuideSet();
-			if(gs == null) {
+			if (gs == null) {
 				throw new DataRetrievalFailureException("A guide set is required for this plot.");
 			}
 			processor.setGuideSet(gs);
-			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chartId, gs.getStartDate(), gs.getEndDate(), labSystemId,
-					sampleTypeId);
-			if(dataToProcess.size()==0) {
-				throw new DataRetrievalFailureException("Your selected guide has no results. Please, choose another date range.");
+			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chartId, gs.getStartDate(),
+					gs.getEndDate(), labSystemId, sampleTypeId);
+			if (dataToProcess.size() == 0) {
+				throw new DataRetrievalFailureException(
+						"Your selected guide has no results. Please, choose another date range.");
 			}
 			processor.setGuideSetData(dataToProcess);
 			return processor.processData();
-		}else {
+		} else {
 			return processor.processData();
-		}		
+		}
 	}
 
 	public List<MiniData> getDataBetweenDates(Date start, Date end) {
@@ -109,7 +127,35 @@ public class DataService {
 	public List<MiniData> getDataBetweenDatesByDataSourceId(Date start, Date end, Long dataSourceId) {
 		return dataRepository.findByFileCreationDateBetweenAndFileLabSystemId(start, end, dataSourceId);
 	}
-	
 
+	public void insertPeptides(String qCCV, String checksum, List<PeptideList> peptides) {
+		List<Data> data = new ArrayList<>();
+		
+		// check if file exists
+		File f = fileRepository.findByChecksum(checksum);
+		if (f == null) {
+			throw new DataRetrievalFailureException("File not found");
+		}
+
+		// check if param exists
+		Param p = paramRepository.findByQCCV(qCCV);
+		if(p==null) {
+			throw new DataRetrievalFailureException("Parameter not found");
+		}
+		// check if peptides exists
+		for(PeptideList pl : peptides) {
+			Peptide peptide = peptideRepository.findBySequence(pl.getSequence());
+			if(peptide == null) {
+				throw new DataRetrievalFailureException("Peptide not found");	
+			}
+			Data d = new Data(p,peptide,f);
+			d.setValue(pl.getValue());
+			d.setDataId(new DataId(p.getId(),peptide.getId(),f.getId()));
+			data.add(d);
+		}
+		dataRepository.saveAll(data);
+		
+
+	}
 
 }
