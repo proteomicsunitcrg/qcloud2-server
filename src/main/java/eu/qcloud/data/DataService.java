@@ -70,7 +70,7 @@ public class DataService {
 
 		for (Data data : dataFromDb) {
 			dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-					data.getContextSource().getName(), data.getValue()));
+					data.getContextSource().getAbbreviated(), data.getValue()));
 		}
 		// Get the param
 		Param param = chartParamRepository.findTopByChartId(chartId).getParam();
