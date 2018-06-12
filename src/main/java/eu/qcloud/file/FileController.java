@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.qcloud.file.FileRepository.OnlyChecksum;
 import eu.qcloud.file.FileRepository.OnlySmalls;
 /**
  * File controller
@@ -43,5 +44,14 @@ public class FileController {
 	public List<OnlySmalls> getLastFiles(@PathVariable Long dataSourceId,@PathVariable  Long sampleTypeId) {
 		return fileService.getLastFilesByDataSourceIdAndSampleTypeId(dataSourceId,sampleTypeId);
 		
+	}
+	/**
+	 * Delete this when all the migration is completed
+	 * @param filename
+	 * @return
+	 */
+	@RequestMapping(value="/api/file/name/{filename}", method = RequestMethod.GET)
+	public OnlyChecksum findByFilename(@PathVariable String filename) {
+		return fileService.getFileByFilename(filename);
 	}
 }
