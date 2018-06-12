@@ -2,14 +2,20 @@ package eu.qcloud.file;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.file.FileRepository.OnlyChecksum;
 import eu.qcloud.file.FileRepository.OnlySmalls;
 import eu.qcloud.labsystem.LabSystem;
+import eu.qcloud.labsystem.LabSystemService;
 import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.sampleType.SampleTypeService;
 /**
  * File service
  * @author dmancera
@@ -20,6 +26,12 @@ public class FileService {
 	
 	@Autowired
 	private FileRepository fileRepository;
+	
+	@Autowired
+	private SampleTypeService sampleTypeService;
+	
+	@Autowired
+	private LabSystemService labSystemService;
 	
 	
 	public File addNewFile(File file) {
@@ -65,4 +77,39 @@ public class FileService {
 		return fileRepository.getFileByFilename(filename);
 		
 	}
+
+	public File addFile(String sampleTypeQCCV, File file) {
+		// get the sample type
+		SampleType t = sampleTypeService.getSampleTypeByQCCV(sampleTypeQCCV);
+		file.setSampleType(t);
+		return fileRepository.save(file);
+	}
+
+	public File addFromWorkflow(File file, String sampleTypeQCCV, UUID labSystemApiKey) {
+		// Find if file already exists
+		if(getFileByChecksum(file.getChecksum())!= null) {
+			throw new DataIntegrityViolationException("A file with that checksum already exists!");
+		}
+		
+		SampleType st = sampleTypeService.getSampleTypeByQCCV(sampleTypeQCCV);
+		Optional<LabSystem> ls = labSystemService.findSystemByApiKey(labSystemApiKey);
+		if(ls.isPresent()) {
+			file.setSampleType(st);
+			file.setLabSystem(ls.get());
+			return fileRepository.save(file);
+		} else {
+			throw new DataRetrievalFailureException("Lab system not found.");
+		}
+	}
+	
+	public void deleteFile(String checksum) {
+		File f = fileRepository.findByChecksum(checksum);
+		if(f== null) {
+			throw new DataRetrievalFailureException("File not found.");
+		}
+		fileRepository.delete(f);
+		
+	}
+
+
 }
