@@ -13,7 +13,7 @@ public class Peptide extends ContextSource{
 	
 	private String sequence;
 	
-	private String abbreviatedSequence;
+	// private String abbreviatedSequence;
 	
 	private Float mz;
 	
@@ -29,7 +29,7 @@ public class Peptide extends ContextSource{
 	public void setSequence(String sequence) {
 		this.sequence = sequence;
 	}
-
+	/*
 	public String getAbbreviatedSequence() {
 		return abbreviatedSequence;
 	}
@@ -37,6 +37,7 @@ public class Peptide extends ContextSource{
 	public void setAbbreviatedSequence(String abbreviatedSequence) {
 		this.abbreviatedSequence = abbreviatedSequence;		
 	}
+	*/
 
 	public Float getMz() {
 		return mz;

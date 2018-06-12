@@ -24,7 +24,7 @@ public class SampleComposition {
 	@JoinColumn(name="peptideId",insertable=false, updatable= false)
 	private Peptide peptide;
 	
-	private int concentration;
+	private Float concentration;
 	
 	public SampleCompositionId getSampleCompositionId() {
 		return sampleCompositionId;
@@ -32,10 +32,10 @@ public class SampleComposition {
 	public void setSampleCompositionId(SampleCompositionId sampleCompositionId) {
 		this.sampleCompositionId = sampleCompositionId;
 	}
-	public int getConcentration() {
+	public Float getConcentration() {
 		return concentration;
 	}
-	public void setConcentration(int concentration) {
+	public void setConcentration(Float concentration) {
 		this.concentration = concentration;
 	}
 	public SampleType getSampleType() {
