@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -71,6 +72,16 @@ public class ParamController {
 			processors.add(s.name());
 		}
 		return processors;
+	}
+	
+	/**
+	 * Find a param by its QC CV
+	 * @param qCCV the QC CV to look for
+	 * @return a param or null
+	 */
+	@RequestMapping(value="/api/param/qccv/{qCCV}", method = RequestMethod.GET)
+	public Param findByQCCV(@PathVariable String qCCV) {
+		return paramService.findByQCCV(qCCV);
 	}
 
 }

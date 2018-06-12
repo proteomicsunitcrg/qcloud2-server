@@ -24,5 +24,9 @@ public class ParamService {
 	public Param updateParam(Param param) {
 		return paramRepository.save(param);
 	}
+	
+	public Param findByQCCV(String qCCV) {
+		return paramRepository.findByQCCV(qCCV);
+	}
 
 }

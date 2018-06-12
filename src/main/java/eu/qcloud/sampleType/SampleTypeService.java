@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
@@ -126,6 +127,15 @@ public class SampleTypeService {
 
 	public List<SampleTypeOnlyName> getAllSampleTypeIsotopologues() {
 		return sampleTypeRepository.findBySampleTypeCategorySampleTypeComplexity(SampleTypeComplexity.HIGHWITHISOTOPOLOGUES);		
+	}
+
+	public SampleType getSampleTypeByQCCV(String qCCV) {
+		Optional<SampleType> st = sampleTypeRepository.findByQCCV(qCCV); 
+		if(st.isPresent()) {
+			return st.get();
+		} else {
+			throw new DataRetrievalFailureException("No sample type found with this sample type " + qCCV);
+		}
 	}
 	
 }

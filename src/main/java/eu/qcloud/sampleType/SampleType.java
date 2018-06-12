@@ -34,6 +34,9 @@ public class SampleType {
     @Size(min = 3, max = 50)
     private String name;
     
+    @Column(name = "QCCV", length = 50, unique = true)
+    private String qCCV;
+    
     @OneToMany(mappedBy="sampleType")
     private List<SampleComposition> sampleCompositions;
     
@@ -44,6 +47,14 @@ public class SampleType {
     @Column(name="is_main_sample_type")
     private boolean isMainSampleType;
     
+	public String getqCCV() {
+		return qCCV;
+	}
+
+	public void setqCCV(String qCCV) {
+		this.qCCV = qCCV;
+	}
+
 	public boolean isMainSampleType() {
 		return isMainSampleType;
 	}

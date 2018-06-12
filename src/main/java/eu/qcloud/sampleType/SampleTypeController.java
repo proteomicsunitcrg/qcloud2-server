@@ -1,9 +1,15 @@
 package eu.qcloud.sampleType;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,14 +81,15 @@ public class SampleTypeController {
 	}
 	
 	/**
-	 * Get a sample type by its id
-	 * @param sampleId the id of the requested sample type
-	 * @return a sample type
+	 * Get a sample type with its QC CV
+	 * @param qCCv the qccv to look for
+	 * @return a peptide or null
 	 */
-	@RequestMapping(value="/sample/{sampleId}", method=RequestMethod.GET)
-	public SampleTypeOnlyName getById(@PathVariable Long sampleId) {
-		return sampleTypeService.getSampleById(sampleId);
+	@RequestMapping(value="/api/sample/qccv/{qCCV}", method=RequestMethod.GET)
+	public SampleType getSampleTypeByQCCv(@PathVariable String qCCV) {
+		return sampleTypeService.getSampleTypeByQCCV(qCCV);
 	}
+	
 	/**
 	 * Make the given sample as main in its category
 	 * Only a sample type per category can be main
@@ -101,6 +108,12 @@ public class SampleTypeController {
 	@RequestMapping(value="/api/sample/type/{complexity}", method=RequestMethod.GET)
 	public List<SampleTypeOnlyName> findAllByCategoryComplexity(@PathVariable(value="complexity") SampleTypeComplexity complexity) {
 		return sampleTypeService.findByCategorySampleTypeComplexity(complexity);
+	}
+	
+	
+	@ExceptionHandler(DataRetrievalFailureException.class)
+	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
 	
 }

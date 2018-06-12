@@ -1,6 +1,7 @@
 package eu.qcloud.sampleType;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -18,6 +19,8 @@ public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
     
     @Query("select s from SampleType s")
     public List<WithPeptide> findAllSampleType();
+    
+    public Optional<SampleType> findByQCCV(String qCCV);
     
     interface WithPeptide {
     	String getName();

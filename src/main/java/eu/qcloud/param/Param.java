@@ -27,6 +27,17 @@ public class Param {
 	@Column(name="processor",nullable= true)	
 	private ProcessorType processor;
 	
+	@Column(name="QCCV")
+	private String qCCV;
+	
+	public String getqCCV() {
+		return qCCV;
+	}
+
+	public void setqCCV(String qCCV) {
+		this.qCCV = qCCV;
+	}
+
 	public ProcessorType getProcessor() {
 		return processor;
 	}
