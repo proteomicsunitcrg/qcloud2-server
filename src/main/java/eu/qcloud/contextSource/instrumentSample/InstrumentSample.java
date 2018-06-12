@@ -7,6 +7,7 @@ import eu.qcloud.contextSource.ContextSource;
 @Entity(name="instrument_sample")
 public class InstrumentSample extends ContextSource{
 
+	/*
 	private String abbreviatedName;
 
 	public String getAbbreviatedName() {
@@ -16,5 +17,6 @@ public class InstrumentSample extends ContextSource{
 	public void setAbbreviatedName(String abbreviatedName) {
 		this.abbreviatedName = abbreviatedName;
 	}
+	*/
 	
 }

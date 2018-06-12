@@ -19,6 +19,16 @@ public class ContextSource {
 	
 	@Column(unique = true)
 	protected String name;
+	
+	protected String abbreviated;
+
+	public String getAbbreviated() {
+		return abbreviated;
+	}
+
+	public void setAbbreviated(String abbreviated) {
+		this.abbreviated = abbreviated;
+	}
 
 	public Long getId() {
 		return id;
