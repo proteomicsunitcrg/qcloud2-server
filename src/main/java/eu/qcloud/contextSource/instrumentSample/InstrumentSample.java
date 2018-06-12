@@ -7,16 +7,14 @@ import eu.qcloud.contextSource.ContextSource;
 @Entity(name="instrument_sample")
 public class InstrumentSample extends ContextSource{
 
-	/*
-	private String abbreviatedName;
+	private String qCCV;
 
-	public String getAbbreviatedName() {
-		return abbreviatedName;
+	public String getqCCV() {
+		return qCCV;
 	}
 
-	public void setAbbreviatedName(String abbreviatedName) {
-		this.abbreviatedName = abbreviatedName;
+	public void setqCCV(String qCCV) {
+		this.qCCV = qCCV;
 	}
-	*/
 	
 }
