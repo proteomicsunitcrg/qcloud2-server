@@ -66,13 +66,20 @@ public class DataForPlot implements Comparable<DataForPlot>{
 
 	@Override
 	public int compareTo(DataForPlot o) {
-		Float me = Float.parseFloat(contextSourceName);
-		Float other = Float.parseFloat(o.getContextSourceName());
-		if(me>other) {
-			return -1;
-		}else {
-			return 1;
+		try {
+			Float me = Float.parseFloat(contextSourceName);
+			Float other = Float.parseFloat(o.getContextSourceName());
+			if(me>other) {
+				return -1;
+			}else {
+				return 1;
+			}	
+		}catch (NullPointerException npe) {
+			return 0;
+		}catch (NumberFormatException nfe) {
+			return 0;
 		}
+		
 	}
 
 	
