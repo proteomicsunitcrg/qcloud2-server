@@ -2,6 +2,7 @@ package eu.qcloud.data;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,11 @@ import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.param.Param;
 import eu.qcloud.param.ParamRepository;
+import eu.qcloud.sampleComposition.SampleComposition;
+import eu.qcloud.sampleComposition.SampleCompositionRepository;
+import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.sampleType.SampleTypeRepository;
+import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 
 /**
  * Service for the data
@@ -50,6 +56,12 @@ public class DataService {
 	
 	@Autowired
 	private PeptideRepository peptideRepository;
+	
+	@Autowired
+	private SampleTypeRepository sampleTypeRepository;
+	
+	@Autowired
+	private SampleCompositionRepository sampleCompositionRepository;
 
 	public List<Data> getAllData() {
 		List<Data> data = new ArrayList<>();
@@ -80,14 +92,33 @@ public class DataService {
 	 * @return
 	 */
 	public List<DataForPlot> getPlotData(Date start, Date end, Long chartId, Long labSystemId, Long sampleTypeId) {
-		List<DataForPlot> dataForPlot = new ArrayList<>();
+		// List<DataForPlot> dataForPlot = new ArrayList<>();
 		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chartId, start, end, labSystemId,
 				sampleTypeId);
 
-		for (Data data : dataFromDb) {
-			dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-					data.getContextSource().getAbbreviated(), data.getValue()));
+		// Check sample type in order to send the abbreviated name or anything else		
+		
+		
+		Optional<SampleType> sampleType = sampleTypeRepository.findById(sampleTypeId);
+		/*
+		if(sampleType.get().getSampleTypeCategory().getSampleTypeComplexity()== SampleTypeComplexity.HIGHWITHISOTOPOLOGUES) {
+			for (Data data : dataFromDb) {
+				// Instead of getting the full name or the abbreviated one we need to get the concentration
+				SampleComposition concentration = sampleCompositionRepository.getConcentrationBySampleTypeIdAndPeptideId(sampleType.get().getId(), data.getContextSource().getId());
+				
+				dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
+						concentration.getConcentration().toString(), data.getValue()));
+				Collections.sort(dataForPlot);
+			}			
+		} else {
+			for (Data data : dataFromDb) {
+				dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
+						data.getContextSource().getAbbreviated(), data.getValue()));
+			}	
 		}
+		*/
+		List<DataForPlot> dataForPlot = prepareDataForPlot(dataFromDb,sampleType.get());
+		
 		// Get the param
 		Param param = chartParamRepository.findTopByChartId(chartId).getParam();
 		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
@@ -118,6 +149,40 @@ public class DataService {
 		} else {
 			return processor.processData();
 		}
+	}
+	
+	/**
+	 * Prepare the output data for the client.
+	 * It will take into account if the sample category is HIGHWITHISOTOPOLOGUE for 
+	 * susbsitute the abbreviated name with the concentration
+	 * @param dataFromDb
+	 * @param sampleType
+	 * @return
+	 */
+	private List<DataForPlot> prepareDataForPlot(List<Data> dataFromDb, SampleType sampleType) {
+		
+		List<DataForPlot> dataForPlot = new ArrayList<>();
+		switch(sampleType.getSampleTypeCategory().getSampleTypeComplexity()) {
+		case HIGHWITHISOTOPOLOGUES:
+			for (Data data : dataFromDb) {
+				// Instead of getting the full name or the abbreviated one we need to get the concentration
+				SampleComposition concentration = sampleCompositionRepository.getConcentrationBySampleTypeIdAndPeptideId(sampleType.getId(), data.getContextSource().getId());
+				
+				dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
+						concentration.getConcentration().toString(), data.getValue()));
+				Collections.sort(dataForPlot);
+			}
+			break;
+			default:
+				for (Data data : dataFromDb) {
+					dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
+							data.getContextSource().getAbbreviated(), data.getValue()));
+				}
+				break;
+		}
+		
+		return dataForPlot;
+		
 	}
 
 	public List<MiniData> getDataBetweenDates(Date start, Date end) {
