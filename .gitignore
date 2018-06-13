@@ -24,4 +24,4 @@ nbdist/
 .nb-gradle/
 
 ### PROPERTIES FILE ###
-./src/main/resources/application.yml
+src/main/resources/application.yml
