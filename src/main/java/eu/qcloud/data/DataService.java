@@ -166,7 +166,7 @@ public class DataService {
 		case HIGHWITHISOTOPOLOGUES:
 			for (Data data : dataFromDb) {
 				// Instead of getting the full name or the abbreviated one we need to get the concentration
-				SampleComposition concentration = sampleCompositionRepository.getConcentrationBySampleTypeIdAndPeptideId(sampleType.getId(), data.getContextSource().getId());
+				SampleComposition concentration = sampleCompositionRepository.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.getId(), data.getContextSource().getId());
 				
 				dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
 						concentration.getConcentration().toString(), data.getValue()));
