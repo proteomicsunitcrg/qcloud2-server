@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * @author dmancera
  *
  */
-public class DataForPlot {
+public class DataForPlot implements Comparable<DataForPlot>{
 	
 	protected String fileFilename;
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")	
@@ -63,6 +63,20 @@ public class DataForPlot {
 	public void setValue(Float value) {
 		this.value = value;
 	}
+
+	@Override
+	public int compareTo(DataForPlot o) {
+		Float me = Float.parseFloat(contextSourceName);
+		Float other = Float.parseFloat(o.getContextSourceName());
+		if(me>other) {
+			return -1;
+		}else {
+			return 1;
+		}
+	}
+
+	
+	
 	
 	
 }
