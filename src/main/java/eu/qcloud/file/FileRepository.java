@@ -2,6 +2,7 @@ package eu.qcloud.file;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -20,6 +21,8 @@ public interface FileRepository extends CrudRepository<File, Long>{
 	public File findTop1ByLabSystemIdOrderByCreationDateDesc(Long labSystemId);
 	
 	public List<OnlySmalls> findTop10ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(Long labSystemId,Long sampleTypeId);
+	
+	public File findTop1BySampleTypeQualityControlControlledVocabularyAndLabSystemApiKeyOrderByCreationDateDesc(String sampleTypeQCCV, UUID labSystemApikey);
 	
 	@Projection(name = "file_mini", types = File.class)
 	public interface OnlySmalls {

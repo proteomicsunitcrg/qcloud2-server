@@ -44,22 +44,34 @@ public class FileController {
 	public OnlySmalls getFileById(@PathVariable Long fileId) {
 		return fileService.getFileById(fileId);
 	}
-	/*
-	@RequestMapping(value="/api/file/{sampleTypeId}/{dataSourceId}", method = RequestMethod.POST)
-	public File addFileSpecial(@RequestBody File file,@PathVariable Long sampleTypeId,@PathVariable Long dataSourceId) {
-		return fileService.addSpecial(file, dataSourceId, sampleTypeId);
-	}
-	*/
-	
+		
 	@RequestMapping(value="/api/file/{sampleTypeQCCV}/{labSystemApiKey}", method = RequestMethod.POST)
 	public File addFileSpecial(@RequestBody File file,@PathVariable String sampleTypeQCCV,@PathVariable UUID labSystemApiKey) {
 		return fileService.addFromWorkflow(file, sampleTypeQCCV, labSystemApiKey);
 	}
-	
-	@RequestMapping(value="/api/file/{sampleTypeId}/{dataSourceId}", method = RequestMethod.GET)
+	/**
+	 * @deprecated
+	 * @param dataSourceId
+	 * @param sampleTypeId
+	 * @return
+	 */
+	// @RequestMapping(value="/api/file/{sampleTypeId}/{dataSourceId}", method = RequestMethod.GET)
 	public List<OnlySmalls> getLastFiles(@PathVariable Long dataSourceId,@PathVariable  Long sampleTypeId) {
 		return fileService.getLastFilesByDataSourceIdAndSampleTypeId(dataSourceId,sampleTypeId);
 	}
+	
+	/**
+	 * Get the last file of a given lab system and sample type
+	 * @param sampleTypeQCCV
+	 * @param labSystemApikey
+	 * @return
+	 */
+	@RequestMapping(value="/api/file/{sampleTypeQCCV}/{labSystemApikey}", method = RequestMethod.GET)
+	public File getLastFileBySampleTypeQCCVAndLabSystemApikey(@PathVariable String sampleTypeQCCV,@PathVariable UUID labSystemApikey) {
+		return fileService.getLastFileBySampleTypeQCCVAndLabSystemApikey(sampleTypeQCCV, labSystemApikey);
+	}
+	
+	
 	/**
 	 * Add a file into the system. This API end point should be consumed
 	 * by the pipeline

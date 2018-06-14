@@ -110,6 +110,10 @@ public class FileService {
 		fileRepository.delete(f);
 		
 	}
+	
+	public File getLastFileBySampleTypeQCCVAndLabSystemApikey(String sampleTypeQCCV, UUID labSystemApikey) {
+		return fileRepository.findTop1BySampleTypeQualityControlControlledVocabularyAndLabSystemApiKeyOrderByCreationDateDesc(sampleTypeQCCV,labSystemApikey);
+	}
 
 
 }
