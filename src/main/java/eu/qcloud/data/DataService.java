@@ -100,23 +100,7 @@ public class DataService {
 		
 		
 		Optional<SampleType> sampleType = sampleTypeRepository.findById(sampleTypeId);
-		/*
-		if(sampleType.get().getSampleTypeCategory().getSampleTypeComplexity()== SampleTypeComplexity.HIGHWITHISOTOPOLOGUES) {
-			for (Data data : dataFromDb) {
-				// Instead of getting the full name or the abbreviated one we need to get the concentration
-				SampleComposition concentration = sampleCompositionRepository.getConcentrationBySampleTypeIdAndPeptideId(sampleType.get().getId(), data.getContextSource().getId());
-				
-				dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-						concentration.getConcentration().toString(), data.getValue()));
-				Collections.sort(dataForPlot);
-			}			
-		} else {
-			for (Data data : dataFromDb) {
-				dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-						data.getContextSource().getAbbreviated(), data.getValue()));
-			}	
-		}
-		*/
+		
 		List<DataForPlot> dataForPlot = prepareDataForPlot(dataFromDb,sampleType.get());
 		
 		// Get the param
