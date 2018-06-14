@@ -35,7 +35,7 @@ public class SampleType {
     private String name;
     
     @Column(name = "QCCV", length = 50, unique = true)
-    private String qCCV;
+    private String qualityControlControlledVocabulary;
     
     @OneToMany(mappedBy="sampleType")
     private List<SampleComposition> sampleCompositions;
@@ -48,11 +48,11 @@ public class SampleType {
     private boolean isMainSampleType;
     
 	public String getqCCV() {
-		return qCCV;
+		return qualityControlControlledVocabulary;
 	}
 
 	public void setqCCV(String qCCV) {
-		this.qCCV = qCCV;
+		this.qualityControlControlledVocabulary = qCCV;
 	}
 
 	public boolean isMainSampleType() {

@@ -20,7 +20,7 @@ public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
     @Query("select s from SampleType s")
     public List<WithPeptide> findAllSampleType();
     
-    public Optional<SampleType> findByQCCV(String qCCV);
+    public Optional<SampleType> findByQualityControlControlledVocabulary(String qCCV);
     
     interface WithPeptide {
     	String getName();

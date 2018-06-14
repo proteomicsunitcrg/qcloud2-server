@@ -110,6 +110,16 @@ public class SampleTypeController {
 		return sampleTypeService.findByCategorySampleTypeComplexity(complexity);
 	}
 	
+	/**
+	 * Get the default sample type by sample type category
+	 * @param sampleTypeCategoryId
+	 * @return
+	 */
+	@RequestMapping(value="/api/sample/main/{sampleTypeCategoryId}", method=RequestMethod.GET)
+	public SampleType getDefaultSampleTypeBySampleTypeCategoryId(@PathVariable Long sampleTypeCategoryId) {
+		return sampleTypeService.getMainSampleTypeBySampleTypeCategory(sampleTypeCategoryId);
+	}
+	
 	
 	@ExceptionHandler(DataRetrievalFailureException.class)
 	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {

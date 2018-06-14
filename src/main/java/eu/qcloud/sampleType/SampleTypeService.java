@@ -130,7 +130,7 @@ public class SampleTypeService {
 	}
 
 	public SampleType getSampleTypeByQCCV(String qCCV) {
-		Optional<SampleType> st = sampleTypeRepository.findByQCCV(qCCV); 
+		Optional<SampleType> st = sampleTypeRepository.findByQualityControlControlledVocabulary(qCCV); 
 		if(st.isPresent()) {
 			return st.get();
 		} else {
