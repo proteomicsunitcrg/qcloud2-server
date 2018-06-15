@@ -45,21 +45,18 @@ public class FileController {
 		return fileService.getFileById(fileId);
 	}
 		
+	/**
+	 * Add a new file into the system
+	 * @param file
+	 * @param sampleTypeQCCV
+	 * @param labSystemApiKey
+	 * @return
+	 */
 	@RequestMapping(value="/api/file/{sampleTypeQCCV}/{labSystemApiKey}", method = RequestMethod.POST)
 	public File addFileSpecial(@RequestBody File file,@PathVariable String sampleTypeQCCV,@PathVariable UUID labSystemApiKey) {
 		return fileService.addFromWorkflow(file, sampleTypeQCCV, labSystemApiKey);
 	}
-	/**
-	 * @deprecated
-	 * @param dataSourceId
-	 * @param sampleTypeId
-	 * @return
-	 */
-	// @RequestMapping(value="/api/file/{sampleTypeId}/{dataSourceId}", method = RequestMethod.GET)
-	public List<OnlySmalls> getLastFiles(@PathVariable Long dataSourceId,@PathVariable  Long sampleTypeId) {
-		return fileService.getLastFilesByDataSourceIdAndSampleTypeId(dataSourceId,sampleTypeId);
-	}
-	
+
 	/**
 	 * Get the last file of a given lab system and sample type
 	 * @param sampleTypeQCCV
