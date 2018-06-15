@@ -26,9 +26,9 @@ import eu.qcloud.param.Param;
 import eu.qcloud.param.ParamRepository;
 import eu.qcloud.sampleComposition.SampleComposition;
 import eu.qcloud.sampleComposition.SampleCompositionRepository;
+import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
-import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 
 /**
  * Service for the data
@@ -168,16 +168,7 @@ public class DataService {
 		return dataForPlot;
 		
 	}
-	/*
-	public List<MiniData> getDataBetweenDates(Date start, Date end) {
-		return dataRepository.findByFileCreationDateBetween(start, end);
-	}
 	
-	public List<MiniData> getDataBetweenDatesByDataSourceId(Date start, Date end, Long dataSourceId) {
-		return dataRepository.findByFileCreationDateBetweenAndFileLabSystemId(start, end, dataSourceId);
-	}
-	*/
-
 	public void insertPeptides(String qCCV, String checksum, List<PeptideList> peptides) {
 		List<Data> data = new ArrayList<>();
 		
@@ -204,8 +195,51 @@ public class DataService {
 			data.add(d);
 		}
 		dataRepository.saveAll(data);
-		
+	}
+	
+	public List<DataForPlot> getIsotopologueData(String checksum, String abbreviatedSequence) {
+		List<Data> dataFromDb = new ArrayList<>();
 
+		// Getting file
+		File file = fileRepository.findByChecksum(checksum);
+		if(file==null) {
+			throw new DataRetrievalFailureException("File not found");
+		}
+		
+		// Getting param
+		Param param = paramRepository.findByQCCV("QC:1001844");
+		if(param== null) {
+			throw new DataRetrievalFailureException("Database error, please contact administrator");
+		}
+		
+		// get peptides by abbreviated sequence
+		List<Peptide> peptides = new ArrayList<>();
+		List<PeptidesFromSample> pps = sampleCompositionRepository.findBySampleTypeQualityControlControlledVocabularyAndPeptideAbbreviated(file.getSampleType().getqCCV(), abbreviatedSequence);
+		for(int i = 0 ; i < pps.size(); i++) {
+			peptides.add(pps.get(i).getPeptide());
+		}
+		if(peptides.size()==0) {
+			throw new DataRetrievalFailureException("No isotopologues found.");
+		}
+		for(Peptide peptide : peptides) {
+			Data d = dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(), param.getId(), peptide.getId());
+			dataFromDb.add(d);
+		}
+		List<DataForPlot> dataForPlot = prepareDataForPlot(dataFromDb, file.getSampleType());
+		
+		
+		/**
+		 * The peptide area of isotopologues will only need the LOG2 processor.
+		 * So, there is no need to check if the processor needs a guide set because
+		 * we already know what processor will it be.
+		 */
+		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
+		Collections.reverse(dataForPlot);
+		processor.setData(dataForPlot);
+		
+		return processor.processData();
+		
+				
 	}
 
 }

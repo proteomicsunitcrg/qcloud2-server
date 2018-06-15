@@ -123,6 +123,12 @@ public class DataController {
 		return dataService.getPlotData(start, end, chartId, labSystemId, sampleTypeId);
 	}
 	
+	@RequestMapping(value="/api/data/iso/{checksum}/{abbreviated}", method=RequestMethod.GET)
+	public List<DataForPlot> isotopologueData(@PathVariable String checksum,@PathVariable String abbreviated ) {
+		return dataService.getIsotopologueData(checksum, abbreviated);
+		
+	}
+	
 	/*
 	 * Helper classes
 	 */
