@@ -168,14 +168,15 @@ public class DataService {
 		return dataForPlot;
 		
 	}
-
+	/*
 	public List<MiniData> getDataBetweenDates(Date start, Date end) {
 		return dataRepository.findByFileCreationDateBetween(start, end);
 	}
-
+	
 	public List<MiniData> getDataBetweenDatesByDataSourceId(Date start, Date end, Long dataSourceId) {
 		return dataRepository.findByFileCreationDateBetweenAndFileLabSystemId(start, end, dataSourceId);
 	}
+	*/
 
 	public void insertPeptides(String qCCV, String checksum, List<PeptideList> peptides) {
 		List<Data> data = new ArrayList<>();
