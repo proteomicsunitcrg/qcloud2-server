@@ -18,6 +18,8 @@ public interface SampleCompositionRepository extends CrudRepository<SampleCompos
 	
 	public List<SampleComposition> findBySampleTypeQualityControlControlledVocabulary(String qqcv);
 	
+	public List<PeptidesFromSample> findBySampleTypeQualityControlControlledVocabularyAndPeptideAbbreviated(String qqcv, String abbreviated);
+	
 	interface PeptidesFromSample {
 		Peptide getPeptide();
 	}
