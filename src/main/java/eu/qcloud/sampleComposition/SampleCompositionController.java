@@ -89,7 +89,16 @@ public class SampleCompositionController {
 	@RequestMapping(value="/api/samplecomposition/sample/{sampleTypeName}", method=RequestMethod.GET)
 	public List<PeptidesFromSample> findAllPeptidesBySampleTypeName(@PathVariable String sampleTypeName) {
 		return sampleCompositionService.findAllPeptidesBySampleTypeName(sampleTypeName);
-		
+	}
+	
+	/**
+	 * Find all peptides by its qqcv
+	 * @param qqcv
+	 * @return
+	 */
+	@RequestMapping(value="/api/samplecomposition/qqcv/{qqcv}", method=RequestMethod.GET)
+	public List<SampleComposition> findAllBySampleTypeQQCV(@PathVariable String qqcv) {
+		return sampleCompositionService.getAllSampleCompositionBySampleTypeQQCV(qqcv);		
 	}
 	
 	/*

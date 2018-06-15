@@ -56,8 +56,10 @@ public class SampleCompositionService {
 
 	public List<PeptidesFromSample> findAllPeptidesBySampleTypeName(String sampleTypeName) {
 		return sampleCompositionRepository.findBySampleTypeName(sampleTypeName);
-
-		
+	}
+	
+	public List<SampleComposition> getAllSampleCompositionBySampleTypeQQCV(String qqcv) {
+		return sampleCompositionRepository.findBySampleTypeQualityControlControlledVocabulary(qqcv);
 	}
 	
 	

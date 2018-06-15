@@ -16,6 +16,7 @@ public interface SampleCompositionRepository extends CrudRepository<SampleCompos
 	@Query("select sc from SampleComposition sc where sc.sampleType.id=?1 and sc.peptide.id = ?2")
 	public SampleComposition getSampleCompositionBySampleTypeIdAndPeptideId(Long sampleTypeId, Long peptideId);
 	
+	public List<SampleComposition> findBySampleTypeQualityControlControlledVocabulary(String qqcv);
 	
 	interface PeptidesFromSample {
 		Peptide getPeptide();
