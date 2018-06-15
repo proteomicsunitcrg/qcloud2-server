@@ -11,7 +11,7 @@ public interface PeptideRepository extends CrudRepository<Peptide, Long> {
 	@Query("select p from peptide p order by p.abbreviated")
 	List<Peptide> findAllPeptides();
 	
-	// public List<Peptide> findAllOrderByAbbreviatedSequence();
+	List<Peptide> findByAbbreviated(String abbreviated);
 	
 	public interface OnlyPeptide {
 		Long getId();
