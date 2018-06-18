@@ -7,14 +7,14 @@ import eu.qcloud.contextSource.ContextSource;
 @Entity(name="instrument_sample")
 public class InstrumentSample extends ContextSource{
 
-	private String qCCV;
+	private String qualityControlControlledVocabulary;
 
 	public String getqCCV() {
-		return qCCV;
+		return qualityControlControlledVocabulary;
 	}
 
 	public void setqCCV(String qCCV) {
-		this.qCCV = qCCV;
+		this.qualityControlControlledVocabulary = qCCV;
 	}
 	
 }
