@@ -21,7 +21,7 @@ import eu.qcloud.contextSource.instrumentSample.InstrumentSample;
 import eu.qcloud.contextSource.instrumentSample.InstrumentSampleService;
 import eu.qcloud.contextSource.peptide.Peptide;
 import eu.qcloud.contextSource.peptide.PeptideService;
-import eu.qcloud.data.insertmodel.PeptideList;
+import eu.qcloud.data.insertmodel.DataFromPipeline;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileService;
 
@@ -75,16 +75,6 @@ public class DataController {
 		return dataService.addData(data);
 	}
 	
-	/**
-	 * Method for insert peptides in the database
-	 * @param qCCV
-	 * @param checksum
-	 * @param peptides
-	 */
-	@RequestMapping(value="/api/data/peptides/{qCCV}/{checksum}",method = RequestMethod.POST)
-	public void insertPeptideData(@PathVariable String qCCV, @PathVariable String checksum, @RequestBody List<PeptideList> peptides) {
-		dataService.insertPeptides(qCCV,checksum,peptides);
-	}
 	
 	/**
 	 * Insert new data into the database. Before add new data there
@@ -126,7 +116,15 @@ public class DataController {
 	@RequestMapping(value="/api/data/iso/{checksum}/{abbreviated}", method=RequestMethod.GET)
 	public List<DataForPlot> isotopologueData(@PathVariable String checksum,@PathVariable String abbreviated ) {
 		return dataService.getIsotopologueData(checksum, abbreviated);
-		
+	}
+	
+	/**
+	 * Insert data from the pipeline into the database
+	 * @param dataFromPipeline the data to insert
+	 */
+	@RequestMapping(value="/api/data/pipeline", method=RequestMethod.POST)
+	public void insertDataFromPipeline(@RequestBody DataFromPipeline dataFromPipeline) {
+		dataService.insertDataFromPipeline(dataFromPipeline);		
 	}
 	
 	/*

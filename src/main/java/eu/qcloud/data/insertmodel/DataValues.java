@@ -1,17 +1,17 @@
 package eu.qcloud.data.insertmodel;
 
-public class PeptideList {
+public class DataValues {
 	
-	private String sequence;
+	private String contextSource;
 	
 	private Float value;
 
-	public String getSequence() {
-		return sequence;
+	public String getContextSource() {
+		return contextSource;
 	}
 
-	public void setSequence(String sequence) {
-		this.sequence = sequence;
+	public void setContextSource(String contextSource) {
+		this.contextSource = contextSource;
 	}
 
 	public Float getValue() {

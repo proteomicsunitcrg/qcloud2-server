@@ -11,10 +11,14 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
+import eu.qcloud.contextSource.ContextSource;
+import eu.qcloud.contextSource.instrumentSample.InstrumentSampleRepository;
 import eu.qcloud.contextSource.peptide.Peptide;
 import eu.qcloud.contextSource.peptide.PeptideRepository;
 import eu.qcloud.data.DataRepository.MiniData;
-import eu.qcloud.data.insertmodel.PeptideList;
+import eu.qcloud.data.insertmodel.DataFromPipeline;
+import eu.qcloud.data.insertmodel.DataValues;
+import eu.qcloud.data.insertmodel.ParameterData;
 import eu.qcloud.data.processor.processorfactory.ProcessorFactory;
 import eu.qcloud.data.processor.processors.Processor;
 import eu.qcloud.file.File;
@@ -62,6 +66,9 @@ public class DataService {
 	
 	@Autowired
 	private SampleCompositionRepository sampleCompositionRepository;
+	
+	@Autowired
+	private InstrumentSampleRepository instrumentSampleRepository;
 
 	public List<Data> getAllData() {
 		List<Data> data = new ArrayList<>();
@@ -166,35 +173,72 @@ public class DataService {
 		}
 		
 		return dataForPlot;
+	}
+	
+	/**
+	 * Insert data from the pipeline into the database
+	 * @param dataFromPipeline
+	 */
+	public void insertDataFromPipeline(DataFromPipeline dataFromPipeline) {
+		// Check if file exists
+		File file = fileRepository.findByChecksum(dataFromPipeline.getFile().getChecksum());
+		if(file == null) {
+			throw new DataRetrievalFailureException("File not found");
+		}
+		// Loop through the parameters
+		for(ParameterData parameterData : dataFromPipeline.getData()) {
+			// Loop through the parameters
+			Param param = paramRepository.findByQCCV(parameterData.getParameter().getqCCV());
+			if(param == null ) {
+				continue;
+			}
+			// loop through values
+			for(DataValues dataValue: parameterData.getValues()) {
+				ContextSource cs = null;
+				switch(param.getIsFor()) {
+				case "Peptide":
+					cs = peptideRepository.findBySequence(dataValue.getContextSource());
+					if(cs==null) {
+						continue;						
+					}
+					if(!peptideBelongsToSampleType(file.getSampleType(), dataValue.getContextSource())) {
+						continue;
+					}
+						
+					break;
+				case "InstrumentSample":
+					cs = instrumentSampleRepository.findByQualityControlControlledVocabulary(dataValue.getContextSource());
+					if(cs==null) {
+						continue;
+					}
+					break;
+					default:
+						System.out.println("i dont know");
+						break;
+				}
+				Data d = new Data(param,cs,file);
+				d.setValue(dataValue.getValue());
+				d.setDataId(new DataId(param.getId(),cs.getId(),file.getId()));
+				dataRepository.save(d);
+			}
+		}
 		
 	}
 	
-	public void insertPeptides(String qCCV, String checksum, List<PeptideList> peptides) {
-		List<Data> data = new ArrayList<>();
-		
-		// check if file exists
-		File f = fileRepository.findByChecksum(checksum);
-		if (f == null) {
-			throw new DataRetrievalFailureException("File not found");
-		}
-
-		// check if param exists
-		Param p = paramRepository.findByQCCV(qCCV);
-		if(p==null) {
-			throw new DataRetrievalFailureException("Parameter not found");
-		}
-		// check if peptides exists
-		for(PeptideList pl : peptides) {
-			Peptide peptide = peptideRepository.findBySequence(pl.getSequence());
-			if(peptide == null) {
-				throw new DataRetrievalFailureException("Peptide not found");	
+	/**
+	 * Check if a peptide belongs to a sample type
+	 * @param sampleType
+	 * @param sequence
+	 * @return true or false
+	 */
+	private boolean peptideBelongsToSampleType(SampleType sampleType, String sequence) {
+		List<SampleComposition> sampleComposition = sampleCompositionRepository.findBySampleTypeQualityControlControlledVocabulary(sampleType.getqCCV());
+		for(SampleComposition sc : sampleComposition) {
+			if(sc.getPeptide().getSequence().equals(sequence)) {
+				return true;
 			}
-			Data d = new Data(p,peptide,f);
-			d.setValue(pl.getValue());
-			d.setDataId(new DataId(p.getId(),peptide.getId(),f.getId()));
-			data.add(d);
 		}
-		dataRepository.saveAll(data);
+		return false;
 	}
 	
 	public List<DataForPlot> getIsotopologueData(String checksum, String abbreviatedSequence) {
