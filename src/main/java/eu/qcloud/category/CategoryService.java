@@ -2,6 +2,7 @@ package eu.qcloud.category;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class CategoryService {
 	}
 	
 	public Category addCategory(Category category) {
-		
+		category.setApiKey(UUID.randomUUID());
 		return categoryRepository.save(category);
 	}
 
@@ -27,11 +28,11 @@ public class CategoryService {
 		return categoryRepository.findByName(categoryName);
 	}
 	
-	public void makeCategoryMain(Long categoryId) {
+	public void makeCategoryMain(UUID categoryApiKey) {
 		List<Category> categories = new ArrayList<>();
 		categoryRepository.findAll().forEach(categories::add);
 		for(Category c: categories) {
-			if(c.getId()==categoryId) {
+			if(c.getApiKey().equals(categoryApiKey)) {
 				c.setMainDataSource(true);
 			}else {
 				c.setMainDataSource(false);

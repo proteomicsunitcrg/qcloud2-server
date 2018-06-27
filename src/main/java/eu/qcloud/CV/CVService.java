@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.category.Category;
@@ -59,8 +60,11 @@ public class CVService {
 	}
 
 	public CV getCvByCVId(String cvId) {
-		return cvRepository.getByCVId(cvId);
-		
+		Optional<CV> cv = cvRepository.getByCVId(cvId);
+		if(!cv.isPresent()) {
+			throw new DataRetrievalFailureException("CV not found");
+		}
+		return cv.get();
 	}
 	
 

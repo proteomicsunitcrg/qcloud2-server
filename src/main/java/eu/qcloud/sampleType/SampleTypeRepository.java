@@ -2,6 +2,7 @@ package eu.qcloud.sampleType;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -41,6 +42,8 @@ public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
 	public Iterable<SampleTypeOnlyName> findAllSampleTypes();
 
 	public SampleType findByIsMainSampleTypeTrueAndSampleTypeCategoryId(Long sampleTypeCategoryId);
+	
+	public SampleType findByIsMainSampleTypeTrueAndSampleTypeCategoryApiKey(UUID sampleTypeCategoryApiKey);
 	
 	public List<SampleTypeOnlyName> findBySampleTypeCategorySampleTypeComplexity(SampleTypeComplexity complexity);
     

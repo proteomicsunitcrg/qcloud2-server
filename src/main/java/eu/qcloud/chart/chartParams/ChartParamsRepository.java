@@ -1,6 +1,7 @@
 package eu.qcloud.chart.chartParams;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -33,4 +34,5 @@ public interface ChartParamsRepository extends CrudRepository<ChartParams, Chart
 		Param getParam();
 		ContextSource getContextSource();
 	}
+	
 }

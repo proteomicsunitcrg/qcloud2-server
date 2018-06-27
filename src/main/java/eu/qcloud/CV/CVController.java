@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -62,12 +63,9 @@ public class CVController {
 	}
 	
 	@RequestMapping(value="/api/cv/{cvId}", method = RequestMethod.PUT)
-	public CV changeEnabled(@PathVariable Long cvId) {
-		Optional<CV> cv = cvService.getCVbyId(cvId);
-		if(!cv.isPresent()) {
-			throw new DataIntegrityViolationException("Controlled vocabulary id not found.");
-		}
-		return cvService.changeEnabled(cv.get());
+	public CV changeEnabled(@PathVariable String cvId) {
+		CV cv = cvService.getCvByCVId(cvId);		
+		return cvService.changeEnabled(cv);
 	}
 	
 	/*
@@ -76,5 +74,9 @@ public class CVController {
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
+	}
+	@ExceptionHandler(DataRetrievalFailureException.class)
+	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
 }

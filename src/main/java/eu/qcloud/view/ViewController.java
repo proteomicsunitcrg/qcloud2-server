@@ -2,6 +2,7 @@ package eu.qcloud.view;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
@@ -86,9 +87,17 @@ public class ViewController {
 	 * @param sampleTypeCategoryId
 	 * @return
 	 */
+	/*
 	@RequestMapping(value="/api/views/default/{cvId}/{sampleTypeCategoryId}", method=RequestMethod.GET)
 	public View getViewByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,@PathVariable Long sampleTypeCategoryId) {
 		View v = viewService.getDefaultViewByCVIdAndSampleTypeCategoryId(cvId,sampleTypeCategoryId);
+		return v;
+	}
+	*/
+	
+	@RequestMapping(value="/api/views/default/{cvId}/{sampleTypeCategoryApiKey}", method=RequestMethod.GET)
+	public View getViewByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,@PathVariable UUID sampleTypeCategoryApiKey) {
+		View v = viewService.getDefaultViewByCVIdAndSampleTypeCategoryApiKey(cvId,sampleTypeCategoryApiKey);
 		return v;
 	}
 	

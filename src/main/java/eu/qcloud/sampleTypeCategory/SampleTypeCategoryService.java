@@ -3,6 +3,7 @@ package eu.qcloud.sampleTypeCategory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,7 +36,7 @@ public class SampleTypeCategoryService {
 		if(stc.isPresent()) {
 			throw new DataIntegrityViolationException("Category name already exists");
 		}
-		
+		sampleTypeCategory.setApiKey(UUID.randomUUID());
 		sampleTypeCategoryRepository.save(sampleTypeCategory);		
 	}
 	/**
@@ -85,9 +86,23 @@ public class SampleTypeCategoryService {
 	
 	public Optional<SampleTypeCategory> getSampleTypeCategoryById(Long sampleTypeCategoryId) {
 		return sampleTypeCategoryRepository.findById(sampleTypeCategoryId);
-		
 	}
+	
+	public Optional<SampleTypeCategory> getSampleTypeCategoryByApiKey(UUID sampleTypeCategoryApiKey) {
+		return sampleTypeCategoryRepository.findByApiKey(sampleTypeCategoryApiKey);
+	}
+	
 	public List<SampleTypeCategory> findByComplexity(SampleTypeComplexity complexity) {
 		return sampleTypeCategoryRepository.findBySampleTypeComplexity(complexity);
+	}
+	
+	public void generate() {
+		List<SampleTypeCategory> sampleTypeCategories = new ArrayList<>();
+		sampleTypeCategoryRepository.findAll().forEach(sampleTypeCategories::add);
+		for(SampleTypeCategory sc: sampleTypeCategories) {
+			sc.setApiKey(UUID.randomUUID());
+			System.out.println(sampleTypeCategoryRepository.save(sc).getApiKey());
+			
+		}
 	}
 }

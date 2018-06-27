@@ -8,6 +8,7 @@ import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -184,5 +185,9 @@ public class DataSourceController {
 	@ExceptionHandler(PersistenceException.class)
 	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), e.getMessage());
+	}
+	@ExceptionHandler(DataRetrievalFailureException.class)
+	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
 }

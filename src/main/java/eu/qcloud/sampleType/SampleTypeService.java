@@ -3,6 +3,7 @@ package eu.qcloud.sampleType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -88,6 +89,10 @@ public class SampleTypeService {
 	 */
 	public SampleType getMainSampleTypeBySampleTypeCategory(Long sampleTypeCategoryId) {
 		return sampleTypeRepository.findByIsMainSampleTypeTrueAndSampleTypeCategoryId(sampleTypeCategoryId);
+	}
+	
+	public SampleType getMainSampleTypeBySampleTypeCategoryApiKey(UUID sampleTypeCategoryApiKey) {
+		return sampleTypeRepository.findByIsMainSampleTypeTrueAndSampleTypeCategoryApiKey(sampleTypeCategoryApiKey);
 	}
 	
 	/**

@@ -1,6 +1,7 @@
 package eu.qcloud.sampleTypeCategory;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,6 +35,18 @@ public class SampleTypeCategory {
     
     @OneToMany(mappedBy="sampleTypeCategory")
     private List<SampleType> sampleTypes;
+    
+    @Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+    private UUID apiKey;
+    
+	public UUID getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(UUID apiKey) {
+		this.apiKey = apiKey;
+	}
 
 	public Long getId() {
 		return id;

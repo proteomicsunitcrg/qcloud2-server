@@ -2,6 +2,7 @@ package eu.qcloud.view;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -77,6 +78,10 @@ public class ViewService {
 
 	public View getDefaultViewByCVIdAndSampleTypeCategoryId(Long cvId, Long sampleTypeCategoryId) {
 		return viewRepository.findByCvIdAndSampleTypeCategoryId(cvId, sampleTypeCategoryId);
+	}
+	
+	public View getDefaultViewByCVIdAndSampleTypeCategoryApiKey(Long cvId, UUID sampleTypeCategoryApiKey) {
+		return viewRepository.findByCvIdAndSampleTypeCategoryApiKey(cvId, sampleTypeCategoryApiKey);
 	}
 	
 	

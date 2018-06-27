@@ -1,9 +1,9 @@
 package eu.qcloud.sampleTypeCategory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
@@ -52,9 +52,10 @@ public class SampleTypeCategoryController {
 	public List<SampleTypeCategory> getSampleTypeCategories() {
 		return sampleTypeCategoryService.getAll();
 	}
-	@RequestMapping(value="/api/samplecategory/{sampleTypeCategoryId}",method= RequestMethod.GET)
-	public SampleTypeCategory getSampleTypeCategoryById(@PathVariable Long sampleTypeCategoryId) {
-		Optional<SampleTypeCategory> stc = sampleTypeCategoryService.getSampleTypeCategoryById(sampleTypeCategoryId);
+	
+	@RequestMapping(value="/api/samplecategory/{sampleTypeCategoryApiKey}",method= RequestMethod.GET)
+	public SampleTypeCategory getSampleTypeCategoryByApiKey(@PathVariable UUID sampleTypeCategoryApiKey) {
+		Optional<SampleTypeCategory> stc = sampleTypeCategoryService.getSampleTypeCategoryByApiKey(sampleTypeCategoryApiKey);
 		if(stc.isPresent()) {
 			return stc.get();
 		}else {
@@ -111,6 +112,11 @@ public class SampleTypeCategoryController {
 	@RequestMapping(value="/api/samplecategory/complexities/{complexity}",method= RequestMethod.GET)
 	public List<SampleTypeCategory> getSampleTypeComplexity(@PathVariable SampleTypeComplexity complexity) {
 		return sampleTypeCategoryService.findByComplexity(complexity);		
+	}
+	
+	@RequestMapping(value="/api/samplecategory/generate",method= RequestMethod.GET)
+	public void generate() {
+		sampleTypeCategoryService.generate();		
 	}
 	
 	/*

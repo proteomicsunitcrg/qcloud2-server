@@ -1,5 +1,7 @@
 package eu.qcloud.category;
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,14 +33,16 @@ public class CategoryController {
 	public Category getCategoryByName(@PathVariable String categoryName) {
 		return categoryService.getCategoryByName(categoryName);
 	}
+		
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value="/api/category/makemain/{categoryId}", method = RequestMethod.PUT)
-	public void makeMainCategory(@PathVariable Long categoryId) {
-		categoryService.makeCategoryMain(categoryId);
+	@RequestMapping(value="/api/category/makemain/{categoryApiKey}", method = RequestMethod.PUT)
+	public void makeMainCategory(@PathVariable UUID categoryApiKey) {
+		categoryService.makeCategoryMain(categoryApiKey);
 	}
 	
 	@RequestMapping(value="/api/category/main", method = RequestMethod.GET)
 	public Category getMainCategory() {
 		return categoryService.getMainCategory();		
 	}
+		
 }

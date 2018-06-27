@@ -1,5 +1,7 @@
 package eu.qcloud.category;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,6 +30,8 @@ public class Category {
     @Column(name="MAIN", columnDefinition="boolean default false")
     private boolean isMainDataSource;
     
+    public UUID apiKey;
+    
     public boolean isMainDataSource() {
 		return isMainDataSource;
 	}
@@ -36,32 +40,8 @@ public class Category {
 		this.isMainDataSource = isMainDataSource;
 	}
 
-
-
-
 	public Category() {}
     
-    
-    
-    
-    /*
-    @JsonIgnore
-    @OneToMany(mappedBy="category",
-    		cascade={CascadeType.PERSIST,CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH})
-    private List<CV> cvs;    
-    
-    public Category() {}
-	
-    public List<CV> getCvs() {
-		return cvs;
-	}
-	
-
-	public void setCvs(List<CV> cvs) {
-		this.cvs = cvs;
-	}
-	*/
-	
 	public Long getId() {
 		return id;
 	}
@@ -83,6 +63,13 @@ public class Category {
 	public void setName(String name) {
 		this.name = name;
 	}
-    
+
+	public UUID getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(UUID apiKey) {
+		this.apiKey = apiKey;
+	}
     
 }

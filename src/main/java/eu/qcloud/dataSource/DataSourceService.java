@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.CV.CV;
@@ -84,8 +85,11 @@ public class DataSourceService {
 	}
 
 	public DataSource addNewDataSourceAuto(DataSource dataSource) {
-		CV cv = cvRepository.getByCVId(dataSource.getCv().getCVId());
-		dataSource.setCv(cv);
+		Optional<CV> cv = cvRepository.getByCVId(dataSource.getCv().getCVId());
+		if(!cv.isPresent()) {
+			throw new DataRetrievalFailureException("CV not found");
+		}
+		dataSource.setCv(cv.get());
 		return dataSourceRepository.save(dataSource);
 	}
 			

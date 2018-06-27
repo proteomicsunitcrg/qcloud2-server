@@ -70,7 +70,7 @@ public class CV {
 	}
 
 	public CV() {}
-    
+    	
 	public Long getId() {
 		return id;
 	}

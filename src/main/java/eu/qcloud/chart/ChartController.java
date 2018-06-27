@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,8 +59,7 @@ public class ChartController {
 	 */
 	@RequestMapping(value="/api/chart", method = RequestMethod.PUT)
 	public Chart updateChart(@RequestBody Chart chart) {
-		
-		return chartService.addNewChart(chart);
+		return chartService.updateChart(chart);
 	}
 	/**
 	 * Retrieves all the charts
@@ -76,7 +77,7 @@ public class ChartController {
 	 * @return a list with the results
 	 */
 	@RequestMapping(value="/api/chart/cv/{cvId}", method = RequestMethod.GET)
-	public List<NoView> getChartByCVId(@PathVariable Long cvId) {
+	public List<NoView> getChartByCVId(@PathVariable String cvId) {
 		return chartService.getChartsByCVIdWithoutView(cvId);
 		//return chartService.getChartsByCVId(cvId);
 	}
@@ -86,10 +87,10 @@ public class ChartController {
 	 * @param sampleTypeCategoryId
 	 * @return
 	 */
-	@RequestMapping(value="/api/chart/cv/{cvId}/category/{sampleTypeCategoryId}", method = RequestMethod.GET)
-	public List<NoView> getChartsByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,@PathVariable Long sampleTypeCategoryId) {
+	@RequestMapping(value="/api/chart/cv/{cvId}/category/{sampleTypeCategoryApiKey}", method = RequestMethod.GET)
+	public List<NoView> getChartsByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,@PathVariable UUID sampleTypeCategoryApiKey) {
 		// get the main sample type of the given category
-		SampleType sampleType = sampleTypeService.getMainSampleTypeBySampleTypeCategory(sampleTypeCategoryId);
+		SampleType sampleType = sampleTypeService.getMainSampleTypeBySampleTypeCategoryApiKey(sampleTypeCategoryApiKey);
 		return chartService.getChartsByCVIdAndSampleTypeCategoryId(cvId, sampleType.getId());
 	}
 	
@@ -99,10 +100,10 @@ public class ChartController {
 	 * @param chartId the id of the chart whose params would be updated
 	 * @return a list with the new chart params
 	 */
-	@RequestMapping(value="/api/chart/{chartId}", method = RequestMethod.PUT)
-	public List<ChartParams> updateChartParamsByChart(@RequestBody List<ChartParams> chartParams,@PathVariable Long chartId) {
+	@RequestMapping(value="/api/chart/{chartApiKey}", method = RequestMethod.PUT)
+	public List<ChartParams> updateChartParamsByChart(@RequestBody List<ChartParams> chartParams,@PathVariable UUID chartApiKey) {
 		// Delete previous chartparams
-		List<ChartParams> previous = chartService.getChartParamsByChart(chartId);
+		List<ChartParams> previous = chartService.getChartParamsByChartApiKey(chartApiKey);
 		chartService.deleteChartParams(previous);
 		// Add new ones
 		List<ChartParams> chartParamsList = new ArrayList<>();		
@@ -113,7 +114,7 @@ public class ChartController {
 		if(chartParamsList.size()!=chartParams.size()) {
 			// delete previous
 			chartService.deleteChartParams(chartParamsList);
-			chartService.deleteChartById(chartId);
+			chartService.deleteChartByApiKey(chartApiKey);
 			throw new DataIntegrityViolationException("There were a problem inserting the chart. Try again later");
 		}
 		return chartParams;
@@ -125,18 +126,20 @@ public class ChartController {
 	 * @param chartId the chart id to add the params
 	 * @return a list with the chart params added
 	 */
-	@RequestMapping(value="/api/chart/{chartId}", method = RequestMethod.POST)
-	public List<ChartParams> addParamsToChart(@RequestBody List<ChartParams> chartParams,@PathVariable Long chartId) {
-		
-		List<ChartParams> chartParamsList = new ArrayList<>();		
+	@RequestMapping(value="/api/chart/{chartApiKey}", method = RequestMethod.POST)
+	public List<ChartParams> addParamsToChart(@RequestBody List<ChartParams> chartParams,@PathVariable UUID chartApiKey) {
+		// get the chart id
+		Optional<Chart> chart = chartService.getChartByApiKey(chartApiKey);
+		List<ChartParams> chartParamsList = new ArrayList<>();
 		for(ChartParams chartParam: chartParams) {
+			chartParam.setChart(chart.get());
 			chartParamsList.add(chartService.addParamToChart(chartParam));
 			
 		}
 		if(chartParamsList.size()!=chartParams.size()) {
 			// delete previous
 			chartService.deleteChartParams(chartParamsList);
-			chartService.deleteChartById(chartId);
+			chartService.deleteChartByApiKey(chartApiKey);
 			throw new DataIntegrityViolationException("There were a problem inserting the chart. Try again later");
 		}
 		return chartParams;
@@ -150,9 +153,9 @@ public class ChartController {
 	 * Check the manual for more information on that topic or go to the 
 	 * repository itself.
 	 */
-	@RequestMapping(value="/api/chart/params/{chartId}")
-	public List<FullParams> getChartParamsByChartId(@PathVariable Long chartId) {
-		return chartService.getFullChartParamsByChartId(chartId);
+	@RequestMapping(value="/api/chart/params/{chartApiKey}", method = RequestMethod.GET)
+	public List<FullParams> getChartParamsByChartId(@PathVariable UUID chartApiKey) {
+		return chartService.getFullChartParamsByChartApiKey(chartApiKey);
 	}
 	
 	/**
@@ -160,9 +163,14 @@ public class ChartController {
 	 * @param chartId
 	 * @return a chart
 	 */
-	@RequestMapping(value="/api/chart/{chartId}", method = RequestMethod.GET)
-	public Optional<Chart> getChartByChartId(@PathVariable Long chartId) {
-		return chartService.getChartById(chartId);
+	@RequestMapping(value="/api/chart/{chartApiKey}", method = RequestMethod.GET)
+	public Optional<Chart> getChartByChartId(@PathVariable UUID chartApiKey) {
+		return chartService.getChartByApiKey(chartApiKey);
+	}
+	
+	// @RequestMapping(value="/api/chart/generate", method = RequestMethod.GET)
+	public void generate() {
+		chartService.generate();
 	}
 	
 	/*
@@ -180,6 +188,10 @@ public class ChartController {
 	@ExceptionHandler(InvalidActionException.class)
 	void handleBadAction(HttpServletResponse response, Exception e) throws IOException{
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
+	}
+	@ExceptionHandler(DataRetrievalFailureException.class)
+	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
 	
 }

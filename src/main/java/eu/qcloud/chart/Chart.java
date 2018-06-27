@@ -1,6 +1,7 @@
 package eu.qcloud.chart;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,13 +44,19 @@ public class Chart {
     @Column(name="is_threshold", columnDefinition="tinyint(1) default 0")
     private boolean isThresholdEnabled;
 
-	/*
-     * 3/5/18 i've commented this and still works with the
-     * current database. If a new database is used mind this
-     * line comment
-     */
-    //@OneToMany(mappedBy="chart")
-    public List<ViewDisplay> getViewDisplay() {
+    @Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+    private UUID apiKey;
+    
+    public UUID getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(UUID apiKey) {
+		this.apiKey = apiKey;
+	}
+
+	public List<ViewDisplay> getViewDisplay() {
 		return viewDisplay;
 	}
 
@@ -58,7 +65,7 @@ public class Chart {
 	}
 
 	public Chart() {}
-
+	
 	public Long getId() {
 		return id;
 	}

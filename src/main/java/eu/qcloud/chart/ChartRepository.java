@@ -2,6 +2,7 @@ package eu.qcloud.chart;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -17,8 +18,8 @@ public interface ChartRepository extends CrudRepository<Chart, Long>{
 	
 	List<Chart> findByCvId(Long cvId);
 	
-	@Query("select c from Chart c where c.cv.id = ?1")
-	List<NoView> findByCvIdWithoutView(Long cvId);
+	@Query("select c from Chart c where c.cv.CVId = ?1")
+	List<NoView> findByCvIdWithoutView(String cvId);
 	
 	@Query("select c from Chart c")
 	List<NoView> findAllCharts();
@@ -39,6 +40,11 @@ public interface ChartRepository extends CrudRepository<Chart, Long>{
 		SampleType getSampleType();
 		CV getCv();
 		boolean getIsThresholdEnabled();
+		UUID getApiKey();
 	}
+
+	Optional<Chart> findByApiKey(UUID chartApiKey);
+
+	void deleteByApiKey(UUID chartApiKey);
 
 }
