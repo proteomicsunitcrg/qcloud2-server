@@ -4,7 +4,11 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-
+/**
+ * Interface for peptide
+ * @author dmancera
+ *
+ */
 public interface PeptideRepository extends CrudRepository<Peptide, Long> {
 	Peptide findBySequence(String sequence);
 	
@@ -18,6 +22,8 @@ public interface PeptideRepository extends CrudRepository<Peptide, Long> {
 		String getName();
 		String getSequence();
 		String getAbbreviated();
+		Float getMz();
+		Integer getCharge();
 	}
 	
 	Peptide findByName(String name);
