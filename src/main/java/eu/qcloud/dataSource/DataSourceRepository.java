@@ -29,6 +29,8 @@ public interface DataSourceRepository extends CrudRepository<DataSource, Long> {
 		String getName();
 		
 	}
+
+	List<DataSource> findByNodeIdAndCvCategoryApiKey(Long nodeId, UUID categoryApiKey);
 	
 	
 

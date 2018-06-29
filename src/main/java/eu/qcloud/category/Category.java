@@ -12,6 +12,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @Table(name = "category")
@@ -30,7 +32,9 @@ public class Category {
     @Column(name="MAIN", columnDefinition="boolean default false")
     private boolean isMainDataSource;
     
-    public UUID apiKey;
+    @Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+    private UUID apiKey;
     
     public boolean isMainDataSource() {
 		return isMainDataSource;
@@ -42,6 +46,7 @@ public class Category {
 
 	public Category() {}
     
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}

@@ -2,7 +2,7 @@ package eu.qcloud.CV;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,14 +47,14 @@ public class CVController {
 		
 	}
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="/api/cv/category/{categoryId}", method = RequestMethod.GET)
-	public List<CV> getAllCVByCategory(@PathVariable Long categoryId) {		
-		return cvService.getAllCVbyCategory(categoryId);
+	@RequestMapping(value="/api/cv/category/{categoryApiKey}", method = RequestMethod.GET)
+	public List<CV> getAllCVByCategory(@PathVariable UUID categoryApiKey) {		
+		return cvService.getAllCVbyCategory(categoryApiKey);
 	}
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="/api/cv/category/{categoryId}/enabled", method = RequestMethod.GET)
-	public List<CV> getAllEnabledCV(@PathVariable Long categoryId) {
-		return cvService.getAllEnabledCVByCategory(categoryId);
+	@RequestMapping(value="/api/cv/category/{categoryApiKey}/enabled", method = RequestMethod.GET)
+	public List<CV> getAllEnabledCV(@PathVariable UUID categoryApiKey) {
+		return cvService.getAllEnabledCVByCategory(categoryApiKey);
 	}
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/api/cv/{cvId}", method = RequestMethod.GET)

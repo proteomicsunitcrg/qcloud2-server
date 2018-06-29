@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.chart.Chart;
+import eu.qcloud.chart.ChartRepository;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.contextSource.instrumentSample.InstrumentSampleRepository;
@@ -69,6 +72,9 @@ public class DataService {
 	
 	@Autowired
 	private InstrumentSampleRepository instrumentSampleRepository;
+	
+	@Autowired
+	private ChartRepository chartRepository;
 
 	public List<Data> getAllData() {
 		List<Data> data = new ArrayList<>();
@@ -98,25 +104,28 @@ public class DataService {
 	 * @param sampleTypeId
 	 * @return
 	 */
-	public List<DataForPlot> getPlotData(Date start, Date end, Long chartId, Long labSystemId, Long sampleTypeId) {
-		// List<DataForPlot> dataForPlot = new ArrayList<>();
-		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chartId, start, end, labSystemId,
-				sampleTypeId);
+	public List<DataForPlot> getPlotData(Date start, Date end, UUID chartApiKey, UUID labSystemApiKey, String sampleTypeQCCV) {
+		Optional<Chart> chart = chartRepository.findByApiKey(chartApiKey);
+		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
+		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQCCV); 
+		if(!chart.isPresent() || !labSystem.isPresent() || !sampleType.isPresent()) {
+			throw new DataRetrievalFailureException("Wrong chart, system or sample type");
+		}
+				
+		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chart.get().getId(), start, end, labSystem.get().getId(),
+				sampleType.get().getId());
 
 		// Check sample type in order to send the abbreviated name or anything else		
-		
-		
-		Optional<SampleType> sampleType = sampleTypeRepository.findById(sampleTypeId);
 		
 		List<DataForPlot> dataForPlot = prepareDataForPlot(dataFromDb,sampleType.get());
 		
 		// Get the param
-		Param param = chartParamRepository.findTopByChartId(chartId).getParam();
+		Param param = chartParamRepository.findTopByChartId(chart.get().getId()).getParam();
 		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 
 		// Optional<DataSource> dataSource =
 		// dataSourceRepository.findById(dataSourceId);
-		Optional<LabSystem> labSystem = labSystemRepository.findById(labSystemId);
+		// Optional<LabSystem> labSystem = labSystemRepository.findById(labSystemId);
 		processor.setData(dataForPlot);
 		/**
 		 * If data from a guide set is required then call the db for the data and set it
@@ -129,8 +138,8 @@ public class DataService {
 				throw new DataRetrievalFailureException("A guide set is required for this plot.");
 			}
 			processor.setGuideSet(gs);
-			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chartId, gs.getStartDate(),
-					gs.getEndDate(), labSystemId, sampleTypeId);
+			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chart.get().getId(), gs.getStartDate(),
+					gs.getEndDate(), labSystem.get().getId(), sampleType.get().getId());
 			if (dataToProcess.size() == 0) {
 				throw new DataRetrievalFailureException(
 						"Your selected guide has no results. Please, choose another date range.");
@@ -232,7 +241,7 @@ public class DataService {
 	 * @return true or false
 	 */
 	private boolean peptideBelongsToSampleType(SampleType sampleType, String sequence) {
-		List<SampleComposition> sampleComposition = sampleCompositionRepository.findBySampleTypeQualityControlControlledVocabulary(sampleType.getqCCV());
+		List<SampleComposition> sampleComposition = sampleCompositionRepository.findBySampleTypeQualityControlControlledVocabulary(sampleType.getQualityControlControlledVocabulary());
 		for(SampleComposition sc : sampleComposition) {
 			if(sc.getPeptide().getSequence().equals(sequence)) {
 				return true;
@@ -258,7 +267,7 @@ public class DataService {
 		
 		// get peptides by abbreviated sequence
 		List<Peptide> peptides = new ArrayList<>();
-		List<PeptidesFromSample> pps = sampleCompositionRepository.findBySampleTypeQualityControlControlledVocabularyAndPeptideAbbreviated(file.getSampleType().getqCCV(), abbreviatedSequence);
+		List<PeptidesFromSample> pps = sampleCompositionRepository.findBySampleTypeQualityControlControlledVocabularyAndPeptideAbbreviated(file.getSampleType().getQualityControlControlledVocabulary(), abbreviatedSequence);
 		for(int i = 0 ; i < pps.size(); i++) {
 			peptides.add(pps.get(i).getPeptide());
 		}

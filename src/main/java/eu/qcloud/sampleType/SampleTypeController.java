@@ -2,7 +2,9 @@ package eu.qcloud.sampleType;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
 import eu.qcloud.sampleType.SampleTypeRepository.WithPeptide;
 import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
@@ -33,12 +36,12 @@ public class SampleTypeController {
 	/**
 	 * Add a new sample type to the database
 	 * @param sampleType the sample type to insert
-	 * @param sampleTypeCategoryId the id of the category
+	 * @param sampleTypeCategoryApiKey the apikey of the category
 	 * @return the inserted sample type
 	 */
-	@RequestMapping(value="/api/sample/{sampleTypeCategoryId}",method= RequestMethod.POST)
-	public SampleType addSampleType(@RequestBody SampleType sampleType,@PathVariable Long sampleTypeCategoryId) {
-		return sampleTypeService.addSampleType(sampleType,sampleTypeCategoryId);
+	@RequestMapping(value="/api/sample/{sampleTypeCategoryApiKey}",method= RequestMethod.POST)
+	public SampleType addSampleType(@RequestBody SampleType sampleType,@PathVariable UUID sampleTypeCategoryApiKey) {
+		return sampleTypeService.addSampleType(sampleType,sampleTypeCategoryApiKey);
 	}
 	
 	/**
@@ -95,9 +98,9 @@ public class SampleTypeController {
 	 * Only a sample type per category can be main
 	 * @param sampleType
 	 */
-	@RequestMapping(value="/api/sample/makemain/{sampleTypeCategoryId}/{sampleTypeId}", method=RequestMethod.PUT)
-	public void doMainSampleType(@PathVariable Long sampleTypeCategoryId,@PathVariable Long sampleTypeId) {
-		sampleTypeService.makeMainSampleType(sampleTypeCategoryId,sampleTypeId);
+	@RequestMapping(value="/api/sample/makemain/{sampleTypeCategoryApiKey}/{sampleTypeQCCV}", method=RequestMethod.PUT)
+	public void doMainSampleType(@PathVariable UUID sampleTypeCategoryApiKey,@PathVariable String sampleTypeQCCV) {
+		sampleTypeService.makeMainSampleType(sampleTypeCategoryApiKey,sampleTypeQCCV);
 	}
 	
 	/**
@@ -121,8 +124,19 @@ public class SampleTypeController {
 	}
 	
 	
-	@ExceptionHandler(DataRetrievalFailureException.class)
+	/*
+	 * Error handlers
+	 */
+	@ExceptionHandler(InvalidActionException.class)
+	void handleBadAction(HttpServletResponse response, Exception e) throws IOException{
+		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
+	}
+	@ExceptionHandler(PersistenceException.class)
 	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
+		response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), e.getMessage());
+	}
+	@ExceptionHandler(DataRetrievalFailureException.class)
+	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
 	

@@ -19,7 +19,10 @@ import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsId;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
 import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
+import eu.qcloud.param.Param;
+import eu.qcloud.param.ParamRepository;
 import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.sampleType.SampleTypeRepository;
 /**
  * Service for charts and chart params
  * @author dmancera
@@ -37,16 +40,25 @@ public class ChartService {
 	@Autowired
 	private CVRepository cVRepository;
 	
+	@Autowired
+	private SampleTypeRepository sampleTypeRepository;
+	
+	@Autowired
+	private ParamRepository paramRepository;
+	
 	@PersistenceContext
 	private EntityManager entityManager;
 
 	public Chart addNewChart(Chart chart) {
 		chart.setApiKey(UUID.randomUUID());
 		Optional<CV> cv = cVRepository.getByCVId(chart.getCv().getCVId());
-		if(!cv.isPresent()) {
-			throw new DataRetrievalFailureException("Chart not found");
+		Optional<SampleType> st = sampleTypeRepository.findByQualityControlControlledVocabulary(chart.getSampleType().getQualityControlControlledVocabulary());
+		
+		if(!cv.isPresent() || !st.isPresent()) {
+			throw new DataRetrievalFailureException("Chart/ sample type not found");
 		}
 		chart.setCv(cv.get());
+		chart.setSampleType(st.get());
 		return chartRepository.save(chart);		
 	}
 	
@@ -57,6 +69,7 @@ public class ChartService {
 		}
 		Chart chart = original.get();
 		updatedChart.setId(chart.getId());
+		updatedChart.setSampleType(chart.getSampleType());
 		
 		return chartRepository.save(updatedChart);
 		
@@ -95,9 +108,16 @@ public class ChartService {
 		return true;
 	}
 	public ChartParams addParamToChart(ChartParams chartParam) {
+		Optional<Chart> c = chartRepository.findByApiKey(chartParam.getChart().getApiKey());
+		Param p = paramRepository.findByQCCV(chartParam.getParam().getqCCV());
+		if(!c.isPresent() || p == null) {
+			throw new DataRetrievalFailureException("Chart not found");
+		}
+		chartParam.setChart(c.get());
+		chartParam.setParam(p);
 		ChartParamsId id = new ChartParamsId();
-		id.setChartId(chartParam.getChart().getId());
-		id.setParamId(chartParam.getParam().getId());
+		id.setChartId(c.get().getId());
+		id.setParamId(p.getId());
 		id.setContextSourceId(chartParam.getContextSource().getId());
 		chartParam.setChartParamsId(id);
 		return chartParamsRepository.save(chartParam);
@@ -179,7 +199,7 @@ public class ChartService {
 	public List<FullParams> getFullChartParamsByChartApiKey(UUID chartApiKey) {
 		Optional<Chart> chart = chartRepository.findByApiKey(chartApiKey);
 		if(!chart.isPresent()) {
-			
+			throw new DataRetrievalFailureException("Chart not found");
 		}
 		return chartParamsRepository.findByChartParamsIdChartId(chart.get().getId());
 	}

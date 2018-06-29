@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import eu.qcloud.data.ProcessorType;
 
 @Entity
@@ -27,7 +29,7 @@ public class Param {
 	@Column(name="processor",nullable= true)	
 	private ProcessorType processor;
 	
-	@Column(name="QCCV")
+	@Column(name="QCCV", unique=true)
 	private String qCCV;
 	
 	public String getqCCV() {
@@ -53,7 +55,8 @@ public class Param {
 	public void setIsFor(String isFor) {
 		this.isFor = isFor;
 	}
-
+	
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}

@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import eu.qcloud.CV.CV;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.view.ViewDisplay;
@@ -66,6 +68,7 @@ public class Chart {
 
 	public Chart() {}
 	
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}

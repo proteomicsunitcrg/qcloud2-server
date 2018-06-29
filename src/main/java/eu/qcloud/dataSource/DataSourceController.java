@@ -52,10 +52,10 @@ public class DataSourceController {
 		return dataSourceService.getAllDataSourceByNodeId(u.getNode().getId());
 	}
 	
-	@RequestMapping(value="/api/datasource/category/{categoryId}",method= RequestMethod.GET)
-	public List<DataSource> getDataSourcesByNode(@PathVariable Long categoryId) {
+	@RequestMapping(value="/api/datasource/category/{categoryApiKey}",method= RequestMethod.GET)
+	public List<DataSource> getDataSourcesByNode(@PathVariable UUID categoryApiKey) {
 		User u = getManagerFromSecurityContext();
-		return dataSourceService.getAllDataSourceByNodeIdAndCategoryId(u.getNode().getId(),categoryId);
+		return dataSourceService.getAllDataSourceByNodeIdAndCategoryApiKey(u.getNode().getId(),categoryApiKey);
 	}
 	@RequestMapping(value="/api/datasource/{apiKey}",method= RequestMethod.GET)
 	public DataSource getDataSourceByApikey(@PathVariable UUID apiKey) {
@@ -117,33 +117,16 @@ public class DataSourceController {
 	public DataSource updateDataSource(@RequestBody DataSource dataSource) {
 		// Get the current node
 		User u = getManagerFromSecurityContext();
-		// Check if node has this instrument
-		if(dataSourceService.checkIfNodeHasDataSource(dataSource.getId(),u.getNode().getId())) {
-			DataSource ds = dataSourceService.findByApiKey(dataSource.getApiKey());
-			if(ds == null) {
-				throw new InvalidActionException("Instrument not found.");
-			}			
+		DataSource ds = dataSourceService.findByApiKey(dataSource.getApiKey());
+		// Check if node has this instrument		
+		if(dataSourceService.checkIfNodeHasDataSource(ds.getId(),u.getNode().getId())) {
 			ds.setName(dataSource.getName());
-			//ds.setGuideSet(dataSource.getGuideSet());
 			return dataSourceService.updateDataSource(ds);
 		}else {
 			throw new InvalidActionException("You do not own this instrument.");
 		}
 	}
-	/*
-	@RequestMapping(value="/api/datasource/guideset/{apiKey}",method= RequestMethod.POST)
-	public DataSource addGuideSetToDataSource(@PathVariable UUID apiKey, @RequestBody GuideSet guideSet) {
-		User u = getManagerFromSecurityContext();
-		DataSource dataSource = dataSourceService.findByApiKey(apiKey);
-		if(dataSourceService.checkIfNodeHasDataSource(dataSource.getId(), u.getNode().getId())) {
-			guideSet.setDataSource(dataSource);
-			
-			dataSource.setGuideSet(dataSourceService.saveGuideSet(guideSet));
-			return dataSourceService.updateDataSource(dataSource);
-		}
-		return null;
-	}
-	*/
+
 	/**
 	 * This endpoint is for migration purposes. The data from the old 
 	 * database is not enought to use the current addSource function.

@@ -71,7 +71,8 @@ public class LabSystem {
 	public void setGuideSet(GuideSet guideSet) {
 		this.guideSet = guideSet;
 	}
-
+	
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}

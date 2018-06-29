@@ -47,11 +47,11 @@ public class SampleType {
     @Column(name="is_main_sample_type")
     private boolean isMainSampleType;
     
-	public String getqCCV() {
+	public String getQualityControlControlledVocabulary() {
 		return qualityControlControlledVocabulary;
 	}
 
-	public void setqCCV(String qCCV) {
+	public void setQualityControlControlledVocabulary(String qCCV) {
 		this.qualityControlControlledVocabulary = qCCV;
 	}
 
@@ -63,6 +63,11 @@ public class SampleType {
 		this.isMainSampleType = isMainSampleType;
 	}
 
+	/*
+	 * Comment this jsonignore for use
+	 * python migrator
+	 */
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}

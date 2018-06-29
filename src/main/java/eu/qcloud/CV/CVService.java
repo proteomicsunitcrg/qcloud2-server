@@ -3,6 +3,7 @@ package eu.qcloud.CV;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -33,10 +34,10 @@ public class CVService {
 		return cvRepository.findById(id);
 	}
 	
-	public List<CV> getAllCVbyCategory(Long categoryId) {
+	public List<CV> getAllCVbyCategory(UUID categoryApiKey) {
 		List<CV> cvs = new ArrayList<>();
-		cvRepository.findByCategoryId(categoryId)
-		.forEach(cvs::add);		
+		cvRepository.findByCategoryApiKey(categoryApiKey)
+		.forEach(cvs::add);
 		return cvs;
 	}
 	
@@ -55,8 +56,8 @@ public class CVService {
 		return cvRepository.findByEnabled(true);
 	}
 
-	public List<CV> getAllEnabledCVByCategory(Long categoryId) {
-		return cvRepository.findByCategoryIdAndEnabled(categoryId,true);		
+	public List<CV> getAllEnabledCVByCategory(UUID categoryId) {
+		return cvRepository.findByCategoryApiKeyAndEnabled(categoryId,true);		
 	}
 
 	public CV getCvByCVId(String cvId) {

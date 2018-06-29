@@ -24,6 +24,8 @@ import eu.qcloud.chart.ChartRepository.NoView;
 import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
 import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.param.Param;
+import eu.qcloud.param.ParamRepository;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeService;
 /**
@@ -40,6 +42,9 @@ public class ChartController {
 	
 	@Autowired
 	private SampleTypeService sampleTypeService;
+	
+	@Autowired
+	private ParamRepository paramRepository;
 	
 	
 	/**
@@ -130,9 +135,15 @@ public class ChartController {
 	public List<ChartParams> addParamsToChart(@RequestBody List<ChartParams> chartParams,@PathVariable UUID chartApiKey) {
 		// get the chart id
 		Optional<Chart> chart = chartService.getChartByApiKey(chartApiKey);
+		
+		if(chartParams.size() == 0) {
+			throw new InvalidActionException("You need at least one param");
+		}
+		Param p = paramRepository.findByQCCV(chartParams.get(0).getParam().getqCCV());
 		List<ChartParams> chartParamsList = new ArrayList<>();
 		for(ChartParams chartParam: chartParams) {
 			chartParam.setChart(chart.get());
+			chartParam.setParam(p);
 			chartParamsList.add(chartService.addParamToChart(chartParam));
 			
 		}

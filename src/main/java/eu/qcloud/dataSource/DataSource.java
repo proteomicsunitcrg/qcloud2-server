@@ -54,7 +54,8 @@ public class DataSource {
 	public void setNode(Node node) {
 		this.node = node;
 	}
-
+	
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}

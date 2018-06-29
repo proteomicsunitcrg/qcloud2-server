@@ -2,7 +2,6 @@ package eu.qcloud.sampleComposition;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
@@ -53,32 +52,26 @@ public class SampleCompositionController {
 	
 	/**
 	 * Return a list of all sample composition that have a certain peptide
-	 * @param peptideId the id of the peptide
+	 * @param peptideSequence the sequence of the peptide
 	 * @return a list of sample composition matching the required criteria
 	 */
-	@RequestMapping(value="/api/samplecomposition/peptide/{peptideId}", method=RequestMethod.GET)
-	public List<SampleComposition> getAllSampleCompositionByPeptideId(@PathVariable Long peptideId) {
-		return sampleCompositionService.getAllSampleCompositionByPeptideId(peptideId);
+	@RequestMapping(value="/api/samplecomposition/peptide/{peptideSequence}", method=RequestMethod.GET)
+	public List<SampleComposition> getAllSampleCompositionByPeptideSequence(@PathVariable String peptideSequence) {
+		return sampleCompositionService.getAllSampleCompositionByPeptideSequence(peptideSequence);
 	}
 	
 	/**
 	 * Delete a peptide from a sample
-	 * @param peptideId the peptide to delete
-	 * @param sampleTypeId the sample type id to delete from
+	 * @param peptideSequence the peptide sequence to delete
+	 * @param sampleTypeQCCV the sample type qccv to delete from
 	 * @return true if ok, false if something wrong
 	 */
-	@RequestMapping(value="/api/samplecomposition/peptide/{peptideId}/sample/{sampleTypeId}", method=RequestMethod.DELETE)
-	public boolean deleteSampleComposition(@PathVariable Long peptideId,@PathVariable  Long sampleTypeId) {
+	@RequestMapping(value="/api/samplecomposition/peptide/{peptideSequence}/sample/{sampleTypeQCCV}", method=RequestMethod.DELETE)
+	public boolean deleteSampleComposition(@PathVariable String peptideSequence,@PathVariable  String sampleTypeQCCV) {
 		// Get the sample composition by id
-		SampleCompositionId scId = new SampleCompositionId();
-		scId.setPeptideId(peptideId);
-		scId.setSampleTypeId(sampleTypeId);
-		Optional<SampleComposition> sc = sampleCompositionService.getSampleCompositionById(scId);
-		if(!sc.isPresent()) {
-			throw new DataIntegrityViolationException("Sample composition does not exist.");
-		}
+		sampleCompositionService.deleteFromSampleComposition(peptideSequence, sampleTypeQCCV);
 		
-		return sampleCompositionService.deleteSampleComposition(sc.get());
+		return true;
 	}
 	
 	/**

@@ -25,12 +25,12 @@ public class RetentionTimeProcessor extends Processor {
 		 * to perform the calculation of the mean
 		 */
 		for(Data d: guideSetData) {
-			if(guideSetValues.containsKey(d.getContextSource().getName())) {
+			if(guideSetValues.containsKey(d.getContextSource().getAbbreviated())) {
 				if(d.getValue()!=0f) {
-					guideSetValues.get(d.getContextSource().getName()).add(d.getValue());					
+					guideSetValues.get(d.getContextSource().getAbbreviated()).add(d.getValue());					
 				}
 			}else {
-				guideSetValues.put(d.getContextSource().getName(), new ArrayList<>());
+				guideSetValues.put(d.getContextSource().getAbbreviated(), new ArrayList<>());
 			}
 		}
 		/**

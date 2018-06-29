@@ -2,6 +2,7 @@ package eu.qcloud.contextSource.peptide;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
@@ -11,6 +12,7 @@ import eu.qcloud.sampleComposition.SampleComposition;
 @Entity(name="peptide")
 public class Peptide extends ContextSource{
 	
+	@Column(name="sequence", unique = true)
 	private String sequence;
 	
 	// private String abbreviatedSequence;
@@ -29,15 +31,6 @@ public class Peptide extends ContextSource{
 	public void setSequence(String sequence) {
 		this.sequence = sequence;
 	}
-	/*
-	public String getAbbreviatedSequence() {
-		return abbreviatedSequence;
-	}
-
-	public void setAbbreviatedSequence(String abbreviatedSequence) {
-		this.abbreviatedSequence = abbreviatedSequence;		
-	}
-	*/
 
 	public Float getMz() {
 		return mz;

@@ -40,7 +40,7 @@ public class ParamController {
 	}
 	
 	@RequestMapping(value="/api/param",method= RequestMethod.PUT)
-	public Param updateParam(@RequestBody Param param) {
+	public Param updateParam(@RequestBody Param param) {		
 		return paramService.updateParam(param);
 	}
 	/**

@@ -14,6 +14,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import eu.qcloud.sampleType.SampleType;
 
 @Entity
@@ -47,7 +49,8 @@ public class SampleTypeCategory {
 	public void setApiKey(UUID apiKey) {
 		this.apiKey = apiKey;
 	}
-
+	
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}

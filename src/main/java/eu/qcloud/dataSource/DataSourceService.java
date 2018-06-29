@@ -62,6 +62,10 @@ public class DataSourceService {
 		return dataSourceRepository.findByNodeIdAndCvCategoryId(nodeId, categoryId);
 	}
 	
+	public List<DataSource> getAllDataSourceByNodeIdAndCategoryApiKey(Long nodeId, UUID categoryApiKey) {
+		return dataSourceRepository.findByNodeIdAndCvCategoryApiKey(nodeId, categoryApiKey);
+	}
+	
 	public Optional<DataSource> findById(Long id) {
 		return dataSourceRepository.findById(id);
 	}

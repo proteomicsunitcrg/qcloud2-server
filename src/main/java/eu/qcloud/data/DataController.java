@@ -3,6 +3,7 @@ package eu.qcloud.data;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,6 +25,8 @@ import eu.qcloud.contextSource.peptide.PeptideService;
 import eu.qcloud.data.insertmodel.DataFromPipeline;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileService;
+import eu.qcloud.param.Param;
+import eu.qcloud.param.ParamRepository;
 
 
 /**
@@ -41,6 +44,9 @@ public class DataController {
 	private PeptideService peptideService;
 	@Autowired
 	private FileService fileService;
+	
+	@Autowired
+	private ParamRepository paramRepository;;
 
 	@Autowired
 	private InstrumentSampleService instrumentSampleService;
@@ -65,13 +71,14 @@ public class DataController {
 	 * @param data
 	 * @return
 	 */
-	@RequestMapping(value="/api/data/{paramId}/{quantificationSourceSequence}/{checksum}",method = RequestMethod.POST)
-	public Data insertData(@PathVariable Long paramId,
+	@RequestMapping(value="/api/data/{paramQCCV}/{quantificationSourceSequence}/{checksum}",method = RequestMethod.POST)
+	public Data insertData(@PathVariable String paramQCCV,
 			@PathVariable String quantificationSourceSequence,
 			@PathVariable String checksum,@RequestBody Data data) {
 		Peptide p = peptideService.findPeptideBySequence(quantificationSourceSequence);
 		File f = fileService.getFileByChecksum(checksum);
-		data.setDataId(new DataId(paramId,p.getId(),f.getId()));
+		Param param = paramRepository.findByQCCV(paramQCCV);
+		data.setDataId(new DataId(param.getId(),p.getId(),f.getId()));
 		return dataService.addData(data);
 	}
 	
@@ -86,13 +93,16 @@ public class DataController {
 	 * @param data
 	 * @return
 	 */
-	@RequestMapping(value="/api/data/simple/{paramId}/{instrumentSampleId}/{checksum}",method = RequestMethod.POST)
-	public Data insertSimpleData(@PathVariable Long paramId,
-			@PathVariable Long instrumentSampleId,
+	@RequestMapping(value="/api/data/simple/{paramQCCV}/{instrumentSampleQCCV}/{checksum}",method = RequestMethod.POST)
+	public Data insertSimpleData(@PathVariable String paramQCCV,
+			@PathVariable String instrumentSampleQCCV,
 			@PathVariable String checksum,@RequestBody Data data) {
-		InstrumentSample is = instrumentSampleService.findById(instrumentSampleId).get();		
+		
+		InstrumentSample is = instrumentSampleService.findByQCCV(instrumentSampleQCCV);
+		Param p = paramRepository.findByQCCV(paramQCCV);
+		
 		File f = fileService.getFileByChecksum(checksum);
-		data.setDataId(new DataId(paramId,is.getId(),f.getId()));
+		data.setDataId(new DataId(p.getId(),is.getId(),f.getId()));
 		return dataService.addData(data);
 	}
 	
@@ -105,12 +115,16 @@ public class DataController {
 	 * @param sampleTypeId
 	 * @return a list of data in a form of a DataForPlot, another class.
 	 */
-	@RequestMapping(value="/api/data/{startDate}/{endDate}/{chartId}/{labSystemId}/{sampleTypeId}", method=RequestMethod.GET)
+	@RequestMapping(value="/api/data/{startDate}/{endDate}/{chartApiKey}/{labSystemApiKey}/{sampleTypeQCCV}", method=RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
-	public List<DataForPlot> getPlotData(@PathVariable String startDate,@PathVariable  String endDate,@PathVariable Long chartId, @PathVariable Long labSystemId,@PathVariable Long sampleTypeId) {
+	public List<DataForPlot> getPlotData(@PathVariable String startDate,
+			@PathVariable  String endDate,
+			@PathVariable UUID chartApiKey, 
+			@PathVariable UUID labSystemApiKey,
+			@PathVariable String sampleTypeQCCV) {
 		Date start = Date.valueOf(startDate);
 		Date end = Date.valueOf(endDate);
-		return dataService.getPlotData(start, end, chartId, labSystemId, sampleTypeId);
+		return dataService.getPlotData(start, end, chartApiKey, labSystemApiKey, sampleTypeQCCV);
 	}
 	
 	@RequestMapping(value="/api/data/iso/{checksum}/{abbreviated}", method=RequestMethod.GET)

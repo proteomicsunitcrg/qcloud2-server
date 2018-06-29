@@ -29,7 +29,7 @@ public class ContextSource {
 	public void setAbbreviated(String abbreviated) {
 		this.abbreviated = abbreviated;
 	}
-
+	
 	public Long getId() {
 		return id;
 	}

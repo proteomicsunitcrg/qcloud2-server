@@ -2,6 +2,7 @@ package eu.qcloud.sampleComposition;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -9,7 +10,13 @@ import eu.qcloud.contextSource.peptide.Peptide;
 
 public interface SampleCompositionRepository extends CrudRepository<SampleComposition, SampleCompositionId> {
 	
+	@Modifying
+	@Query(value = "delete from sample_composition where peptide_id = ?1 and sample_type_id = ?2", nativeQuery= true)
+	public void deleteSampleCompositionByPeptideIdAndSampleTypeId(Long peptideId, Long sampleTypeId);
+	
 	public List<SampleComposition> findByPeptideId(Long peptideId);
+	
+	public List<SampleComposition> findByPeptideSequence(String peptideSequence);
 	
 	public List<PeptidesFromSample> findBySampleTypeName(String name);
 	

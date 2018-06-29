@@ -12,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
 import eu.qcloud.sampleType.SampleTypeRepository.WithPeptide;
 import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
@@ -33,8 +34,8 @@ public class SampleTypeService {
 	 * @param sampleTypeCategoryId the category id of the sample type
 	 * @return inserted sample type
 	 */
-	public SampleType addSampleType(SampleType s, Long sampleTypeCategoryId) {
-		Optional<SampleTypeCategory> stc = sampleTypeCategoryRepository.findById(sampleTypeCategoryId);
+	public SampleType addSampleType(SampleType s, UUID sampleTypeCategoryApiKey) {
+		Optional<SampleTypeCategory> stc = sampleTypeCategoryRepository.findByApiKey(sampleTypeCategoryApiKey);
 		if(stc.isPresent()) {
 			s.setSampleTypeCategory(stc.get());
 			return sampleTypeRepository.save(s);			
@@ -101,11 +102,16 @@ public class SampleTypeService {
 	 * @param sampleTypeCategoryId
 	 * @param sampleTypeId
 	 */
-	public void makeMainSampleType(Long sampleTypeCategoryId, Long sampleTypeId) {
-		sampleTypeRepository.findBySampleTypeCategoryId(sampleTypeCategoryId)
+	public void makeMainSampleType(UUID sampleTypeCategoryApiKey, String sampleTypeQCCV) {
+		// check if this sample type belongs to the sample type category
+		Optional<SampleType> st = sampleTypeRepository.findByQualityControlControlledVocabularyAndSampleTypeCategoryApiKey(sampleTypeQCCV, sampleTypeCategoryApiKey);
+		if(!st.isPresent()) {
+			throw new InvalidActionException("This sample type does not belong to this sample type category");
+		}
+		sampleTypeRepository.findBySampleTypeCategoryApiKey(sampleTypeCategoryApiKey)
 		.forEach(s-> {
-			if(s.getId()!= sampleTypeId) {
-				s.setMainSampleType(false);					
+			if(!s.getQualityControlControlledVocabulary().equals(sampleTypeQCCV)) {
+				s.setMainSampleType(false);
 			}else {
 				s.setMainSampleType(true);
 			}
@@ -142,5 +148,7 @@ public class SampleTypeService {
 			throw new DataRetrievalFailureException("No sample type found with this sample type " + qCCV);
 		}
 	}
+	
+
 	
 }

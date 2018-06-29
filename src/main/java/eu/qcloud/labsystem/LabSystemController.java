@@ -1,6 +1,7 @@
 package eu.qcloud.labsystem;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.dataSource.DataSource;
+import eu.qcloud.dataSource.DataSourceRepository;
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
@@ -38,6 +40,9 @@ public class LabSystemController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private DataSourceRepository dataSourceRepository;
 	
 	/**
 	 * Save the given system into the database
@@ -57,6 +62,8 @@ public class LabSystemController {
 		// get the system
 		Optional<LabSystem> s = labSystemService.findSystemByApiKey(apiKey);
 		if(s.isPresent()) {
+			// check if data sources belongs to the lab
+			dataSources = checkDataSources(dataSources);
 			// add the data sources
 			LabSystem system = s.get();
 			system.setDataSources(dataSources);
@@ -65,6 +72,26 @@ public class LabSystemController {
 		}else {
 			throw new InvalidActionException("System not found");
 		}
+	}
+	
+	/**
+	 * This method will check if the datasources belongs to
+	 * the node, and will return an array with the proper data source
+	 * entities from the database.
+	 * If not it will throw an exception
+	 * @param dataSources
+	 */
+	private List<DataSource> checkDataSources(List<DataSource> dataSources) {
+		List<DataSource> data = new ArrayList<>();
+		User manager = getManagerFromSecurityContext();
+		for(DataSource ds: dataSources) {
+			DataSource d = dataSourceRepository.findByApiKey(ds.getApiKey());
+			if(!d.getNode().getApiKey().equals(manager.getNode().getApiKey())) {
+				throw new InvalidActionException("You do not own this data sources");
+			}
+			data.add(d);
+		}
+		return data;
 	}
 	
 	@PreAuthorize("hasRole('MANAGER')")
@@ -126,7 +153,6 @@ public class LabSystemController {
 		User manager = userService.getUserByUsername(authentication.getName());
 		return manager;
 	}
-	
 	/*
 	 * Error handlers
 	 */

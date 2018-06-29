@@ -46,6 +46,10 @@ public class PeptideService {
 	public Optional<Peptide> getPeptideById(Long peptideId) {
 		return peptideRepository.findById(peptideId);
 	}
+	
+	public Peptide getPeptideBySequence(String peptideSequence) {
+		return peptideRepository.findBySequence(peptideSequence);
+	}
 
 	/**
 	 * Find peptides by its id

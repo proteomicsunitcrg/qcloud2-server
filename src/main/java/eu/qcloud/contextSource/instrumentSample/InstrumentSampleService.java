@@ -30,4 +30,8 @@ public class InstrumentSampleService {
 		return elementRepository.findById(instrumentSampleId);
 	}
 	
+	public InstrumentSample findByQCCV(String qccv) {
+		return elementRepository.findByQualityControlControlledVocabulary(qccv);
+	}
+	
 }

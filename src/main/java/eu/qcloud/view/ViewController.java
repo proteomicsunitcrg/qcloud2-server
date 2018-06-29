@@ -46,7 +46,7 @@ public class ViewController {
 		try {
 			return viewService.addView(view);
 		}catch(Exception e) {
-			throw new DataIntegrityViolationException("There is a problem with the server");
+			throw new DataIntegrityViolationException(e.getMessage());
 		}
 	}
 	
@@ -87,14 +87,7 @@ public class ViewController {
 	 * @param sampleTypeCategoryId
 	 * @return
 	 */
-	/*
-	@RequestMapping(value="/api/views/default/{cvId}/{sampleTypeCategoryId}", method=RequestMethod.GET)
-	public View getViewByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,@PathVariable Long sampleTypeCategoryId) {
-		View v = viewService.getDefaultViewByCVIdAndSampleTypeCategoryId(cvId,sampleTypeCategoryId);
-		return v;
-	}
-	*/
-	
+		
 	@RequestMapping(value="/api/views/default/{cvId}/{sampleTypeCategoryApiKey}", method=RequestMethod.GET)
 	public View getViewByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,@PathVariable UUID sampleTypeCategoryApiKey) {
 		View v = viewService.getDefaultViewByCVIdAndSampleTypeCategoryApiKey(cvId,sampleTypeCategoryApiKey);
