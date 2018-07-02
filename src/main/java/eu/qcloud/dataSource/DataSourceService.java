@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
-import eu.qcloud.CV.CV;
-import eu.qcloud.CV.CVRepository;
+import eu.qcloud.Instrument.Instrument;
+import eu.qcloud.Instrument.InstrumentRepository;
 import eu.qcloud.labsystem.GuideSet;
 import eu.qcloud.labsystem.GuideSetRepository;
 /**
@@ -27,7 +27,7 @@ public class DataSourceService {
 	private GuideSetRepository guideSetRepository;
 	
 	@Autowired
-	private CVRepository cvRepository;
+	private InstrumentRepository cvRepository;
 	
 	public List<DataSource> getAllDataSource() {
 		List<DataSource> dataSources = new ArrayList<>();
@@ -89,7 +89,7 @@ public class DataSourceService {
 	}
 
 	public DataSource addNewDataSourceAuto(DataSource dataSource) {
-		Optional<CV> cv = cvRepository.getByCVId(dataSource.getCv().getCVId());
+		Optional<Instrument> cv = cvRepository.getByCVId(dataSource.getCv().getCVId());
 		if(!cv.isPresent()) {
 			throw new DataRetrievalFailureException("CV not found");
 		}

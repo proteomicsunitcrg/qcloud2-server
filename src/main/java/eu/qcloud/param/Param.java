@@ -30,14 +30,14 @@ public class Param {
 	private ProcessorType processor;
 	
 	@Column(name="QCCV", unique=true)
-	private String qCCV;
+	private String qccv;
 	
 	public String getqCCV() {
-		return qCCV;
+		return qccv;
 	}
 
 	public void setqCCV(String qCCV) {
-		this.qCCV = qCCV;
+		this.qccv = qCCV;
 	}
 
 	public ProcessorType getProcessor() {

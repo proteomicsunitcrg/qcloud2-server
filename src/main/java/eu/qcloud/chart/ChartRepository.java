@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import eu.qcloud.CV.CV;
+import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.sampleType.SampleType;
 
 @Repository
@@ -18,7 +18,7 @@ public interface ChartRepository extends CrudRepository<Chart, Long>{
 	
 	List<Chart> findByCvId(Long cvId);
 	
-	@Query("select c from Chart c where c.cv.CVId = ?1")
+	@Query("select c from Chart c where c.cv.qccv = ?1")
 	List<NoView> findByCvIdWithoutView(String cvId);
 	
 	@Query("select c from Chart c")
@@ -38,7 +38,7 @@ public interface ChartRepository extends CrudRepository<Chart, Long>{
 		Long getId();
 		String getName();
 		SampleType getSampleType();
-		CV getCv();
+		Instrument getCv();
 		boolean getIsThresholdEnabled();
 		UUID getApiKey();
 	}

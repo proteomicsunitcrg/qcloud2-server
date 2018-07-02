@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import eu.qcloud.CV.CV;
+import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.security.model.User;
 
 @Repository
@@ -15,7 +15,7 @@ public interface ViewRepository extends CrudRepository<View, Long> {
 
 	//List<View> findByCvId(Long cvId);
 	
-	@Query("SELECT v from View v where v.cv.CVId=?1 and v.isDefault=true")
+	@Query("SELECT v from View v where v.cv.qccv=?1 and v.isDefault=true")
 	List<View> findByCvCVId(String cvId);
 	
 	
@@ -29,7 +29,7 @@ public interface ViewRepository extends CrudRepository<View, Long> {
 		Long getId();
 		String getName();
 		User getUser();
-		CV getCv();
+		Instrument getCv();
 		
 		
 	}

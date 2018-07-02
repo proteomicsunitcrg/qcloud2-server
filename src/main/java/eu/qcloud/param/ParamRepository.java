@@ -4,6 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ParamRepository extends CrudRepository<Param, Long> {
 	
-	public Param findByQCCV(String qCCV);
+	public Param findByQccv(String qCCV);
 
 }

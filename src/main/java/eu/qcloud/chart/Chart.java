@@ -16,7 +16,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import eu.qcloud.CV.CV;
+import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.view.ViewDisplay;
 
@@ -34,7 +34,7 @@ public class Chart {
     
     @ManyToOne
 	@JoinColumn(name="cvId",insertable=true, updatable= false, nullable=false)
-    private CV cv;
+    private Instrument cv;
     
     @ManyToOne
 	@JoinColumn(name="sampleTypeId",insertable=true, updatable= false,nullable=false)
@@ -77,11 +77,11 @@ public class Chart {
 		this.id = id;
 	}
 
-	public CV getCv() {
+	public Instrument getCv() {
 		return cv;
 	}
 
-	public void setCv(CV cv) {
+	public void setCv(Instrument cv) {
 		this.cv = cv;
 	}
 
@@ -101,7 +101,7 @@ public class Chart {
 		this.name = name;
 	}
 
-	public Chart(Long id, CV cv, SampleType sampleType, String name, List<ViewDisplay> display) {		
+	public Chart(Long id, Instrument cv, SampleType sampleType, String name, List<ViewDisplay> display) {		
 		this.id = id;
 		this.cv = cv;
 		this.sampleType = sampleType;

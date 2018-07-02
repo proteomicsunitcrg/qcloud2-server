@@ -1,4 +1,4 @@
-package eu.qcloud.CV;
+package eu.qcloud.Instrument;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import eu.qcloud.dataSource.DataSource;
 
 @Entity
 @Table(name = "cv")
-public class CV {
+public class Instrument {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "cv_seq")
@@ -43,7 +43,7 @@ public class CV {
     private String definition;
     
     @Column(name="cv_id")
-    private String CVId;
+    private String qccv;
     
     @Column(name="enabled")
     private boolean enabled;
@@ -69,7 +69,7 @@ public class CV {
 		this.enabled = enabled;
 	}
 
-	public CV() {}
+	public Instrument() {}
     	
 	public Long getId() {
 		return id;
@@ -104,11 +104,11 @@ public class CV {
 	}
 
 	public String getCVId() {
-		return CVId;
+		return qccv;
 	}
 
 	public void setCVId(String cVId) {
-		CVId = cVId;
+		qccv = cVId;
 	}    
     
 }

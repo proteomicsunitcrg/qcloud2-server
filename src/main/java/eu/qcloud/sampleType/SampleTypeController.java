@@ -118,9 +118,9 @@ public class SampleTypeController {
 	 * @param sampleTypeCategoryId
 	 * @return
 	 */
-	@RequestMapping(value="/api/sample/main/{sampleTypeCategoryId}", method=RequestMethod.GET)
-	public SampleType getDefaultSampleTypeBySampleTypeCategoryId(@PathVariable Long sampleTypeCategoryId) {
-		return sampleTypeService.getMainSampleTypeBySampleTypeCategory(sampleTypeCategoryId);
+	@RequestMapping(value="/api/sample/main/{sampleTypeCategoryQCCV}", method=RequestMethod.GET)
+	public SampleType getDefaultSampleTypeBySampleTypeCategoryId(@PathVariable UUID sampleTypeCategoryQCCV) {
+		return sampleTypeService.getMainSampleTypeBySampleTypeCategoryApiKey(sampleTypeCategoryQCCV);
 	}
 	
 	

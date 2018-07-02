@@ -15,7 +15,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import eu.qcloud.CV.CV;
+import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
 import eu.qcloud.security.model.User;
 /**
@@ -46,7 +46,7 @@ public class View {
 	
 	@OneToOne
 	@JoinColumn(name="cvId",insertable=true, updatable= false,nullable=true,unique=false)
-	private CV cv;
+	private Instrument cv;
 	
 	@OneToMany(mappedBy="view")
 	private List<ViewDisplay> viewDisplay;
@@ -63,11 +63,11 @@ public class View {
 		this.sampleTypeCategory = sampleTypeCategory;
 	}
 
-	public CV getCv() {
+	public Instrument getCv() {
 		return cv;
 	}
 
-	public void setCv(CV cv) {
+	public void setCv(Instrument cv) {
 		this.cv = cv;
 	}
 	

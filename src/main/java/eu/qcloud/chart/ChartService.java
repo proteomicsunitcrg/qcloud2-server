@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
-import eu.qcloud.CV.CV;
-import eu.qcloud.CV.CVRepository;
+import eu.qcloud.Instrument.Instrument;
+import eu.qcloud.Instrument.InstrumentRepository;
 import eu.qcloud.chart.ChartRepository.NoView;
 import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsId;
@@ -38,7 +38,7 @@ public class ChartService {
 	private ChartParamsRepository chartParamsRepository;
 	
 	@Autowired
-	private CVRepository cVRepository;
+	private InstrumentRepository cVRepository;
 	
 	@Autowired
 	private SampleTypeRepository sampleTypeRepository;
@@ -51,7 +51,7 @@ public class ChartService {
 
 	public Chart addNewChart(Chart chart) {
 		chart.setApiKey(UUID.randomUUID());
-		Optional<CV> cv = cVRepository.getByCVId(chart.getCv().getCVId());
+		Optional<Instrument> cv = cVRepository.getByCVId(chart.getCv().getCVId());
 		Optional<SampleType> st = sampleTypeRepository.findByQualityControlControlledVocabulary(chart.getSampleType().getQualityControlControlledVocabulary());
 		
 		if(!cv.isPresent() || !st.isPresent()) {
@@ -109,7 +109,7 @@ public class ChartService {
 	}
 	public ChartParams addParamToChart(ChartParams chartParam) {
 		Optional<Chart> c = chartRepository.findByApiKey(chartParam.getChart().getApiKey());
-		Param p = paramRepository.findByQCCV(chartParam.getParam().getqCCV());
+		Param p = paramRepository.findByQccv(chartParam.getParam().getqCCV());
 		if(!c.isPresent() || p == null) {
 			throw new DataRetrievalFailureException("Chart not found");
 		}
@@ -152,6 +152,10 @@ public class ChartService {
 	
 	public ChartParams getChartParamByChartId(Long chartId) {
 		return chartParamsRepository.findTopByChartId(chartId);
+	}
+	
+	public ChartParams getTopChartParamByChartApiKey(UUID chartApiKey) {
+		return chartParamsRepository.findTopByChartApiKey(chartApiKey);
 	}
 
 	public Optional<Chart> getChartById(Long chartId) {

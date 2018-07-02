@@ -15,6 +15,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.sampleType.SampleType;
@@ -55,7 +56,8 @@ public class File {
 	public void setChecksum(String checksum) {
 		this.checksum = checksum;
 	}
-
+	
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}

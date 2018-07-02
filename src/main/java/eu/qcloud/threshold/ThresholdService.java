@@ -13,6 +13,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.Instrument.Instrument;
+import eu.qcloud.Instrument.InstrumentRepository;
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataRepository;
 import eu.qcloud.dataSource.DataSource;
@@ -22,6 +24,10 @@ import eu.qcloud.file.FileRepository;
 import eu.qcloud.labsystem.GuideSet;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
+import eu.qcloud.param.Param;
+import eu.qcloud.param.ParamRepository;
+import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
@@ -62,6 +68,15 @@ public class ThresholdService {
 	
 	@Autowired
 	private FileRepository fileRepository;
+	
+	@Autowired
+	private SampleTypeRepository sampleTypeRepository;
+	
+	@Autowired
+	private InstrumentRepository instrumentRepository;
+	
+	@Autowired
+	private ParamRepository paramRepository;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -90,8 +105,60 @@ public class ThresholdService {
 	 */
 	public Optional<Threshold> findThresholdBySampleTypeIdAndParamIdAndCvId(Long sampleTypeId, Long paramId,
 			Long cvId) {
-		return thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(sampleTypeId, paramId, cvId);
+		return thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrue(sampleTypeId, paramId, cvId);
 	}
+	
+	
+	public Optional<Threshold> findThresholdBySampleTypeQCCVAndParamQCCVAndCVQCCV(String sampleTypeQCCV, String paramQCCV, String instrumentQCCV) {
+		return thresholdRepository.findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccv(sampleTypeQCCV, paramQCCV, instrumentQCCV);
+	}
+	
+	public Threshold saveThreshold(ThresholdType type, Threshold threshold) {
+		// Get the entities
+		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(threshold.getSampleType().getQualityControlControlledVocabulary());
+		Param p = paramRepository.findByQccv(threshold.getParam().getqCCV());
+		Optional<Instrument> instrument = instrumentRepository.getByCVId(threshold.getCv().getCVId());
+		
+		if(!sampleType.isPresent() || p == null | !instrument.isPresent()) {
+			throw new DataRetrievalFailureException("Instrument, parameter or sample type not found");
+		}
+		
+		/**
+		 * I had to this because I could not do a downcast from threshold
+		 * to a more specific son.
+		 */
+		switch(type) {
+		case SIGMA:
+			SigmaThreshold st = new SigmaThreshold();
+			// st.setCv(threshold.getCv());
+			st.setCv(instrument.get());
+			st.setSteps(threshold.getSteps());
+			// st.setParam(threshold.getParam());
+			st.setParam(p);
+			// st.setSampleType(threshold.getSampleType());
+			st.setSampleType(sampleType.get());
+			st.setEnabled(true);
+			st.setMonitored(true);
+			return saveSigmaThreshold(st);
+		case HARDLIMIT:
+			HardLimitThreshold ht = new HardLimitThreshold();
+			// ht.setCv(threshold.getCv());
+			ht.setCv(instrument.get());
+			ht.setSteps(threshold.getSteps());
+			// ht.setParam(threshold.getParam());
+			ht.setParam(p);
+			// ht.setSampleType(threshold.getSampleType());
+			ht.setSampleType(sampleType.get());
+			ht.setEnabled(true);
+			ht.setMonitored(true);
+			return saveHardLimitThreshold(ht);
+		default:
+			return null;
+		}
+	}
+	
+	
+	
 
 	/**
 	 * Returns a labsystem threshold. In case the labsystem do not have a threshold
@@ -109,14 +176,53 @@ public class ThresholdService {
 			Long cvId, Long labSystemId) {
 		// check if exists for the current labSystem, if not, create
 		Optional<Threshold> t = thresholdRepository
-				.findOptionalBySampleTypeIdAndParamIdAndCvIdAndLabSystemIdAndIsEnabledTrue(sampleTypeId, paramId, cvId, labSystemId);
+				.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndLabSystemIdAndIsEnabledTrue(sampleTypeId, paramId, cvId, labSystemId);
 		if (t.isPresent()) {
 			return t.get();
 		} else {
 			// create and return
 			Optional<LabSystem> ls = labSystemRepository.findById(labSystemId);
 			// t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(sampleTypeId, paramId, cvId);
-			t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrueAndLabSystemIdIsNull(sampleTypeId, paramId, cvId);
+			t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrueAndLabSystemIdIsNull(sampleTypeId, paramId, cvId);
+			if (t.isPresent()) {
+				t.get().setLabSystem(ls.get());
+				switch (t.get().getThresholdType()) {
+				case SIGMA:
+					entityManager.detach(t.get());
+					t.get().setId(null);
+					// save threshold params for new labsystem threshold
+					Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaThreshold) t.get());
+					entityManager.detach(labSystemSigmaThreshold);
+					saveThresholdParams(labSystemSigmaThreshold);
+					return labSystemSigmaThreshold;
+				case HARDLIMIT:
+					entityManager.detach(t.get());
+					t.get().setId(null);
+					Threshold labSystemHardLimitThreshold = saveHardLimitThreshold((HardLimitThreshold) t.get());
+					entityManager.detach(labSystemHardLimitThreshold);
+					saveThresholdParams(labSystemHardLimitThreshold);
+					return labSystemHardLimitThreshold;
+				default:
+					break;
+				}
+			}
+
+		}
+		return null;
+	}
+	
+	public Threshold findThresholdBySampleTypeQCCVAndParamQCCVAndInstrumentQCCVAndLabSystemApiKey(String sampleTypeQCCV, String paramQCCV,
+			String cvId, UUID labSystemApiKey) {
+		// check if exists for the current labSystem, if not, create
+		Optional<Threshold> t = thresholdRepository
+				.findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccvAndLabSystemApiKeyAndIsEnabledTrue(sampleTypeQCCV, paramQCCV, cvId, labSystemApiKey);
+		if (t.isPresent()) {
+			return t.get();
+		} else {
+			// create and return
+			Optional<LabSystem> ls = labSystemRepository.findByApiKey(labSystemApiKey);
+			// t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(sampleTypeId, paramId, cvId);
+			t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrueAndLabSystemIdIsNull(t.get().getSampleType().getId(), t.get().getParam().getId(), t.get().getCv().getId());
 			if (t.isPresent()) {
 				t.get().setLabSystem(ls.get());
 				switch (t.get().getThresholdType()) {
@@ -237,7 +343,7 @@ public class ThresholdService {
 				DataSource mainDataSource = ls.getMainDataSource();
 				if (mainDataSource.getCv().getId() == t.getCv().getId()) {
 					nodeThresholds.add(findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(t.sampleType.getId(),
-							t.param.getId(), t.cv.getId(), ls.getId()));
+							t.param.getId(), t.instrument.getId(), ls.getId()));
 				}
 			}
 		}
@@ -266,7 +372,7 @@ public class ThresholdService {
 				DataSource mainDataSource = nodeLabSystem.get().getMainDataSource();
 				if (mainDataSource.getCv().getId() == t.getCv().getId()) {
 					nodeThresholds.add(processThreshold(findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
-							t.sampleType.getId(), t.param.getId(), t.cv.getId(), nodeLabSystem.get().getId())));
+							t.sampleType.getId(), t.param.getId(), t.instrument.getId(), nodeLabSystem.get().getId())));
 				}
 			}
 			List<withParamsWithoutThreshold> thresholds = new ArrayList<>();

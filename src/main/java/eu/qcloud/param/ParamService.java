@@ -22,13 +22,13 @@ public class ParamService {
 	}
 
 	public Param updateParam(Param param) {
-		Param p = paramRepository.findByQCCV(param.getqCCV());
+		Param p = paramRepository.findByQccv(param.getqCCV());
 		p.setName(param.getName());
 		return paramRepository.save(p);
 	}
 	
 	public Param findByQCCV(String qCCV) {
-		return paramRepository.findByQCCV(qCCV);
+		return paramRepository.findByQccv(qCCV);
 	}
 
 }

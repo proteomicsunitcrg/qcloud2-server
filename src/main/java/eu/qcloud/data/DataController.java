@@ -77,7 +77,7 @@ public class DataController {
 			@PathVariable String checksum,@RequestBody Data data) {
 		Peptide p = peptideService.findPeptideBySequence(quantificationSourceSequence);
 		File f = fileService.getFileByChecksum(checksum);
-		Param param = paramRepository.findByQCCV(paramQCCV);
+		Param param = paramRepository.findByQccv(paramQCCV);
 		data.setDataId(new DataId(param.getId(),p.getId(),f.getId()));
 		return dataService.addData(data);
 	}
@@ -99,7 +99,7 @@ public class DataController {
 			@PathVariable String checksum,@RequestBody Data data) {
 		
 		InstrumentSample is = instrumentSampleService.findByQCCV(instrumentSampleQCCV);
-		Param p = paramRepository.findByQCCV(paramQCCV);
+		Param p = paramRepository.findByQccv(paramQCCV);
 		
 		File f = fileService.getFileByChecksum(checksum);
 		data.setDataId(new DataId(p.getId(),is.getId(),f.getId()));

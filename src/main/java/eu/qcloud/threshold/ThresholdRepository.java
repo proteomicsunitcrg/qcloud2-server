@@ -2,12 +2,13 @@ package eu.qcloud.threshold;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
-import eu.qcloud.CV.CV;
+import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.param.Param;
 import eu.qcloud.sampleType.SampleType;
@@ -17,11 +18,16 @@ import eu.qcloud.threshold.params.ThresholdParamsRepository.paramsNoThreshold;
 @NoRepositoryBean
 public interface ThresholdRepository<T extends Threshold> extends CrudRepository<T, Long> {
 
-	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndCvIdAndLabSystemIdAndIsEnabledTrue(Long sampleTypeId,Long paramId, Long cvId, Long labSystemId);
+	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndLabSystemIdAndIsEnabledTrue(Long sampleTypeId,Long paramId, Long cvId, Long labSystemId);
 	
-	public withParamsWithoutThreshold findBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(Long sampleTypeId,Long paramId, Long cvId, Long labSystemId);
+	public withParamsWithoutThreshold findBySampleTypeIdAndParamIdAndInstrumentIdAndLabSystemId(Long sampleTypeId,Long paramId, Long cvId, Long labSystemId);
 
-	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(Long sampleTypeId, Long paramId, Long cvId);
+	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrue(Long sampleTypeId, Long paramId, Long cvId);
+
+	public Optional<Threshold> findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccv(String sampleTypeQCCV, String paramQCCV, String instrumentQCCV);
+	
+	public Optional<Threshold> findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccvAndLabSystemApiKeyAndIsEnabledTrue(String sampleTypeQCCV, String paramQCCV, String instrumentQCCV, UUID labSystemApiKey);
+	
 	
 	/**
 	 * Find a default threshold
@@ -30,9 +36,9 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	 * @param cvId
 	 * @return
 	 */
-	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrueAndLabSystemIdIsNull(Long sampleTypeId, Long paramId, Long cvId);
+	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrueAndLabSystemIdIsNull(Long sampleTypeId, Long paramId, Long cvId);
 	
-	public withParamsWithoutThreshold findBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(Long sampleTypeId, Long paramId, Long cvId);
+	public withParamsWithoutThreshold findBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrue(Long sampleTypeId, Long paramId, Long cvId);
 	
 	@Query("select t from Threshold t where t.id =?1")
 	public withParamsWithoutThreshold findThresholdById(Long thresholdId);
@@ -46,7 +52,7 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	@Query("select t from Threshold t where t.labSystem = null")
 	public List<Threshold> findAllDefaultThresholds();
 	
-	@Query("select t from Threshold t where t.labSystem = null and t.cv.id = ?1")
+	@Query("select t from Threshold t where t.labSystem = null and t.instrument.id = ?1")
 	public List<Threshold> findAllDefaultThresholdsByThresholdCVId(Long cvId);
 	
 	@Query("select t from Threshold t where t.labSystem.id = ?1 and t.isEnabled= true")
@@ -61,7 +67,7 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 		ThresholdType getThresholdType();
 		SampleType getSampleType();
 		Param getParam();
-		CV getCv();
+		Instrument getCv();
 		int getSteps();
 		LabSystem getLabSystem();
 		ThresholdConstraint getAdminThresholdConstraint();

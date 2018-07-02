@@ -1,4 +1,4 @@
-package eu.qcloud.CV;
+package eu.qcloud.Instrument;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
  *
  */
 @RestController
-public class CVController {
+public class InstrumentController {
 	
 	@Autowired
-	private CVService cvService;
+	private InstrumentService instrumentService;
 	
 	/**
 	 * Add a CV to the database by category id
@@ -37,35 +37,35 @@ public class CVController {
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/api/cv/category/{categoryId}", method = RequestMethod.POST)
-	public CV addCV(@RequestBody CV cv, @PathVariable Long categoryId) {
-		return cvService.addCV(cv, categoryId);
+	public Instrument addCV(@RequestBody Instrument cv, @PathVariable Long categoryId) {
+		return instrumentService.addCV(cv, categoryId);
 	}
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value="/api/cv", method = RequestMethod.GET)
-	public List<CV> getAllCV() {
-		return cvService.getAllCV();
+	public List<Instrument> getAllCV() {
+		return instrumentService.getAllCV();
 		
 	}
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value="/api/cv/category/{categoryApiKey}", method = RequestMethod.GET)
-	public List<CV> getAllCVByCategory(@PathVariable UUID categoryApiKey) {		
-		return cvService.getAllCVbyCategory(categoryApiKey);
+	public List<Instrument> getAllCVByCategory(@PathVariable UUID categoryApiKey) {		
+		return instrumentService.getAllCVbyCategory(categoryApiKey);
 	}
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value="/api/cv/category/{categoryApiKey}/enabled", method = RequestMethod.GET)
-	public List<CV> getAllEnabledCV(@PathVariable UUID categoryApiKey) {
-		return cvService.getAllEnabledCVByCategory(categoryApiKey);
+	public List<Instrument> getAllEnabledCV(@PathVariable UUID categoryApiKey) {
+		return instrumentService.getAllEnabledCVByCategory(categoryApiKey);
 	}
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/api/cv/{cvId}", method = RequestMethod.GET)
-	public CV getCvByCvId(@PathVariable String cvId) {
-		return cvService.getCvByCVId(cvId);
+	public Instrument getCvByCvId(@PathVariable String cvId) {
+		return instrumentService.getCvByCVId(cvId);
 	}
 	
 	@RequestMapping(value="/api/cv/{cvId}", method = RequestMethod.PUT)
-	public CV changeEnabled(@PathVariable String cvId) {
-		CV cv = cvService.getCvByCVId(cvId);		
-		return cvService.changeEnabled(cv);
+	public Instrument changeEnabled(@PathVariable String cvId) {
+		Instrument cv = instrumentService.getCvByCVId(cvId);		
+		return instrumentService.changeEnabled(cv);
 	}
 	
 	/*

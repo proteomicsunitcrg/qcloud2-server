@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import eu.qcloud.CV.CV;
+import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.node.Node;
 
 @Entity
@@ -39,7 +39,7 @@ public class DataSource {
 	
 	@ManyToOne
 	@JoinColumn(name="cv_id")
-	private CV cv;
+	private Instrument cv;
 	
 	@ManyToOne
 	@JoinColumn(name="node_id")
@@ -72,11 +72,11 @@ public class DataSource {
 		this.name = name;
 	}
 
-	public CV getCv() {
+	public Instrument getCv() {
 		return cv;
 	}
 
-	public void setCv(CV cv) {
+	public void setCv(Instrument cv) {
 		this.cv = cv;
 	}
 	

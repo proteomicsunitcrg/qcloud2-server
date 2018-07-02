@@ -19,7 +19,7 @@ import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import eu.qcloud.CV.CV;
+import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.param.Param;
 import eu.qcloud.sampleType.SampleType;
@@ -89,7 +89,7 @@ public class Threshold {
 	
 	@ManyToOne
 	@JoinColumn(name="cv_id", nullable= false)
-	protected CV cv;
+	protected Instrument instrument;
 	
 	@Column(name="steps")
 	protected int steps;
@@ -117,12 +117,12 @@ public class Threshold {
 		this.param = param;
 	}
 
-	public CV getCv() {
-		return cv;
+	public Instrument getCv() {
+		return instrument;
 	}
 
-	public void setCv(CV cv) {
-		this.cv = cv;
+	public void setCv(Instrument cv) {
+		this.instrument = cv;
 	}
 
 	public Long getId() {

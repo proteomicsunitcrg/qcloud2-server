@@ -1,4 +1,4 @@
-package eu.qcloud.CV;
+package eu.qcloud.Instrument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,32 +16,32 @@ import eu.qcloud.category.Category;
  *
  */
 @Service
-public class CVService {
+public class InstrumentService {
 	@Autowired
-	private CVRepository cvRepository;
+	private InstrumentRepository cvRepository;
 	
-	public CV addCV(CV cv, Long categoryId) {
+	public Instrument addCV(Instrument cv, Long categoryId) {
 		cv.setCategory(new Category(categoryId,""));
 		cvRepository.save(cv);
 		return cv;
 	}
 	
-	public List<CV> getAllCV() {
+	public List<Instrument> getAllCV() {
 		return cvRepository.findAll();
 	}
 	
-	public Optional<CV> getCVbyId(Long id) {
+	public Optional<Instrument> getCVbyId(Long id) {
 		return cvRepository.findById(id);
 	}
 	
-	public List<CV> getAllCVbyCategory(UUID categoryApiKey) {
-		List<CV> cvs = new ArrayList<>();
+	public List<Instrument> getAllCVbyCategory(UUID categoryApiKey) {
+		List<Instrument> cvs = new ArrayList<>();
 		cvRepository.findByCategoryApiKey(categoryApiKey)
 		.forEach(cvs::add);
 		return cvs;
 	}
 	
-	public CV changeEnabled(CV cv) {
+	public Instrument changeEnabled(Instrument cv) {
 		if(cv.isEnabled()) {
 			cv.setEnabled(false);
 		}else {
@@ -52,16 +52,16 @@ public class CVService {
 		
 	}
 
-	public List<CV> getAllEnabledCV() {
+	public List<Instrument> getAllEnabledCV() {
 		return cvRepository.findByEnabled(true);
 	}
 
-	public List<CV> getAllEnabledCVByCategory(UUID categoryId) {
+	public List<Instrument> getAllEnabledCVByCategory(UUID categoryId) {
 		return cvRepository.findByCategoryApiKeyAndEnabled(categoryId,true);		
 	}
 
-	public CV getCvByCVId(String cvId) {
-		Optional<CV> cv = cvRepository.getByCVId(cvId);
+	public Instrument getCvByCVId(String cvId) {
+		Optional<Instrument> cv = cvRepository.getByCVId(cvId);
 		if(!cv.isPresent()) {
 			throw new DataRetrievalFailureException("CV not found");
 		}

@@ -67,7 +67,7 @@ public class SampleType {
 	 * Comment this jsonignore for use
 	 * python migrator
 	 */
-	@JsonIgnore
+	//@JsonIgnore
 	public Long getId() {
 		return id;
 	}

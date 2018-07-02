@@ -197,7 +197,7 @@ public class DataService {
 		// Loop through the parameters
 		for(ParameterData parameterData : dataFromPipeline.getData()) {
 			// Loop through the parameters
-			Param param = paramRepository.findByQCCV(parameterData.getParameter().getqCCV());
+			Param param = paramRepository.findByQccv(parameterData.getParameter().getqCCV());
 			if(param == null ) {
 				continue;
 			}
@@ -260,7 +260,7 @@ public class DataService {
 		}
 		
 		// Getting param
-		Param param = paramRepository.findByQCCV("QC:1001844");
+		Param param = paramRepository.findByQccv("QC:1001844");
 		if(param== null) {
 			throw new DataRetrievalFailureException("Database error, please contact administrator");
 		}

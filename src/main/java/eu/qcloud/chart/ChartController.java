@@ -139,7 +139,7 @@ public class ChartController {
 		if(chartParams.size() == 0) {
 			throw new InvalidActionException("You need at least one param");
 		}
-		Param p = paramRepository.findByQCCV(chartParams.get(0).getParam().getqCCV());
+		Param p = paramRepository.findByQccv(chartParams.get(0).getParam().getqCCV());
 		List<ChartParams> chartParamsList = new ArrayList<>();
 		for(ChartParams chartParam: chartParams) {
 			chartParam.setChart(chart.get());
