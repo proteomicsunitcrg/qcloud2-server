@@ -119,6 +119,11 @@ public class ViewController {
 		return viewService.findAllDefaultViews();
 	}
 	
+	/**
+	 * Get all views by user.
+	 * The user is retrieved via the security context
+	 * @return a list of views
+	 */
 	@RequestMapping(value="/api/views/user", method=RequestMethod.GET)
 	public List<UserViewWithoutUser> findAllUserViews() {
 		return viewService.findAllUserViews();

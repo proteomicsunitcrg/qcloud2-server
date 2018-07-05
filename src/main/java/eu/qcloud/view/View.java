@@ -94,7 +94,7 @@ public class View {
 		this.isDefault = isDefault;
 	}
 
-	@JsonIgnore
+	//@JsonIgnore
 	public Long getId() {
 		return id;
 	}

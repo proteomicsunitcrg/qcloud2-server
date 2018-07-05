@@ -27,7 +27,7 @@ public interface ViewRepository extends CrudRepository<View, Long> {
 	View findByCvIdAndSampleTypeCategoryApiKey(Long cvId, UUID sampleTypeCategoryApiKey);
 	
 	interface ViewWithoutDisplay {
-		// Long getId();		
+		Long getId();		
 		String getName();
 		User getUser();
 		Instrument getCv();
