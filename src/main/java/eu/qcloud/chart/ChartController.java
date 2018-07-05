@@ -84,8 +84,13 @@ public class ChartController {
 	@RequestMapping(value="/api/chart/cv/{cvId}", method = RequestMethod.GET)
 	public List<NoView> getChartByCVId(@PathVariable String cvId) {
 		return chartService.getChartsByCVIdWithoutView(cvId);
-		//return chartService.getChartsByCVId(cvId);
 	}
+	
+	@RequestMapping(value="/api/chart/cv/{cvId}/{sampleTypeQCCV}", method = RequestMethod.GET)
+	public List<NoView> getChartsByCVIdAndSampleTypeQCCV(@PathVariable String cvId,@PathVariable String sampleTypeQCCV) {
+		return chartService.getChartsByCVIdAndSampleTypeQCCVWithoutView(cvId, sampleTypeQCCV);
+	}
+	
 	/**
 	 * Get a list of charts of the main sample type of a sample type category
 	 * @param cvId
@@ -179,11 +184,7 @@ public class ChartController {
 		return chartService.getChartByApiKey(chartApiKey);
 	}
 	
-	// @RequestMapping(value="/api/chart/generate", method = RequestMethod.GET)
-	public void generate() {
-		chartService.generate();
-	}
-	
+		
 	/*
 	 * Exception handlers
 	 */

@@ -4,20 +4,20 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import eu.qcloud.dataSource.DataSource;
+import eu.qcloud.labsystem.LabSystem;
 @Entity(name="user_view")
 public class UserView extends ViewDisplay {
 	
 	@ManyToOne
-	@JoinColumn(name="dataSourceId",insertable=false, updatable= false)
-	private DataSource dataSource;
+	@JoinColumn(name="labSystemId",insertable=true, updatable= false)
+	private LabSystem labSystem;
 
-	public DataSource getDataSource() {
-		return dataSource;
+	public LabSystem getLabSystem() {
+		return labSystem;
 	}
 
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
+	public void setLabSystem(LabSystem labSystem) {
+		this.labSystem = labSystem;
 	}
 
 }

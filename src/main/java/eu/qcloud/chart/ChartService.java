@@ -184,6 +184,10 @@ public class ChartService {
 		return chartRepository.findByCvIdWithoutView(cvId);
 	}
 	
+	public List<NoView> getChartsByCVIdAndSampleTypeQCCVWithoutView(String cvId, String sampleTypeQCCV) {
+		return chartRepository.findByCvQccvAndSampleTypeQualityControlControlledVocabulary(cvId, sampleTypeQCCV);
+	}
+	
 	public List<NoView> getChartsByCVIdAndSampleTypeCategoryId(Long cvId, Long sampleTypeId) {
 		return chartRepository.findByCvIdAndSampleTypeId(cvId, sampleTypeId);
 	}

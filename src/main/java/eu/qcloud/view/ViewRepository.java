@@ -1,6 +1,7 @@
 package eu.qcloud.view;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Query;
@@ -26,12 +27,23 @@ public interface ViewRepository extends CrudRepository<View, Long> {
 	View findByCvIdAndSampleTypeCategoryApiKey(Long cvId, UUID sampleTypeCategoryApiKey);
 	
 	interface ViewWithoutDisplay {
-		Long getId();
+		// Long getId();		
 		String getName();
 		User getUser();
 		Instrument getCv();
-		
-		
+		UUID getApiKey();
 	}
+	
+	interface UserViewWithoutUser {
+		String getName();
+		UUID getApiKey();
+	}
+	
+	@Query("SELECT v from View v where v.apiKey = ?1")
+	UserViewWithoutUser getByApiKey(UUID viewApiKey);
+	
+	Optional<View> findOptionalByApiKey(UUID apiKey);
+	
+	List<UserViewWithoutUser> findByUserIdAndIsDefaultFalse(Long userId);
 		
 }

@@ -21,6 +21,8 @@ public interface ChartRepository extends CrudRepository<Chart, Long>{
 	@Query("select c from Chart c where c.cv.qccv = ?1")
 	List<NoView> findByCvIdWithoutView(String cvId);
 	
+	List<NoView> findByCvQccvAndSampleTypeQualityControlControlledVocabulary(String instrumentQCCV, String sampleTypeQCCV);
+	
 	@Query("select c from Chart c")
 	List<NoView> findAllCharts();
 	

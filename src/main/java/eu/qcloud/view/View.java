@@ -1,6 +1,7 @@
 package eu.qcloud.view;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +15,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
@@ -55,6 +58,18 @@ public class View {
 	@JoinColumn(name="sampleTypeCategoryId", insertable=true, updatable=false, nullable=true, unique = false)
 	private SampleTypeCategory sampleTypeCategory;
 	
+	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+	private UUID apiKey;
+	
+	public UUID getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(UUID apiKey) {
+		this.apiKey = apiKey;
+	}
+
 	public SampleTypeCategory getSampleTypeCategory() {
 		return sampleTypeCategory;
 	}
@@ -79,6 +94,7 @@ public class View {
 		this.isDefault = isDefault;
 	}
 
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}

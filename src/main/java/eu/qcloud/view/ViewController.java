@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.view.UserViewRepository.UserDisplayWithOutViewDisplay;
 import eu.qcloud.view.ViewDisplayRepository.WithOutViewDisplay;
+import eu.qcloud.view.ViewRepository.UserViewWithoutUser;
 /**
  * View controller.
  * It handles the views and the displays.
@@ -51,25 +53,75 @@ public class ViewController {
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="/api/views/default", method=RequestMethod.PUT)
+	public View updateDefaultView(@RequestBody View view) {
+		return viewService.updateView(view);
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="/api/views/user", method=RequestMethod.PUT)
+	public View updateUserView(@RequestBody View view) {
+		return viewService.updateView(view);
+	}
+	
+	@PreAuthorize("hasRole('USER')")
+	@RequestMapping(value="/api/views/user", method=RequestMethod.POST)
+	public View addUserView(@RequestBody View view) {
+		view.setDefault(false);
+		return viewService.addUserView(view);
+	}
+
+	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/api/views/default/layout", method=RequestMethod.POST)
 	public List<ViewDisplay> addViewDisplayToView(@RequestBody List<DefaultView> layout) {
 		return viewService.addDefaultViewDisplay(layout);
 	}
 	
+	@PreAuthorize("hasRole('USER')")
+	@RequestMapping(value="/api/views/user/layout", method=RequestMethod.POST)
+	public List<UserView> addUserViewDisplayToView(@RequestBody List<UserView> layout) {
+		return viewService.addUserViewDisplay(layout);
+	}
+	
+	@PreAuthorize("hasRole('USER')")
+	@RequestMapping(value="/api/views/user/{viewApiKey}", method=RequestMethod.GET)
+	public UserViewWithoutUser findViewByApiKey(@PathVariable UUID viewApiKey) {
+		return viewService.findUserViewByApiKey(viewApiKey);
+	}
+	
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value="/api/views/default/layout/{viewId}", method=RequestMethod.PUT)
-	public List<ViewDisplay> updateViewDisplayToView(@RequestBody List<DefaultView> layout,@PathVariable Long viewId) {
+	@RequestMapping(value="/api/views/default/layout/{viewApiKey}", method=RequestMethod.PUT)
+	public List<ViewDisplay> updateViewDisplayToView(@RequestBody List<DefaultView> layout,@PathVariable UUID viewApiKey) {
 		// delete previous
-		if(viewService.deleteLayoutByViewId(viewId)) {
+		if(viewService.deleteLayoutByViewApiKey(viewApiKey)) {
 			return viewService.addDefaultViewDisplay(layout);	
 		}else {
 			throw new PersistenceException("An error has occurred while updating your view. Try again later");
 		}
 		
 	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="/api/views/user/layout/{viewApiKey}", method=RequestMethod.PUT)
+	public List<UserView> updateUserViewDisplayToView(@RequestBody List<UserView> layout,@PathVariable UUID viewApiKey) {
+		// delete previous
+		if(viewService.deleteLayoutByViewApiKey(viewApiKey)) {
+			return viewService.addUserViewDisplay(layout);	
+		}else {
+			throw new PersistenceException("An error has occurred while updating your view. Try again later");
+		}
+		
+	}
+	
 	@RequestMapping(value="/api/views/default", method=RequestMethod.GET)
 	public List<View> findAllDefaultViews() {
 		return viewService.findAllDefaultViews();
+	}
+	
+	@RequestMapping(value="/api/views/user", method=RequestMethod.GET)
+	public List<UserViewWithoutUser> findAllUserViews() {
+		return viewService.findAllUserViews();
 	}
 	
 	/**
@@ -87,16 +139,20 @@ public class ViewController {
 	 * @param sampleTypeCategoryId
 	 * @return
 	 */
-		
 	@RequestMapping(value="/api/views/default/{cvId}/{sampleTypeCategoryApiKey}", method=RequestMethod.GET)
 	public View getViewByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,@PathVariable UUID sampleTypeCategoryApiKey) {
 		View v = viewService.getDefaultViewByCVIdAndSampleTypeCategoryApiKey(cvId,sampleTypeCategoryApiKey);
 		return v;
 	}
 	
-	@RequestMapping(value="/api/views/default/view/{viewId}", method=RequestMethod.GET)
-	public List<WithOutViewDisplay> getDefaultViewDisplayByViewId(@PathVariable Long viewId) {
-		return viewService.getDefaultViewDisplayByViewId(viewId);
+	@RequestMapping(value="/api/views/default/view/{viewApiKey}", method=RequestMethod.GET)
+	public List<WithOutViewDisplay> getDefaultViewDisplayByViewApiKey(@PathVariable UUID viewApiKey) {
+		return viewService.getDefaultViewDisplayByViewApiKey(viewApiKey);
+	}
+	
+	@RequestMapping(value="/api/views/user/view/{viewApiKey}", method=RequestMethod.GET)
+	public List<UserDisplayWithOutViewDisplay> getUserViewDisplayByViewApiKey(@PathVariable UUID viewApiKey) {
+		return viewService.getUserViewDisplayByViewApiKey(viewApiKey);
 	}
 	
 	/*
