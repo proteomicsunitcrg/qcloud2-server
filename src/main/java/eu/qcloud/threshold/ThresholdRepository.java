@@ -26,6 +26,8 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 
 	public Optional<Threshold> findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccv(String sampleTypeQCCV, String paramQCCV, String instrumentQCCV);
 	
+	public Optional<Threshold> findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccvAndLabSystemApiKeyIsNull(String sampleTypeQCCV, String paramQCCV, String instrumentQCCV);
+	
 	public Optional<Threshold> findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccvAndLabSystemApiKeyAndIsEnabledTrue(String sampleTypeQCCV, String paramQCCV, String instrumentQCCV, UUID labSystemApiKey);
 	
 	

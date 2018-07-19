@@ -118,35 +118,14 @@ public class ThresholdController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public Threshold addNewThreshold(@PathVariable ThresholdType type, @RequestBody Threshold threshold) {
 		// Check if a threshold of that param already exists
-		/*
-		 * Optional<Threshold> t =
-		 * thresholdService.findThresholdBySampleTypeIdAndParamIdAndCvId(threshold.
-		 * sampleType.getId(), threshold.getParam().getId(),threshold.getCv().getId());
-		 */
+		
 		Optional<Threshold> t = thresholdService.findThresholdBySampleTypeQCCVAndParamQCCVAndCVQCCV(
 				threshold.getSampleType().getQualityControlControlledVocabulary(), threshold.getParam().getqCCV(),
 				threshold.getCv().getCVId());
 		if (t.isPresent()) {
 			throw new DataIntegrityViolationException("Threshold already exists");
 		}
-		/**
-		 * I had to this because I could not do a downcast from threshold to a more
-		 * specific son.
-		 */
-
-		/*
-		 * switch(type) { case SIGMA: SigmaThreshold st = new SigmaThreshold();
-		 * st.setCv(threshold.getCv()); st.setSteps(threshold.getSteps());
-		 * st.setParam(threshold.getParam());
-		 * st.setSampleType(threshold.getSampleType()); st.setEnabled(true);
-		 * st.setMonitored(true); return thresholdService.saveSigmaThreshold(st); case
-		 * HARDLIMIT: HardLimitThreshold ht = new HardLimitThreshold();
-		 * ht.setCv(threshold.getCv()); ht.setSteps(threshold.getSteps());
-		 * ht.setParam(threshold.getParam());
-		 * ht.setSampleType(threshold.getSampleType()); ht.setEnabled(true);
-		 * ht.setMonitored(true); return thresholdService.saveHardLimitThreshold(ht);
-		 * default: return null; }
-		 */
+		
 		return thresholdService.saveThreshold(type, threshold);
 
 	}

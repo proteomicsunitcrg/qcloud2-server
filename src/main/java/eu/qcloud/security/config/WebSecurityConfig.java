@@ -66,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 // we don't need CSRF because our token is invulnerable
                 .csrf().disable()               
-        		
+                
 
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 
@@ -95,10 +95,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/actuator/**",
                         "/swagger-resources/**",
                         "/swagger-ui.html",
-                        "/v2/api-docs"
+                        "/v2/api-docs",
+                        "/api/gs-guide-websocket/**"
                 ).permitAll()
-                .antMatchers(HttpMethod.POST,"/user","/api/node").permitAll()
+                .antMatchers(HttpMethod.POST,
+                		"/user",
+                		"/api/node",
+                		"/api/gs-guide-websocket/**"
+                		).permitAll()
                 .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/ws/**").permitAll()
                 .anyRequest().authenticated();
 
         // Custom JWT based security filter

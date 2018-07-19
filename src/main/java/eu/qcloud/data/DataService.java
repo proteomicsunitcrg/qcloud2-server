@@ -57,22 +57,22 @@ public class DataService {
 
 	@Autowired
 	private FileRepository fileRepository;
-	
+
 	@Autowired
 	private ParamRepository paramRepository;
-	
+
 	@Autowired
 	private PeptideRepository peptideRepository;
-	
+
 	@Autowired
 	private SampleTypeRepository sampleTypeRepository;
-	
+
 	@Autowired
 	private SampleCompositionRepository sampleCompositionRepository;
-	
+
 	@Autowired
 	private InstrumentSampleRepository instrumentSampleRepository;
-	
+
 	@Autowired
 	private ChartRepository chartRepository;
 
@@ -104,28 +104,25 @@ public class DataService {
 	 * @param sampleTypeId
 	 * @return
 	 */
-	public List<DataForPlot> getPlotData(Date start, Date end, UUID chartApiKey, UUID labSystemApiKey, String sampleTypeQCCV) {
+	public List<DataForPlot> getPlotData(Date start, Date end, UUID chartApiKey, UUID labSystemApiKey,
+			String sampleTypeQCCV) {
 		Optional<Chart> chart = chartRepository.findByApiKey(chartApiKey);
 		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
-		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQCCV); 
-		if(!chart.isPresent() || !labSystem.isPresent() || !sampleType.isPresent()) {
+		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQCCV);
+		if (!chart.isPresent() || !labSystem.isPresent() || !sampleType.isPresent()) {
 			throw new DataRetrievalFailureException("Wrong chart, system or sample type");
 		}
-				
-		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chart.get().getId(), start, end, labSystem.get().getId(),
-				sampleType.get().getId());
 
-		// Check sample type in order to send the abbreviated name or anything else		
-		
-		List<DataForPlot> dataForPlot = prepareDataForPlot(dataFromDb,sampleType.get());
-		
+		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chart.get().getId(), start, end,
+				labSystem.get().getId(), sampleType.get().getId());
+
 		// Get the param
 		Param param = chartParamRepository.findTopByChartId(chart.get().getId()).getParam();
 		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 
-		// Optional<DataSource> dataSource =
-		// dataSourceRepository.findById(dataSourceId);
-		// Optional<LabSystem> labSystem = labSystemRepository.findById(labSystemId);
+		// Check sample type in order to send the abbreviated name or anything else
+		List<DataForPlot> dataForPlot = prepareDataForPlot(dataFromDb, sampleType.get(), param);
+
 		processor.setData(dataForPlot);
 		/**
 		 * If data from a guide set is required then call the db for the data and set it
@@ -138,8 +135,8 @@ public class DataService {
 				throw new DataRetrievalFailureException("A guide set is required for this plot.");
 			}
 			processor.setGuideSet(gs);
-			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chart.get().getId(), gs.getStartDate(),
-					gs.getEndDate(), labSystem.get().getId(), sampleType.get().getId());
+			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chart.get().getId(),
+					gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(), sampleType.get().getId());
 			if (dataToProcess.size() == 0) {
 				throw new DataRetrievalFailureException(
 						"Your selected guide has no results. Please, choose another date range.");
@@ -150,149 +147,182 @@ public class DataService {
 			return processor.processData();
 		}
 	}
-	
+
 	/**
-	 * Prepare the output data for the client.
-	 * It will take into account if the sample category is HIGHWITHISOTOPOLOGUE for 
-	 * susbsitute the abbreviated name with the concentration
+	 * Prepare the output data for the client. It will take into account if the
+	 * sample category is HIGHWITHISOTOPOLOGUE for susbsitute the abbreviated name
+	 * with the concentration
+	 * 
 	 * @param dataFromDb
 	 * @param sampleType
+	 * @param param
 	 * @return
 	 */
-	private List<DataForPlot> prepareDataForPlot(List<Data> dataFromDb, SampleType sampleType) {
-		
+	private List<DataForPlot> prepareDataForPlot(List<Data> dataFromDb, SampleType sampleType, Param param) {
+
 		List<DataForPlot> dataForPlot = new ArrayList<>();
-		switch(sampleType.getSampleTypeCategory().getSampleTypeComplexity()) {
+		switch (sampleType.getSampleTypeCategory().getSampleTypeComplexity()) {
 		case HIGHWITHISOTOPOLOGUES:
-			for (Data data : dataFromDb) {
-				// Instead of getting the full name or the abbreviated one we need to get the concentration
-				SampleComposition concentration = sampleCompositionRepository.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.getId(), data.getContextSource().getId());
-				
-				dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-						concentration.getConcentration().toString(), data.getValue()));
-				Collections.sort(dataForPlot);
+			if (param.getIsFor().equals("Peptide")) {
+				for (Data data : dataFromDb) {
+					// Instead of getting the full name or the abbreviated one we need to get the
+					// concentration
+					SampleComposition concentration = sampleCompositionRepository
+							.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.getId(),
+									data.getContextSource().getId());
+
+					dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
+							concentration.getConcentration().toString(), data.getValue()));
+					Collections.sort(dataForPlot);
+				}
+			} else {
+				convertDbDataToPlotData(dataFromDb, dataForPlot);
 			}
 			break;
-			default:
-				for (Data data : dataFromDb) {
-					dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-							data.getContextSource().getAbbreviated(), data.getValue()));
-				}
-				break;
+		default:
+			convertDbDataToPlotData(dataFromDb, dataForPlot);
+			break;
 		}
-		
+
 		return dataForPlot;
 	}
-	
+
+	private void convertDbDataToPlotData(List<Data> dataFromDb, List<DataForPlot> dataForPlot) {
+		for (Data data : dataFromDb) {
+			dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
+					data.getContextSource().getAbbreviated(), data.getValue()));
+		}
+	}
+
 	/**
 	 * Insert data from the pipeline into the database
+	 * 
 	 * @param dataFromPipeline
 	 */
 	public void insertDataFromPipeline(DataFromPipeline dataFromPipeline) {
 		// Check if file exists
 		File file = fileRepository.findByChecksum(dataFromPipeline.getFile().getChecksum());
-		if(file == null) {
+		if (file == null) {
 			throw new DataRetrievalFailureException("File not found");
 		}
 		// Loop through the parameters
-		for(ParameterData parameterData : dataFromPipeline.getData()) {
+		for (ParameterData parameterData : dataFromPipeline.getData()) {
 			// Loop through the parameters
 			Param param = paramRepository.findByQccv(parameterData.getParameter().getqCCV());
-			if(param == null ) {
+			if (param == null) {
 				continue;
 			}
 			// loop through values
-			for(DataValues dataValue: parameterData.getValues()) {
+			for (DataValues dataValue : parameterData.getValues()) {
 				ContextSource cs = null;
-				switch(param.getIsFor()) {
+				switch (param.getIsFor()) {
 				case "Peptide":
 					cs = peptideRepository.findBySequence(dataValue.getContextSource());
-					if(cs==null) {
-						continue;						
-					}
-					if(!peptideBelongsToSampleType(file.getSampleType(), dataValue.getContextSource())) {
+					if (cs == null) {
 						continue;
 					}
-						
+					if (!peptideBelongsToSampleType(file.getSampleType(), dataValue.getContextSource())) {
+						continue;
+					}
+
 					break;
 				case "InstrumentSample":
-					cs = instrumentSampleRepository.findByQualityControlControlledVocabulary(dataValue.getContextSource());
-					if(cs==null) {
+					cs = instrumentSampleRepository
+							.findByQualityControlControlledVocabulary(dataValue.getContextSource());
+					if (cs == null) {
 						continue;
 					}
 					break;
-					default:
-						System.out.println("i dont know");
-						break;
+				default:
+					System.out.println("i dont know");
+					break;
 				}
-				Data d = new Data(param,cs,file);
+				Data d = new Data(param, cs, file);
 				d.setValue(dataValue.getValue());
-				d.setDataId(new DataId(param.getId(),cs.getId(),file.getId()));
+				d.setDataId(new DataId(param.getId(), cs.getId(), file.getId()));
 				dataRepository.save(d);
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Check if a peptide belongs to a sample type
+	 * 
 	 * @param sampleType
 	 * @param sequence
 	 * @return true or false
 	 */
 	private boolean peptideBelongsToSampleType(SampleType sampleType, String sequence) {
-		List<SampleComposition> sampleComposition = sampleCompositionRepository.findBySampleTypeQualityControlControlledVocabulary(sampleType.getQualityControlControlledVocabulary());
-		for(SampleComposition sc : sampleComposition) {
-			if(sc.getPeptide().getSequence().equals(sequence)) {
+		List<SampleComposition> sampleComposition = sampleCompositionRepository
+				.findBySampleTypeQualityControlControlledVocabulary(sampleType.getQualityControlControlledVocabulary());
+		for (SampleComposition sc : sampleComposition) {
+			if (sc.getPeptide().getSequence().equals(sequence)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public List<DataForPlot> getIsotopologueData(String checksum, String abbreviatedSequence) {
 		List<Data> dataFromDb = new ArrayList<>();
 
 		// Getting file
 		File file = fileRepository.findByChecksum(checksum);
-		if(file==null) {
+		if (file == null) {
 			throw new DataRetrievalFailureException("File not found");
 		}
-		
+
 		// Getting param
 		Param param = paramRepository.findByQccv("QC:1001844");
-		if(param== null) {
+		if (param == null) {
 			throw new DataRetrievalFailureException("Database error, please contact administrator");
 		}
-		
+
 		// get peptides by abbreviated sequence
 		List<Peptide> peptides = new ArrayList<>();
-		List<PeptidesFromSample> pps = sampleCompositionRepository.findBySampleTypeQualityControlControlledVocabularyAndPeptideAbbreviated(file.getSampleType().getQualityControlControlledVocabulary(), abbreviatedSequence);
-		for(int i = 0 ; i < pps.size(); i++) {
+		List<PeptidesFromSample> pps = sampleCompositionRepository
+				.findBySampleTypeQualityControlControlledVocabularyAndPeptideAbbreviated(
+						file.getSampleType().getQualityControlControlledVocabulary(), abbreviatedSequence);
+		for (int i = 0; i < pps.size(); i++) {
 			peptides.add(pps.get(i).getPeptide());
 		}
-		if(peptides.size()==0) {
+		if (peptides.size() == 0) {
 			throw new DataRetrievalFailureException("No isotopologues found.");
 		}
-		for(Peptide peptide : peptides) {
-			Data d = dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(), param.getId(), peptide.getId());
+		for (Peptide peptide : peptides) {
+			Data d = dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(), param.getId(),
+					peptide.getId());
+			
+			/**
+			 * This part of the code should be removed when the migration ends.
+			 */
+			if(d==null) {
+				// It is possible that there is no data from the current file.
+				List<File> files = fileRepository.findByCreationDateAndLabSystemIdAndSampleTypeId(file.getCreationDate(), file.getLabSystem().getId(), file.getSampleType().getId());
+				for(File f: files) {
+					d = dataRepository.findByFileIdAndParamIdAndContextSourceId(f.getId(), param.getId(),
+							peptide.getId());
+					if(d!=null) {
+						continue;
+					}
+				}
+			}
 			dataFromDb.add(d);
 		}
-		List<DataForPlot> dataForPlot = prepareDataForPlot(dataFromDb, file.getSampleType());
-		
-		
+		List<DataForPlot> dataForPlot = prepareDataForPlot(dataFromDb, file.getSampleType(), param);
+
 		/**
-		 * The peptide area of isotopologues will only need the LOG2 processor.
-		 * So, there is no need to check if the processor needs a guide set because
-		 * we already know what processor will it be.
+		 * The peptide area of isotopologues will only need the LOG2 processor. So,
+		 * there is no need to check if the processor needs a guide set because we
+		 * already know what processor will it be.
 		 */
 		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 		Collections.reverse(dataForPlot);
 		processor.setData(dataForPlot);
-		
+
 		return processor.processData();
-		
-				
+
 	}
 
 }

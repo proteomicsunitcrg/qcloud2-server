@@ -20,9 +20,13 @@ public interface FileRepository extends CrudRepository<File, Long>{
 	
 	public File findTop1ByLabSystemIdOrderByCreationDateDesc(Long labSystemId);
 	
+	public File findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(Long labSystemId, Long sampleTypeId);
+	
 	public List<OnlySmalls> findTop10ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(Long labSystemId,Long sampleTypeId);
 	
 	public File findTop1BySampleTypeQualityControlControlledVocabularyAndLabSystemApiKeyOrderByCreationDateDesc(String sampleTypeQCCV, UUID labSystemApikey);
+	
+	public List<File> findByCreationDateAndLabSystemIdAndSampleTypeId(Date creationDate, Long LabSystemId, Long sampleTypeId);
 	
 	@Projection(name = "file_mini", types = File.class)
 	public interface OnlySmalls {

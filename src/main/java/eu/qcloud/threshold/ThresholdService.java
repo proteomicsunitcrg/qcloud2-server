@@ -16,7 +16,10 @@ import org.springframework.stereotype.Service;
 import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.Instrument.InstrumentRepository;
 import eu.qcloud.data.Data;
+import eu.qcloud.data.DataForPlot;
 import eu.qcloud.data.DataRepository;
+import eu.qcloud.data.processor.processorfactory.ProcessorFactory;
+import eu.qcloud.data.processor.processors.Processor;
 import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.file.File;
@@ -65,16 +68,16 @@ public class ThresholdService {
 
 	@Autowired
 	private ThresholdUtils thresholdUtils;
-	
+
 	@Autowired
 	private FileRepository fileRepository;
-	
+
 	@Autowired
 	private SampleTypeRepository sampleTypeRepository;
-	
+
 	@Autowired
 	private InstrumentRepository instrumentRepository;
-	
+
 	@Autowired
 	private ParamRepository paramRepository;
 
@@ -105,29 +108,33 @@ public class ThresholdService {
 	 */
 	public Optional<Threshold> findThresholdBySampleTypeIdAndParamIdAndCvId(Long sampleTypeId, Long paramId,
 			Long cvId) {
-		return thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrue(sampleTypeId, paramId, cvId);
+		return thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrue(sampleTypeId,
+				paramId, cvId);
 	}
-	
-	
-	public Optional<Threshold> findThresholdBySampleTypeQCCVAndParamQCCVAndCVQCCV(String sampleTypeQCCV, String paramQCCV, String instrumentQCCV) {
-		return thresholdRepository.findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccv(sampleTypeQCCV, paramQCCV, instrumentQCCV);
+
+	public Optional<Threshold> findThresholdBySampleTypeQCCVAndParamQCCVAndCVQCCV(String sampleTypeQCCV,
+			String paramQCCV, String instrumentQCCV) {
+		return thresholdRepository
+				.findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccv(sampleTypeQCCV,
+						paramQCCV, instrumentQCCV);
 	}
-	
+
 	public Threshold saveThreshold(ThresholdType type, Threshold threshold) {
 		// Get the entities
-		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(threshold.getSampleType().getQualityControlControlledVocabulary());
+		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(
+				threshold.getSampleType().getQualityControlControlledVocabulary());
 		Param p = paramRepository.findByQccv(threshold.getParam().getqCCV());
 		Optional<Instrument> instrument = instrumentRepository.getByCVId(threshold.getCv().getCVId());
-		
-		if(!sampleType.isPresent() || p == null | !instrument.isPresent()) {
+
+		if (!sampleType.isPresent() || p == null | !instrument.isPresent()) {
 			throw new DataRetrievalFailureException("Instrument, parameter or sample type not found");
 		}
-		
+
 		/**
-		 * I had to this because I could not do a downcast from threshold
-		 * to a more specific son.
+		 * I had to this because I could not do a downcast from threshold to a more
+		 * specific son.
 		 */
-		switch(type) {
+		switch (type) {
 		case SIGMA:
 			SigmaThreshold st = new SigmaThreshold();
 			// st.setCv(threshold.getCv());
@@ -156,9 +163,6 @@ public class ThresholdService {
 			return null;
 		}
 	}
-	
-	
-	
 
 	/**
 	 * Returns a labsystem threshold. In case the labsystem do not have a threshold
@@ -176,14 +180,19 @@ public class ThresholdService {
 			Long cvId, Long labSystemId) {
 		// check if exists for the current labSystem, if not, create
 		Optional<Threshold> t = thresholdRepository
-				.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndLabSystemIdAndIsEnabledTrue(sampleTypeId, paramId, cvId, labSystemId);
+				.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndLabSystemIdAndIsEnabledTrue(sampleTypeId,
+						paramId, cvId, labSystemId);
 		if (t.isPresent()) {
 			return t.get();
 		} else {
 			// create and return
 			Optional<LabSystem> ls = labSystemRepository.findById(labSystemId);
-			// t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(sampleTypeId, paramId, cvId);
-			t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrueAndLabSystemIdIsNull(sampleTypeId, paramId, cvId);
+			// t =
+			// thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(sampleTypeId,
+			// paramId, cvId);
+			t = thresholdRepository
+					.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrueAndLabSystemIdIsNull(
+							sampleTypeId, paramId, cvId);
 			if (t.isPresent()) {
 				t.get().setLabSystem(ls.get());
 				switch (t.get().getThresholdType()) {
@@ -210,19 +219,29 @@ public class ThresholdService {
 		}
 		return null;
 	}
-	
-	public Threshold findThresholdBySampleTypeQCCVAndParamQCCVAndInstrumentQCCVAndLabSystemApiKey(String sampleTypeQCCV, String paramQCCV,
-			String cvId, UUID labSystemApiKey) {
+
+	public Threshold findThresholdBySampleTypeQCCVAndParamQCCVAndInstrumentQCCVAndLabSystemApiKey(String sampleTypeQCCV,
+			String paramQCCV, String cvId, UUID labSystemApiKey) {
+		// check if threshold exists for the current cv
+		Optional<Threshold> t = thresholdRepository.findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccvAndLabSystemApiKeyIsNull(sampleTypeQCCV, paramQCCV, cvId);
+		if(!t.isPresent()) {
+			return null;
+		}
 		// check if exists for the current labSystem, if not, create
-		Optional<Threshold> t = thresholdRepository
-				.findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccvAndLabSystemApiKeyAndIsEnabledTrue(sampleTypeQCCV, paramQCCV, cvId, labSystemApiKey);
+		t = thresholdRepository
+				.findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccvAndLabSystemApiKeyAndIsEnabledTrue(
+						sampleTypeQCCV, paramQCCV, cvId, labSystemApiKey);
 		if (t.isPresent()) {
 			return t.get();
 		} else {
 			// create and return
 			Optional<LabSystem> ls = labSystemRepository.findByApiKey(labSystemApiKey);
-			// t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(sampleTypeId, paramId, cvId);
-			t = thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrueAndLabSystemIdIsNull(t.get().getSampleType().getId(), t.get().getParam().getId(), t.get().getCv().getId());
+			// t =
+			// thresholdRepository.findOptionalBySampleTypeIdAndParamIdAndCvIdAndIsEnabledTrue(sampleTypeId,
+			// paramId, cvId);
+			t = thresholdRepository
+					.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrueAndLabSystemIdIsNull(
+							t.get().getSampleType().getId(), t.get().getParam().getId(), t.get().getCv().getId());
 			if (t.isPresent()) {
 				t.get().setLabSystem(ls.get());
 				switch (t.get().getThresholdType()) {
@@ -288,7 +307,7 @@ public class ThresholdService {
 				if (gs == null) {
 					gs = thresholdUtils.getTwoWeeksGuideSet(t.getLabSystem().getId());
 				}
-				if(gs==null) {
+				if (gs == null) {
 					throw new DataRetrievalFailureException("There are no files to process a default guide set.");
 				}
 				thresholdProcessor.setGuideSet(gs);
@@ -297,7 +316,7 @@ public class ThresholdService {
 					List<Data> dataForProcessor = dataRepository.findParamData(p.getContextSource().getId(),
 							t.getParam().getId(), gs.getStartDate(), gs.getEndDate(), t.getLabSystem().getId(),
 							t.getSampleType().getId());
-					thresholdProcessor.setGuideSetData(dataForProcessor);					
+					thresholdProcessor.setGuideSetData(dataForProcessor);
 					thresholdProcessor.process(p);
 					thresholdParamsRepository.save(p);
 				}
@@ -353,10 +372,11 @@ public class ThresholdService {
 		}
 		return thresholds;
 	}
-	
+
 	/**
-	 * Find all threshold params by lab system. It will create new
-	 * thresholds if there is no current labsystem thresholds yet.
+	 * Find all threshold params by lab system. It will create new thresholds if
+	 * there is no current labsystem thresholds yet.
+	 * 
 	 * @param labSystemApiKey
 	 * @return
 	 */
@@ -378,14 +398,12 @@ public class ThresholdService {
 			List<withParamsWithoutThreshold> thresholds = new ArrayList<>();
 			for (Threshold t : nodeThresholds) {
 				thresholds.add(thresholdRepository.findThresholdById(t.getId()));
-			}			
+			}
 			return thresholds;
 		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");
 		}
 	}
-	
-	
 
 	public void switchThresholdMonitoring(Long thresholdId) {
 		Optional<Threshold> threshold = thresholdRepository.findById(thresholdId);
@@ -411,14 +429,15 @@ public class ThresholdService {
 	public ThresholdForPlot getThreshold(Long thresholdId) {
 		return thresholdRepository.getThresholdForPlot(thresholdId);
 	}
-	
+
 	/**
-	 * Update the threshold parameters creating a new one and
-	 * saving the updated one and disabling it. This is because
-	 * we need to keep a trace of the non-conformities.
+	 * Update the threshold parameters creating a new one and saving the updated one
+	 * and disabling it. This is because we need to keep a trace of the
+	 * non-conformities.
+	 * 
 	 * @param thresholdId
 	 * @param thresholdParams
-	 * TODO: check if the threshold belongs to the current user
+	 *            TODO: check if the threshold belongs to the current user
 	 */
 	public void updateThresholdParams(Long thresholdId, List<ThresholdParams> thresholdParams) {
 		// get the threshold
@@ -442,7 +461,7 @@ public class ThresholdService {
 									threshold.setEnabled(true);
 									threshold.setId(null);
 									threshold = thresholdRepository.save(threshold);
-									for(ThresholdParams p : thresholdParams) {
+									for (ThresholdParams p : thresholdParams) {
 										p.setThreshold(threshold);
 										ThresholdParamsId tid = new ThresholdParamsId();
 										tid.setContextSourceId(p.getContextSource().getId());
@@ -522,70 +541,111 @@ public class ThresholdService {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Get the status of a given lab system
-	 * @param labSystem the labsystem to check
+	 * 
+	 * @param labSystem
+	 *            the labsystem to check
 	 */
 	public List<LabSystemStatus> getLabSystemStatus(LabSystem labSystem) {
-		
+
 		List<LabSystemStatus> labSystemStatus = new ArrayList<>();
-		
+		Float valueToCheck = null;
 		File labSystemLastFile = fileRepository.findTop1ByLabSystemIdOrderByCreationDateDesc(labSystem.getId());
-		if(labSystemLastFile!=null) {
+		if (labSystemLastFile != null) {
 			List<withParamsWithoutThreshold> thresholds = findAllThresholdsByLabSystemApiKey(labSystem.getApiKey());
-			for(withParamsWithoutThreshold tt : thresholds) {
-				if(!tt.getIsMonitored()) {
+			for (withParamsWithoutThreshold tt : thresholds) {
+				if (!tt.getIsMonitored()) {
 					continue;
 				}
-				for(paramsNoThreshold tp : tt.getThresholdParams()) {
+				labSystemLastFile = fileRepository.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(
+						labSystem.getId(), tt.getSampleType().getId());
+				for (paramsNoThreshold tp : tt.getThresholdParams()) {
 					/*
 					 * Get the last value by param and sample type
 					 */
-					Data data = dataRepository.findByFileIdAndParamIdAndContextSourceId(
-							labSystemLastFile.getId(), tt.getParam().getId(), tp.getContextSource().getId());
-					Float value = thresholdUtils.processValueWithThresholdProcessor(
-							data.getValue(), tt.getThresholdType());
+					Data data = dataRepository.findByFileIdAndParamIdAndContextSourceId(labSystemLastFile.getId(),
+							tt.getParam().getId(), tp.getContextSource().getId());
+					/*
+					 * Look for param processor
+					 */
+					Processor processor = ProcessorFactory.getProcessor(tt.getParam().getProcessor());
+					if (processor.isGuideSetRequired()) {
+						// get the guide set of the instrument
+						GuideSet gs = labSystem.getGuideSet();
+						if (gs == null) {
+							throw new DataRetrievalFailureException("A guide set is required for this plot.");
+						}
+						processor.setGuideSet(gs);
+						ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(
+								tp.getContextSource().getId(), tt.getParam().getId(), gs.getStartDate(),
+								gs.getEndDate(), labSystem.getId(), tt.getSampleType().getId());
+						if (dataToProcess.size() == 0) {
+							throw new DataRetrievalFailureException(
+									"Your selected guide has no results. Please, choose another date range.");
+						}
+						List<DataForPlot> dataForPlot = new ArrayList<>();
+
+						dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
+								data.getContextSource().getAbbreviated(), data.getValue()));
+
+						processor.setData(dataForPlot);
+						processor.setGuideSetData(dataToProcess);
+						List<DataForPlot> processedData = processor.processData();
+						valueToCheck = processedData.get(0).getValue();
+					} else {
+						valueToCheck = data.getValue();
+					}
+					
+
+					Float value = thresholdUtils.processValueWithThresholdProcessor(valueToCheck,
+							tt.getThresholdType());
+
 					/*
 					 * Compare the last value with the threshold parameter value
 					 */
-					switch(tt.getNonConformityDirection()) {
+					switch (tt.getNonConformityDirection()) {
 					case DOWN:
-						if(value < (tp.getInitialValue()-(tp.getStepValue()*tt.getSteps()))) {
+						if (value < (tp.getInitialValue() - (tp.getStepValue() * tt.getSteps()))) {
 							// danger
-							labSystemStatus.add(new LabSystemStatus(tt.getParam(),tp.getContextSource(),InstrumentStatus.DANGER));
-						} else if(value < tp.getInitialValue()-(tp.getStepValue()*(tt.getSteps()-1)) && tt.getSteps()>1) {
+							labSystemStatus.add(
+									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.DANGER));
+						} else if (value < tp.getInitialValue() - (tp.getStepValue() * (tt.getSteps() - 1))
+								&& tt.getSteps() > 1) {
 							// warning
-							labSystemStatus.add(new LabSystemStatus(tt.getParam(),tp.getContextSource(),InstrumentStatus.WARNING));
+							labSystemStatus.add(new LabSystemStatus(tt.getParam(), tp.getContextSource(),
+									InstrumentStatus.WARNING));
 						} else {
 							// ok
-							labSystemStatus.add(new LabSystemStatus(tt.getParam(),tp.getContextSource(),InstrumentStatus.OK));
+							labSystemStatus.add(
+									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.OK));
 						}
-						
+
 						break;
 					case UPDOWN:
-						if(Math.abs(value)> tp.getInitialValue()+(tp.getStepValue()*tt.getSteps())) {
-							// fail 
-							labSystemStatus.add(new LabSystemStatus(tt.getParam(),tp.getContextSource(),InstrumentStatus.DANGER));
-						}else {
-							//ok
-							labSystemStatus.add(new LabSystemStatus(tt.getParam(),tp.getContextSource(),InstrumentStatus.OK));
+						if (Math.abs(value) > tp.getInitialValue() + (tp.getStepValue() * tt.getSteps())) {
+							// fail
+							labSystemStatus.add(
+									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.DANGER));
+						} else {
+							// ok
+							labSystemStatus.add(
+									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.OK));
 						}
 						break;
 					default:
 						break;
 					}
-					
+
 				}
-				
+
 			}
-			
-		}else {
+
+		} else {
 			throw new DataRetrievalFailureException("There were a problem retrieving last labsystem data");
 		}
 		return labSystemStatus;
 	}
-	
-	
 
 }

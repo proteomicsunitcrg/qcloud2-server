@@ -46,7 +46,8 @@ public class ThresholdUtils {
 		case HARDLIMIT:
 			return value;
 		case SIGMA:
-			return log2(value); 
+			// return log2(value);
+			return value;
 		default:
 			return null;
 		}
