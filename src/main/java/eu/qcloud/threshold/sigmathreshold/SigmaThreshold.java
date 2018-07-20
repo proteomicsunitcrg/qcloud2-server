@@ -16,8 +16,8 @@ public class SigmaThreshold extends Threshold {
 		this.direction = Direction.UPDOWN;
 		this.nonConformityDirection = Direction.DOWN;
 		this.processor = new AreaProcessor();
-		this.adminThresholdConstraint = new ThresholdConstraint(true,false,false,true,false,false);
-		this.managerThresholdConstraint = new ThresholdConstraint(true,false,false,false,false,false);
+		this.adminThresholdConstraint = new ThresholdConstraint(false,false,false,true,false,false);
+		this.managerThresholdConstraint = new ThresholdConstraint(false,false,false,false,false,false);
 		this.thresholdType = ThresholdType.SIGMA;
 		
 	}

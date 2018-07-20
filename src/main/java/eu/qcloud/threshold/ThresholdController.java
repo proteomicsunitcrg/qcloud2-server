@@ -146,11 +146,7 @@ public class ThresholdController {
 	public ThresholdForPlot getPlotThreshold(@PathVariable UUID chartApiKey, @PathVariable UUID labSystemApiKey) {
 		// get the param
 		ChartParams chartParam = chartService.getTopChartParamByChartApiKey(chartApiKey);
-		/*
-		Threshold t = thresholdService.findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
-				chartParam.getChart().getSampleType().getId(), chartParam.getParam().getId(),
-				chartParam.getChart().getCv().getId(), labSystemId);
-		*/
+		
 		Threshold t = thresholdService.findThresholdBySampleTypeQCCVAndParamQCCVAndInstrumentQCCVAndLabSystemApiKey(
 				chartParam.getChart().getSampleType().getQualityControlControlledVocabulary(), chartParam.getParam().getqCCV(),
 				chartParam.getChart().getCv().getCVId(), labSystemApiKey);

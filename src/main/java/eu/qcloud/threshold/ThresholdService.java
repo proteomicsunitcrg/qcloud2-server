@@ -624,7 +624,8 @@ public class ThresholdService {
 
 						break;
 					case UPDOWN:
-						if (Math.abs(value) > tp.getInitialValue() + (tp.getStepValue() * tt.getSteps())) {
+						if(value > tp.getInitialValue() + (tp.getStepValue() * tt.getSteps()) ||
+								value < tp.getInitialValue() - (tp.getStepValue() * tt.getSteps())) {
 							// fail
 							labSystemStatus.add(
 									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.DANGER));
