@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.labsystem.LabSystem;
@@ -60,6 +61,10 @@ public class Threshold {
 	
 	@Column(name="is_enabled", columnDefinition="tinyint(1) default 1")
     private boolean isEnabled;
+	
+	@JsonProperty
+	@Column(name="is_zero_no_data", columnDefinition="tinyint(1) default 0")
+    private boolean isZeroNoData;
 	
 	@Transient
 	protected ThresholdConstraint adminThresholdConstraint;
@@ -219,6 +224,14 @@ public class Threshold {
 
 	public void setEnabled(boolean isEnabled) {
 		this.isEnabled = isEnabled;
+	}
+
+	public boolean getIsZeroNoData() {
+		return isZeroNoData;
+	}
+
+	public void setIsZeroNoData(boolean isZeroNoData) {
+		this.isZeroNoData = isZeroNoData;
 	}
 	
 }

@@ -137,27 +137,23 @@ public class ThresholdService {
 		switch (type) {
 		case SIGMA:
 			SigmaThreshold st = new SigmaThreshold();
-			// st.setCv(threshold.getCv());
 			st.setCv(instrument.get());
 			st.setSteps(threshold.getSteps());
-			// st.setParam(threshold.getParam());
 			st.setParam(p);
-			// st.setSampleType(threshold.getSampleType());
 			st.setSampleType(sampleType.get());
 			st.setEnabled(true);
 			st.setMonitored(true);
+			st.setIsZeroNoData(threshold.getIsZeroNoData());
 			return saveSigmaThreshold(st);
 		case HARDLIMIT:
 			HardLimitThreshold ht = new HardLimitThreshold();
-			// ht.setCv(threshold.getCv());
 			ht.setCv(instrument.get());
 			ht.setSteps(threshold.getSteps());
-			// ht.setParam(threshold.getParam());
 			ht.setParam(p);
-			// ht.setSampleType(threshold.getSampleType());
 			ht.setSampleType(sampleType.get());
 			ht.setEnabled(true);
 			ht.setMonitored(true);
+			ht.setIsZeroNoData(threshold.getIsZeroNoData());
 			return saveHardLimitThreshold(ht);
 		default:
 			return null;
@@ -601,6 +597,13 @@ public class ThresholdService {
 
 					Float value = thresholdUtils.processValueWithThresholdProcessor(valueToCheck,
 							tt.getThresholdType());
+					if(tt.getIsZeroNoData()) {
+						if(value == 0f) {
+							labSystemStatus.add(new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.NO_DATA));
+							System.out.println("hola rt");
+							continue;
+						}
+					}
 
 					/*
 					 * Compare the last value with the threshold parameter value
