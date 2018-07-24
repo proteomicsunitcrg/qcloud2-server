@@ -106,7 +106,7 @@ public class PeptideController {
 		if(checkIfPeptideNameExists(peptide.getName()) && !peptide.getName().equals(p.getName())) {
 			throw new DataIntegrityViolationException("This peptide already exists");
 		}else {
-			return peptideService.addPeptide(peptide);				
+			return peptideService.updatePeptide(peptide);				
 		}			
 		
 	}

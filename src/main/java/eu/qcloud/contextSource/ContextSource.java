@@ -1,5 +1,7 @@
 package eu.qcloud.contextSource;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,6 +23,10 @@ public class ContextSource {
 	protected String name;
 	
 	protected String abbreviated;
+	
+	@Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+    private UUID apiKey;
 
 	public String getAbbreviated() {
 		return abbreviated;
@@ -44,5 +50,13 @@ public class ContextSource {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public UUID getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(UUID apiKey) {
+		this.apiKey = apiKey;
 	}
 }

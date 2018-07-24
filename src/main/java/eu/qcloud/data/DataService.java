@@ -325,4 +325,11 @@ public class DataService {
 
 	}
 
+	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey,
+			String sampleTypeQccv) {
+		// vas por aquí... saca la fecha de un mes anterior y la de hoy 
+
+		return null;
+	}
+
 }

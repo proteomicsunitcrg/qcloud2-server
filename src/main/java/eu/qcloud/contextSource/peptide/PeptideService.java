@@ -3,6 +3,7 @@ package eu.qcloud.contextSource.peptide;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -27,7 +28,12 @@ public class PeptideService {
 	 * @return the inserted peptide
 	 */
 	public Peptide addPeptide(Peptide p) {
+		p.setApiKey(UUID.randomUUID());
 		return peptideRepository.save(p);		
+	}
+	
+	public Peptide updatePeptide(Peptide p) {
+		return peptideRepository.save(p);
 	}
 	
 	/**

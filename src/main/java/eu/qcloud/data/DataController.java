@@ -127,6 +127,11 @@ public class DataController {
 		return dataService.getPlotData(start, end, chartApiKey, labSystemApiKey, sampleTypeQCCV);
 	}
 	
+	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey, String sampleTypeQccv) {
+		
+		return dataService.getAutoPlotData(labSystemApiKey, paramQccv, contextSourceApiKey, sampleTypeQccv);
+	}
+	
 	@RequestMapping(value="/api/data/iso/{checksum}/{abbreviated}", method=RequestMethod.GET)
 	public List<DataForPlot> isotopologueData(@PathVariable String checksum,@PathVariable String abbreviated ) {
 		return dataService.getIsotopologueData(checksum, abbreviated);

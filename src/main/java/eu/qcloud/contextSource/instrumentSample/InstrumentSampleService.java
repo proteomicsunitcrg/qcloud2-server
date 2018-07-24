@@ -3,6 +3,7 @@ package eu.qcloud.contextSource.instrumentSample;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,8 @@ public class InstrumentSampleService {
 	private InstrumentSampleRepository elementRepository;
 	
 	public InstrumentSample addElement(InstrumentSample e) {
-		return elementRepository.save(e);		
+		e.setApiKey(UUID.randomUUID());
+		return elementRepository.save(e);
 	}
 
 	public List<InstrumentSample> getAllInstrumentSample() {

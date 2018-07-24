@@ -599,8 +599,7 @@ public class ThresholdService {
 							tt.getThresholdType());
 					if(tt.getIsZeroNoData()) {
 						if(value == 0f) {
-							labSystemStatus.add(new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.NO_DATA));
-							System.out.println("hola rt");
+							labSystemStatus.add(new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.NO_DATA, tt.getId(), tt.getSampleType().getQualityControlControlledVocabulary()));
 							continue;
 						}
 					}
@@ -613,16 +612,16 @@ public class ThresholdService {
 						if (value < (tp.getInitialValue() - (tp.getStepValue() * tt.getSteps()))) {
 							// danger
 							labSystemStatus.add(
-									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.DANGER));
+									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.DANGER, tt.getId(), tt.getSampleType().getQualityControlControlledVocabulary()));
 						} else if (value < tp.getInitialValue() - (tp.getStepValue() * (tt.getSteps() - 1))
 								&& tt.getSteps() > 1) {
 							// warning
 							labSystemStatus.add(new LabSystemStatus(tt.getParam(), tp.getContextSource(),
-									InstrumentStatus.WARNING));
+									InstrumentStatus.WARNING, tt.getId(), tt.getSampleType().getQualityControlControlledVocabulary()));
 						} else {
 							// ok
 							labSystemStatus.add(
-									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.OK));
+									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.OK, tt.getId(), tt.getSampleType().getQualityControlControlledVocabulary()));
 						}
 
 						break;
@@ -631,11 +630,11 @@ public class ThresholdService {
 								value < tp.getInitialValue() - (tp.getStepValue() * tt.getSteps())) {
 							// fail
 							labSystemStatus.add(
-									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.DANGER));
+									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.DANGER, tt.getId(), tt.getSampleType().getQualityControlControlledVocabulary()));
 						} else {
 							// ok
 							labSystemStatus.add(
-									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.OK));
+									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.OK, tt.getId(), tt.getSampleType().getQualityControlControlledVocabulary()));
 						}
 						break;
 					default:
