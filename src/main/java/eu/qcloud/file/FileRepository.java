@@ -28,6 +28,12 @@ public interface FileRepository extends CrudRepository<File, Long>{
 	
 	public List<File> findByCreationDateAndLabSystemIdAndSampleTypeId(Date creationDate, Long LabSystemId, Long sampleTypeId);
 	
+	@Query(value = "select * from file f where f.id in (select d.file_id from data d where d.param_id = ?1 and d.context_source_id = ?2)  and f.labsystem_id = ?3 and f.sample_type_id = ?4 order by f.creation_date desc limit 15",nativeQuery = true )
+	public List<File> findForAutoPlotWithZero(Long paramId, Long contextSourceId, Long labSystemId, Long sampleTypeId);
+	
+	@Query(value = "select * from file f where f.id in (select d.file_id from data d where d.value > 0 and d.param_id = ?1 and d.context_source_id = ?2)  and f.labsystem_id = ?3 and f.sample_type_id = ?4 order by f.creation_date desc limit 15",nativeQuery = true )
+	public List<File> findForAutoPlotExcludeZero(Long paramId, Long contextSourceId, Long labSystemId, Long sampleTypeId);
+	
 	@Projection(name = "file_mini", types = File.class)
 	public interface OnlySmalls {
 		String getFilename();

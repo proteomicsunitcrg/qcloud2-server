@@ -127,9 +127,15 @@ public class DataController {
 		return dataService.getPlotData(start, end, chartApiKey, labSystemApiKey, sampleTypeQCCV);
 	}
 	
-	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey, String sampleTypeQccv) {
+	@RequestMapping(value="/api/data/auto/{labSystemApiKey}/{paramQccv}/{contextSourceApiKey}/{sampleTypeQccv}/{thresholdId}", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
+	public List<DataForPlot> getAutoPlotData(@PathVariable UUID labSystemApiKey,
+			@PathVariable String paramQccv,
+			@PathVariable UUID contextSourceApiKey,
+			@PathVariable String sampleTypeQccv,
+			@PathVariable Long thresholdId) {
 		
-		return dataService.getAutoPlotData(labSystemApiKey, paramQccv, contextSourceApiKey, sampleTypeQccv);
+		return dataService.getAutoPlotData(labSystemApiKey, paramQccv, contextSourceApiKey, sampleTypeQccv, thresholdId);
 	}
 	
 	@RequestMapping(value="/api/data/iso/{checksum}/{abbreviated}", method=RequestMethod.GET)

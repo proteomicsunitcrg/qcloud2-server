@@ -159,6 +159,13 @@ public class ThresholdController {
 			return null;
 		}
 	}
+	
+	@PreAuthorize("hasRole('USER')")
+	@RequestMapping(value = "/api/threshold/autoplot/{thresholdId}", method = RequestMethod.GET)
+	public ThresholdForPlot getAutoPlotThreshold(@PathVariable Long thresholdId) {
+		return thresholdService.getThreshold(thresholdId);
+		
+	}
 
 	public paramsNoThreshold getThresholdParams(Long thresholdId) {
 		return null;

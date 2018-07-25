@@ -15,6 +15,7 @@ import eu.qcloud.chart.Chart;
 import eu.qcloud.chart.ChartRepository;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
 import eu.qcloud.contextSource.ContextSource;
+import eu.qcloud.contextSource.ContextSourceRepository;
 import eu.qcloud.contextSource.instrumentSample.InstrumentSampleRepository;
 import eu.qcloud.contextSource.peptide.Peptide;
 import eu.qcloud.contextSource.peptide.PeptideRepository;
@@ -36,6 +37,8 @@ import eu.qcloud.sampleComposition.SampleCompositionRepository;
 import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
+import eu.qcloud.threshold.Threshold;
+import eu.qcloud.threshold.ThresholdRepository;
 
 /**
  * Service for the data
@@ -75,6 +78,12 @@ public class DataService {
 
 	@Autowired
 	private ChartRepository chartRepository;
+	
+	@Autowired
+	private ThresholdRepository<Threshold> thresholdRepository;
+	
+	@Autowired
+	private ContextSourceRepository contextSourceRepository;
 
 	public List<Data> getAllData() {
 		List<Data> data = new ArrayList<>();
@@ -326,10 +335,71 @@ public class DataService {
 	}
 
 	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey,
-			String sampleTypeQccv) {
-		// vas por aquí... saca la fecha de un mes anterior y la de hoy 
+			String sampleTypeQccv, Long thresholdId) {
+		
+		Optional<Threshold> threshold = thresholdRepository.findById(thresholdId);
+		Param param = paramRepository.findByQccv(paramQccv);
+		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
+		Optional<ContextSource> contextSource = contextSourceRepository.findByApiKey(contextSourceApiKey);
+		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQccv);
+		
+		if(!threshold.isPresent()) {
+			throw new DataRetrievalFailureException("No threshold found.");
+		}
+		if(param==null) {
+			throw new DataRetrievalFailureException("No parameter found.");
+		}
+		if(!labSystem.isPresent()) {
+			throw new DataRetrievalFailureException("No lab system found.");
+		}
+		if(!contextSource.isPresent()) {
+			throw new DataRetrievalFailureException("No context source found.");
+		}
+		if(!sampleType.isPresent()) {
+			throw new DataRetrievalFailureException("No sample type found.");
+		}
+		List<File> files;
+		if (threshold.get().getIsZeroNoData()) {
+			files = fileRepository.findForAutoPlotWithZero(param.getId(), contextSource.get().getId(), labSystem.get().getId(), sampleType.get().getId());
+		} else {
+			files = fileRepository.findForAutoPlotWithZero(param.getId(), contextSource.get().getId(), labSystem.get().getId(), sampleType.get().getId());
+		}
+		
+		if(files.size() == 0) {
+			throw new DataRetrievalFailureException("No files found.");
+		}
+		Date endDate = new Date(files.get(0).getCreationDate().getTime());
+		Date startDate = new Date(files.get(files.size()-1).getCreationDate().getTime());
+		
+		List<Data> data = dataRepository.findParamData(contextSource.get().getId(), param.getId(), startDate, endDate, labSystem.get().getId(), sampleType.get().getId());
+		
+		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 
-		return null;
+		// Check sample type in order to send the abbreviated name or anything else
+		List<DataForPlot> dataForPlot = prepareDataForPlot(data, sampleType.get(), param);
+
+		processor.setData(dataForPlot);
+		/**
+		 * If data from a guide set is required then call the db for the data and set it
+		 * in the processor
+		 */
+		if (processor.isGuideSetRequired()) {
+			// get the guide set of the instrument
+			GuideSet gs = labSystem.get().getGuideSet();
+			if (gs == null) {
+				throw new DataRetrievalFailureException("A guide set is required for this plot.");
+			}
+			processor.setGuideSet(gs);
+			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(contextSource.get().getId(), param.getId(), gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(), sampleType.get().getId());
+			if (dataToProcess.size() == 0) {
+				throw new DataRetrievalFailureException(
+						"Your selected guide has no results. Please, choose another date range.");
+			}
+			processor.setGuideSetData(dataToProcess);
+			return processor.processData();
+		} else {
+			return processor.processData();
+		}
 	}
 
 }
