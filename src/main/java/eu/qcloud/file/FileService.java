@@ -15,6 +15,7 @@ import eu.qcloud.file.FileRepository.OnlySmalls;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemService;
 import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
 import eu.qcloud.sampleType.SampleTypeService;
 /**
  * File service
@@ -113,6 +114,10 @@ public class FileService {
 	
 	public File getLastFileBySampleTypeQCCVAndLabSystemApikey(String sampleTypeQCCV, UUID labSystemApikey) {
 		return fileRepository.findTop1BySampleTypeQualityControlControlledVocabularyAndLabSystemApiKeyOrderByCreationDateDesc(sampleTypeQCCV,labSystemApikey);
+	}
+
+	public List<SampleType> findSampleTypesByLabSystemApiKey(UUID labSystemApiKey) {
+		return fileRepository.findDistinctSampleTypeByLabSystemApiKey(labSystemApiKey);
 	}
 
 

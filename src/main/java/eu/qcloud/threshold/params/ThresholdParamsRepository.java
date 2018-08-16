@@ -16,6 +16,7 @@ public interface ThresholdParamsRepository extends CrudRepository<ThresholdParam
 		Float getStepValue();
 		Float getInitialValue();
 		ContextSource getContextSource();
+		Boolean getIsEnabled();
 		
 	}
 }

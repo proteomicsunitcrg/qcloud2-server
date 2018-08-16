@@ -18,8 +18,10 @@ public class AreaProcessor extends ThresholdProcessor {
 		
 		DescriptiveStatistics ds = new DescriptiveStatistics();
 		for(Data d: guideSetData) {
-			if(d.getValue()!=0) {
+			if(d.getValue()>0) {
 				ds.addValue(log2(d.getValue()));
+			} else {
+				ds.addValue(0f);	
 			}
 		}
 		thresholdParam.setInitialValue((float)ds.getMean());

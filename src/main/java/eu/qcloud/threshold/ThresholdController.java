@@ -13,8 +13,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,14 +25,13 @@ import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemService;
-import eu.qcloud.security.model.User;
-import eu.qcloud.security.service.UserService;
 import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
 import eu.qcloud.threshold.constraint.ThresholdConstraint;
 import eu.qcloud.threshold.labsystemstatus.LabSystemStatus;
 import eu.qcloud.threshold.params.ThresholdParams;
 import eu.qcloud.threshold.params.ThresholdParamsRepository.paramsNoThreshold;
+import eu.qcloud.utils.factory.ThresholdForPlotImpl;
 
 @RestController
 // @PreAuthorize("hasRole('ADMIN')")
@@ -54,9 +51,6 @@ public class ThresholdController {
 
 	@Autowired
 	private ChartService chartService;
-
-	@Autowired
-	private UserService userService;
 
 	@Autowired
 	private LabSystemService labSystemService;
@@ -118,18 +112,27 @@ public class ThresholdController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public Threshold addNewThreshold(@PathVariable ThresholdType type, @RequestBody Threshold threshold) {
 		// Check if a threshold of that param already exists
-		
+
 		Optional<Threshold> t = thresholdService.findThresholdBySampleTypeQCCVAndParamQCCVAndCVQCCV(
 				threshold.getSampleType().getQualityControlControlledVocabulary(), threshold.getParam().getqCCV(),
 				threshold.getCv().getCVId());
 		if (t.isPresent()) {
 			throw new DataIntegrityViolationException("Threshold already exists");
 		}
-		
+
 		return thresholdService.saveThreshold(type, threshold);
 
 	}
 
+	/**
+	 * 
+	 * @param sampleTypeId
+	 * @param paramId
+	 * @param cvId
+	 * @param labSystemId
+	 * @deprecated probably deprecated
+	 * @return
+	 */
 	@RequestMapping(value = "/api/threshold/{sampleTypeId}/{paramId}/{cvId}/{labSystemId}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ThresholdForPlot getThreshold(@PathVariable Long sampleTypeId, @PathVariable Long paramId,
@@ -137,50 +140,44 @@ public class ThresholdController {
 		Threshold t = thresholdService.findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(sampleTypeId, paramId,
 				cvId, labSystemId);
 		// calculate threshold
-		thresholdService.processThreshold(t);
 		return thresholdService.getThreshold(t.getId());
 	}
 
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/api/threshold/plot/{chartApiKey}/{labSystemApiKey}", method = RequestMethod.GET)
-	public ThresholdForPlot getPlotThreshold(@PathVariable UUID chartApiKey, @PathVariable UUID labSystemApiKey) {
+	public ThresholdForPlotImpl getPlotThreshold(@PathVariable UUID chartApiKey, @PathVariable UUID labSystemApiKey) {
 		// get the param
 		ChartParams chartParam = chartService.getTopChartParamByChartApiKey(chartApiKey);
-		
-		Threshold t = thresholdService.findThresholdBySampleTypeQCCVAndParamQCCVAndInstrumentQCCVAndLabSystemApiKey(
-				chartParam.getChart().getSampleType().getQualityControlControlledVocabulary(), chartParam.getParam().getqCCV(),
-				chartParam.getChart().getCv().getCVId(), labSystemApiKey);
-		// calculate threshold
-
-		if (t != null) {
-			thresholdService.processThreshold(t);
-			return thresholdService.getThreshold(t.getId());
-		} else {
-			return null;
-		}
+//		return thresholdService.findThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(
+//				chartParam.getParam().getId(), chartParam.getChart().getSampleType().getId(), labSystemApiKey);
+		return thresholdService.calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(
+				chartParam.getParam().getId(), chartParam.getChart().getSampleType().getId(), labSystemApiKey);
 	}
 	
+//	@PreAuthorize("hasRole('USER')")
+//	@RequestMapping(value = "/api/threshold/plot/{chartApiKey}/{labSystemApiKey}", method = RequestMethod.GET)
+//	public ThresholdForPlotImpl getPlotThreshold(@PathVariable UUID chartApiKey, @PathVariable UUID labSystemApiKey) {
+//		// get the param
+//		ChartParams chartParam = chartService.getTopChartParamByChartApiKey(chartApiKey);
+//		return thresholdService.findThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(
+//				chartParam.getParam().getId(), chartParam.getChart().getSampleType().getId(), labSystemApiKey);
+//	}
+
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/api/threshold/autoplot/{thresholdId}", method = RequestMethod.GET)
 	public ThresholdForPlot getAutoPlotThreshold(@PathVariable Long thresholdId) {
 		return thresholdService.getThreshold(thresholdId);
-		
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@RequestMapping(value = "/api/threshold/nonconformityplot/{thresholdApiKey}/{fileChecksum}/{contextSourceApiKey}", method = RequestMethod.GET)
+	public ThresholdForPlotImpl getNonConformityPlotThresholdWithoutGuideSet(@PathVariable UUID thresholdApiKey,
+			@PathVariable String fileChecksum, @PathVariable UUID contextSourceApiKey) {
+		return thresholdService.getNonConformityThresholdWithoutGuideSet(thresholdApiKey, fileChecksum, contextSourceApiKey);
 	}
 
 	public paramsNoThreshold getThresholdParams(Long thresholdId) {
 		return null;
-	}
-
-	/**
-	 * Deprecated function
-	 * 
-	 * @return
-	 * @deprecated do not use it, use getNodeThresholdsBySystemApiKey() instead
-	 */
-	@RequestMapping(value = "/api/threshold/node", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('MANAGER')")
-	public List<withParamsWithoutThreshold> getNodeThresholds() {
-		return thresholdService.findAllNodeThreshold(getManagerFromSecurityContext().getNode().getId());
 	}
 
 	@RequestMapping(value = "/api/threshold/params", method = RequestMethod.POST)
@@ -235,7 +232,7 @@ public class ThresholdController {
 	}
 
 	/**
-	 * Return the lab system status. It will check the monitores values of the last
+	 * Return the lab system status. It will check the monitored values of the last
 	 * file of the system.
 	 * 
 	 * @param the
@@ -253,20 +250,6 @@ public class ThresholdController {
 			throw new DataRetrievalFailureException("Lab system not found.");
 		}
 
-	}
-
-	/*
-	 * Helper classes
-	 */
-	/**
-	 * Get the current user from the security context
-	 * 
-	 * @return the logged user
-	 */
-	private User getManagerFromSecurityContext() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User manager = userService.getUserByUsername(authentication.getName());
-		return manager;
 	}
 
 	/*

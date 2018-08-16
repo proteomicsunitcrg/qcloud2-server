@@ -47,6 +47,7 @@ public class RetentionTimeProcessor extends Processor {
 			Float value = d.getValue();
 			Float nV = (value-means.get(d.getContextSourceName()))/60;
 			if(nV.isNaN()) {
+				//d.setValue(Float.NaN);
 				continue;
 			}
 			Float rounded =round(nV,1);

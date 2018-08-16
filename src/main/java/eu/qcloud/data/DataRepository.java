@@ -19,6 +19,9 @@ public interface DataRepository extends CrudRepository<Data, DataId>{
 	@Query("SELECT d as d from Data d where d.contextSource.id=?1 and d.param.id=?2 and d.file in (select f from File f where f.creationDate between ?3 and ?4 and f.labSystem.id=?5 and f.sampleType.id=?6) order by d.file.creationDate asc")
 	List<Data> findParamData(Long contextSourceId, Long paramId, java.util.Date start, java.util.Date end, Long labSystemId, Long sampleTypeId);
 	
+	@Query("SELECT d as d from Data d where d.contextSource.sequence=?1 and d.param.id=?2 and d.file in (select f from File f where f.creationDate between ?3 and ?4 and f.labSystem.id=?5 and f.sampleType.id=?6) order by d.file.creationDate asc")
+	List<Data> findParamPeptideData(String contextSourceSequence, Long paramId, java.util.Date start, java.util.Date end, Long labSystemId, Long sampleTypeId);
+	
 	Data findByFileIdAndParamIdAndContextSourceId(Long fileId, Long paramId, Long contextSourceId);
 	
 	public interface MiniData {

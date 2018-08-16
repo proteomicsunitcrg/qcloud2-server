@@ -1,24 +1,25 @@
 package eu.qcloud.labsystem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.dataSource.DataSource;
+import eu.qcloud.guideset.GuideSet;
 
 /**
  * This class represents a system of LC/MS at this moment
@@ -47,13 +48,48 @@ public class LabSystem {
 	@ManyToMany
 	private List<DataSource> dataSources;
 	
-	@OneToOne(cascade= CascadeType.ALL)
-    @JoinColumn(name = "guide_set")
-	private GuideSet guideSet;
+	@OneToMany	
+	private List<GuideSet> guideSets;
 	
 	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
+	
+	@Transient
+	private List<GuideSet> enabledGuideSets;
+	
+	public List<GuideSet> getEnabledGuideSets() {
+		List<GuideSet> enabledGuideSets = new ArrayList<>();
+		if(guideSets == null) {
+			return enabledGuideSets;
+		}
+		if(guideSets.size()> 0) {
+			for(GuideSet gs : guideSets) {
+				if (gs.getIsActive()) {
+					enabledGuideSets.add(gs);
+				}
+			}
+		}
+		
+		return enabledGuideSets;
+	}
+	
+	public GuideSet getGuideSet(Long sampleTypeId) {
+		GuideSet guideSet = null;
+		if(guideSets == null) {
+			return null;
+		}
+		if(guideSets.size()> 0) {
+			for(GuideSet gs : guideSets) {
+				if (gs.getIsActive() && gs.getSampleType().getId() == sampleTypeId) {
+					guideSet= gs;
+					break;
+				}
+			}
+		}
+		return guideSet;
+		
+	}
 	
 	
 	public UUID getApiKey() {
@@ -63,15 +99,15 @@ public class LabSystem {
 	public void setApiKey(UUID apiKey) {
 		this.apiKey = apiKey;
 	}
-
-	public GuideSet getGuideSet() {
-		return guideSet;
+	@JsonIgnore
+	public List<GuideSet> getGuideSets() {
+		return guideSets;
 	}
 
-	public void setGuideSet(GuideSet guideSet) {
-		this.guideSet = guideSet;
+	public void setGuideSets(List<GuideSet> guideSets) {
+		this.guideSets = guideSets;
 	}
-	
+
 	@JsonIgnore
 	public Long getId() {
 		return id;

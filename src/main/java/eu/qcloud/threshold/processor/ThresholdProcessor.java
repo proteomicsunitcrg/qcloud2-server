@@ -5,7 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.data.Data;
-import eu.qcloud.labsystem.GuideSet;
+import eu.qcloud.guideset.GuideSet;
 import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.params.ThresholdParams;
 

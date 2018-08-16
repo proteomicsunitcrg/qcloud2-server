@@ -6,8 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +20,7 @@ import eu.qcloud.chart.ChartRepository;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.contextSource.ContextSourceRepository;
+import eu.qcloud.contextSource.instrumentSample.InstrumentSample;
 import eu.qcloud.contextSource.instrumentSample.InstrumentSampleRepository;
 import eu.qcloud.contextSource.peptide.Peptide;
 import eu.qcloud.contextSource.peptide.PeptideRepository;
@@ -27,9 +32,12 @@ import eu.qcloud.data.processor.processorfactory.ProcessorFactory;
 import eu.qcloud.data.processor.processors.Processor;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileRepository;
-import eu.qcloud.labsystem.GuideSet;
+import eu.qcloud.guideset.GuideSet;
+import eu.qcloud.guideset.GuideSetRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
+import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformity;
+import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformityRepository;
 import eu.qcloud.param.Param;
 import eu.qcloud.param.ParamRepository;
 import eu.qcloud.sampleComposition.SampleComposition;
@@ -37,8 +45,12 @@ import eu.qcloud.sampleComposition.SampleCompositionRepository;
 import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
+import eu.qcloud.threshold.Direction;
 import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdRepository;
+import eu.qcloud.threshold.params.ThresholdParams;
+import eu.qcloud.threshold.params.ThresholdParamsRepository;
+import eu.qcloud.utils.ThresholdUtils;
 
 /**
  * Service for the data
@@ -78,12 +90,31 @@ public class DataService {
 
 	@Autowired
 	private ChartRepository chartRepository;
-	
+
 	@Autowired
 	private ThresholdRepository<Threshold> thresholdRepository;
-	
+
 	@Autowired
 	private ContextSourceRepository contextSourceRepository;
+
+	@Autowired
+	private ThresholdUtils thresholdUtils;
+
+	@Autowired
+	private ThresholdParamsRepository thresholdParamsRepository;
+
+	@Autowired
+	private ThresholdNonConformityRepository thresholdNonConformityRepository;
+
+	@Autowired
+	private GuideSetRepository guideSetRepository;
+
+	@Value("${qcloud.threshold.min-points-auto}")
+	private int minPointsAutoThreshold;
+
+	private GuideSet currentGuideSet;
+
+	private final Log logger = LogFactory.getLog(this.getClass());
 
 	public List<Data> getAllData() {
 		List<Data> data = new ArrayList<>();
@@ -139,10 +170,12 @@ public class DataService {
 		 */
 		if (processor.isGuideSetRequired()) {
 			// get the guide set of the instrument
-			GuideSet gs = labSystem.get().getGuideSet();
+			GuideSet gs = labSystem.get().getGuideSet(sampleType.get().getId());
 			if (gs == null) {
-				throw new DataRetrievalFailureException("A guide set is required for this plot.");
+				// Create an on-the-fly guide set
+				gs = thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get());
 			}
+
 			processor.setGuideSet(gs);
 			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chart.get().getId(),
 					gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(), sampleType.get().getId());
@@ -212,8 +245,10 @@ public class DataService {
 		// Check if file exists
 		File file = fileRepository.findByChecksum(dataFromPipeline.getFile().getChecksum());
 		if (file == null) {
+			logger.info("insertDataFromPipeline() file not found. " + dataFromPipeline.getFile().getChecksum());
 			throw new DataRetrievalFailureException("File not found");
 		}
+		dataFromPipeline.setFile(file);
 		// Loop through the parameters
 		for (ParameterData parameterData : dataFromPipeline.getData()) {
 			// Loop through the parameters
@@ -221,6 +256,7 @@ public class DataService {
 			if (param == null) {
 				continue;
 			}
+			parameterData.setParameter(param);
 			// loop through values
 			for (DataValues dataValue : parameterData.getValues()) {
 				ContextSource cs = null;
@@ -252,7 +288,238 @@ public class DataService {
 				dataRepository.save(d);
 			}
 		}
+		// Do threshold checks
+		if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
+				file.getSampleType().getId()) > minPointsAutoThreshold) {
+			evaluateDataForNonConformities(file, dataFromPipeline);
+			// Recalculate user thresholds
+			regenerateThresholds(file);
+		}
+	}
 
+	private void evaluateDataForNonConformities(File file, DataFromPipeline data) {
+		this.currentGuideSet = getGuideSet(file);
+		for (ParameterData parameterDate : data.getData()) {
+			// Get the threshold for this parameter, sample type and instrument
+			Threshold threshold = thresholdUtils
+					.findOrCreateLabSystemThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
+							file.getSampleType().getId(), parameterDate.getParameter().getId(),
+							file.getLabSystem().getMainDataSource().getCv().getId(), file.getLabSystem().getId());
+			
+			if(threshold == null) {
+				continue;
+			}
+			
+			Processor processor = ProcessorFactory.getProcessor(parameterDate.getParameter().getProcessor());
+			Float value = 0f;
+			for (DataValues dataValue : parameterDate.getValues()) {
+
+				ContextSource cs = getContextSourceFromDatabase(dataValue.getContextSource(), parameterDate.getParameter().getIsFor());
+				if (processor.isGuideSetRequired()) {
+					// get data
+					value = processThresholdData(file, threshold, parameterDate.getParameter(), processor, value, dataValue, cs);
+				} else {
+					value = thresholdUtils.processValueWithThresholdProcessor(dataValue.getValue(),
+							threshold.getThresholdType());
+				}
+
+				// Compare here
+				if (isNonConformity(value,
+						getInitialValueFromThresholdParamByContextSource(threshold.getThresholdParams(),
+								dataValue.getContextSource(), parameterDate.getParameter().getIsFor()),
+						getStepValueFromThresholdParamByContextSourceName(threshold.getThresholdParams(),
+								dataValue.getContextSource(), parameterDate.getParameter().getIsFor()),
+						threshold.getSteps(), threshold.getNonConformityDirection()) && threshold.isMonitored()) {
+					// Save no conformity
+					logger.info("Storing non conformity");
+					ThresholdNonConformity tnc = new ThresholdNonConformity();
+					tnc.setContextSource(cs);
+					tnc.setFile(file);
+					tnc.setThreshold(threshold);
+					if (!this.currentGuideSet.getIsUserDefined()) {
+						tnc.setGuideSet(null);
+					} else {
+						tnc.setGuideSet(this.currentGuideSet);
+					}
+					thresholdNonConformityRepository.save(tnc);
+
+					// Send message to client
+				}
+			}
+			
+		}
+	}
+
+	private ContextSource getContextSourceFromDatabase(String name, String isFor) {
+		switch (isFor) {
+		case "Peptide":
+			return peptideRepository.findBySequence(name);
+		case "InstrumentSample":
+			return instrumentSampleRepository.findByQualityControlControlledVocabulary(name);
+		}
+		return null;
+	}
+
+	/**
+	 * Get and process the data required for the threshold from the database 
+	 * @param file
+	 * @param threshold
+	 * @param param
+	 * @param processor
+	 * @param value
+	 * @param dataValue
+	 * @param cs
+	 * @return
+	 */
+	private Float processThresholdData(File file, Threshold threshold, Param param, Processor processor, Float value,
+			DataValues dataValue, ContextSource cs) {
+		processor.setGuideSet(this.currentGuideSet);
+		switch (param.getIsFor()) {
+		case "Peptide":
+			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(cs.getId(),
+					threshold.getParam().getId(), this.currentGuideSet.getStartDate(), this.currentGuideSet.getEndDate(),
+					file.getLabSystem().getId(), threshold.getSampleType().getId());
+
+			if (dataToProcess.size() == 0) {
+				throw new DataRetrievalFailureException(
+						"Your selected guide has no results. Please, choose another date range.");
+			}
+			List<DataForPlot> dataForPlot = new ArrayList<>();
+
+			dataForPlot.add(new DataForPlot(file.getFilename(), file.getCreationDate(),
+					getAbbreviatedFromSequence(dataValue.getContextSource()), dataValue.getValue()));
+
+			processor.setData(dataForPlot);
+			processor.setGuideSetData(dataToProcess);
+			List<DataForPlot> processedData = processor.processData();
+			value = processedData.get(0).getValue();
+			break;
+		case "InstrumentSample":
+			// TODO
+			ArrayList<Data> isDataToProcess = (ArrayList<Data>) dataRepository.findParamData(cs.getId(),
+					threshold.getParam().getId(), this.currentGuideSet.getStartDate(), this.currentGuideSet.getEndDate(),
+					file.getLabSystem().getId(), threshold.getSampleType().getId());
+
+			if (isDataToProcess.size() == 0) {
+				throw new DataRetrievalFailureException(
+						"Your selected guide has no results. Please, choose another date range.");
+			}
+			List<DataForPlot> isDataForPlot = new ArrayList<>();
+
+			isDataForPlot.add(new DataForPlot(file.getFilename(), file.getCreationDate(),
+					getAbbreviatedFromSequence(dataValue.getContextSource()), dataValue.getValue()));
+
+			processor.setData(isDataForPlot);
+			processor.setGuideSetData(isDataToProcess);
+			List<DataForPlot> isProcessedData = processor.processData();
+			value = isProcessedData.get(0).getValue();			
+			break;
+		}
+		return value;
+	}
+
+	private boolean isNonConformity(Float value, Float initialValue, Float stepValue, int steps, Direction direction) {
+		Float upperLimit = initialValue + (stepValue * steps);
+		Float lowerLimit = initialValue - (stepValue * steps);
+		switch (direction) {
+		case DOWN:
+			if (value < lowerLimit) {
+				return true;
+			}
+			break;
+		case UPDOWN:
+			if (value < lowerLimit || value > upperLimit) {
+				return true;
+			}
+			break;
+		default:
+			System.out.println("Direction not found");
+		}
+
+		return false;
+	}
+
+	private Float getInitialValueFromThresholdParamByContextSource(List<ThresholdParams> tp, String contextSourceName,
+			String isFor) {
+		switch (isFor) {
+
+		case "Peptide":
+			return tp.stream().filter(cs -> {
+				return cs.getContextSource().getName().equals(contextSourceName);
+			}).collect(Collectors.toList()).get(0).getInitialValue();
+		case "InstrumentSample":
+			return tp.stream().filter(cs -> {
+				InstrumentSample is = (InstrumentSample) cs.getContextSource();
+				return is.getqCCV().equals(contextSourceName);
+			}).collect(Collectors.toList()).get(0).getInitialValue();
+		default:
+			logger.info("Unknown is for parameter");
+			break;
+		}
+
+		return null;
+	}
+
+	private Float getStepValueFromThresholdParamByContextSourceName(List<ThresholdParams> tp, String contextSourceName,
+			String isFor) {
+		switch (isFor) {
+
+		case "Peptide":
+			return tp.stream().filter(cs -> {
+				return cs.getContextSource().getName().equals(contextSourceName);
+			}).collect(Collectors.toList()).get(0).getStepValue();
+		case "InstrumentSample":
+			return tp.stream().filter(cs -> {
+				InstrumentSample is = (InstrumentSample) cs.getContextSource();
+				return is.getqCCV().equals(contextSourceName);
+			}).collect(Collectors.toList()).get(0).getStepValue();
+		default:
+			logger.info("Unknown is for parameter");
+			break;
+		}
+
+		return null;
+
+	}
+
+	private GuideSet getGuideSet(File file) {
+		GuideSet activeGuideSet = file.getLabSystem().getGuideSet(file.getSampleType().getId());
+		if (activeGuideSet == null) {
+			// create a new guideset
+			return thresholdUtils.generateAutoGuideSet(file.getSampleType(), file.getLabSystem());
+		} else {
+			return activeGuideSet;
+		}
+	}
+
+	private void regenerateThresholds(File file) {
+		List<Threshold> defaultThresholds = new ArrayList<>();
+		List<Threshold> nodeThresholds = new ArrayList<>();
+		thresholdRepository
+				.findAllDefaultThresholdsByThresholdCVIdAndSampleTypeId(
+						file.getLabSystem().getMainDataSource().getCv().getId(), file.getSampleType().getId())
+				.forEach(defaultThresholds::add);
+		// Get the labsystem thresholds if any
+		defaultThresholds.forEach(defaultThreshold -> {
+			nodeThresholds
+					.add(thresholdUtils.findOrCreateLabSystemThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
+							file.getSampleType().getId(), defaultThreshold.getParam().getId(),
+							defaultThreshold.getCv().getId(), file.getLabSystem().getId()));
+		});
+
+		nodeThresholds.forEach(nodeThreshold -> {
+			thresholdUtils.processThreshold(nodeThreshold, currentGuideSet);
+			saveThresholdParams(nodeThreshold);
+		});
+
+	}
+
+	private void saveThresholdParams(Threshold threshold) {
+		for (ThresholdParams p : threshold.getThresholdParams()) {
+			if (!p.getInitialValue().isNaN() || !p.getStepValue().isNaN()) {
+				thresholdParamsRepository.save(p);
+			}
+		}
 	}
 
 	/**
@@ -302,17 +569,18 @@ public class DataService {
 		for (Peptide peptide : peptides) {
 			Data d = dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(), param.getId(),
 					peptide.getId());
-			
+
 			/**
 			 * This part of the code should be removed when the migration ends.
 			 */
-			if(d==null) {
+			if (d == null) {
 				// It is possible that there is no data from the current file.
-				List<File> files = fileRepository.findByCreationDateAndLabSystemIdAndSampleTypeId(file.getCreationDate(), file.getLabSystem().getId(), file.getSampleType().getId());
-				for(File f: files) {
+				List<File> files = fileRepository.findByCreationDateAndLabSystemIdAndSampleTypeId(
+						file.getCreationDate(), file.getLabSystem().getId(), file.getSampleType().getId());
+				for (File f : files) {
 					d = dataRepository.findByFileIdAndParamIdAndContextSourceId(f.getId(), param.getId(),
 							peptide.getId());
-					if(d!=null) {
+					if (d != null) {
 						continue;
 					}
 				}
@@ -336,43 +604,26 @@ public class DataService {
 
 	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey,
 			String sampleTypeQccv, Long thresholdId) {
-		
+
 		Optional<Threshold> threshold = thresholdRepository.findById(thresholdId);
 		Param param = paramRepository.findByQccv(paramQccv);
 		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
 		Optional<ContextSource> contextSource = contextSourceRepository.findByApiKey(contextSourceApiKey);
 		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQccv);
-		
-		if(!threshold.isPresent()) {
-			throw new DataRetrievalFailureException("No threshold found.");
-		}
-		if(param==null) {
-			throw new DataRetrievalFailureException("No parameter found.");
-		}
-		if(!labSystem.isPresent()) {
-			throw new DataRetrievalFailureException("No lab system found.");
-		}
-		if(!contextSource.isPresent()) {
-			throw new DataRetrievalFailureException("No context source found.");
-		}
-		if(!sampleType.isPresent()) {
-			throw new DataRetrievalFailureException("No sample type found.");
-		}
-		List<File> files;
-		if (threshold.get().getIsZeroNoData()) {
-			files = fileRepository.findForAutoPlotWithZero(param.getId(), contextSource.get().getId(), labSystem.get().getId(), sampleType.get().getId());
-		} else {
-			files = fileRepository.findForAutoPlotWithZero(param.getId(), contextSource.get().getId(), labSystem.get().getId(), sampleType.get().getId());
-		}
-		
-		if(files.size() == 0) {
+
+		checkAutoPlotParameters(threshold, param, labSystem, contextSource, sampleType);
+
+		List<File> files = getFilesForAutoPlot(threshold, param, labSystem, contextSource, sampleType);
+
+		if (files.size() == 0) {
 			throw new DataRetrievalFailureException("No files found.");
 		}
 		Date endDate = new Date(files.get(0).getCreationDate().getTime());
-		Date startDate = new Date(files.get(files.size()-1).getCreationDate().getTime());
-		
-		List<Data> data = dataRepository.findParamData(contextSource.get().getId(), param.getId(), startDate, endDate, labSystem.get().getId(), sampleType.get().getId());
-		
+		Date startDate = new Date(files.get(files.size() - 1).getCreationDate().getTime());
+
+		List<Data> data = dataRepository.findParamData(contextSource.get().getId(), param.getId(), startDate, endDate,
+				labSystem.get().getId(), sampleType.get().getId());
+
 		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 
 		// Check sample type in order to send the abbreviated name or anything else
@@ -385,12 +636,14 @@ public class DataService {
 		 */
 		if (processor.isGuideSetRequired()) {
 			// get the guide set of the instrument
-			GuideSet gs = labSystem.get().getGuideSet();
+			GuideSet gs = labSystem.get().getGuideSet(sampleType.get().getId());
 			if (gs == null) {
-				throw new DataRetrievalFailureException("A guide set is required for this plot.");
+				gs = thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get());
 			}
 			processor.setGuideSet(gs);
-			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(contextSource.get().getId(), param.getId(), gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(), sampleType.get().getId());
+			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(contextSource.get().getId(),
+					param.getId(), gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(),
+					sampleType.get().getId());
 			if (dataToProcess.size() == 0) {
 				throw new DataRetrievalFailureException(
 						"Your selected guide has no results. Please, choose another date range.");
@@ -400,6 +653,163 @@ public class DataService {
 		} else {
 			return processor.processData();
 		}
+	}
+
+	public List<DataForPlot> getNonConformityPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey,
+			String sampleTypeQccv, String fileChecksum, UUID guideSetApiKey) {
+
+		Param param = paramRepository.findByQccv(paramQccv);
+		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
+		Optional<ContextSource> contextSource = contextSourceRepository.findByApiKey(contextSourceApiKey);
+		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQccv);
+		Optional<File> file = fileRepository.findOptionalByChecksum(fileChecksum);
+		Optional<GuideSet> guideSet = null;
+		GuideSet gs = null;
+
+		checkNonConformityPlotParameters(param, labSystem, contextSource, sampleType, file, guideSet);
+		if (guideSetApiKey != null) {
+			guideSet = guideSetRepository.findOptionalByApiKey(guideSetApiKey);
+			gs = guideSet.get();
+		} else {
+			gs = thresholdUtils.generateAutoGuideSetFromFile(sampleType.get(), labSystem.get(), file.get());
+		}
+
+		List<File> files = getFilesForNonConformityPlot(labSystem, sampleType, file);
+
+		if (files.size() == 0) {
+			throw new DataRetrievalFailureException("No files found.");
+		}
+		Date endDate = new Date(files.get(0).getCreationDate().getTime());
+		Date startDate = new Date(files.get(files.size() - 1).getCreationDate().getTime());
+
+		List<Data> data = dataRepository.findParamData(contextSource.get().getId(), param.getId(), startDate, endDate,
+				labSystem.get().getId(), sampleType.get().getId());
+
+		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
+
+		// Check sample type in order to send the abbreviated name or anything else
+		List<DataForPlot> dataForPlot = prepareDataForPlot(data, sampleType.get(), param);
+
+		processor.setData(dataForPlot);
+		/**
+		 * If data from a guide set is required then call the db for the data and set it
+		 * in the processor
+		 */
+		if (processor.isGuideSetRequired()) {
+			// get the guide set of the instrument
+			processor.setGuideSet(gs);
+			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(contextSource.get().getId(),
+					param.getId(), gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(),
+					sampleType.get().getId());
+			if (dataToProcess.size() == 0) {
+				throw new DataRetrievalFailureException(
+						"Your selected guide has no results. Please, choose another date range.");
+			}
+			processor.setGuideSetData(dataToProcess);
+			return processor.processData();
+		} else {
+			return processor.processData();
+		}
+	}
+
+	/**
+	 * Retrieve the files for the auto plot. It will consider if the 0.0 values are
+	 * no data or just a 0.0
+	 * 
+	 * @param threshold
+	 * @param param
+	 * @param labSystem
+	 * @param contextSource
+	 * @param sampleType
+	 * @return
+	 */
+	private List<File> getFilesForAutoPlot(Optional<Threshold> threshold, Param param, Optional<LabSystem> labSystem,
+			Optional<ContextSource> contextSource, Optional<SampleType> sampleType) {
+		List<File> files;
+		if (threshold.get().getIsZeroNoData()) {
+			files = fileRepository.findForAutoPlotWithZero(labSystem.get().getId(), sampleType.get().getId());
+		} else {
+			files = fileRepository.findForAutoPlotWithZero(labSystem.get().getId(), sampleType.get().getId());
+		}
+		return files;
+	}
+
+	private List<File> getFilesForNonConformityPlot(Optional<LabSystem> labSystem, Optional<SampleType> sampleType,
+			Optional<File> file) {
+		List<File> files;
+		files = fileRepository.findForNonConformityPlot(labSystem.get().getId(), sampleType.get().getId(),
+				file.get().getCreationDate());
+		return files;
+	}
+
+	/**
+	 * Check if all the required parameters for the function are ok. It will throw
+	 * exceptions if it fails.
+	 * 
+	 * @param threshold
+	 * @param param
+	 * @param labSystem
+	 * @param contextSource
+	 * @param sampleType
+	 */
+	private void checkAutoPlotParameters(Optional<Threshold> threshold, Param param, Optional<LabSystem> labSystem,
+			Optional<ContextSource> contextSource, Optional<SampleType> sampleType) {
+		if (!threshold.isPresent()) {
+			throw new DataRetrievalFailureException("No threshold found.");
+		}
+		if (param == null) {
+			throw new DataRetrievalFailureException("No parameter found.");
+		}
+		if (!labSystem.isPresent()) {
+			throw new DataRetrievalFailureException("No lab system found.");
+		}
+		if (!contextSource.isPresent()) {
+			throw new DataRetrievalFailureException("No context source found.");
+		}
+		if (!sampleType.isPresent()) {
+			throw new DataRetrievalFailureException("No sample type found.");
+		}
+	}
+
+	private void checkNonConformityPlotParameters(Param param, Optional<LabSystem> labSystem,
+			Optional<ContextSource> contextSource, Optional<SampleType> sampleType, Optional<File> file,
+			Optional<GuideSet> guideSet) {
+
+		if (param == null) {
+			throw new DataRetrievalFailureException("No parameter found.");
+		}
+		if (!labSystem.isPresent()) {
+			throw new DataRetrievalFailureException("No lab system found.");
+		}
+		if (!contextSource.isPresent()) {
+			throw new DataRetrievalFailureException("No context source found.");
+		}
+		if (!sampleType.isPresent()) {
+			throw new DataRetrievalFailureException("No sample type found.");
+		}
+		if (!file.isPresent()) {
+			throw new DataRetrievalFailureException("No file found.");
+		}
+		if (guideSet != null) {
+			if (!guideSet.isPresent()) {
+				throw new DataRetrievalFailureException("No guide set found.");
+			}
+		}
+	}
+
+	private String getAbbreviatedFromSequence(String sequence) {
+		int index = 0;
+		int close = 0;
+		while (index >= 0) {
+			index = sequence.indexOf("(");
+			if (index == -1) {
+				break;
+			}
+			close = sequence.indexOf(")");
+			String stringToRemove = sequence.substring(index, close + 1);
+			sequence = sequence.replace(stringToRemove, "");
+		}
+		return sequence.substring(0, 3);
 	}
 
 }

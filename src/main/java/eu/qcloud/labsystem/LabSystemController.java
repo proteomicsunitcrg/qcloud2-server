@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.dataSource.DataSourceRepository;
 import eu.qcloud.exceptions.InvalidActionException;
+import eu.qcloud.guideset.GuideSet;
+import eu.qcloud.guideset.GuideSetService;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
 
@@ -43,6 +45,9 @@ public class LabSystemController {
 	
 	@Autowired
 	private DataSourceRepository dataSourceRepository;
+	
+	@Autowired
+	private GuideSetService guideSetService;
 	
 	/**
 	 * Save the given system into the database
@@ -108,12 +113,15 @@ public class LabSystemController {
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value="/api/system/guideset/{apikey}",method= RequestMethod.POST)
 	public void addGuideSetToLabSystem(@PathVariable UUID apikey,@RequestBody GuideSet guideSet) {
+		
 		Optional<LabSystem> labSystem = labSystemService.findSystemByApiKey(apikey);
 		if(labSystem.isPresent()) {
 			LabSystem ls = labSystem.get();
-			guideSet.setLabSystem(ls);
-			ls.setGuideSet(guideSet);
-			labSystemService.saveSystem(ls);			
+
+			// Check for others guideset and set it to false before add the new one
+			guideSetService.setAllLabSystemGuideSetsBySampleTypeDisabled(ls.getGuideSets(), guideSet);
+			ls.getGuideSets().add(guideSetService.addNewGuideSet(guideSet));
+			labSystemService.saveSystem(ls);
 		}
 	}
 	

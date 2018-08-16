@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.file.FileRepository.OnlyChecksum;
 import eu.qcloud.file.FileRepository.OnlySmalls;
+import eu.qcloud.sampleType.SampleType;
 /**
  * File controller
  * @author dmancera
@@ -97,6 +98,12 @@ public class FileController {
 	@RequestMapping(value="/api/file/name/{filename}", method = RequestMethod.GET)
 	public OnlyChecksum findByFilename(@PathVariable String filename) {
 		return fileService.getFileByFilename(filename);
+	}
+	
+	@RequestMapping(value="/api/file/sampletypes/{labSystemApiKey}", method = RequestMethod.GET)
+	public List<SampleType> findSampleTypesUseByLabSystemByLabSystemApiKey(@PathVariable UUID labSystemApiKey) {
+		
+		return fileService.findSampleTypesByLabSystemApiKey(labSystemApiKey);
 	}
 	
 	@ExceptionHandler(DataRetrievalFailureException.class)

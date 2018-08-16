@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.contextSource.instrumentSample.InstrumentSample;
@@ -136,6 +137,18 @@ public class DataController {
 			@PathVariable Long thresholdId) {
 		
 		return dataService.getAutoPlotData(labSystemApiKey, paramQccv, contextSourceApiKey, sampleTypeQccv, thresholdId);
+	}
+	
+	@RequestMapping(value="/api/data/nonconformity/{labSystemApiKey}/{paramQccv}/{contextSourceApiKey}/{sampleTypeQccv}/{fileChecksum}", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
+	public List<DataForPlot> getNonConformityPlotData(@PathVariable UUID labSystemApiKey,
+			@PathVariable String paramQccv,
+			@PathVariable UUID contextSourceApiKey,
+			@PathVariable String sampleTypeQccv,
+			@PathVariable String fileChecksum,
+			@RequestParam(value= "guideSet", required = false) UUID guideSet) {
+		
+		return dataService.getNonConformityPlotData(labSystemApiKey, paramQccv, contextSourceApiKey, sampleTypeQccv, fileChecksum, guideSet);
 	}
 	
 	@RequestMapping(value="/api/data/iso/{checksum}/{abbreviated}", method=RequestMethod.GET)

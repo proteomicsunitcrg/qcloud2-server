@@ -1,6 +1,7 @@
 package eu.qcloud.threshold;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,10 +40,6 @@ import eu.qcloud.threshold.params.ThresholdParams;
  */
 import eu.qcloud.threshold.processor.ThresholdProcessor;
 @Entity
-/*
-@Table(name="threshold",
-	uniqueConstraints= {@UniqueConstraint(columnNames= {"sample_type_id","param_id","cv_id"})})
-	*/
 @Table(name="threshold")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class Threshold {
@@ -65,6 +62,10 @@ public class Threshold {
 	@JsonProperty
 	@Column(name="is_zero_no_data", columnDefinition="tinyint(1) default 0")
     private boolean isZeroNoData;
+	
+    @Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+    private UUID apiKey;
 	
 	@Transient
 	protected ThresholdConstraint adminThresholdConstraint;
@@ -233,5 +234,22 @@ public class Threshold {
 	public void setIsZeroNoData(boolean isZeroNoData) {
 		this.isZeroNoData = isZeroNoData;
 	}
+
+	public Direction getNonConformityDirection() {
+		return nonConformityDirection;
+	}
+
+	public void setNonConformityDirection(Direction nonConformityDirection) {
+		this.nonConformityDirection = nonConformityDirection;
+	}
+	
+	public UUID getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(UUID apiKey) {
+		this.apiKey = apiKey;
+	}
+
 	
 }

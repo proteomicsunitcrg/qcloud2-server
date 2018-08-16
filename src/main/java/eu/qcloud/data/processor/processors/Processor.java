@@ -6,7 +6,7 @@ import java.util.List;
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataForPlot;
 import eu.qcloud.data.processor.DataProcessor;
-import eu.qcloud.labsystem.GuideSet;
+import eu.qcloud.guideset.GuideSet;
 
 public abstract class Processor implements DataProcessor{
 	/**

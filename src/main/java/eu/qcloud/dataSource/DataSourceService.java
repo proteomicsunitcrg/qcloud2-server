@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.Instrument.InstrumentRepository;
-import eu.qcloud.labsystem.GuideSet;
-import eu.qcloud.labsystem.GuideSetRepository;
+import eu.qcloud.guideset.GuideSet;
+import eu.qcloud.guideset.GuideSetRepository;
 /**
  * Data source service
  * @author dmancera

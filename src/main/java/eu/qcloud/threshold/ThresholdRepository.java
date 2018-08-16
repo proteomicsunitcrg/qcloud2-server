@@ -25,11 +25,18 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	public Optional<Threshold> findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrue(Long sampleTypeId, Long paramId, Long cvId);
 
 	public Optional<Threshold> findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccv(String sampleTypeQCCV, String paramQCCV, String instrumentQCCV);
-	
+	/**
+	 * 
+	 * @param sampleTypeQCCV
+	 * @param paramQCCV
+	 * @param instrumentQCCV
+	 * @return
+	 */
 	public Optional<Threshold> findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccvAndLabSystemApiKeyIsNull(String sampleTypeQCCV, String paramQCCV, String instrumentQCCV);
 	
 	public Optional<Threshold> findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccvAndLabSystemApiKeyAndIsEnabledTrue(String sampleTypeQCCV, String paramQCCV, String instrumentQCCV, UUID labSystemApiKey);
 	
+	public List<Threshold> findBySampleTypeIdAndLabSystemIdAndIsMonitoredTrue(Long sampleTypeId, Long labSystemId);
 	
 	/**
 	 * Find a default threshold
@@ -57,14 +64,23 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	@Query("select t from Threshold t where t.labSystem = null and t.instrument.id = ?1")
 	public List<Threshold> findAllDefaultThresholdsByThresholdCVId(Long cvId);
 	
+	@Query("select t from Threshold t where t.labSystem = null and t.instrument.id = ?1 and t.sampleType.id = ?2")
+	public List<Threshold> findAllDefaultThresholdsByThresholdCVIdAndSampleTypeId(Long cvId, Long sampleTypeId);
+	
 	@Query("select t from Threshold t where t.labSystem.id = ?1 and t.isEnabled= true")
 	public List<withParamsWithoutThreshold> findLabSystemThresholds(Long labSystemId);
 	
 	@Query("select t from Threshold t where t.id = ?1")
 	public List<withParamsWithoutThreshold> findTresholdById(Long thresholdId);
 	
+	public ThresholdForPlot findByParamIdAndSampleTypeIdAndLabSystemId(Long paramId, Long sampleTypeId, Long labSystemId);
+	
+	@Query("select t from Threshold t where t.param.id = ?1 and t.sampleType.id = ?2 and t.labSystem.id = ?3")
+	public Threshold findThresholdByParamIdAndSampleTypeIdAndLabSystemId(Long paramId, Long sampleTypeId, Long labSystemId);
+	
 	interface withParamsWithoutThreshold {
 		Long getId();
+		UUID getApiKey();
 		String getName();
 		ThresholdType getThresholdType();
 		SampleType getSampleType();
@@ -84,6 +100,11 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 		ThresholdConstraint getThresholdConstraint();
 	}
 	
+	interface ThresholdApiAndParam {
+		UUID getApiKey();
+		Param getParam();
+	}
+	
 	interface ThresholdForPlot {
 		ThresholdType getThresholdType();
 		Direction getDirection();
@@ -92,4 +113,6 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 		List<paramsNoThreshold> getThresholdParams();
 		boolean isMonitored();
 	}
+
+	public Optional<Threshold> findByApiKey(UUID thresholdApiKey);
 }

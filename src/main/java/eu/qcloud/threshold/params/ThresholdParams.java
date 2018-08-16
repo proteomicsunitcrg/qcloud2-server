@@ -27,6 +27,17 @@ public class ThresholdParams {
 	@JoinColumn(name="contextSourceId",insertable=false, updatable= false)
 	private ContextSource contextSource;
 	
+	@Column(name="is_enabled", columnDefinition="tinyint(1) default 1")
+    private boolean isEnabled;
+	
+	public boolean getIsEnabled() {
+		return isEnabled;
+	}
+
+	public void setIsEnabled(boolean isEnabled) {
+		this.isEnabled = isEnabled;
+	}
+
 	@ManyToOne
 	@JoinColumn(name="thresholdId",insertable=false, updatable= false)
 	private Threshold threshold;
@@ -73,11 +84,11 @@ public class ThresholdParams {
 		this.threshold = threshold;
 	}
 
-	public float getStepValue() {
+	public Float getStepValue() {
 		return stepValue;
 	}
 
-	public void setStepValue(float stepValue) {
+	public void setStepValue(Float stepValue) {
 		this.stepValue = stepValue;
 	}
 	
