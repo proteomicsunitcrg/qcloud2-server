@@ -52,8 +52,8 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	@Query("select t from Threshold t where t.id =?1")
 	public withParamsWithoutThreshold findThresholdById(Long thresholdId);
 	
-	@Query("select t from Threshold t where t.id =?1")
-	public ThresholdForPlot getThresholdForPlot(Long thresholdId);
+	@Query("select t from Threshold t where t.apiKey =?1")
+	public ThresholdForPlot getThresholdForPlot(UUID thresholdApiKey);
 	
 	@Query("select t from Threshold t where t.labSystem = null")
 	public List<withParamsWithoutThreshold> findMini();
@@ -75,11 +75,10 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	
 	public ThresholdForPlot findByParamIdAndSampleTypeIdAndLabSystemId(Long paramId, Long sampleTypeId, Long labSystemId);
 	
-	@Query("select t from Threshold t where t.param.id = ?1 and t.sampleType.id = ?2 and t.labSystem.id = ?3")
+	@Query("select t from Threshold t where t.param.id = ?1 and t.sampleType.id = ?2 and t.labSystem.id = ?3 and t.isEnabled = 1")
 	public Threshold findThresholdByParamIdAndSampleTypeIdAndLabSystemId(Long paramId, Long sampleTypeId, Long labSystemId);
 	
 	interface withParamsWithoutThreshold {
-		Long getId();
 		UUID getApiKey();
 		String getName();
 		ThresholdType getThresholdType();

@@ -133,6 +133,7 @@ public class ThresholdController {
 	 * @deprecated probably deprecated
 	 * @return
 	 */
+	/*
 	@RequestMapping(value = "/api/threshold/{sampleTypeId}/{paramId}/{cvId}/{labSystemId}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ThresholdForPlot getThreshold(@PathVariable Long sampleTypeId, @PathVariable Long paramId,
@@ -142,31 +143,21 @@ public class ThresholdController {
 		// calculate threshold
 		return thresholdService.getThreshold(t.getId());
 	}
+	*/
 
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/api/threshold/plot/{chartApiKey}/{labSystemApiKey}", method = RequestMethod.GET)
 	public ThresholdForPlotImpl getPlotThreshold(@PathVariable UUID chartApiKey, @PathVariable UUID labSystemApiKey) {
 		// get the param
 		ChartParams chartParam = chartService.getTopChartParamByChartApiKey(chartApiKey);
-//		return thresholdService.findThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(
-//				chartParam.getParam().getId(), chartParam.getChart().getSampleType().getId(), labSystemApiKey);
 		return thresholdService.calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(
 				chartParam.getParam().getId(), chartParam.getChart().getSampleType().getId(), labSystemApiKey);
 	}
 	
-//	@PreAuthorize("hasRole('USER')")
-//	@RequestMapping(value = "/api/threshold/plot/{chartApiKey}/{labSystemApiKey}", method = RequestMethod.GET)
-//	public ThresholdForPlotImpl getPlotThreshold(@PathVariable UUID chartApiKey, @PathVariable UUID labSystemApiKey) {
-//		// get the param
-//		ChartParams chartParam = chartService.getTopChartParamByChartApiKey(chartApiKey);
-//		return thresholdService.findThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(
-//				chartParam.getParam().getId(), chartParam.getChart().getSampleType().getId(), labSystemApiKey);
-//	}
-
 	@PreAuthorize("hasRole('USER')")
-	@RequestMapping(value = "/api/threshold/autoplot/{thresholdId}", method = RequestMethod.GET)
-	public ThresholdForPlot getAutoPlotThreshold(@PathVariable Long thresholdId) {
-		return thresholdService.getThreshold(thresholdId);
+	@RequestMapping(value = "/api/threshold/autoplot/{thresholdApiKey}", method = RequestMethod.GET)
+	public ThresholdForPlot getAutoPlotThreshold(@PathVariable UUID thresholdApiKey) {
+		return thresholdService.getThreshold(thresholdApiKey);
 	}
 
 	@PreAuthorize("hasRole('USER')")
@@ -209,10 +200,10 @@ public class ThresholdController {
 		return thresholdService.findAllThresholdsByLabSystemApiKey(labSystemApiKey);
 	}
 
-	@RequestMapping(value = "/api/threshold/switchmonitor/{thresholdId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/api/threshold/switchmonitor/{thresholdApiKey}", method = RequestMethod.PUT)
 	@PreAuthorize("hasRole('MANAGER')")
-	public void switchThresholdMonitoring(@PathVariable Long thresholdId) {
-		thresholdService.switchThresholdMonitoring(thresholdId);
+	public void switchThresholdMonitoring(@PathVariable UUID thresholdApiKey) {
+		thresholdService.switchThresholdMonitoring(thresholdApiKey);
 	}
 
 	/**
@@ -223,12 +214,12 @@ public class ThresholdController {
 	 * @param thresholdParams
 	 *            the new threshold parameters
 	 */
-	@RequestMapping(value = "/api/threshold/{thresholdId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/api/threshold/{thresholdApiKey}", method = RequestMethod.PUT)
 	@PreAuthorize("hasRole('ADMIN')")
-	public void updateThresholdParams(@PathVariable Long thresholdId,
+	public void updateThresholdParams(@PathVariable UUID thresholdApiKey,
 			@RequestBody List<ThresholdParams> thresholdParams) {
 		// get threshold
-		thresholdService.updateThresholdParams(thresholdId, thresholdParams);
+		thresholdService.updateThresholdParams(thresholdApiKey, thresholdParams);
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package eu.qcloud.threshold.labsystemstatus;
 
+import java.util.UUID;
+
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.param.Param;
 import eu.qcloud.threshold.InstrumentStatus;
@@ -9,17 +11,18 @@ public class LabSystemStatus {
 	private Param param;
 	private ContextSource contextSource;
 	private InstrumentStatus status;
-	private Long thresholdId;
+	// private Long thresholdId;
+	private UUID thresholdApiKey;
 	private String sampleTypeQccv;
 
 	public LabSystemStatus() {
 	}
 
-	public LabSystemStatus(Param param, ContextSource contextSource, InstrumentStatus status, Long thresholdId, String sampleTypeQccv) {
+	public LabSystemStatus(Param param, ContextSource contextSource, InstrumentStatus status, UUID thresholdApiKey, String sampleTypeQccv) {
 		this.param = param;
 		this.contextSource = contextSource;
 		this.status = status;
-		this.thresholdId = thresholdId;
+		this.thresholdApiKey = thresholdApiKey;
 		this.sampleTypeQccv = sampleTypeQccv;
 	}
 
@@ -47,12 +50,12 @@ public class LabSystemStatus {
 		this.status = status;
 	}
 
-	public Long getThresholdId() {
-		return thresholdId;
+	public UUID getThresholdApiKey() {
+		return thresholdApiKey;
 	}
 
-	public void setThresholdId(Long thresholdId) {
-		this.thresholdId = thresholdId;
+	public void setThresholdApiKey(UUID thresholdApiKey) {
+		this.thresholdApiKey = thresholdApiKey;
 	}
 
 	public String getSampleTypeQccv() {

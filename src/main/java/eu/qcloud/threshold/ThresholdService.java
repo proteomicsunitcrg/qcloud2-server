@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.Instrument.InstrumentRepository;
-import eu.qcloud.contextSource.ContextSource;
-import eu.qcloud.contextSource.ContextSourceRepository;
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataForPlot;
 import eu.qcloud.data.DataRepository;
@@ -84,9 +82,6 @@ public class ThresholdService {
 	@Autowired
 	private ParamRepository paramRepository;
 	
-	@Autowired
-	private ContextSourceRepository contextSourceRepository;
-
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -327,8 +322,8 @@ public class ThresholdService {
 		}
 	}
 
-	public void switchThresholdMonitoring(Long thresholdId) {
-		Optional<Threshold> threshold = thresholdRepository.findById(thresholdId);
+	public void switchThresholdMonitoring(UUID thresholdApiKey) {
+		Optional<Threshold> threshold = thresholdRepository.findByApiKey(thresholdApiKey);
 		if (threshold.isPresent()) {
 			Threshold t = threshold.get();
 			// switching
@@ -348,8 +343,8 @@ public class ThresholdService {
 		return thresholdRepository.findMini();
 	}
 
-	public ThresholdForPlot getThreshold(Long thresholdId) {
-		return thresholdRepository.getThresholdForPlot(thresholdId);
+	public ThresholdForPlot getThreshold(UUID thresholdApiKey) {
+		return thresholdRepository.getThresholdForPlot(thresholdApiKey);
 	}
 
 	/**
@@ -361,9 +356,9 @@ public class ThresholdService {
 	 * @param thresholdParams
 	 *            TODO: check if the threshold belongs to the current user
 	 */
-	public void updateThresholdParams(Long thresholdId, List<ThresholdParams> thresholdParams) {
+	public void updateThresholdParams(UUID thresholdApiKey, List<ThresholdParams> thresholdParams) {
 		// get the threshold
-		Optional<Threshold> t = thresholdRepository.findById(thresholdId);
+		Optional<Threshold> t = thresholdRepository.findByApiKey(thresholdApiKey);
 		if (t.isPresent()) {
 			Threshold threshold = t.get();
 			// compare both thresholdparams
@@ -528,7 +523,7 @@ public class ThresholdService {
 						if (value == 0f) {
 							labSystemStatus.add(
 									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.NO_DATA,
-											tt.getId(), tt.getSampleType().getQualityControlControlledVocabulary()));
+											tt.getApiKey(), tt.getSampleType().getQualityControlControlledVocabulary()));
 							continue;
 						}
 					}
@@ -542,13 +537,13 @@ public class ThresholdService {
 							// danger
 							labSystemStatus.add(
 									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.DANGER,
-											tt.getId(), tt.getSampleType().getQualityControlControlledVocabulary()));
+											tt.getApiKey(), tt.getSampleType().getQualityControlControlledVocabulary()));
 						} else if (value < tp.getInitialValue() - (tp.getStepValue() * (tt.getSteps() - 1))
 								&& tt.getSteps() > 1) {
 							// warning
 							labSystemStatus.add(
 									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.WARNING,
-											tt.getId(), tt.getSampleType().getQualityControlControlledVocabulary()));
+											tt.getApiKey(), tt.getSampleType().getQualityControlControlledVocabulary()));
 						} else {
 							// ok
 							/*
@@ -565,7 +560,7 @@ public class ThresholdService {
 							// fail
 							labSystemStatus.add(
 									new LabSystemStatus(tt.getParam(), tp.getContextSource(), InstrumentStatus.DANGER,
-											tt.getId(), tt.getSampleType().getQualityControlControlledVocabulary()));
+											tt.getApiKey(), tt.getSampleType().getQualityControlControlledVocabulary()));
 						} else {
 							// ok
 							/*
