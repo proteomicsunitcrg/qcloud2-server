@@ -50,6 +50,9 @@ public class Chart {
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
     private UUID apiKey;
     
+    @Column(name="is_normalized", columnDefinition="tinyint(1) default 0")
+    private boolean isNormalized;
+    
     public UUID getApiKey() {
 		return apiKey;
 	}
@@ -116,8 +119,13 @@ public class Chart {
 	public void setIsThresholdEnabled(boolean isThresholdEnabled) {
 		this.isThresholdEnabled = isThresholdEnabled;
 	}
-    
-    
-    
+
+	public boolean isNormalized() {
+		return isNormalized;
+	}
+
+	public void setNormalized(boolean isNormalized) {
+		this.isNormalized = isNormalized;
+	}
     
 }

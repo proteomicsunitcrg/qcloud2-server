@@ -3,7 +3,9 @@ package eu.qcloud.data;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -155,6 +157,10 @@ public class DataService {
 
 		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chart.get().getId(), start, end,
 				labSystem.get().getId(), sampleType.get().getId());
+		
+		if(chart.get().isNormalized()) {
+			normalizeData(dataFromDb, labSystem.get(), sampleType.get(), chart.get());
+		}
 
 		// Get the param
 		Param param = chartParamRepository.findTopByChartId(chart.get().getId()).getParam();
@@ -188,6 +194,61 @@ public class DataService {
 		} else {
 			return processor.processData();
 		}
+	}
+
+	/**
+	 * It needs some supervision
+	 * @param data
+	 * @param labSystem
+	 * @param sampleType
+	 * @param chart
+	 */
+	private void normalizeData(List<Data> data, LabSystem labSystem, SampleType sampleType, Chart chart) {
+		GuideSet gs = labSystem.getGuideSet(sampleType.getId());
+		if (gs == null) {
+			// Create an on-the-fly guide set
+			gs = thresholdUtils.generateAutoGuideSet(sampleType, labSystem);
+		}
+
+		ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chart.getId(), gs.getStartDate(),
+				gs.getEndDate(), labSystem.getId(), sampleType.getId());
+
+		HashMap<String, ArrayList<Float>> guideSetValues = new HashMap<>();
+		/**
+		 * This for is formatting the data of the guide set in order to perform the
+		 * calculation of the mean
+		 */
+		for (Data d : dataToProcess) {
+			if (guideSetValues.containsKey(d.getContextSource().getAbbreviated())) {
+				if (d.getValue() != 0f || !d.getValue().isNaN()) {
+					guideSetValues.get(d.getContextSource().getAbbreviated()).add(d.getValue());
+				}
+			} else {
+				guideSetValues.put(d.getContextSource().getAbbreviated(), new ArrayList<>());
+			}
+		}
+
+		HashMap<String, Float> means = new HashMap<>();
+
+		for (Map.Entry<String, ArrayList<Float>> entry : guideSetValues.entrySet()) {
+			means.put(entry.getKey(), calculateMeanOfArrayList(entry.getValue()));
+		}
+		
+		for(Data d: data) {
+			System.out.println(means.get(d.getContextSource().getAbbreviated()));
+			System.out.println(d.getValue());
+			System.out.println("----");
+			d.setValue(means.get(d.getContextSource().getAbbreviated()) - d.getValue());
+		}
+
+	}
+	
+	private float calculateMeanOfArrayList(ArrayList<Float> values) {
+		float sum = 0f;
+		for(Float f: values) {
+			sum+=f;
+		}
+		return sum/values.size();
 	}
 
 	/**
@@ -305,19 +366,21 @@ public class DataService {
 					.findOrCreateLabSystemThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
 							file.getSampleType().getId(), parameterDate.getParameter().getId(),
 							file.getLabSystem().getMainDataSource().getCv().getId(), file.getLabSystem().getId());
-			
-			if(threshold == null) {
+
+			if (threshold == null) {
 				continue;
 			}
-			
+
 			Processor processor = ProcessorFactory.getProcessor(parameterDate.getParameter().getProcessor());
 			Float value = 0f;
 			for (DataValues dataValue : parameterDate.getValues()) {
 
-				ContextSource cs = getContextSourceFromDatabase(dataValue.getContextSource(), parameterDate.getParameter().getIsFor());
+				ContextSource cs = getContextSourceFromDatabase(dataValue.getContextSource(),
+						parameterDate.getParameter().getIsFor());
 				if (processor.isGuideSetRequired()) {
 					// get data
-					value = processThresholdData(file, threshold, parameterDate.getParameter(), processor, value, dataValue, cs);
+					value = processThresholdData(file, threshold, parameterDate.getParameter(), processor, value,
+							dataValue, cs);
 				} else {
 					value = thresholdUtils.processValueWithThresholdProcessor(dataValue.getValue(),
 							threshold.getThresholdType());
@@ -346,7 +409,7 @@ public class DataService {
 					// Send message to client
 				}
 			}
-			
+
 		}
 	}
 
@@ -361,7 +424,8 @@ public class DataService {
 	}
 
 	/**
-	 * Get and process the data required for the threshold from the database 
+	 * Get and process the data required for the threshold from the database
+	 * 
 	 * @param file
 	 * @param threshold
 	 * @param param
@@ -377,8 +441,8 @@ public class DataService {
 		switch (param.getIsFor()) {
 		case "Peptide":
 			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(cs.getId(),
-					threshold.getParam().getId(), this.currentGuideSet.getStartDate(), this.currentGuideSet.getEndDate(),
-					file.getLabSystem().getId(), threshold.getSampleType().getId());
+					threshold.getParam().getId(), this.currentGuideSet.getStartDate(),
+					this.currentGuideSet.getEndDate(), file.getLabSystem().getId(), threshold.getSampleType().getId());
 
 			if (dataToProcess.size() == 0) {
 				throw new DataRetrievalFailureException(
@@ -397,8 +461,8 @@ public class DataService {
 		case "InstrumentSample":
 			// TODO
 			ArrayList<Data> isDataToProcess = (ArrayList<Data>) dataRepository.findParamData(cs.getId(),
-					threshold.getParam().getId(), this.currentGuideSet.getStartDate(), this.currentGuideSet.getEndDate(),
-					file.getLabSystem().getId(), threshold.getSampleType().getId());
+					threshold.getParam().getId(), this.currentGuideSet.getStartDate(),
+					this.currentGuideSet.getEndDate(), file.getLabSystem().getId(), threshold.getSampleType().getId());
 
 			if (isDataToProcess.size() == 0) {
 				throw new DataRetrievalFailureException(
@@ -412,7 +476,7 @@ public class DataService {
 			processor.setData(isDataForPlot);
 			processor.setGuideSetData(isDataToProcess);
 			List<DataForPlot> isProcessedData = processor.processData();
-			value = isProcessedData.get(0).getValue();			
+			value = isProcessedData.get(0).getValue();
 			break;
 		}
 		return value;
@@ -603,9 +667,9 @@ public class DataService {
 	}
 
 	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey,
-			String sampleTypeQccv, Long thresholdId) {
+			String sampleTypeQccv, UUID thresholdApiKey) {
 
-		Optional<Threshold> threshold = thresholdRepository.findById(thresholdId);
+		Optional<Threshold> threshold = thresholdRepository.findByApiKey(thresholdApiKey);
 		Param param = paramRepository.findByQccv(paramQccv);
 		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
 		Optional<ContextSource> contextSource = contextSourceRepository.findByApiKey(contextSourceApiKey);
