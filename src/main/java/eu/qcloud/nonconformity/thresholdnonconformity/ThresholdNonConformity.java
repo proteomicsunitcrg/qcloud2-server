@@ -2,6 +2,8 @@ package eu.qcloud.nonconformity.thresholdnonconformity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.file.File;
 import eu.qcloud.guideset.GuideSet;
+import eu.qcloud.threshold.InstrumentStatus;
 import eu.qcloud.threshold.Threshold;
 
 /**
@@ -42,6 +45,10 @@ public class ThresholdNonConformity {
 	
 	@ManyToOne(optional= true)
 	private GuideSet guideSet;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
+	private InstrumentStatus status;
 
 	public Long getId() {
 		return id;
@@ -84,4 +91,12 @@ public class ThresholdNonConformity {
 		this.guideSet = guideSet;
 	}
 
+	public InstrumentStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(InstrumentStatus status) {
+		this.status = status;
+	}
+	
 }

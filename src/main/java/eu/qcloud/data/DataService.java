@@ -48,6 +48,7 @@ import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSampl
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.threshold.Direction;
+import eu.qcloud.threshold.InstrumentStatus;
 import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdRepository;
 import eu.qcloud.threshold.params.ThresholdParams;
@@ -157,10 +158,6 @@ public class DataService {
 
 		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chart.get().getId(), start, end,
 				labSystem.get().getId(), sampleType.get().getId());
-		
-		if(chart.get().isNormalized()) {
-			normalizeData(dataFromDb, labSystem.get(), sampleType.get(), chart.get());
-		}
 
 		// Get the param
 		Param param = chartParamRepository.findTopByChartId(chart.get().getId()).getParam();
@@ -192,18 +189,28 @@ public class DataService {
 			processor.setGuideSetData(dataToProcess);
 			return processor.processData();
 		} else {
+			if (chart.get().isNormalized()) {
+				return normalizeData(processor.processData(), labSystem.get(), sampleType.get(), chart.get());
+			}
 			return processor.processData();
 		}
 	}
 
+	private float log2(float f) {
+		return (float) (Math.log(f) / Math.log(2.0));
+	}
+
 	/**
 	 * It needs some supervision
-	 * @param data
+	 * 
+	 * @param list
 	 * @param labSystem
 	 * @param sampleType
 	 * @param chart
+	 * @return
 	 */
-	private void normalizeData(List<Data> data, LabSystem labSystem, SampleType sampleType, Chart chart) {
+	private List<DataForPlot> normalizeData(List<DataForPlot> list, LabSystem labSystem, SampleType sampleType,
+			Chart chart) {
 		GuideSet gs = labSystem.getGuideSet(sampleType.getId());
 		if (gs == null) {
 			// Create an on-the-fly guide set
@@ -233,22 +240,26 @@ public class DataService {
 		for (Map.Entry<String, ArrayList<Float>> entry : guideSetValues.entrySet()) {
 			means.put(entry.getKey(), calculateMeanOfArrayList(entry.getValue()));
 		}
-		
-		for(Data d: data) {
-			System.out.println(means.get(d.getContextSource().getAbbreviated()));
-			System.out.println(d.getValue());
-			System.out.println("----");
-			d.setValue(means.get(d.getContextSource().getAbbreviated()) - d.getValue());
+
+		for (DataForPlot d : list) {
+			// Float res = log2(means.get(d.getContextSourceName()) - d.getValue());
+			Float res = d.getValue() - log2(means.get(d.getContextSourceName()));
+			d.setValue(res);
+			if (res.isNaN()) {
+				System.out.println(d.getContextSourceName() + " " + d.getValue() + "  -  "
+						+ log2(means.get(d.getContextSourceName())));
+			}
 		}
+		return list;
 
 	}
-	
+
 	private float calculateMeanOfArrayList(ArrayList<Float> values) {
 		float sum = 0f;
-		for(Float f: values) {
-			sum+=f;
+		for (Float f : values) {
+			sum += f;
 		}
-		return sum/values.size();
+		return sum / values.size();
 	}
 
 	/**
@@ -360,6 +371,10 @@ public class DataService {
 
 	private void evaluateDataForNonConformities(File file, DataFromPipeline data) {
 		this.currentGuideSet = getGuideSet(file);
+		// delete previous warnings
+		thresholdNonConformityRepository.deletePreviousWarnings(file.getLabSystem().getId(),
+				file.getSampleType().getId(), InstrumentStatus.WARNING.toString());
+
 		for (ParameterData parameterDate : data.getData()) {
 			// Get the threshold for this parameter, sample type and instrument
 			Threshold threshold = thresholdUtils
@@ -387,15 +402,19 @@ public class DataService {
 				}
 
 				// Compare here
-				if (isNonConformity(value,
+
+				InstrumentStatus is = isNonConformity(value,
 						getInitialValueFromThresholdParamByContextSource(threshold.getThresholdParams(),
 								dataValue.getContextSource(), parameterDate.getParameter().getIsFor()),
 						getStepValueFromThresholdParamByContextSourceName(threshold.getThresholdParams(),
 								dataValue.getContextSource(), parameterDate.getParameter().getIsFor()),
-						threshold.getSteps(), threshold.getNonConformityDirection()) && threshold.isMonitored()) {
-					// Save no conformity
+						threshold.getSteps(), threshold.getNonConformityDirection());
+
+				if (is != InstrumentStatus.OK && threshold.isMonitored()) {
+
 					logger.info("Storing non conformity");
 					ThresholdNonConformity tnc = new ThresholdNonConformity();
+					tnc.setStatus(is);
 					tnc.setContextSource(cs);
 					tnc.setFile(file);
 					tnc.setThreshold(threshold);
@@ -405,11 +424,8 @@ public class DataService {
 						tnc.setGuideSet(this.currentGuideSet);
 					}
 					thresholdNonConformityRepository.save(tnc);
-
-					// Send message to client
 				}
 			}
-
 		}
 	}
 
@@ -482,25 +498,45 @@ public class DataService {
 		return value;
 	}
 
-	private boolean isNonConformity(Float value, Float initialValue, Float stepValue, int steps, Direction direction) {
+	private InstrumentStatus isNonConformity(Float value, Float initialValue, Float stepValue, int steps,
+			Direction direction) {
 		Float upperLimit = initialValue + (stepValue * steps);
+		Float midLimit = initialValue - (stepValue * (steps - 1));
 		Float lowerLimit = initialValue - (stepValue * steps);
 		switch (direction) {
 		case DOWN:
-			if (value < lowerLimit) {
-				return true;
+			// taking care if there is only one step
+			if (steps == 1) {
+				if (value < lowerLimit) {
+					return InstrumentStatus.DANGER;
+
+				}
+			} else {
+				if (value < lowerLimit) {
+					return InstrumentStatus.DANGER;
+					// return true;
+				}
+
+				else if (value >= lowerLimit && value < midLimit) {
+					System.out.println("value: " + value + " low: " + lowerLimit + " mid: " + midLimit);
+					logger.info("ADDING A WARNINGGGG");
+					return InstrumentStatus.WARNING;
+				}
+
 			}
 			break;
 		case UPDOWN:
 			if (value < lowerLimit || value > upperLimit) {
-				return true;
+				return InstrumentStatus.DANGER;
+				// return true;
 			}
 			break;
 		default:
 			System.out.println("Direction not found");
 		}
 
-		return false;
+		return InstrumentStatus.OK;
+		// return false;
 	}
 
 	private Float getInitialValueFromThresholdParamByContextSource(List<ThresholdParams> tp, String contextSourceName,
@@ -572,7 +608,8 @@ public class DataService {
 		});
 
 		nodeThresholds.forEach(nodeThreshold -> {
-			thresholdUtils.processThreshold(nodeThreshold, currentGuideSet);
+			thresholdUtils.processThreshold(nodeThreshold,
+					thresholdUtils.generateExactGuideSetFromFile(file.getSampleType(), file.getLabSystem(), file));
 			saveThresholdParams(nodeThreshold);
 		});
 
@@ -735,7 +772,7 @@ public class DataService {
 			guideSet = guideSetRepository.findOptionalByApiKey(guideSetApiKey);
 			gs = guideSet.get();
 		} else {
-			gs = thresholdUtils.generateAutoGuideSetFromFile(sampleType.get(), labSystem.get(), file.get());
+			gs = thresholdUtils.generateAutoGuideSetFromFile(file.get());
 		}
 
 		List<File> files = getFilesForNonConformityPlot(labSystem, sampleType, file);

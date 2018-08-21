@@ -88,9 +88,10 @@ public class ThresholdUtils {
 		List<File> files = fileRepository.findByLabSystemIdAndSampleTypeId(labSystem.getId(), sampleType.getId(),
 				maxFiles);
 		// Get the first and the last file
+		
 		File firstFile = files.get(files.size() - 1);
 		File lastFile = files.get(files.size() == 1 ? 0 : 1);
-		// File lastFile = files.get(0);
+		
 		GuideSet guideSet = null;
 		
 		guideSet = new GuideSet(firstFile.getCreationDate(), lastFile.getCreationDate());
@@ -100,17 +101,37 @@ public class ThresholdUtils {
 		return guideSet;
 	}
 
-	public GuideSet generateAutoGuideSetFromFile(SampleType sampleType, LabSystem labSystem, File file) {
+	public GuideSet generateAutoGuideSetFromFile(File file) {
 
 		Pageable maxFiles = PageRequest.of(0, maxFilesForAutoGuideSet,
 				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
 
-		List<File> files = fileRepository.findByLabSystemIdAndSampleTypeIdAndCreationDateBefore(labSystem.getId(),
+		List<File> files = fileRepository.findByLabSystemIdAndSampleTypeIdAndCreationDateBefore(file.getLabSystem().getId(),
+				file.getSampleType().getId(), file.getCreationDate(), maxFiles);
+		// Get the first and the last file
+		File firstFile = files.get(files.size() - 1);
+		// File lastFile = files.get(files.size() == 1 ? 0 : 1);
+		File lastFile = files.get(0);
+		GuideSet guideSet = null;
+		
+		guideSet = new GuideSet(firstFile.getCreationDate(), lastFile.getCreationDate());
+		guideSet.setIsActive(true);
+		guideSet.setIsUserDefined(false);
+		guideSet.setSampleType(file.getSampleType());
+		return guideSet;
+	}
+	
+	public GuideSet generateExactGuideSetFromFile(SampleType sampleType, LabSystem labSystem, File file) {
+
+		Pageable maxFiles = PageRequest.of(0, maxFilesForAutoGuideSet,
+				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
+
+		List<File> files = fileRepository.findByLabSystemIdAndSampleTypeIdAndCreationDateLessThanEqual(labSystem.getId(),
 				sampleType.getId(), file.getCreationDate(), maxFiles);
 		// Get the first and the last file
 		File firstFile = files.get(files.size() - 1);
-		File lastFile = files.get(files.size() == 1 ? 0 : 1);
-		// File lastFile = files.get(0);
+		// File lastFile = files.get(files.size() == 1 ? 0 : 1);
+		File lastFile = files.get(0);
 		GuideSet guideSet = null;
 		
 		guideSet = new GuideSet(firstFile.getCreationDate(), lastFile.getCreationDate());

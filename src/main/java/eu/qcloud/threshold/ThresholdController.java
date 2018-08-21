@@ -25,7 +25,6 @@ import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemService;
-import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
 import eu.qcloud.threshold.constraint.ThresholdConstraint;
 import eu.qcloud.threshold.labsystemstatus.LabSystemStatus;
@@ -124,27 +123,6 @@ public class ThresholdController {
 
 	}
 
-	/**
-	 * 
-	 * @param sampleTypeId
-	 * @param paramId
-	 * @param cvId
-	 * @param labSystemId
-	 * @deprecated probably deprecated
-	 * @return
-	 */
-	/*
-	@RequestMapping(value = "/api/threshold/{sampleTypeId}/{paramId}/{cvId}/{labSystemId}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
-	public ThresholdForPlot getThreshold(@PathVariable Long sampleTypeId, @PathVariable Long paramId,
-			@PathVariable Long cvId, @PathVariable Long labSystemId) {
-		Threshold t = thresholdService.findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(sampleTypeId, paramId,
-				cvId, labSystemId);
-		// calculate threshold
-		return thresholdService.getThreshold(t.getId());
-	}
-	*/
-
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/api/threshold/plot/{chartApiKey}/{labSystemApiKey}", method = RequestMethod.GET)
 	public ThresholdForPlotImpl getPlotThreshold(@PathVariable UUID chartApiKey, @PathVariable UUID labSystemApiKey) {
@@ -156,8 +134,10 @@ public class ThresholdController {
 	
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/api/threshold/autoplot/{thresholdApiKey}", method = RequestMethod.GET)
-	public ThresholdForPlot getAutoPlotThreshold(@PathVariable UUID thresholdApiKey) {
-		return thresholdService.getThreshold(thresholdApiKey);
+	public ThresholdForPlotImpl getAutoPlotThreshold(@PathVariable UUID thresholdApiKey) {
+		Threshold threshold = thresholdService.findThresholdByApiKey(thresholdApiKey);
+		return thresholdService.calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(
+				threshold.getParam().getId(), threshold.getSampleType().getId(), threshold.getLabSystem().getApiKey());
 	}
 
 	@PreAuthorize("hasRole('USER')")
@@ -237,6 +217,7 @@ public class ThresholdController {
 		if (ls.isPresent()) {
 			LabSystem labSystem = ls.get();
 			return thresholdService.getLabSystemStatus(labSystem);
+			// return thresholdService.getLabSystemLastFileStatus(labSystem);
 		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");
 		}
