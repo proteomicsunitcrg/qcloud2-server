@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.chart.Chart;
 import eu.qcloud.chart.ChartRepository;
+import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.contextSource.ContextSourceRepository;
@@ -172,6 +173,29 @@ public class DataService {
 		 * in the processor
 		 */
 		if (processor.isGuideSetRequired()) {
+			
+			ArrayList<Data> dataToProcess = new ArrayList<>();
+			
+			// we need to get a meaningful gs by context source 
+			List<ChartParams> chartParams = chartParamRepository.findByChartIdAndParamId(chart.get().getId(), param.getId());
+			for(ChartParams chartParam : chartParams) {
+				GuideSet gs = thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get(), param , chartParam.getContextSource());
+				processor.setGuideSet(gs);
+				dataToProcess.addAll((ArrayList<Data>) dataRepository.findParamData(
+						chartParam.getContextSource().getId(), param.getId(), gs.getStartDate(), gs.getEndDate(),
+						labSystem.get().getId(), sampleType.get().getId()));
+				
+			}
+			if (dataToProcess.size() == 0) {
+				throw new DataRetrievalFailureException(
+						"Your selected guide has no results. Please, choose another date range.");
+			}
+			processor.setGuideSetData(dataToProcess);
+			return processor.processData();
+			
+			
+			
+			/*
 			// get the guide set of the instrument
 			GuideSet gs = labSystem.get().getGuideSet(sampleType.get().getId());
 			if (gs == null) {
@@ -188,6 +212,7 @@ public class DataService {
 			}
 			processor.setGuideSetData(dataToProcess);
 			return processor.processData();
+			*/
 		} else {
 			if (chart.get().isNormalized()) {
 				return normalizeData(processor.processData(), labSystem.get(), sampleType.get(), chart.get());

@@ -17,6 +17,8 @@ public interface ChartParamsRepository extends CrudRepository<ChartParams, Chart
 	
 	public ChartParams findTopByChartApiKey(UUID chartApiKey);
 	
+	public List<ChartParams> findByChartIdAndParamId(Long chartId, Long paramId);
+	
 	interface OnlyParams {
 		Long getChartId();
 	}

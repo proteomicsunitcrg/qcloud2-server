@@ -92,8 +92,6 @@ public interface FileRepository extends JpaRepository<File, Long>{
 	public List<File> findByLabSystemIdAndSampleTypeIdAndCreationDateLessThanEqual(Long id, Long id2, Date creationDate, Pageable maxFiles);
 
 	public Optional<File> findOptionalByChecksum(String fileChecksum);
-
 	
-
 	
 }

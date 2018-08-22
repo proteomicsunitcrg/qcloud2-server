@@ -32,6 +32,9 @@ public class Param {
 	@Column(name="QCCV", unique=true)
 	private String qccv;
 	
+	@Column(name="is_zero_no_data", columnDefinition="tinyint(1) default 0")
+    private boolean isZeroNoData;
+	
 	public String getqCCV() {
 		return qccv;
 	}
@@ -71,6 +74,14 @@ public class Param {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isZeroNoData() {
+		return isZeroNoData;
+	}
+
+	public void setZeroNoData(boolean isZeroNoData) {
+		this.isZeroNoData = isZeroNoData;
 	}
 	
 	
