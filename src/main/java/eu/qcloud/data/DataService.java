@@ -216,15 +216,27 @@ public class DataService {
 			// Create an on-the-fly guide set
 			gs = thresholdUtils.generateAutoGuideSet(sampleType, labSystem);
 		}
-
+		/*
 		ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chart.getId(), gs.getStartDate(),
 				gs.getEndDate(), labSystem.getId(), sampleType.getId());
-
+		 */
 		HashMap<String, ArrayList<Float>> guideSetValues = new HashMap<>();
+		
+		for(DataForPlot d: list) {
+			if (guideSetValues.containsKey(d.getContextSourceName())) {
+				if (d.getValue() != 0f && !d.getValue().isNaN()) {
+					guideSetValues.get(d.getContextSourceName()).add(d.getValue());
+				}
+			} else {
+				guideSetValues.put(d.getContextSourceName(), new ArrayList<>());
+			}
+		}
+		
 		/**
 		 * This for is formatting the data of the guide set in order to perform the
 		 * calculation of the mean
 		 */
+		/*
 		for (Data d : dataToProcess) {
 			if (guideSetValues.containsKey(d.getContextSource().getAbbreviated())) {
 				if (d.getValue() != 0f || !d.getValue().isNaN()) {
@@ -234,6 +246,7 @@ public class DataService {
 				guideSetValues.put(d.getContextSource().getAbbreviated(), new ArrayList<>());
 			}
 		}
+		*/
 
 		HashMap<String, Float> means = new HashMap<>();
 
@@ -243,12 +256,9 @@ public class DataService {
 
 		for (DataForPlot d : list) {
 			// Float res = log2(means.get(d.getContextSourceName()) - d.getValue());
-			Float res = d.getValue() - log2(means.get(d.getContextSourceName()));
+			Float res = d.getValue() - means.get(d.getContextSourceName());
+			System.out.println(d.getValue() + " - " + log2(means.get(d.getContextSourceName())) + " = " + res);
 			d.setValue(res);
-			if (res.isNaN()) {
-				System.out.println(d.getContextSourceName() + " " + d.getValue() + "  -  "
-						+ log2(means.get(d.getContextSourceName())));
-			}
 		}
 		return list;
 
