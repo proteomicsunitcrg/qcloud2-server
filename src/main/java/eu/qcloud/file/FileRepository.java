@@ -76,7 +76,7 @@ public interface FileRepository extends JpaRepository<File, Long>{
 	interface FileLabSystemNameAndApiKey {
 		SampleType getSampleType();
 		LabSystemNameAndApiKey getLabSystem();
-		@JsonFormat(pattern="yyyy-MM-dd hh:mm")
+		@JsonFormat(pattern="yyyy-MM-dd HH:mm")
 		Date getCreationDate();
 		String getChecksum();
 		String getFilename();
