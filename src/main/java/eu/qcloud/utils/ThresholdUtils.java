@@ -126,6 +126,32 @@ public class ThresholdUtils {
 		guideSet.setSampleType(file.getSampleType());
 		return guideSet;
 	}
+	
+	/**
+	 * It will generate a guide set taking into account if there some invalid values
+	 * from a file 
+	 * @param file
+	 * @param param
+	 * @param contextSource
+	 * @return
+	 */
+	public GuideSet generateAutoGuideSetFromFile(File file, Param param, ContextSource contextSource) {
+
+		Pageable maxFiles = PageRequest.of(0, maxFilesForAutoGuideSet,
+				new Sort(Sort.Direction.DESC, Arrays.asList("file.creationDate")));
+		List<File> files = null;
+		if (param.isZeroNoData()) {
+			files = dataRepository.findLastFilesWithoutZeroValue(contextSource.getAbbreviated(), param.getId(),
+					file.getSampleType().getId(), file.getLabSystem().getId(), maxFiles);
+		} else {
+			return generateAutoGuideSetFromFile(file);
+		}
+		GuideSet guideSet = new GuideSet(files.get(files.size()-1).getCreationDate(), files.get(0).getCreationDate());
+		guideSet.setIsActive(true);
+		guideSet.setIsUserDefined(false);
+		guideSet.setSampleType(file.getSampleType());
+		return guideSet;
+	}
 
 	/**
 	 * It will generate a guide set taking into account if there some invalid values

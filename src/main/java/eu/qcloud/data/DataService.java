@@ -2,6 +2,7 @@ package eu.qcloud.data;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -173,46 +174,28 @@ public class DataService {
 		 * in the processor
 		 */
 		if (processor.isGuideSetRequired()) {
-			
-			ArrayList<Data> dataToProcess = new ArrayList<>();
-			
-			// we need to get a meaningful gs by context source 
-			List<ChartParams> chartParams = chartParamRepository.findByChartIdAndParamId(chart.get().getId(), param.getId());
-			for(ChartParams chartParam : chartParams) {
-				GuideSet gs = thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get(), param , chartParam.getContextSource());
-				processor.setGuideSet(gs);
-				dataToProcess.addAll((ArrayList<Data>) dataRepository.findParamData(
-						chartParam.getContextSource().getId(), param.getId(), gs.getStartDate(), gs.getEndDate(),
-						labSystem.get().getId(), sampleType.get().getId()));
-				
-			}
-			if (dataToProcess.size() == 0) {
-				throw new DataRetrievalFailureException(
-						"Your selected guide has no results. Please, choose another date range.");
-			}
-			processor.setGuideSetData(dataToProcess);
-			return processor.processData();
-			
-			
-			
-			/*
-			// get the guide set of the instrument
-			GuideSet gs = labSystem.get().getGuideSet(sampleType.get().getId());
-			if (gs == null) {
-				// Create an on-the-fly guide set
-				gs = thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get());
-			}
 
-			processor.setGuideSet(gs);
-			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chart.get().getId(),
-					gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(), sampleType.get().getId());
+			ArrayList<Data> dataToProcess = new ArrayList<>();
+
+			// we need to get a meaningful gs by context source
+			List<ChartParams> chartParams = chartParamRepository.findByChartIdAndParamId(chart.get().getId(),
+					param.getId());
+			for (ChartParams chartParam : chartParams) {
+				GuideSet gs = thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get(), param,
+						chartParam.getContextSource());
+				processor.setGuideSet(gs);
+				dataToProcess
+						.addAll((ArrayList<Data>) dataRepository.findParamData(chartParam.getContextSource().getId(),
+								param.getId(), gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(),
+								sampleType.get().getId()));
+
+			}
 			if (dataToProcess.size() == 0) {
 				throw new DataRetrievalFailureException(
 						"Your selected guide has no results. Please, choose another date range.");
 			}
 			processor.setGuideSetData(dataToProcess);
 			return processor.processData();
-			*/
 		} else {
 			if (chart.get().isNormalized()) {
 				return normalizeData(processor.processData(), labSystem.get(), sampleType.get(), chart.get());
@@ -242,12 +225,13 @@ public class DataService {
 			gs = thresholdUtils.generateAutoGuideSet(sampleType, labSystem);
 		}
 		/*
-		ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findPlotData(chart.getId(), gs.getStartDate(),
-				gs.getEndDate(), labSystem.getId(), sampleType.getId());
+		 * ArrayList<Data> dataToProcess = (ArrayList<Data>)
+		 * dataRepository.findPlotData(chart.getId(), gs.getStartDate(),
+		 * gs.getEndDate(), labSystem.getId(), sampleType.getId());
 		 */
 		HashMap<String, ArrayList<Float>> guideSetValues = new HashMap<>();
-		
-		for(DataForPlot d: list) {
+
+		for (DataForPlot d : list) {
 			if (guideSetValues.containsKey(d.getContextSourceName())) {
 				if (d.getValue() != 0f && !d.getValue().isNaN()) {
 					guideSetValues.get(d.getContextSourceName()).add(d.getValue());
@@ -256,22 +240,19 @@ public class DataService {
 				guideSetValues.put(d.getContextSourceName(), new ArrayList<>());
 			}
 		}
-		
+
 		/**
 		 * This for is formatting the data of the guide set in order to perform the
 		 * calculation of the mean
 		 */
 		/*
-		for (Data d : dataToProcess) {
-			if (guideSetValues.containsKey(d.getContextSource().getAbbreviated())) {
-				if (d.getValue() != 0f || !d.getValue().isNaN()) {
-					guideSetValues.get(d.getContextSource().getAbbreviated()).add(d.getValue());
-				}
-			} else {
-				guideSetValues.put(d.getContextSource().getAbbreviated(), new ArrayList<>());
-			}
-		}
-		*/
+		 * for (Data d : dataToProcess) { if
+		 * (guideSetValues.containsKey(d.getContextSource().getAbbreviated())) { if
+		 * (d.getValue() != 0f || !d.getValue().isNaN()) {
+		 * guideSetValues.get(d.getContextSource().getAbbreviated()).add(d.getValue());
+		 * } } else { guideSetValues.put(d.getContextSource().getAbbreviated(), new
+		 * ArrayList<>()); } }
+		 */
 
 		HashMap<String, Float> means = new HashMap<>();
 
@@ -510,7 +491,6 @@ public class DataService {
 			value = processedData.get(0).getValue();
 			break;
 		case "InstrumentSample":
-			// TODO
 			ArrayList<Data> isDataToProcess = (ArrayList<Data>) dataRepository.findParamData(cs.getId(),
 					threshold.getParam().getId(), this.currentGuideSet.getStartDate(),
 					this.currentGuideSet.getEndDate(), file.getLabSystem().getId(), threshold.getSampleType().getId());
@@ -807,7 +787,7 @@ public class DataService {
 			guideSet = guideSetRepository.findOptionalByApiKey(guideSetApiKey);
 			gs = guideSet.get();
 		} else {
-			gs = thresholdUtils.generateAutoGuideSetFromFile(file.get());
+			gs = thresholdUtils.generateAutoGuideSetFromFile(file.get(), param, contextSource.get());
 		}
 
 		List<File> files = getFilesForNonConformityPlot(labSystem, sampleType, file);
@@ -825,7 +805,9 @@ public class DataService {
 
 		// Check sample type in order to send the abbreviated name or anything else
 		List<DataForPlot> dataForPlot = prepareDataForPlot(data, sampleType.get(), param);
-
+		
+		List<DataForPlot> finalData = new ArrayList<>(); 
+		
 		processor.setData(dataForPlot);
 		/**
 		 * If data from a guide set is required then call the db for the data and set it
@@ -833,16 +815,30 @@ public class DataService {
 		 */
 		if (processor.isGuideSetRequired()) {
 			// get the guide set of the instrument
+			/*
 			processor.setGuideSet(gs);
 			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(contextSource.get().getId(),
 					param.getId(), gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(),
 					sampleType.get().getId());
-			if (dataToProcess.size() == 0) {
-				throw new DataRetrievalFailureException(
-						"Your selected guide has no results. Please, choose another date range.");
+			*/
+			// for each point calculate its previous guide set value
+			for (DataForPlot d : dataForPlot) {
+				GuideSet pastGuideSet = thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get(), param,
+						contextSource.get());
+				ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(contextSource.get().getId(),
+						param.getId(), pastGuideSet.getStartDate(), pastGuideSet.getEndDate(), labSystem.get().getId(),
+						sampleType.get().getId());
+				if (guideSetData.size() == 0) {
+					throw new DataRetrievalFailureException(
+							"Your selected guide has no results. Please, choose another date range.");
+				}
+				processor.setGuideSetData(guideSetData);
+				processor.setData(Arrays.asList(d));								
+				processor.setGuideSet(pastGuideSet);
+				finalData.addAll(processor.processData());
 			}
-			processor.setGuideSetData(dataToProcess);
-			return processor.processData();
+			
+			return finalData;
 		} else {
 			return processor.processData();
 		}
@@ -907,6 +903,17 @@ public class DataService {
 		}
 	}
 
+	/**
+	 * Check if the parameters for the function are setted properly, if not it will
+	 * throw an exception
+	 * 
+	 * @param param
+	 * @param labSystem
+	 * @param contextSource
+	 * @param sampleType
+	 * @param file
+	 * @param guideSet
+	 */
 	private void checkNonConformityPlotParameters(Param param, Optional<LabSystem> labSystem,
 			Optional<ContextSource> contextSource, Optional<SampleType> sampleType, Optional<File> file,
 			Optional<GuideSet> guideSet) {
