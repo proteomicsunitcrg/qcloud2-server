@@ -24,13 +24,13 @@ public abstract class Processor implements DataProcessor{
 	 * Requested data of the guide set. Used to process
 	 * some data... maybe to get mean on RT, etc...
 	 */
-	protected ArrayList<Data> guideSetData;
+	protected List<Data> guideSetData;
 	
-	public ArrayList<Data> getGuideSetData() {
+	public List<Data> getGuideSetData() {
 		return guideSetData;
 	}
 
-	public void setGuideSetData(ArrayList<Data> guideSetData) {
+	public void setGuideSetData(List<Data> guideSetData) {
 		this.guideSetData = guideSetData;
 	}
 
