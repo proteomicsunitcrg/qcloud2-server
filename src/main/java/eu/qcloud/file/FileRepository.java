@@ -85,11 +85,11 @@ public interface FileRepository extends JpaRepository<File, Long>{
 	@Query("select f from File f where filename = ?1")
 	public OnlyChecksum getFileByFilename(String filename);
 
-	public List<File> findByLabSystemIdAndSampleTypeId(Long id, Long id2, Pageable maxFiles);
+	public List<File> findByLabSystemIdAndSampleTypeId(Long labSystemId, Long sampleTypeId, Pageable maxFiles);
 	
-	public List<File> findByLabSystemIdAndSampleTypeIdAndCreationDateBefore(Long id, Long id2, Date creationDate, Pageable maxFiles);
+	public List<File> findByLabSystemIdAndSampleTypeIdAndCreationDateBefore(Long labSystemId, Long sampleTypeId, Date creationDate, Pageable maxFiles);
 	
-	public List<File> findByLabSystemIdAndSampleTypeIdAndCreationDateLessThanEqual(Long id, Long id2, Date creationDate, Pageable maxFiles);
+	public List<File> findByLabSystemIdAndSampleTypeIdAndCreationDateLessThanEqual(Long labSystemId, Long sampleTypeId, Date creationDate, Pageable maxFiles);
 
 	public Optional<File> findOptionalByChecksum(String fileChecksum);
 	
