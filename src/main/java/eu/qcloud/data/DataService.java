@@ -16,6 +16,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.chart.Chart;
@@ -117,6 +120,9 @@ public class DataService {
 	@Value("${qcloud.threshold.min-points-auto}")
 	private int minPointsAutoThreshold;
 
+	@Value("${qcloud.threshold.files-auto-plot}")
+	private int filesForAutoPlot;
+
 	private GuideSet currentGuideSet;
 
 	private final Log logger = LogFactory.getLog(this.getClass());
@@ -157,51 +163,64 @@ public class DataService {
 		if (!chart.isPresent() || !labSystem.isPresent() || !sampleType.isPresent()) {
 			throw new DataRetrievalFailureException("Wrong chart, system or sample type");
 		}
-
-		ArrayList<Data> dataFromDb = (ArrayList<Data>) dataRepository.findPlotData(chart.get().getId(), start, end,
-				labSystem.get().getId(), sampleType.get().getId());
-
 		// Get the param
 		Param param = chartParamRepository.findTopByChartId(chart.get().getId()).getParam();
-		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 
-		// Check sample type in order to send the abbreviated name or anything else
-		List<DataForPlot> dataForPlot = prepareDataForPlot(dataFromDb, sampleType.get(), param);
+		List<ChartParams> chartParams = chartParamRepository.findByChartIdAndParamId(chart.get().getId(),
+				param.getId());
 
-		processor.setData(dataForPlot);
-		/**
-		 * If data from a guide set is required then call the db for the data and set it
-		 * in the processor
-		 */
-		if (processor.isGuideSetRequired()) {
+		List<ContextSource> contextSources = new ArrayList<>();
 
-			ArrayList<Data> dataToProcess = new ArrayList<>();
+		chartParams.forEach(cp -> {
+			contextSources.add(cp.getContextSource());
+		});
 
-			// we need to get a meaningful gs by context source
-			List<ChartParams> chartParams = chartParamRepository.findByChartIdAndParamId(chart.get().getId(),
-					param.getId());
-			for (ChartParams chartParam : chartParams) {
-				GuideSet gs = thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get(), param,
-						chartParam.getContextSource());
-				processor.setGuideSet(gs);
-				dataToProcess
-						.addAll((ArrayList<Data>) dataRepository.findParamData(chartParam.getContextSource().getId(),
-								param.getId(), gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(),
-								sampleType.get().getId()));
-
-			}
-			if (dataToProcess.size() == 0) {
-				throw new DataRetrievalFailureException(
-						"Your selected guide has no results. Please, choose another date range.");
-			}
-			processor.setGuideSetData(dataToProcess);
-			return processor.processData();
+		List<DataForPlot> dataForPlot = getDataForPlot(labSystem.get(), param, contextSources, sampleType.get(), start,
+				end);
+		
+		if (chart.get().isNormalized()) {
+			return normalizeData(dataForPlot, labSystem.get(), sampleType.get(), chart.get());
 		} else {
-			if (chart.get().isNormalized()) {
-				return normalizeData(processor.processData(), labSystem.get(), sampleType.get(), chart.get());
-			}
-			return processor.processData();
+			return dataForPlot;
 		}
+
+
+		/*
+		 * 
+		 * ArrayList<Data> dataFromDb = (ArrayList<Data>)
+		 * dataRepository.findPlotData(chart.get().getId(), start, end,
+		 * labSystem.get().getId(), sampleType.get().getId());
+		 * 
+		 * Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
+		 * 
+		 * // Check sample type in order to send the abbreviated name or anything else
+		 * List<DataForPlot> dataForPlot = prepareDataForPlot(dataFromDb,
+		 * sampleType.get(), param);
+		 * 
+		 * processor.setData(dataForPlot);
+		 * 
+		 * if (processor.isGuideSetRequired()) {
+		 * 
+		 * ArrayList<Data> dataToProcess = new ArrayList<>();
+		 * 
+		 * // we need to get a meaningful gs by context source List<ChartParams>
+		 * chartParams =
+		 * chartParamRepository.findByChartIdAndParamId(chart.get().getId(),
+		 * param.getId()); for (ChartParams chartParam : chartParams) { GuideSet gs =
+		 * thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get(), param,
+		 * chartParam.getContextSource()); processor.setGuideSet(gs); dataToProcess
+		 * .addAll((ArrayList<Data>)
+		 * dataRepository.findParamData(chartParam.getContextSource().getId(),
+		 * param.getId(), gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(),
+		 * sampleType.get().getId()));
+		 * 
+		 * } if (dataToProcess.size() == 0) { throw new DataRetrievalFailureException(
+		 * "Your selected guide has no results. Please, choose another date range."); }
+		 * processor.setGuideSetData(dataToProcess); return processor.processData(); }
+		 * else { if (chart.get().isNormalized()) { return
+		 * normalizeData(processor.processData(), labSystem.get(), sampleType.get(),
+		 * chart.get()); } return processor.processData(); }
+		 */
 	}
 
 	private float log2(float f) {
@@ -224,11 +243,7 @@ public class DataService {
 			// Create an on-the-fly guide set
 			gs = thresholdUtils.generateAutoGuideSet(sampleType, labSystem);
 		}
-		/*
-		 * ArrayList<Data> dataToProcess = (ArrayList<Data>)
-		 * dataRepository.findPlotData(chart.getId(), gs.getStartDate(),
-		 * gs.getEndDate(), labSystem.getId(), sampleType.getId());
-		 */
+
 		HashMap<String, ArrayList<Float>> guideSetValues = new HashMap<>();
 
 		for (DataForPlot d : list) {
@@ -240,19 +255,6 @@ public class DataService {
 				guideSetValues.put(d.getContextSourceName(), new ArrayList<>());
 			}
 		}
-
-		/**
-		 * This for is formatting the data of the guide set in order to perform the
-		 * calculation of the mean
-		 */
-		/*
-		 * for (Data d : dataToProcess) { if
-		 * (guideSetValues.containsKey(d.getContextSource().getAbbreviated())) { if
-		 * (d.getValue() != 0f || !d.getValue().isNaN()) {
-		 * guideSetValues.get(d.getContextSource().getAbbreviated()).add(d.getValue());
-		 * } } else { guideSetValues.put(d.getContextSource().getAbbreviated(), new
-		 * ArrayList<>()); } }
-		 */
 
 		HashMap<String, Float> means = new HashMap<>();
 
@@ -718,6 +720,52 @@ public class DataService {
 
 	}
 
+	/**
+	 * 
+	 * @param labSystem
+	 * @param param
+	 * @param contextSources
+	 * @param sampleType
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	private List<DataForPlot> getDataForPlot(LabSystem labSystem, Param param, List<ContextSource> contextSources,
+			SampleType sampleType, java.util.Date startDate, java.util.Date endDate) {
+		List<DataForPlot> dataForPlot = new ArrayList<>();
+		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
+		contextSources.forEach(cs -> {
+			List<Data> data = dataRepository.findParamData(cs.getId(), param.getId(), startDate, endDate,
+					labSystem.getId(), sampleType.getId());
+			List<DataForPlot> contextSourceDataForPlot = prepareDataForPlot(data, sampleType, param);
+			processor.setData(contextSourceDataForPlot);
+
+			if (processor.isGuideSetRequired()) {
+				// get the guide set of the instrument
+				// for each point calculate its previous guide set value
+				for (Data d : data) {
+					GuideSet pastGuideSet = thresholdUtils.generateAutoGuideSetFromFile(d.getFile(), d.getParam(),
+							d.getContextSource());
+					ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(cs.getId(),
+							param.getId(), pastGuideSet.getStartDate(), pastGuideSet.getEndDate(), labSystem.getId(),
+							sampleType.getId());
+					if (guideSetData.size() == 0) {
+						throw new DataRetrievalFailureException(
+								"Your selected guide has no results. Please, choose another date range.");
+					}
+					processor.setGuideSetData(guideSetData);
+					processor.setData(prepareDataForPlot(Arrays.asList(d), sampleType, d.getParam()));
+					processor.setGuideSet(pastGuideSet);
+					dataForPlot.addAll(processor.processData());
+				}
+			} else {
+				dataForPlot.addAll((processor.processData()));
+			}
+		});
+
+		return dataForPlot;
+	}
+
 	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey,
 			String sampleTypeQccv, UUID thresholdApiKey) {
 
@@ -729,46 +777,10 @@ public class DataService {
 
 		checkAutoPlotParameters(threshold, param, labSystem, contextSource, sampleType);
 
-		List<File> files = getFilesForAutoPlot(threshold, param, labSystem, contextSource, sampleType);
+		List<File> files = getFilesForAutoPlot(labSystem.get(), sampleType.get());
 
-		if (files.size() == 0) {
-			throw new DataRetrievalFailureException("No files found.");
-		}
-		Date endDate = new Date(files.get(0).getCreationDate().getTime());
-		Date startDate = new Date(files.get(files.size() - 1).getCreationDate().getTime());
-
-		List<Data> data = dataRepository.findParamData(contextSource.get().getId(), param.getId(), startDate, endDate,
-				labSystem.get().getId(), sampleType.get().getId());
-
-		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
-
-		// Check sample type in order to send the abbreviated name or anything else
-		List<DataForPlot> dataForPlot = prepareDataForPlot(data, sampleType.get(), param);
-
-		processor.setData(dataForPlot);
-		/**
-		 * If data from a guide set is required then call the db for the data and set it
-		 * in the processor
-		 */
-		if (processor.isGuideSetRequired()) {
-			// get the guide set of the instrument
-			GuideSet gs = labSystem.get().getGuideSet(sampleType.get().getId());
-			if (gs == null) {
-				gs = thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get());
-			}
-			processor.setGuideSet(gs);
-			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(contextSource.get().getId(),
-					param.getId(), gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(),
-					sampleType.get().getId());
-			if (dataToProcess.size() == 0) {
-				throw new DataRetrievalFailureException(
-						"Your selected guide has no results. Please, choose another date range.");
-			}
-			processor.setGuideSetData(dataToProcess);
-			return processor.processData();
-		} else {
-			return processor.processData();
-		}
+		return getDataForPlot(labSystem.get(), param, Arrays.asList(contextSource.get()), sampleType.get(),
+				files.get(files.size() - 1).getCreationDate(), files.get(0).getCreationDate());
 	}
 
 	public List<DataForPlot> getNonConformityPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey,
@@ -780,68 +792,13 @@ public class DataService {
 		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQccv);
 		Optional<File> file = fileRepository.findOptionalByChecksum(fileChecksum);
 		Optional<GuideSet> guideSet = null;
-		GuideSet gs = null;
 
 		checkNonConformityPlotParameters(param, labSystem, contextSource, sampleType, file, guideSet);
-		if (guideSetApiKey != null) {
-			guideSet = guideSetRepository.findOptionalByApiKey(guideSetApiKey);
-			gs = guideSet.get();
-		} else {
-			gs = thresholdUtils.generateAutoGuideSetFromFile(file.get(), param, contextSource.get());
-		}
 
-		List<File> files = getFilesForNonConformityPlot(labSystem, sampleType, file);
+		List<File> files = getFilesForNonConformityPlot(labSystem.get(), sampleType.get(), file.get());
 
-		if (files.size() == 0) {
-			throw new DataRetrievalFailureException("No files found.");
-		}
-		Date endDate = new Date(files.get(0).getCreationDate().getTime());
-		Date startDate = new Date(files.get(files.size() - 1).getCreationDate().getTime());
-
-		List<Data> data = dataRepository.findParamData(contextSource.get().getId(), param.getId(), startDate, endDate,
-				labSystem.get().getId(), sampleType.get().getId());
-
-		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
-
-		// Check sample type in order to send the abbreviated name or anything else
-		List<DataForPlot> dataForPlot = prepareDataForPlot(data, sampleType.get(), param);
-		
-		List<DataForPlot> finalData = new ArrayList<>(); 
-		
-		processor.setData(dataForPlot);
-		/**
-		 * If data from a guide set is required then call the db for the data and set it
-		 * in the processor
-		 */
-		if (processor.isGuideSetRequired()) {
-			// get the guide set of the instrument
-			/*
-			processor.setGuideSet(gs);
-			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(contextSource.get().getId(),
-					param.getId(), gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(),
-					sampleType.get().getId());
-			*/
-			// for each point calculate its previous guide set value
-			for (DataForPlot d : dataForPlot) {
-				GuideSet pastGuideSet = thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get(), param,
-						contextSource.get());
-				ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(contextSource.get().getId(),
-						param.getId(), pastGuideSet.getStartDate(), pastGuideSet.getEndDate(), labSystem.get().getId(),
-						sampleType.get().getId());
-				if (guideSetData.size() == 0) {
-					throw new DataRetrievalFailureException(
-							"Your selected guide has no results. Please, choose another date range.");
-				}
-				processor.setGuideSetData(guideSetData);
-				processor.setData(Arrays.asList(d));								
-				processor.setGuideSet(pastGuideSet);
-				finalData.addAll(processor.processData());
-			}
-			
-			return finalData;
-		} else {
-			return processor.processData();
-		}
+		return getDataForPlot(labSystem.get(), param, Arrays.asList(contextSource.get()), sampleType.get(),
+				files.get(files.size() - 1).getCreationDate(), files.get(0).getCreationDate());
 	}
 
 	/**
@@ -855,22 +812,20 @@ public class DataService {
 	 * @param sampleType
 	 * @return
 	 */
-	private List<File> getFilesForAutoPlot(Optional<Threshold> threshold, Param param, Optional<LabSystem> labSystem,
-			Optional<ContextSource> contextSource, Optional<SampleType> sampleType) {
+	private List<File> getFilesForAutoPlot(LabSystem labSystem, SampleType sampleType) {
 		List<File> files;
-		if (threshold.get().getIsZeroNoData()) {
-			files = fileRepository.findForAutoPlotWithZero(labSystem.get().getId(), sampleType.get().getId());
-		} else {
-			files = fileRepository.findForAutoPlotWithZero(labSystem.get().getId(), sampleType.get().getId());
-		}
+		Pageable maxFiles = PageRequest.of(0, filesForAutoPlot,
+				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
+		files = fileRepository.findByLabSystemIdAndSampleTypeId(labSystem.getId(), sampleType.getId(), maxFiles);
 		return files;
 	}
 
-	private List<File> getFilesForNonConformityPlot(Optional<LabSystem> labSystem, Optional<SampleType> sampleType,
-			Optional<File> file) {
+	private List<File> getFilesForNonConformityPlot(LabSystem labSystem, SampleType sampleType, File file) {
 		List<File> files;
-		files = fileRepository.findForNonConformityPlot(labSystem.get().getId(), sampleType.get().getId(),
-				file.get().getCreationDate());
+		Pageable maxFiles = PageRequest.of(0, filesForAutoPlot,
+				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
+		files = fileRepository.findByLabSystemIdAndSampleTypeIdAndCreationDateLessThanEqual(labSystem.getId(),
+				sampleType.getId(), file.getCreationDate(), maxFiles);
 		return files;
 	}
 
