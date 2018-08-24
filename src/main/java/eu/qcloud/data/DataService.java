@@ -40,7 +40,6 @@ import eu.qcloud.data.processor.processors.Processor;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileRepository;
 import eu.qcloud.guideset.GuideSet;
-import eu.qcloud.guideset.GuideSetRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformity;
@@ -113,9 +112,6 @@ public class DataService {
 
 	@Autowired
 	private ThresholdNonConformityRepository thresholdNonConformityRepository;
-
-	@Autowired
-	private GuideSetRepository guideSetRepository;
 
 	@Value("${qcloud.threshold.min-points-auto}")
 	private int minPointsAutoThreshold;
