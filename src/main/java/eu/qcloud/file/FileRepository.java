@@ -49,13 +49,67 @@ public interface FileRepository extends JpaRepository<File, Long>{
 	
 	public List<File> findByCreationDateAndLabSystemIdAndSampleTypeId(Date creationDate, Long LabSystemId, Long sampleTypeId);
 	
-	// @Query(value = "select * from file f where f.id in (select d.file_id from data d where d.param_id = ?1 and d.context_source_id = ?2)  and f.labsystem_id = ?3 and f.sample_type_id = ?4 order by f.creation_date desc limit 15",nativeQuery = true )
 	@Query(value = "select * from file f where f.labsystem_id = ?1 and f.sample_type_id = ?2 order by f.creation_date desc limit 15",nativeQuery = true )
 	public List<File> findForAutoPlotWithZero(Long labSystemId, Long sampleTypeId);
 	
 	@Query(value = "select * from file f where f.labsystem_id = ?1 and f.sample_type_id = ?2 and f.creation_date <= ?3 order by f.creation_date desc limit 15",nativeQuery = true )
 	public List<File> findForNonConformityPlot(Long labSystemId, Long sampleTypeId, Date creationDate);
 	
+	/**
+	 * Get the files from a date excluding with a value of 0 at a given context source
+	 * @param labSystemId
+	 * @param sampleTypeId
+	 * @param creationDate
+	 * @param paramId
+	 * @param maxPages
+	 * @return
+	 */
+	@Query("select f from File f where f.labSystem.id = ?1 and f.sampleType.id=?2 and f.creationDate <= ?3 and f.id in (select d.file.id from Data d where d.value !=0 and d.param.id = ?4 and d.contextSource.id = ?5)")
+	public List<File> findFilesExcludingZeroValuesFromDate(Long labSystemId, Long sampleTypeId, Date creationDate, Long paramId, Long contextSourceId, Pageable maxPages);
+	
+	/**
+	 * Get the files from a date including files with a value of 0 at a given context source
+	 * @param labSystemId
+	 * @param sampleTypeId
+	 * @param creationDate
+	 * @param paramId
+	 * @param contextSourceId
+	 * @param maxPages
+	 * @return
+	 */
+	@Query("select f from File f where f.labSystem.id = ?1 and f.sampleType.id=?2 and f.creationDate <= ?3 and f.id in (select d.file.id from Data d where d.param.id = ?4 and d.contextSource.id = ?5)")
+	public List<File> findFilesIncludingZeroValuesFromDate(Long labSystemId, Long sampleTypeId, Date creationDate, Long paramId, Long contextSourceId, Pageable maxPages);
+	
+	/**
+	 * Find the last files excluding files with a value of 0 at a given context source
+	 * @param labSystemId
+	 * @param sampleTypeId
+	 * @param paramId
+	 * @param maxPages
+	 * @return
+	 */
+	@Query("select f from File f where f.labSystem.id = ?1 and f.sampleType.id=?2 and f.id in (select d.file.id from Data d where d.value !=0 and d.param.id = ?3 and d.contextSource.id = ?4)")
+	public List<File> findLastFilesExcludingZeroValues(Long labSystemId, Long sampleTypeId, Long paramId,Long contextSourceId, Pageable maxPages);
+	
+	/**
+	 * Find the last files including files with a value of 0 at a given context source
+	 * @param labSystemId
+	 * @param sampleTypeId
+	 * @param paramId
+	 * @param maxPages
+	 * @return
+	 */
+	@Query("select f from File f where f.labSystem.id = ?1 and f.sampleType.id=?2 and f.id in (select d.file.id from Data d where d.param.id = ?3 and d.contextSource.id = ?4)")
+	public List<File> findLastFilesIncludingZeroValues(Long labSystemId, Long sampleTypeId, Long paramId, Long contextSourceId, Pageable maxPages);
+	
+	/**
+	 * 
+	 * @param paramId
+	 * @param contextSourceId
+	 * @param labSystemId
+	 * @param sampleTypeId
+	 * @return
+	 */
 	@Query(value = "select * from file f where f.id in (select d.file_id from data d where d.value > 0 and d.param_id = ?1 and d.context_source_id = ?2)  and f.labsystem_id = ?3 and f.sample_type_id = ?4 order by f.creation_date desc limit 15",nativeQuery = true )
 	public List<File> findForAutoPlotExcludeZero(Long paramId, Long contextSourceId, Long labSystemId, Long sampleTypeId);
 	

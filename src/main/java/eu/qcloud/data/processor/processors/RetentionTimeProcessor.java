@@ -31,6 +31,7 @@ public class RetentionTimeProcessor extends Processor {
 				}
 			}else {
 				guideSetValues.put(d.getContextSource().getAbbreviated(), new ArrayList<>());
+				guideSetValues.get(d.getContextSource().getAbbreviated()).add(d.getValue());
 			}
 		}
 		/**

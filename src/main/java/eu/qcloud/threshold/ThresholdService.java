@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.Instrument.InstrumentRepository;
-import eu.qcloud.data.DataRepository;
+import eu.qcloud.contextSource.ContextSource;
+import eu.qcloud.contextSource.ContextSourceRepository;
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileRepository;
@@ -57,9 +58,6 @@ public class ThresholdService {
 	private HardLimitThresholdRepository hardLimitThresholdRepository;
 
 	@Autowired
-	private DataRepository dataRepository;
-
-	@Autowired
 	private LabSystemRepository labSystemRepository;
 
 	@Autowired
@@ -82,6 +80,9 @@ public class ThresholdService {
 	
 	@Autowired
 	private ThresholdNonConformityRepository thresholdNonConformityRepository;
+	
+	@Autowired
+	private ContextSourceRepository contextSourceRepository;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -494,23 +495,56 @@ public class ThresholdService {
 		return thresholdRepository.findByParamIdAndSampleTypeIdAndLabSystemId(paramId, sampleTypeId,
 				labSystem.get().getId());
 	}
-
+	
 	public ThresholdForPlotImpl calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(Long paramId,
 			Long sampleTypeId, UUID labSystemApiKey) {
 		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
 		if (!labSystem.isPresent()) {
 			throw new DataRetrievalFailureException("Labsystem do not exists.");
 		}
-		// get the last file
-		File file = fileRepository.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.get().getId(),
-				sampleTypeId);
-
+		
 		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(paramId,
 				sampleTypeId, labSystem.get().getId());
-		GuideSet gs =thresholdUtils.generateAutoGuideSet(file.getSampleType(), file.getLabSystem()); 
-		thresholdUtils.processThreshold(threshold, gs);
+		
+		/*
+		if(threshold.getThresholdType()== ThresholdType.SIGMA) {
+			return null;
+		} else {
+			return ThresholdForPlotFactory.create(threshold);
+		}
+		*/
 		return ThresholdForPlotFactory.create(threshold);
+	}
 
+	/**
+	 * Create a threshold for an autoplot doing a recalculation of the threshold params
+	 * @param paramId
+	 * @param sampleTypeId
+	 * @param labSystemApiKey
+	 * @param contextSourceApiKey
+	 * @return
+	 */
+	public ThresholdForPlotImpl calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(Long paramId,
+			Long sampleTypeId, UUID labSystemApiKey, UUID contextSourceApiKey) {
+		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
+		if (!labSystem.isPresent()) {
+			throw new DataRetrievalFailureException("Labsystem do not exists.");
+		}
+		
+		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(paramId,
+				sampleTypeId, labSystem.get().getId());
+		
+		Optional<ContextSource> cs = contextSourceRepository.findByApiKey(contextSourceApiKey);
+		
+		if(!cs.isPresent()) {
+			throw new DataRetrievalFailureException("Context source do not exists.");
+		}
+
+		GuideSet gs = thresholdUtils.generateGuideSetWithoutLastFileByContextSource(threshold.getSampleType(),labSystem.get(),cs.get(), threshold.getParam());
+		
+		thresholdUtils.processThreshold(threshold, gs);
+		
+		return ThresholdForPlotFactory.create(threshold);
 	}
 
 	public ThresholdForPlotImpl getNonConformityThresholdWithoutGuideSet(UUID thresholdApiKey, String fileChecksum,
@@ -518,7 +552,15 @@ public class ThresholdService {
 		// TODO Auto-generated method stub
 		Optional<Threshold> threshold = thresholdRepository.findByApiKey(thresholdApiKey);
 		File file = fileRepository.findByChecksum(fileChecksum);
-		GuideSet gs = thresholdUtils.generateAutoGuideSetFromFile(file);
+		
+		
+		Optional<ContextSource> cs = contextSourceRepository.findByApiKey(contextSourceApiKey);
+		if(!cs.isPresent()) {
+			throw new DataRetrievalFailureException("Context source do not exists.");
+		}
+		// GuideSet gs =thresholdUtils.generateAutoGuideSet(file.getSampleType(), file.getLabSystem());
+		GuideSet gs =thresholdUtils.generateGuideSetFromBeforeFile(file,threshold.get().getParam(), cs.get());
+		
 		thresholdUtils.processThreshold(threshold.get(), gs);
 
 		return ThresholdForPlotFactory.create(threshold.get());

@@ -173,54 +173,12 @@ public class DataService {
 
 		List<DataForPlot> dataForPlot = getDataForPlot(labSystem.get(), param, contextSources, sampleType.get(), start,
 				end);
-		
+
 		if (chart.get().isNormalized()) {
 			return normalizeData(dataForPlot, labSystem.get(), sampleType.get(), chart.get());
 		} else {
 			return dataForPlot;
 		}
-
-
-		/*
-		 * 
-		 * ArrayList<Data> dataFromDb = (ArrayList<Data>)
-		 * dataRepository.findPlotData(chart.get().getId(), start, end,
-		 * labSystem.get().getId(), sampleType.get().getId());
-		 * 
-		 * Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
-		 * 
-		 * // Check sample type in order to send the abbreviated name or anything else
-		 * List<DataForPlot> dataForPlot = prepareDataForPlot(dataFromDb,
-		 * sampleType.get(), param);
-		 * 
-		 * processor.setData(dataForPlot);
-		 * 
-		 * if (processor.isGuideSetRequired()) {
-		 * 
-		 * ArrayList<Data> dataToProcess = new ArrayList<>();
-		 * 
-		 * // we need to get a meaningful gs by context source List<ChartParams>
-		 * chartParams =
-		 * chartParamRepository.findByChartIdAndParamId(chart.get().getId(),
-		 * param.getId()); for (ChartParams chartParam : chartParams) { GuideSet gs =
-		 * thresholdUtils.generateAutoGuideSet(sampleType.get(), labSystem.get(), param,
-		 * chartParam.getContextSource()); processor.setGuideSet(gs); dataToProcess
-		 * .addAll((ArrayList<Data>)
-		 * dataRepository.findParamData(chartParam.getContextSource().getId(),
-		 * param.getId(), gs.getStartDate(), gs.getEndDate(), labSystem.get().getId(),
-		 * sampleType.get().getId()));
-		 * 
-		 * } if (dataToProcess.size() == 0) { throw new DataRetrievalFailureException(
-		 * "Your selected guide has no results. Please, choose another date range."); }
-		 * processor.setGuideSetData(dataToProcess); return processor.processData(); }
-		 * else { if (chart.get().isNormalized()) { return
-		 * normalizeData(processor.processData(), labSystem.get(), sampleType.get(),
-		 * chart.get()); } return processor.processData(); }
-		 */
-	}
-
-	private float log2(float f) {
-		return (float) (Math.log(f) / Math.log(2.0));
 	}
 
 	/**
@@ -261,7 +219,6 @@ public class DataService {
 		for (DataForPlot d : list) {
 			// Float res = log2(means.get(d.getContextSourceName()) - d.getValue());
 			Float res = d.getValue() - means.get(d.getContextSourceName());
-			System.out.println(d.getValue() + " - " + log2(means.get(d.getContextSourceName())) + " = " + res);
 			d.setValue(res);
 		}
 		return list;
@@ -315,10 +272,46 @@ public class DataService {
 		return dataForPlot;
 	}
 
+	private List<DataForPlot> prepareCalculatedDataForPlot(List<Data> dataFromDb, SampleType sampleType, Param param) {
+
+		List<DataForPlot> dataForPlot = new ArrayList<>();
+		switch (sampleType.getSampleTypeCategory().getSampleTypeComplexity()) {
+		case HIGHWITHISOTOPOLOGUES:
+			if (param.getIsFor().equals("Peptide")) {
+				for (Data data : dataFromDb) {
+					// Instead of getting the full name or the abbreviated one we need to get the
+					// concentration
+					SampleComposition concentration = sampleCompositionRepository
+							.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.getId(),
+									data.getContextSource().getId());
+
+					dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
+							concentration.getConcentration().toString(), data.getCalculatedValue()));
+					Collections.sort(dataForPlot);
+				}
+			} else {
+				convertDbDataToCalculatedPlotData(dataFromDb, dataForPlot);
+			}
+			break;
+		default:
+			convertDbDataToCalculatedPlotData(dataFromDb, dataForPlot);
+			break;
+		}
+
+		return dataForPlot;
+	}
+
 	private void convertDbDataToPlotData(List<Data> dataFromDb, List<DataForPlot> dataForPlot) {
 		for (Data data : dataFromDb) {
 			dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
 					data.getContextSource().getAbbreviated(), data.getValue()));
+		}
+	}
+
+	private void convertDbDataToCalculatedPlotData(List<Data> dataFromDb, List<DataForPlot> dataForPlot) {
+		for (Data data : dataFromDb) {
+			dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
+					data.getContextSource().getAbbreviated(), data.getCalculatedValue()));
 		}
 	}
 
@@ -355,7 +348,6 @@ public class DataService {
 					if (!peptideBelongsToSampleType(file.getSampleType(), dataValue.getContextSource())) {
 						continue;
 					}
-
 					break;
 				case "InstrumentSample":
 					cs = instrumentSampleRepository
@@ -371,7 +363,10 @@ public class DataService {
 				Data d = new Data(param, cs, file);
 				d.setValue(dataValue.getValue());
 				d.setDataId(new DataId(param.getId(), cs.getId(), file.getId()));
+				Float calc = calculateValueFromGuideSet(param, cs, file, d);
+				d.setCalculatedValue(calc);
 				dataRepository.save(d);
+
 			}
 		}
 		// Do threshold checks
@@ -383,32 +378,72 @@ public class DataService {
 		}
 	}
 
+	private Float calculateValueFromGuideSet(Param param, ContextSource cs, File file, Data value) {
+		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
+		if (processor.isGuideSetRequired()) {
+			if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
+					file.getSampleType().getId()) > minPointsAutoThreshold) {
+				GuideSet guideSet = thresholdUtils.generateGuideSetFromWithFile(file,param,cs);
+				if(cs.getAbbreviated().equals("LVN")) {
+					System.out.println(guideSet.getStartDate() +  " " + guideSet.getEndDate());
+				}
+
+				ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(cs.getId(), param.getId(),
+						guideSet.getStartDate(), guideSet.getEndDate(), file.getLabSystem().getId(),
+						file.getSampleType().getId());
+				processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
+				processor.setGuideSet(guideSet);
+				processor.setGuideSetData(guideSetData);
+				List<DataForPlot> processedValue = processor.processData();
+
+				if (processedValue.get(0).getValue() != null && !processedValue.get(0).getValue().isNaN()) {
+					if (param.isZeroNoData() && value.getValue() == 0f) {
+						return null;
+					}
+					return processedValue.get(0).getValue();
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else {
+			processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
+			Float processedValue = processor.processData().get(0).getValue();
+			if (!processedValue.isNaN() && processedValue != null) {
+				return processedValue;
+			} else {
+				return null;
+			}
+		}
+	}
+
 	private void evaluateDataForNonConformities(File file, DataFromPipeline data) {
 		this.currentGuideSet = getGuideSet(file);
 		// delete previous warnings
 		thresholdNonConformityRepository.deletePreviousWarnings(file.getLabSystem().getId(),
 				file.getSampleType().getId(), InstrumentStatus.WARNING.toString());
 
-		for (ParameterData parameterDate : data.getData()) {
+		for (ParameterData parameterData : data.getData()) {
 			// Get the threshold for this parameter, sample type and instrument
 			Threshold threshold = thresholdUtils
 					.findOrCreateLabSystemThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
-							file.getSampleType().getId(), parameterDate.getParameter().getId(),
+							file.getSampleType().getId(), parameterData.getParameter().getId(),
 							file.getLabSystem().getMainDataSource().getCv().getId(), file.getLabSystem().getId());
 
 			if (threshold == null) {
 				continue;
 			}
 
-			Processor processor = ProcessorFactory.getProcessor(parameterDate.getParameter().getProcessor());
+			Processor processor = ProcessorFactory.getProcessor(parameterData.getParameter().getProcessor());
 			Float value = 0f;
-			for (DataValues dataValue : parameterDate.getValues()) {
+			for (DataValues dataValue : parameterData.getValues()) {
 
 				ContextSource cs = getContextSourceFromDatabase(dataValue.getContextSource(),
-						parameterDate.getParameter().getIsFor());
+						parameterData.getParameter().getIsFor());
 				if (processor.isGuideSetRequired()) {
 					// get data
-					value = processThresholdData(file, threshold, parameterDate.getParameter(), processor, value,
+					value = processThresholdData(file, threshold, parameterData.getParameter(), processor, value,
 							dataValue, cs);
 				} else {
 					value = thresholdUtils.processValueWithThresholdProcessor(dataValue.getValue(),
@@ -416,12 +451,12 @@ public class DataService {
 				}
 
 				// Compare here
-
+				 System.out.println("CS: " +dataValue.getContextSource());
 				InstrumentStatus is = isNonConformity(value,
 						getInitialValueFromThresholdParamByContextSource(threshold.getThresholdParams(),
-								dataValue.getContextSource(), parameterDate.getParameter().getIsFor()),
+								dataValue.getContextSource(), parameterData.getParameter().getIsFor()),
 						getStepValueFromThresholdParamByContextSourceName(threshold.getThresholdParams(),
-								dataValue.getContextSource(), parameterDate.getParameter().getIsFor()),
+								dataValue.getContextSource(), parameterData.getParameter().getIsFor()),
 						threshold.getSteps(), threshold.getNonConformityDirection());
 
 				if (is != InstrumentStatus.OK && threshold.isMonitored()) {
@@ -467,12 +502,20 @@ public class DataService {
 	 */
 	private Float processThresholdData(File file, Threshold threshold, Param param, Processor processor, Float value,
 			DataValues dataValue, ContextSource cs) {
-		processor.setGuideSet(this.currentGuideSet);
+
 		switch (param.getIsFor()) {
 		case "Peptide":
+
+			GuideSet gs = file.getLabSystem().getGuideSet(file.getSampleType().getId());
+			if (gs == null) {
+				gs = thresholdUtils.generateGuideSetFromBeforeFile(file,param,cs);
+			}
+			this.currentGuideSet = gs;
+
+			processor.setGuideSet(gs);
 			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(cs.getId(),
-					threshold.getParam().getId(), this.currentGuideSet.getStartDate(),
-					this.currentGuideSet.getEndDate(), file.getLabSystem().getId(), threshold.getSampleType().getId());
+					threshold.getParam().getId(), gs.getStartDate(), gs.getEndDate(), file.getLabSystem().getId(),
+					threshold.getSampleType().getId());
 
 			if (dataToProcess.size() == 0) {
 				throw new DataRetrievalFailureException(
@@ -516,6 +559,8 @@ public class DataService {
 		Float upperLimit = initialValue + (stepValue * steps);
 		Float midLimit = initialValue - (stepValue * (steps - 1));
 		Float lowerLimit = initialValue - (stepValue * steps);
+		System.out.println("mid: " + midLimit + " low: " + lowerLimit + " value: " + value + " init: " + initialValue
+				+ " st: " + stepValue);
 		switch (direction) {
 		case DOWN:
 			// taking care if there is only one step
@@ -527,29 +572,21 @@ public class DataService {
 			} else {
 				if (value < lowerLimit) {
 					return InstrumentStatus.DANGER;
-					// return true;
-				}
-
-				else if (value >= lowerLimit && value < midLimit) {
-					System.out.println("value: " + value + " low: " + lowerLimit + " mid: " + midLimit);
+				} else if (value >= lowerLimit && value < midLimit) {
 					logger.info("ADDING A WARNINGGGG");
 					return InstrumentStatus.WARNING;
 				}
-
 			}
 			break;
 		case UPDOWN:
 			if (value < lowerLimit || value > upperLimit) {
 				return InstrumentStatus.DANGER;
-				// return true;
 			}
 			break;
 		default:
 			System.out.println("Direction not found");
 		}
-
 		return InstrumentStatus.OK;
-		// return false;
 	}
 
 	private Float getInitialValueFromThresholdParamByContextSource(List<ThresholdParams> tp, String contextSourceName,
@@ -619,10 +656,18 @@ public class DataService {
 							file.getSampleType().getId(), defaultThreshold.getParam().getId(),
 							defaultThreshold.getCv().getId(), file.getLabSystem().getId()));
 		});
+		List<ThresholdParams> params = new ArrayList<>();
 
 		nodeThresholds.forEach(nodeThreshold -> {
-			thresholdUtils.processThreshold(nodeThreshold,
-					thresholdUtils.generateExactGuideSetFromFile(file.getSampleType(), file.getLabSystem(), file));
+			nodeThreshold.getThresholdParams().forEach(tp -> {
+				GuideSet gs = thresholdUtils.generateAutoGuideSetFromFile(file, nodeThreshold.getParam(),
+						tp.getContextSource());
+				if(gs != null) {
+					params.add(thresholdUtils.processThresholdParam(nodeThreshold, gs, tp));
+				}
+			});
+
+			nodeThreshold.setThresholdParams(params);
 			saveThresholdParams(nodeThreshold);
 		});
 
@@ -654,6 +699,13 @@ public class DataService {
 		return false;
 	}
 
+	/**
+	 * TODO: try to use the generic data getter
+	 * 
+	 * @param checksum
+	 * @param abbreviatedSequence
+	 * @return
+	 */
 	public List<DataForPlot> getIsotopologueData(String checksum, String abbreviatedSequence) {
 		List<Data> dataFromDb = new ArrayList<>();
 
@@ -729,34 +781,11 @@ public class DataService {
 	private List<DataForPlot> getDataForPlot(LabSystem labSystem, Param param, List<ContextSource> contextSources,
 			SampleType sampleType, java.util.Date startDate, java.util.Date endDate) {
 		List<DataForPlot> dataForPlot = new ArrayList<>();
-		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 		contextSources.forEach(cs -> {
 			List<Data> data = dataRepository.findParamData(cs.getId(), param.getId(), startDate, endDate,
 					labSystem.getId(), sampleType.getId());
-			List<DataForPlot> contextSourceDataForPlot = prepareDataForPlot(data, sampleType, param);
-			processor.setData(contextSourceDataForPlot);
-
-			if (processor.isGuideSetRequired()) {
-				// get the guide set of the instrument
-				// for each point calculate its previous guide set value
-				for (Data d : data) {
-					GuideSet pastGuideSet = thresholdUtils.generateAutoGuideSetFromFile(d.getFile(), d.getParam(),
-							d.getContextSource());
-					ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(cs.getId(),
-							param.getId(), pastGuideSet.getStartDate(), pastGuideSet.getEndDate(), labSystem.getId(),
-							sampleType.getId());
-					if (guideSetData.size() == 0) {
-						throw new DataRetrievalFailureException(
-								"Your selected guide has no results. Please, choose another date range.");
-					}
-					processor.setGuideSetData(guideSetData);
-					processor.setData(prepareDataForPlot(Arrays.asList(d), sampleType, d.getParam()));
-					processor.setGuideSet(pastGuideSet);
-					dataForPlot.addAll(processor.processData());
-				}
-			} else {
-				dataForPlot.addAll((processor.processData()));
-			}
+			List<DataForPlot> contextSourceDataForPlot = prepareCalculatedDataForPlot(data, sampleType, param);
+			dataForPlot.addAll(contextSourceDataForPlot);
 		});
 
 		return dataForPlot;

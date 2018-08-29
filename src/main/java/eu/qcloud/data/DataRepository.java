@@ -40,6 +40,9 @@ public interface DataRepository extends PagingAndSortingRepository<Data, DataId>
 	@Query("SELECT file from Data d where d.contextSource.abbreviated = ?1 and d.param.id=?2 and d.file.sampleType.id = ?3 and d.file.labSystem.id = ?4 and d.value != 0")
 	List<File> findLastFilesWithoutZeroValue(String abbreviated, Long paramId, Long sampleTypeId, Long labSystemId, Pageable page);
 	
+	@Query("SELECT file from Data d where d.contextSource.abbreviated = ?1 and d.param.id=?2 and d.file.sampleType.id = ?3 and d.file.labSystem.id = ?4")
+	List<File> findLastFilesIncludingZeroValue(String abbreviated, Long paramId, Long sampleTypeId, Long labSystemId, Pageable page);
+	
 	public interface MiniData {
 		
 		String getFileFilename();

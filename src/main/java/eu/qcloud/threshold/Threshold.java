@@ -42,7 +42,7 @@ import eu.qcloud.threshold.processor.ThresholdProcessor;
 @Entity
 @Table(name="threshold")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-public class Threshold {
+public class Threshold implements Cloneable {
 	
 	@Id
     @Column(name = "ID")
@@ -249,6 +249,16 @@ public class Threshold {
 
 	public void setApiKey(UUID apiKey) {
 		this.apiKey = apiKey;
+	}
+	@Override
+	public Threshold clone() {
+		try {
+			return (Threshold)super.clone();
+		} catch (CloneNotSupportedException e) {
+			System.out.println("Could not clone");
+
+		}
+		return null;
 	}
 
 	

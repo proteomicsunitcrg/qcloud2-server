@@ -32,8 +32,12 @@ public class Data {
 	@JoinColumn(name="fileId",insertable=false, updatable= false)
 	private File file;
 	
-	
 	private Float value;
+	/*
+	 * This value will hold a value that will be calculated only once, when data from file is received
+	 * and the lab system has not a manual guide set.
+	 */
+	private Float calculatedValue;
 
 	public Float getValue() {
 		return value;
@@ -81,6 +85,16 @@ public class Data {
 	public void setFile(File file) {
 		this.file = file;
 	}
-	
+
+	public Float getCalculatedValue() {
+		if(calculatedValue == null) {
+			return Float.NaN;
+		}
+		return calculatedValue;
+	}
+
+	public void setCalculatedValue(Float calculatedValue) {
+		this.calculatedValue = calculatedValue;
+	}
 	
 }

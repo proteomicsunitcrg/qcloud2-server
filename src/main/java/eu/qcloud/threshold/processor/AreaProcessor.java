@@ -21,7 +21,7 @@ public class AreaProcessor extends ThresholdProcessor {
 			if(d.getValue()>0) {
 				ds.addValue(log2(d.getValue()));
 			} else {
-				ds.addValue(0f);	
+				// ds.addValue(0f);	
 			}
 		}
 		thresholdParam.setInitialValue((float)ds.getMean());
