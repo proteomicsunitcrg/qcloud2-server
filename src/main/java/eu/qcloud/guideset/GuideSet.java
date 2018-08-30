@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -20,8 +22,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.sampleType.SampleType;
+
 @Entity
 @Table(name="guide_set")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class GuideSet {
 	@Id
     @Column(name = "ID")
@@ -32,12 +36,12 @@ public class GuideSet {
 	@JsonFormat(pattern="yyyy-MM-dd hh:mm")
 	@Column(name="start_date", columnDefinition="DATETIME")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date startDate;
+	protected Date startDate;
 	
 	@JsonFormat(pattern="yyyy-MM-dd hh:mm")
 	@Column(name="end_date", columnDefinition="DATETIME")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date endDate;
+	protected Date endDate;
 	
 	@Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
@@ -48,39 +52,29 @@ public class GuideSet {
 	
 	@Transient
 	private long labSystemTotalFiles;
-
-	@ManyToOne
-	@JoinColumn(name="sample_type_id")
-	private SampleType sampleType;
 	
 	@Column(name="is_active", columnDefinition="tinyint(1) default 0")
 	private Boolean isActive;
 	
-	@Column(name="is_user_defined", columnDefinition="tinyint(1) default 1")
-	private Boolean isUserDefined;
 	
-	public Boolean getIsUserDefined() {
-		return isUserDefined;
-	}
-
-	public void setIsUserDefined(Boolean isUserDefined) {
-		this.isUserDefined = isUserDefined;
-	}
-
-	public GuideSet() {}
-
-	public GuideSet(Date startDate, Date endDate) {
-		super();
-		this.startDate = startDate;
-		this.endDate = endDate;
-	}
-
 	public Boolean getIsActive() {
 		return isActive;
 	}
 
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	@ManyToOne
+	@JoinColumn(name="sample_type_id")
+	private SampleType sampleType;
+	
+	public GuideSet() {}
+
+	public GuideSet(Date startDate, Date endDate) {
+		super();
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
 	@JsonIgnore

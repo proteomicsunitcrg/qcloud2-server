@@ -5,16 +5,24 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import eu.qcloud.guideset.automatic.AutomaticGuideSet;
+import eu.qcloud.guideset.automatic.AutomaticGuideSetService;
 
 @RestController
 public class GuideSetController {
 
 	@Autowired
 	private GuideSetService guideSetService;
+	
+	@Autowired
+	private AutomaticGuideSetService automaticGuideSetService;
 
 	@Value("${qcloud.threshold.min-points-manual}")
 	private int minFilesForManualGuideSet;
@@ -32,5 +40,12 @@ public class GuideSetController {
 		Date end = Date.valueOf(endDate);
 		return guideSetService.getFilesInThreshold(labSystemApiKey, start, end, sampleTypeQccv);
 	}
+	
+	@RequestMapping(value="/api/guideset/automatic", method=RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public AutomaticGuideSet save(@RequestBody AutomaticGuideSet automaticGuideSet) {
+		return automaticGuideSetService.saveAutomaticGuideSet(automaticGuideSet);
+	}
+	
 
 }
