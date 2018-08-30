@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.dataSource.DataSource;
-import eu.qcloud.guideset.GuideSet;
+import eu.qcloud.guideset.manual.ManualGuideSet;
 
 /**
  * This class represents a system of LC/MS at this moment
@@ -49,22 +49,22 @@ public class LabSystem {
 	private List<DataSource> dataSources;
 	
 	@OneToMany	
-	private List<GuideSet> guideSets;
+	private List<ManualGuideSet> guideSets;
 	
 	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
 	
 	@Transient
-	private List<GuideSet> enabledGuideSets;
+	private List<ManualGuideSet> enabledGuideSets;
 	
-	public List<GuideSet> getEnabledGuideSets() {
-		List<GuideSet> enabledGuideSets = new ArrayList<>();
+	public List<ManualGuideSet> getEnabledGuideSets() {
+		List<ManualGuideSet> enabledGuideSets = new ArrayList<>();
 		if(guideSets == null) {
 			return enabledGuideSets;
 		}
 		if(guideSets.size()> 0) {
-			for(GuideSet gs : guideSets) {
+			for(ManualGuideSet gs : guideSets) {
 				if (gs.getIsActive()) {
 					enabledGuideSets.add(gs);
 				}
@@ -74,13 +74,13 @@ public class LabSystem {
 		return enabledGuideSets;
 	}
 	
-	public GuideSet getGuideSet(Long sampleTypeId) {
-		GuideSet guideSet = null;
+	public ManualGuideSet getGuideSet(Long sampleTypeId) {
+		ManualGuideSet guideSet = null;
 		if(guideSets == null) {
 			return null;
 		}
 		if(guideSets.size()> 0) {
-			for(GuideSet gs : guideSets) {
+			for(ManualGuideSet gs : guideSets) {
 				if (gs.getIsActive() && gs.getSampleType().getId() == sampleTypeId) {
 					guideSet= gs;
 					break;
@@ -100,11 +100,11 @@ public class LabSystem {
 		this.apiKey = apiKey;
 	}
 	@JsonIgnore
-	public List<GuideSet> getGuideSets() {
+	public List<ManualGuideSet> getGuideSets() {
 		return guideSets;
 	}
 
-	public void setGuideSets(List<GuideSet> guideSets) {
+	public void setGuideSets(List<ManualGuideSet> guideSets) {
 		this.guideSets = guideSets;
 	}
 

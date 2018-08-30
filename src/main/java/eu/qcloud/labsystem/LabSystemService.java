@@ -41,7 +41,7 @@ public class LabSystemService {
 				GuideSet gs = ls.getGuideSet(st.getId());
 				if(gs==null) {
 					gs = thresholdUtils.generateAutoGuideSet(st, ls);
-					ls.getGuideSets().add(gs);
+					// ls.getGuideSets().add(gs);
 				}
 				gs.setTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeIdAndCreationDateBetween(ls.getId(), st.getId(), gs.getStartDate(), gs.getEndDate()));
 				gs.setLabSystemTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeId(ls.getId(), st.getId()));
