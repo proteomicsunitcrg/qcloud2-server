@@ -12,10 +12,11 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.file.FileRepository.OnlyChecksum;
 import eu.qcloud.file.FileRepository.OnlySmalls;
+import eu.qcloud.guideset.GuideSet;
+import eu.qcloud.guideset.automatic.AutomaticGuideSetRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemService;
 import eu.qcloud.sampleType.SampleType;
-import eu.qcloud.sampleType.SampleTypeRepository.SampleTypeOnlyName;
 import eu.qcloud.sampleType.SampleTypeService;
 /**
  * File service
@@ -34,8 +35,15 @@ public class FileService {
 	@Autowired
 	private LabSystemService labSystemService;
 	
+	@Autowired
+	private AutomaticGuideSetRepository guideSetRepository;
+	
 	
 	public File addNewFile(File file) {
+		
+		GuideSet guideSet = guideSetRepository.findByIsActiveTrue().get(0);
+		
+		file.setGuideSet(guideSet);
 		return fileRepository.save(file);
 	}
 	
@@ -91,6 +99,9 @@ public class FileService {
 		if(getFileByChecksum(file.getChecksum())!= null) {
 			throw new DataIntegrityViolationException("A file with that checksum already exists!");
 		}
+		GuideSet guideSet = guideSetRepository.findByIsActiveTrue().get(0);
+		
+		file.setGuideSet(guideSet);
 		
 		SampleType st = sampleTypeService.getSampleTypeByQCCV(sampleTypeQCCV);
 		Optional<LabSystem> ls = labSystemService.findSystemByApiKey(labSystemApiKey);
