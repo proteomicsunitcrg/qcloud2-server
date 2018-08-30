@@ -33,10 +33,7 @@ public class Data {
 	private File file;
 	
 	private Float value;
-	/*
-	 * This value will hold a value that will be calculated only once, when data from file is received
-	 * and the lab system has not a manual guide set.
-	 */
+	
 	private Float calculatedValue;
 
 	public Float getValue() {
@@ -96,5 +93,5 @@ public class Data {
 	public void setCalculatedValue(Float calculatedValue) {
 		this.calculatedValue = calculatedValue;
 	}
-	
+
 }
