@@ -5,6 +5,8 @@ public class DataValues {
 	private String contextSource;
 	
 	private Float value;
+	
+	private Float calculatedValue;
 
 	public String getContextSource() {
 		return contextSource;
@@ -20,6 +22,14 @@ public class DataValues {
 
 	public void setValue(Float value) {
 		this.value = value;
+	}
+
+	public Float getCalculatedValue() {
+		return calculatedValue;
+	}
+
+	public void setCalculatedValue(Float calculatedValue) {
+		this.calculatedValue = calculatedValue;
 	}
 	
 }
