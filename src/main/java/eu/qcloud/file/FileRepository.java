@@ -64,7 +64,7 @@ public interface FileRepository extends JpaRepository<File, Long>{
 	 * @param maxPages
 	 * @return
 	 */
-	@Query("select f from File f where f.labSystem.id = ?1 and f.sampleType.id=?2 and f.creationDate <= ?3 and f.id in (select d.file.id from Data d where d.value !=0 and d.param.id = ?4 and d.contextSource.id = ?5)")
+	@Query("select f from File f where f.labSystem.id = ?1 and f.sampleType.id=?2 and f.creationDate <= ?3 and f.id in (select d.file.id from Data d where d.value !=0 and d.param.id = ?4 and d.contextSource.id = ?5 and d.file.labSystem.id = ?1)")
 	public List<File> findFilesExcludingZeroValuesFromDate(Long labSystemId, Long sampleTypeId, Date creationDate, Long paramId, Long contextSourceId, Pageable maxPages);
 	
 	/**
@@ -77,7 +77,7 @@ public interface FileRepository extends JpaRepository<File, Long>{
 	 * @param maxPages
 	 * @return
 	 */
-	@Query("select f from File f where f.labSystem.id = ?1 and f.sampleType.id=?2 and f.creationDate <= ?3 and f.id in (select d.file.id from Data d where d.param.id = ?4 and d.contextSource.id = ?5)")
+	@Query("select f from File f where f.labSystem.id = ?1 and f.sampleType.id=?2 and f.creationDate <= ?3 and f.id in (select d.file.id from Data d where d.param.id = ?4 and d.contextSource.id = ?5 and d.file.labSystem.id = ?1)")
 	public List<File> findFilesIncludingZeroValuesFromDate(Long labSystemId, Long sampleTypeId, Date creationDate, Long paramId, Long contextSourceId, Pageable maxPages);
 	
 	/**
