@@ -46,6 +46,15 @@ public class RetentionTimeProcessor extends Processor {
 		
 		for(DataForPlot d: this.data) {
 			Float value = d.getValue();
+			/*
+			 * At this time 2018/8/30 we consider a value of 0 at the retention
+			 * time as a null value.
+			 * Daniel Mancera
+			 */
+			if(value == 0f) {
+				d.setValue(Float.NaN);
+				continue;
+			}
 			Float nV = (value-means.get(d.getContextSourceName()))/60;
 			if(nV.isNaN()) {
 				//d.setValue(Float.NaN);
