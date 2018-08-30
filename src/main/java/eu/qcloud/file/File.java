@@ -17,6 +17,7 @@ import javax.persistence.TemporalType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import eu.qcloud.guideset.GuideSet;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.sampleType.SampleType;
 
@@ -48,6 +49,10 @@ public class File {
 	
 	@Column(name="checksum",unique=true)
 	private String checksum;
+	
+	@ManyToOne
+	@JoinColumn(name="guideSetId")
+	private GuideSet guideSet;
 
 	public String getChecksum() {
 		return checksum;
@@ -98,5 +103,12 @@ public class File {
 		this.labSystem = labSystem;
 	}
 
+	public GuideSet getGuideSet() {
+		return guideSet;
+	}
+
+	public void setGuideSet(GuideSet guideSet) {
+		this.guideSet = guideSet;
+	}
 	
 }
