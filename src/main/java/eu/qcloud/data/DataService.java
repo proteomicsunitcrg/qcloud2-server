@@ -119,8 +119,6 @@ public class DataService {
 	@Value("${qcloud.threshold.files-auto-plot}")
 	private int filesForAutoPlot;
 
-	private GuideSet currentGuideSet;
-
 	private final Log logger = LogFactory.getLog(this.getClass());
 
 	public List<Data> getAllData() {
@@ -192,11 +190,7 @@ public class DataService {
 	 */
 	private List<DataForPlot> normalizeData(List<DataForPlot> list, LabSystem labSystem, SampleType sampleType,
 			Chart chart) {
-		GuideSet gs = labSystem.getGuideSet(sampleType.getId());
-		if (gs == null) {
-			// Create an on-the-fly guide set
-			gs = thresholdUtils.generateAutoGuideSet(sampleType, labSystem);
-		}
+		
 
 		HashMap<String, ArrayList<Float>> guideSetValues = new HashMap<>();
 
@@ -217,7 +211,6 @@ public class DataService {
 		}
 
 		for (DataForPlot d : list) {
-			// Float res = log2(means.get(d.getContextSourceName()) - d.getValue());
 			Float res = d.getValue() - means.get(d.getContextSourceName());
 			d.setValue(res);
 		}
@@ -360,11 +353,14 @@ public class DataService {
 					System.out.println("i dont know");
 					break;
 				}
+				
+				//TODO load user guidesets it there is any
 				Data d = new Data(param, cs, file);
 				d.setValue(dataValue.getValue());
 				d.setDataId(new DataId(param.getId(), cs.getId(), file.getId()));
 				Float calc = calculateValueFromGuideSet(param, cs, file, d);
 				d.setCalculatedValue(calc);
+				dataValue.setCalculatedValue(calc);
 				dataRepository.save(d);
 
 			}
@@ -383,10 +379,8 @@ public class DataService {
 		if (processor.isGuideSetRequired()) {
 			if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
 					file.getSampleType().getId()) > minPointsAutoThreshold) {
+				
 				GuideSet guideSet = thresholdUtils.generateGuideSetFromWithFile(file,param,cs);
-				if(cs.getAbbreviated().equals("LVN")) {
-					System.out.println(guideSet.getStartDate() +  " " + guideSet.getEndDate());
-				}
 
 				ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(cs.getId(), param.getId(),
 						guideSet.getStartDate(), guideSet.getEndDate(), file.getLabSystem().getId(),
@@ -419,7 +413,7 @@ public class DataService {
 	}
 
 	private void evaluateDataForNonConformities(File file, DataFromPipeline data) {
-		this.currentGuideSet = getGuideSet(file);
+		
 		// delete previous warnings
 		thresholdNonConformityRepository.deletePreviousWarnings(file.getLabSystem().getId(),
 				file.getSampleType().getId(), InstrumentStatus.WARNING.toString());
@@ -434,24 +428,20 @@ public class DataService {
 			if (threshold == null) {
 				continue;
 			}
-
-			Processor processor = ProcessorFactory.getProcessor(parameterData.getParameter().getProcessor());
+			
 			Float value = 0f;
 			for (DataValues dataValue : parameterData.getValues()) {
 
 				ContextSource cs = getContextSourceFromDatabase(dataValue.getContextSource(),
 						parameterData.getParameter().getIsFor());
-				if (processor.isGuideSetRequired()) {
-					// get data
-					value = processThresholdData(file, threshold, parameterData.getParameter(), processor, value,
-							dataValue, cs);
-				} else {
-					value = thresholdUtils.processValueWithThresholdProcessor(dataValue.getValue(),
-							threshold.getThresholdType());
-				}
 
+				value = dataValue.getCalculatedValue();
+				if(parameterData.getParameter().isZeroNoData()) {
+					if(value == null) {
+						continue;
+					}
+				}
 				// Compare here
-				 System.out.println("CS: " +dataValue.getContextSource());
 				InstrumentStatus is = isNonConformity(value,
 						getInitialValueFromThresholdParamByContextSource(threshold.getThresholdParams(),
 								dataValue.getContextSource(), parameterData.getParameter().getIsFor()),
@@ -460,18 +450,12 @@ public class DataService {
 						threshold.getSteps(), threshold.getNonConformityDirection());
 
 				if (is != InstrumentStatus.OK && threshold.isMonitored()) {
-
 					logger.info("Storing non conformity");
 					ThresholdNonConformity tnc = new ThresholdNonConformity();
 					tnc.setStatus(is);
 					tnc.setContextSource(cs);
 					tnc.setFile(file);
 					tnc.setThreshold(threshold);
-					if (!this.currentGuideSet.getIsUserDefined()) {
-						tnc.setGuideSet(null);
-					} else {
-						tnc.setGuideSet(this.currentGuideSet);
-					}
 					thresholdNonConformityRepository.save(tnc);
 				}
 			}
@@ -488,79 +472,11 @@ public class DataService {
 		return null;
 	}
 
-	/**
-	 * Get and process the data required for the threshold from the database
-	 * 
-	 * @param file
-	 * @param threshold
-	 * @param param
-	 * @param processor
-	 * @param value
-	 * @param dataValue
-	 * @param cs
-	 * @return
-	 */
-	private Float processThresholdData(File file, Threshold threshold, Param param, Processor processor, Float value,
-			DataValues dataValue, ContextSource cs) {
-
-		switch (param.getIsFor()) {
-		case "Peptide":
-
-			GuideSet gs = file.getLabSystem().getGuideSet(file.getSampleType().getId());
-			if (gs == null) {
-				gs = thresholdUtils.generateGuideSetFromBeforeFile(file,param,cs);
-			}
-			this.currentGuideSet = gs;
-
-			processor.setGuideSet(gs);
-			ArrayList<Data> dataToProcess = (ArrayList<Data>) dataRepository.findParamData(cs.getId(),
-					threshold.getParam().getId(), gs.getStartDate(), gs.getEndDate(), file.getLabSystem().getId(),
-					threshold.getSampleType().getId());
-
-			if (dataToProcess.size() == 0) {
-				throw new DataRetrievalFailureException(
-						"Your selected guide has no results. Please, choose another date range.");
-			}
-			List<DataForPlot> dataForPlot = new ArrayList<>();
-
-			dataForPlot.add(new DataForPlot(file.getFilename(), file.getCreationDate(),
-					getAbbreviatedFromSequence(dataValue.getContextSource()), dataValue.getValue()));
-
-			processor.setData(dataForPlot);
-			processor.setGuideSetData(dataToProcess);
-			List<DataForPlot> processedData = processor.processData();
-			value = processedData.get(0).getValue();
-			break;
-		case "InstrumentSample":
-			ArrayList<Data> isDataToProcess = (ArrayList<Data>) dataRepository.findParamData(cs.getId(),
-					threshold.getParam().getId(), this.currentGuideSet.getStartDate(),
-					this.currentGuideSet.getEndDate(), file.getLabSystem().getId(), threshold.getSampleType().getId());
-
-			if (isDataToProcess.size() == 0) {
-				throw new DataRetrievalFailureException(
-						"Your selected guide has no results. Please, choose another date range.");
-			}
-			List<DataForPlot> isDataForPlot = new ArrayList<>();
-
-			isDataForPlot.add(new DataForPlot(file.getFilename(), file.getCreationDate(),
-					getAbbreviatedFromSequence(dataValue.getContextSource()), dataValue.getValue()));
-
-			processor.setData(isDataForPlot);
-			processor.setGuideSetData(isDataToProcess);
-			List<DataForPlot> isProcessedData = processor.processData();
-			value = isProcessedData.get(0).getValue();
-			break;
-		}
-		return value;
-	}
-
 	private InstrumentStatus isNonConformity(Float value, Float initialValue, Float stepValue, int steps,
 			Direction direction) {
 		Float upperLimit = initialValue + (stepValue * steps);
 		Float midLimit = initialValue - (stepValue * (steps - 1));
 		Float lowerLimit = initialValue - (stepValue * steps);
-		System.out.println("mid: " + midLimit + " low: " + lowerLimit + " value: " + value + " init: " + initialValue
-				+ " st: " + stepValue);
 		switch (direction) {
 		case DOWN:
 			// taking care if there is only one step
@@ -630,16 +546,6 @@ public class DataService {
 
 		return null;
 
-	}
-
-	private GuideSet getGuideSet(File file) {
-		GuideSet activeGuideSet = file.getLabSystem().getGuideSet(file.getSampleType().getId());
-		if (activeGuideSet == null) {
-			// create a new guideset
-			return thresholdUtils.generateAutoGuideSet(file.getSampleType(), file.getLabSystem());
-		} else {
-			return activeGuideSet;
-		}
 	}
 
 	private void regenerateThresholds(File file) {
@@ -918,21 +824,6 @@ public class DataService {
 				throw new DataRetrievalFailureException("No guide set found.");
 			}
 		}
-	}
-
-	private String getAbbreviatedFromSequence(String sequence) {
-		int index = 0;
-		int close = 0;
-		while (index >= 0) {
-			index = sequence.indexOf("(");
-			if (index == -1) {
-				break;
-			}
-			close = sequence.indexOf(")");
-			String stringToRemove = sequence.substring(index, close + 1);
-			sequence = sequence.replace(stringToRemove, "");
-		}
-		return sequence.substring(0, 3);
 	}
 
 }
