@@ -482,6 +482,7 @@ public class ThresholdService {
 		ls.setParam(tnc.getThreshold().getParam());
 		ls.setSampleTypeQccv(tnc.getFile().getSampleType().getQualityControlControlledVocabulary());
 		ls.setStatus(tnc.getStatus());
+		ls.setFileChecksum(tnc.getFile().getChecksum());
 		ls.setThresholdApiKey(tnc.getThreshold().getApiKey());
 		return ls;
 	}
@@ -558,7 +559,7 @@ public class ThresholdService {
 		if(!cs.isPresent()) {
 			throw new DataRetrievalFailureException("Context source do not exists.");
 		}
-		// GuideSet gs =thresholdUtils.generateAutoGuideSet(file.getSampleType(), file.getLabSystem());
+
 		GuideSet gs =thresholdUtils.generateGuideSetFromBeforeFile(file,threshold.get().getParam(), cs.get());
 		
 		thresholdUtils.processThreshold(threshold.get(), gs);

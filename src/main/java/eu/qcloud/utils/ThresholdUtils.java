@@ -12,10 +12,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.contextSource.ContextSource;
@@ -25,6 +29,9 @@ import eu.qcloud.file.File;
 import eu.qcloud.file.FileRepository;
 import eu.qcloud.guideset.GuideSet;
 import eu.qcloud.guideset.GuideSetRepository;
+import eu.qcloud.guideset.automatic.AutomaticGuideSet;
+import eu.qcloud.guideset.automatic.AutomaticGuideSetRepository;
+import eu.qcloud.guideset.manual.ManualGuideSet;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.param.Param;
@@ -67,6 +74,9 @@ public class ThresholdUtils {
 
 	@Autowired
 	private DataRepository dataRepository;
+	
+	@Autowired
+	private AutomaticGuideSetRepository automaticGuideSetRepository;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -87,7 +97,7 @@ public class ThresholdUtils {
 	 * @deprecated it not takes into account the context source
 	 * @return
 	 */
-	public GuideSet generateAutoGuideSet(SampleType sampleType, LabSystem labSystem) {
+	public AutomaticGuideSet generateAutoGuideSet(SampleType sampleType, LabSystem labSystem) {
 
 		Pageable maxFiles = PageRequest.of(0, maxFilesForAutoGuideSet,
 				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
@@ -99,14 +109,13 @@ public class ThresholdUtils {
 		File firstFile = files.get(files.size() - 1);
 		File lastFile = files.get(files.size() == 1 ? 0 : 1);
 
-		GuideSet guideSet = null;
+		AutomaticGuideSet guideSet = null;
 
-		guideSet = new GuideSet(firstFile.getCreationDate(), lastFile.getCreationDate());
-		guideSet.setIsActive(true);
-		guideSet.setIsUserDefined(false);
+		guideSet = new AutomaticGuideSet(firstFile.getCreationDate(), lastFile.getCreationDate());
 		guideSet.setSampleType(sampleType);
 		return guideSet;
 	}
+	
 
 	/**
 	 * It will generate a guide set taking into account if there some invalid values
@@ -117,7 +126,7 @@ public class ThresholdUtils {
 	 * @param contextSource
 	 * @return
 	 */
-	public GuideSet generateAutoGuideSetFromFile(File file, Param param, ContextSource contextSource) {
+	public AutomaticGuideSet generateAutoGuideSetFromFile(File file, Param param, ContextSource contextSource) {
 		Pageable maxFiles = PageRequest.of(0, maxFilesForAutoGuideSet,
 				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
 		List<File> files = null;
@@ -132,9 +141,9 @@ public class ThresholdUtils {
 			return null;
 		}
 
-		GuideSet guideSet = new GuideSet(files.get(files.size() - 1).getCreationDate(), files.get(0).getCreationDate());
-		guideSet.setIsActive(true);
-		guideSet.setIsUserDefined(false);
+		AutomaticGuideSet guideSet = new AutomaticGuideSet(files.get(files.size() - 1).getCreationDate(), files.get(0).getCreationDate());
+//		guideSet.setIsActive(true);
+//		guideSet.setIsUserDefined(false);
 		guideSet.setSampleType(file.getSampleType());
 		return guideSet;
 	}
@@ -156,8 +165,9 @@ public class ThresholdUtils {
 	 * @param param
 	 * @return
 	 */
-	public GuideSet generateGuideSetWithoutLastFileByContextSource(SampleType sampleType, LabSystem labSystem,
+	public AutomaticGuideSet generateGuideSetWithoutLastFileByContextSource(SampleType sampleType, LabSystem labSystem,
 			ContextSource contextSource, Param param) {
+		
 		Pageable maxFiles = PageRequest.of(0, maxFilesForAutoGuideSet,
 				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
 
@@ -174,18 +184,30 @@ public class ThresholdUtils {
 		// Get the first and the last file
 		File firstFile = files.get(files.size() - 1);
 		File lastFile = files.get(1);
-		GuideSet guideSet = null;
+		AutomaticGuideSet guideSet = null;
 
-		guideSet = new GuideSet(firstFile.getCreationDate(), lastFile.getCreationDate());
+		guideSet = new AutomaticGuideSet(firstFile.getCreationDate(), lastFile.getCreationDate());
 
-		guideSet.setIsActive(true);
-		guideSet.setIsUserDefined(false);
+//		guideSet.setIsActive(true);
+//		guideSet.setIsUserDefined(false);
 		guideSet.setSampleType(sampleType);
 		return guideSet;
 	}
 	
 	public GuideSet generateGuideSetFromWithFile(File file, Param param, ContextSource contextSource) {
-		Pageable maxFiles = PageRequest.of(0, maxFilesForAutoGuideSet,
+		
+		/*
+		AutomaticGuideSet automaticGuideSet = null;
+		List<AutomaticGuideSet> automaticGuideSets = automaticGuideSetRepository.findByIsActiveTrue();
+		if(automaticGuideSets.size()>1) {
+			logger.error("There more than one active automatic guide set.");
+		} else {
+			automaticGuideSet = automaticGuideSets.get(0);
+		}
+		*/
+		AutomaticGuideSet automaticGuideSet = (AutomaticGuideSet) file.getGuideSet();
+		
+		Pageable maxFiles = PageRequest.of(0, automaticGuideSet.getFiles(),
 				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
 		List<File> files = null;
 
@@ -200,21 +222,23 @@ public class ThresholdUtils {
 					maxFiles);
 
 		}
-		// Get the first and the last file
-		File firstFile = files.get(files.size() - 1);
-		// File lastFile = files.get(files.size() == 1 ? 0 : 1);
-		File lastFile = files.get(0);
-		GuideSet guideSet = null;
-
-		guideSet = new GuideSet(firstFile.getCreationDate(), lastFile.getCreationDate());
-		guideSet.setIsActive(true);
-		guideSet.setIsUserDefined(false);
-		guideSet.setSampleType(file.getSampleType());
-		return guideSet;
+		// AutomaticGuideSet guideSet = null;
+		try {
+			File firstFile = files.get(files.size() - 1);
+			File lastFile = files.get(0);
+			automaticGuideSet.setStartDate(firstFile.getCreationDate());
+			automaticGuideSet.setEndDate(lastFile.getCreationDate());
+			automaticGuideSet.setSampleType(file.getSampleType());
+		} catch(ArrayIndexOutOfBoundsException e) {
+			logger.info("There are no files to build this guide set. Maybe it is the first file of the labsystem.");
+		}
+		
+		return automaticGuideSet;
 	}
 
-	public GuideSet generateGuideSetFromBeforeFile(File file, Param param, ContextSource contextSource) {
-		Pageable maxFiles = PageRequest.of(0, maxFilesForAutoGuideSet,
+	public AutomaticGuideSet generateGuideSetFromBeforeFile(File file, Param param, ContextSource contextSource) {
+		AutomaticGuideSet automaticGuideSet = (AutomaticGuideSet) file.getGuideSet();
+		Pageable maxFiles = PageRequest.of(0, automaticGuideSet.getFiles()+1,
 				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
 		List<File> files = null;
 
@@ -233,11 +257,11 @@ public class ThresholdUtils {
 		File firstFile = files.get(files.size() - 1);
 		// File lastFile = files.get(files.size() == 1 ? 0 : 1);
 		File lastFile = files.get(1);
-		GuideSet guideSet = null;
+		AutomaticGuideSet guideSet = null;
 
-		guideSet = new GuideSet(firstFile.getCreationDate(), lastFile.getCreationDate());
-		guideSet.setIsActive(true);
-		guideSet.setIsUserDefined(false);
+		guideSet = new AutomaticGuideSet(firstFile.getCreationDate(), lastFile.getCreationDate());
+//		guideSet.setIsActive(true);
+//		guideSet.setIsUserDefined(false);
 		guideSet.setSampleType(file.getSampleType());
 		return guideSet;
 	}
@@ -344,7 +368,7 @@ public class ThresholdUtils {
 		}
 	}
 
-	public void disableGuideSet(GuideSet guideSet) {
+	public void disableGuideSet(ManualGuideSet guideSet) {
 		guideSet.setIsActive(false);
 		guideSetRepository.save(guideSet);
 

@@ -134,6 +134,14 @@ public class ThresholdController {
 	
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/api/threshold/autoplot/{thresholdApiKey}/{contextSourceApiKey}", method = RequestMethod.GET)
+	/**
+	 * Please remove
+	 * @param thresholdApiKey
+	 * @param contextSourceApiKey
+	 * @return
+	 * @author dmancera
+	 */
+	@Deprecated
 	public ThresholdForPlotImpl getAutoPlotThreshold(@PathVariable UUID thresholdApiKey, @PathVariable UUID contextSourceApiKey) {
 		Threshold threshold = thresholdService.findThresholdByApiKey(thresholdApiKey);
 		return thresholdService.calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(

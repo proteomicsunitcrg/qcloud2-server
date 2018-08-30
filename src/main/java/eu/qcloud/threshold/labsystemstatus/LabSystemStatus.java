@@ -14,6 +14,7 @@ public class LabSystemStatus {
 	// private Long thresholdId;
 	private UUID thresholdApiKey;
 	private String sampleTypeQccv;
+	private String fileChecksum;
 
 	public LabSystemStatus() {
 	}
@@ -65,6 +66,13 @@ public class LabSystemStatus {
 	public void setSampleTypeQccv(String sampleTypeQccv) {
 		this.sampleTypeQccv = sampleTypeQccv;
 	}
-	
+
+	public String getFileChecksum() {
+		return fileChecksum;
+	}
+
+	public void setFileChecksum(String fileChecksum) {
+		this.fileChecksum = fileChecksum;
+	}
 
 }

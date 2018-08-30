@@ -31,7 +31,7 @@ public class ThresholdNonConformity {
 	@Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "threshold_non_conformity_seq")
-    @SequenceGenerator(name = "threshold_non_conformity_seq", allocationSize = 1)
+	@SequenceGenerator(name = "threshold_non_conformity_seq", sequenceName = "threshold_non_conformity_seq", allocationSize = 1)
 	private Long id;
 	
 	@ManyToOne(optional= false)
