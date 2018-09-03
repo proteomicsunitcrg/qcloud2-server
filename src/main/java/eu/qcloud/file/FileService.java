@@ -38,7 +38,6 @@ public class FileService {
 	@Autowired
 	private AutomaticGuideSetRepository guideSetRepository;
 	
-	
 	public File addNewFile(File file) {
 		
 		GuideSet guideSet = guideSetRepository.findByIsActiveTrue().get(0);
@@ -99,6 +98,8 @@ public class FileService {
 		if(getFileByChecksum(file.getChecksum())!= null) {
 			throw new DataIntegrityViolationException("A file with that checksum already exists!");
 		}
+				
+		
 		GuideSet guideSet = guideSetRepository.findByIsActiveTrue().get(0);
 		
 		file.setGuideSet(guideSet);
@@ -108,6 +109,10 @@ public class FileService {
 		if(ls.isPresent()) {
 			file.setSampleType(st);
 			file.setLabSystem(ls.get());
+			GuideSet mgs = ls.get().getGuideSet(st.getId());
+			if(mgs!=null) {
+				file.setGuideSet(mgs);
+			}
 			return fileRepository.save(file);
 		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");

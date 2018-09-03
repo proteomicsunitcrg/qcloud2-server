@@ -9,12 +9,16 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.file.FileRepository;
 import eu.qcloud.guideset.GuideSet;
+import eu.qcloud.guideset.GuideSetRepository;
 
 @Service
 public class ManualGuideSetService {
 
 	@Autowired
 	private ManualGuideSetRepository manualGuideSetRepository;
+	
+	@Autowired
+	private GuideSetRepository guideSetRepository;
 	
 	@Autowired
 	private FileRepository fileRepository;
@@ -25,16 +29,18 @@ public class ManualGuideSetService {
 						labSystemApiKey, sampleTypeQccv, startDate, endDate);
 	}
 
-	public void setAllLabSystemGuideSetsBySampleTypeDisabled(List<ManualGuideSet> guideSets, ManualGuideSet guideSet) {
+	public void setAllLabSystemGuideSetsBySampleTypeDisabled(List<GuideSet> guideSets, ManualGuideSet guideSet) {
 		guideSets.forEach(gs -> {
 			if (gs.getSampleType().getQualityControlControlledVocabulary()
 					.equals(guideSet.getSampleType().getQualityControlControlledVocabulary())) {
 				gs.setIsActive(false);
-				manualGuideSetRepository.save(gs);	
+				guideSetRepository.save(gs);
 			}
 		});
 
 	}
+	
+	
 
 	public ManualGuideSet addNewManualGuideSet(ManualGuideSet guideSet) {
 		guideSet.setIsActive(true);

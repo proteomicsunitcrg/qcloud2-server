@@ -78,6 +78,14 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	@Query("select t from Threshold t where t.param.id = ?1 and t.sampleType.id = ?2 and t.labSystem.id = ?3 and t.isEnabled = 1")
 	public Threshold findThresholdByParamIdAndSampleTypeIdAndLabSystemId(Long paramId, Long sampleTypeId, Long labSystemId);
 	
+	/**
+	 * 
+	 * @param labSystemApiKey
+	 * @param sampleTypeQccv
+	 * @return
+	 */
+	public List<Threshold> findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabulary(UUID labSystemApiKey, String sampleTypeQccv);
+	
 	interface withParamsWithoutThreshold {
 		UUID getApiKey();
 		String getName();

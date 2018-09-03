@@ -133,22 +133,6 @@ public class ThresholdController {
 	}
 	
 	@PreAuthorize("hasRole('USER')")
-	@RequestMapping(value = "/api/threshold/autoplot/{thresholdApiKey}/{contextSourceApiKey}", method = RequestMethod.GET)
-	/**
-	 * Please remove
-	 * @param thresholdApiKey
-	 * @param contextSourceApiKey
-	 * @return
-	 * @author dmancera
-	 */
-	@Deprecated
-	public ThresholdForPlotImpl getAutoPlotThreshold(@PathVariable UUID thresholdApiKey, @PathVariable UUID contextSourceApiKey) {
-		Threshold threshold = thresholdService.findThresholdByApiKey(thresholdApiKey);
-		return thresholdService.calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(
-				threshold.getParam().getId(), threshold.getSampleType().getId(), threshold.getLabSystem().getApiKey(), contextSourceApiKey);
-	}
-
-	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/api/threshold/nonconformityplot/{thresholdApiKey}/{fileChecksum}/{contextSourceApiKey}", method = RequestMethod.GET)
 	public ThresholdForPlotImpl getNonConformityPlotThresholdWithoutGuideSet(@PathVariable UUID thresholdApiKey,
 			@PathVariable String fileChecksum, @PathVariable UUID contextSourceApiKey) {

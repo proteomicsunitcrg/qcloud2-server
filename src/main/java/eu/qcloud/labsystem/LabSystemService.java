@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.file.FileRepository;
 import eu.qcloud.guideset.GuideSet;
+import eu.qcloud.guideset.automatic.AutomaticGuideSet;
 import eu.qcloud.sampleType.SampleType;
-import eu.qcloud.utils.ThresholdUtils;
 /**
  * Service for system
  * @author dmancera
@@ -25,28 +25,30 @@ public class LabSystemService {
 	@Autowired
 	private FileRepository fileRepository;
 	
-	@Autowired
-	private ThresholdUtils thresholdUtils;
-	
 	public LabSystem saveSystem(LabSystem system) {
 		return systemRepository.save(system);
 	}
 
 	public List<LabSystem> findAllByNode(Long nodeId) {
 		List<LabSystem> labSystems = systemRepository.findAllByNode(nodeId);
+		
 		for(LabSystem ls : labSystems) {
 			// Getting its active guide sets
 			List<SampleType> sampleTypes = fileRepository.findDistinctSampleTypeByLabSystemId(ls.getId());
 			for(SampleType st: sampleTypes) {
 				GuideSet gs = ls.getGuideSet(st.getId());
 				if(gs==null) {
-					gs = thresholdUtils.generateAutoGuideSet(st, ls);
-					// ls.getGuideSets().add(gs);
+					// generate a guide set
+					AutomaticGuideSet ags = new AutomaticGuideSet();
+					ags.setIsActive(true);
+					ags.setSampleType(st);
+					ls.getGuideSets().add(ags);
+					// ags.setTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeIdAndCreationDateBetween(ls.getId(), st.getId(), gs.getStartDate(), gs.getEndDate()));
+					ags.setLabSystemTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeId(ls.getId(), st.getId()));
 				}
-				gs.setTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeIdAndCreationDateBetween(ls.getId(), st.getId(), gs.getStartDate(), gs.getEndDate()));
-				gs.setLabSystemTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeId(ls.getId(), st.getId()));
 			}
 		}
+		
 		return systemRepository.findAllByNode(nodeId);
 	}
 

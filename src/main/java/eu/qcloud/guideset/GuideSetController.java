@@ -1,7 +1,10 @@
 package eu.qcloud.guideset;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,19 +29,24 @@ public class GuideSetController {
 
 	@Value("${qcloud.threshold.min-points-manual}")
 	private int minFilesForManualGuideSet;
+	
+	@Value("${qcloud.threshold.min-valid-context-source-points}")
+	private int minValidPointsManualThreshold;
 
 	@RequestMapping(value = "/api/guideset/minmanual", method = RequestMethod.GET)
-	public int getMinFilesForManualGuideSet() {
+	public int getMinFilesForManualGuideSet(HttpServletResponse response) {
+		response.addIntHeader("minpoints", minValidPointsManualThreshold);
 		return minFilesForManualGuideSet;
 	}
+	
+	
 
 	@RequestMapping(value = "/api/guideset/checkfiles/{labSystemApiKey}/{startDate}/{endDate}/{sampleTypeQccv}", method = RequestMethod.GET)
-	public long getFilesInThreshold(@PathVariable UUID labSystemApiKey, @PathVariable String startDate,
+	public List<GuideSetPeptideStatus> getFilesInThreshold(@PathVariable UUID labSystemApiKey, @PathVariable String startDate,
 			@PathVariable String endDate, @PathVariable String sampleTypeQccv) {
-		System.out.println(startDate);
 		Date start = Date.valueOf(startDate);
 		Date end = Date.valueOf(endDate);
-		return guideSetService.getFilesInThreshold(labSystemApiKey, start, end, sampleTypeQccv);
+		return guideSetService.evaluateGuideSet(labSystemApiKey, start, end, sampleTypeQccv);
 	}
 	
 	@RequestMapping(value="/api/guideset/automatic", method=RequestMethod.POST)

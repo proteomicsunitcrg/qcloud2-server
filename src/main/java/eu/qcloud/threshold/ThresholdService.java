@@ -507,44 +507,6 @@ public class ThresholdService {
 		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(paramId,
 				sampleTypeId, labSystem.get().getId());
 		
-		/*
-		if(threshold.getThresholdType()== ThresholdType.SIGMA) {
-			return null;
-		} else {
-			return ThresholdForPlotFactory.create(threshold);
-		}
-		*/
-		return ThresholdForPlotFactory.create(threshold);
-	}
-
-	/**
-	 * Create a threshold for an autoplot doing a recalculation of the threshold params
-	 * @param paramId
-	 * @param sampleTypeId
-	 * @param labSystemApiKey
-	 * @param contextSourceApiKey
-	 * @return
-	 */
-	public ThresholdForPlotImpl calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(Long paramId,
-			Long sampleTypeId, UUID labSystemApiKey, UUID contextSourceApiKey) {
-		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
-		if (!labSystem.isPresent()) {
-			throw new DataRetrievalFailureException("Labsystem do not exists.");
-		}
-		
-		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(paramId,
-				sampleTypeId, labSystem.get().getId());
-		
-		Optional<ContextSource> cs = contextSourceRepository.findByApiKey(contextSourceApiKey);
-		
-		if(!cs.isPresent()) {
-			throw new DataRetrievalFailureException("Context source do not exists.");
-		}
-
-		GuideSet gs = thresholdUtils.generateGuideSetWithoutLastFileByContextSource(threshold.getSampleType(),labSystem.get(),cs.get(), threshold.getParam());
-		
-		thresholdUtils.processThreshold(threshold, gs);
-		
 		return ThresholdForPlotFactory.create(threshold);
 	}
 

@@ -112,7 +112,7 @@ public class LabSystemController {
 	}
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value="/api/system/guideset/{apikey}",method= RequestMethod.POST)
-	public void addGuideSetToLabSystem(@PathVariable UUID apikey,@RequestBody ManualGuideSet guideSet) {
+	public LabSystem addGuideSetToLabSystem(@PathVariable UUID apikey,@RequestBody ManualGuideSet guideSet) {
 		
 		Optional<LabSystem> labSystem = labSystemService.findSystemByApiKey(apikey);
 		if(labSystem.isPresent()) {
@@ -121,8 +121,9 @@ public class LabSystemController {
 			// Check for others guideset and set it to false before add the new one
 			manualGuideSetService.setAllLabSystemGuideSetsBySampleTypeDisabled(ls.getGuideSets(), guideSet);
 			ls.getGuideSets().add(manualGuideSetService.addNewManualGuideSet(guideSet));
-			labSystemService.saveSystem(ls);
+			return labSystemService.saveSystem(ls);
 		}
+		return null;
 	}
 	
 	

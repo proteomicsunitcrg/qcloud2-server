@@ -566,8 +566,10 @@ public class DataService {
 
 		nodeThresholds.forEach(nodeThreshold -> {
 			nodeThreshold.getThresholdParams().forEach(tp -> {
-				GuideSet gs = thresholdUtils.generateAutoGuideSetFromFile(file, nodeThreshold.getParam(),
+				
+				GuideSet gs = thresholdUtils.generateGuideSetFromWithFile(file, nodeThreshold.getParam(),
 						tp.getContextSource());
+				
 				if(gs != null) {
 					params.add(thresholdUtils.processThresholdParam(nodeThreshold, gs, tp));
 				}

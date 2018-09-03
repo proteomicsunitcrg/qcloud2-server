@@ -27,11 +27,7 @@ public interface FileRepository extends JpaRepository<File, Long>{
 	
 	public File findTop1ByLabSystemIdOrderByCreationDateAsc(Long labSystemId);
 	
-	public File findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateAsc(Long labSystemId, Long sampleTypeId);
-	
 	public File findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(Long labSystemId, Long sampleTypeId);
-	
-	public long countByLabSystemIdAndSampleTypeIdAndCreationDateBetween(Long labSystemId, Long sampleTypeId, Date startDate, Date endDate);
 	
 	public long countByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(UUID labSystemApiKey, String sampleTypeQccv, Date startDate, Date endDate);
 	
@@ -141,11 +137,9 @@ public interface FileRepository extends JpaRepository<File, Long>{
 
 	public List<File> findByLabSystemIdAndSampleTypeId(Long labSystemId, Long sampleTypeId, Pageable maxFiles);
 	
-	public List<File> findByLabSystemIdAndSampleTypeIdAndCreationDateBefore(Long labSystemId, Long sampleTypeId, Date creationDate, Pageable maxFiles);
-	
 	public List<File> findByLabSystemIdAndSampleTypeIdAndCreationDateLessThanEqual(Long labSystemId, Long sampleTypeId, Date creationDate, Pageable maxFiles);
 
 	public Optional<File> findOptionalByChecksum(String fileChecksum);
 	
-	
+	public List<File> findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(UUID labSystemApiKey, String sampleTypeQccv, Date startDate, Date endDate);
 }
