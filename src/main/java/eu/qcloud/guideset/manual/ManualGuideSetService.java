@@ -44,6 +44,7 @@ public class ManualGuideSetService {
 
 	public ManualGuideSet addNewManualGuideSet(ManualGuideSet guideSet) {
 		guideSet.setIsActive(true);
+		guideSet.setEndDate(new Date(guideSet.getEndDate().getTime() + (86399 * 1000)));
 		guideSet.setApiKey(UUID.randomUUID());
 		return manualGuideSetRepository.save(guideSet);
 	}

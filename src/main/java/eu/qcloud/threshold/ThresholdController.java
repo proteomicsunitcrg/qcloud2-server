@@ -177,6 +177,12 @@ public class ThresholdController {
 	public void switchThresholdMonitoring(@PathVariable UUID thresholdApiKey) {
 		thresholdService.switchThresholdMonitoring(thresholdApiKey);
 	}
+	
+	@RequestMapping(value = "/api/threshold/switchcontextsource/{thresholdApiKey}/{contextSourceApiKey}", method = RequestMethod.PUT)
+	@PreAuthorize("hasRole('MANAGER')")
+	public void switchThresholdContextSourceMonitoring(@PathVariable UUID thresholdApiKey, @PathVariable UUID contextSourceApiKey) {
+		thresholdService.switchThresholdContextSourceMonitoring(thresholdApiKey, contextSourceApiKey);
+	}
 
 	/**
 	 * Update a threshold with new threshold parameters

@@ -537,4 +537,16 @@ public class ThresholdService {
 		throw new DataRetrievalFailureException("Threshold do not exists.");
 	}
 
+	public void switchThresholdContextSourceMonitoring(UUID thresholdApiKey, UUID contextSourceApiKey) {
+		Threshold threshold = findThresholdByApiKey(thresholdApiKey);
+		Optional<ContextSource> contextSource = contextSourceRepository.findByApiKey(contextSourceApiKey);
+		if(!contextSource.isPresent()) {
+			throw new DataRetrievalFailureException("Context source do not exists.");	
+		}
+		ThresholdParams tp = thresholdParamsRepository.findByThresholdIdAndContextSourceId(threshold.getId(), contextSource.get().getId());
+		tp.setIsEnabled(!tp.getIsEnabled());
+		thresholdParamsRepository.save(tp);
+				
+	}
+
 }

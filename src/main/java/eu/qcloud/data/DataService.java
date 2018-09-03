@@ -441,6 +441,14 @@ public class DataService {
 						continue;
 					}
 				}
+				// Checking if the context source is monitored for this threshold
+				Optional<ThresholdParams> cc = threshold.getThresholdParams().stream().filter(tp -> {
+					return tp.getContextSource().getId() == cs.getId(); 
+				}).findFirst();
+				if(!cc.get().getIsEnabled()) {
+					continue;
+				}
+				
 				// Compare here
 				InstrumentStatus is = isNonConformity(value,
 						getInitialValueFromThresholdParamByContextSource(threshold.getThresholdParams(),

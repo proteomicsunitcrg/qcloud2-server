@@ -12,6 +12,8 @@ public interface ThresholdParamsRepository extends CrudRepository<ThresholdParam
 	@Query("select tp from ThresholdParams tp")
 	List<paramsNoThreshold> getAll();
 	
+	ThresholdParams findByThresholdIdAndContextSourceId(Long thresholdId, Long contextSourceId);
+	
 	interface paramsNoThreshold {
 		Float getStepValue();
 		Float getInitialValue();
