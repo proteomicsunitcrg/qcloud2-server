@@ -1,7 +1,10 @@
 package eu.qcloud.data;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -11,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.file.File;
 import eu.qcloud.param.Param;
+import eu.qcloud.threshold.InstrumentStatus;
 
 @Entity
 @Table(name="data")
@@ -35,6 +39,10 @@ public class Data {
 	private Float value;
 	
 	private Float calculatedValue;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(columnDefinition="varchar(255) default 'OK'")
+	private InstrumentStatus nonConformityStatus = InstrumentStatus.OK;
 
 	public Float getValue() {
 		return value;
@@ -93,5 +101,14 @@ public class Data {
 	public void setCalculatedValue(Float calculatedValue) {
 		this.calculatedValue = calculatedValue;
 	}
+
+	public InstrumentStatus getNonConformityStatus() {
+		return nonConformityStatus;
+	}
+
+	public void setNonConformityStatus(InstrumentStatus nonConformityStatus) {
+		this.nonConformityStatus = nonConformityStatus;
+	}
+	
 
 }

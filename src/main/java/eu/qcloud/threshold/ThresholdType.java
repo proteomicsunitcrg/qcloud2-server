@@ -1,5 +1,5 @@
 package eu.qcloud.threshold;
 
 public enum ThresholdType {
-	HARDLIMIT,SIGMA;
+	HARDLIMIT,SIGMA, SIGMALOG2
 }

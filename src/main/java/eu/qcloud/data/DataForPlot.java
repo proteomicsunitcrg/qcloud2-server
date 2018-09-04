@@ -4,6 +4,8 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import eu.qcloud.threshold.InstrumentStatus;
+
 /**
  * This is a helper class I had to do because the projection does not seems
  * to work properly when there are tuple queries to the database.
@@ -21,14 +23,17 @@ public class DataForPlot implements Comparable<DataForPlot>{
 	
 	protected Float value;
 	
+	protected InstrumentStatus nonConformityStatus;
+	
 	public DataForPlot() {}
 	
-	public DataForPlot(String filename, Date fileCreationDate, String contextSourceName, Float value) {
+	public DataForPlot(String filename, Date fileCreationDate, String contextSourceName, Float value, InstrumentStatus nonConformityStatus) {
 		super();
 		this.fileFilename = filename;
 		this.fileCreationDate = fileCreationDate;
 		this.contextSourceName = contextSourceName;
 		this.value = value;
+		this.nonConformityStatus = nonConformityStatus;
 	}
 
 
@@ -64,6 +69,14 @@ public class DataForPlot implements Comparable<DataForPlot>{
 		this.value = value;
 	}
 
+	public InstrumentStatus getNonConformityStatus() {
+		return nonConformityStatus;
+	}
+
+	public void setNonConformityStatus(InstrumentStatus nonConformityStatus) {
+		this.nonConformityStatus = nonConformityStatus;
+	}
+
 	@Override
 	public int compareTo(DataForPlot o) {
 		try {
@@ -79,11 +92,7 @@ public class DataForPlot implements Comparable<DataForPlot>{
 		}catch (NumberFormatException nfe) {
 			return 0;
 		}
-		
 	}
-
-	
-	
 	
 	
 }

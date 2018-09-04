@@ -74,14 +74,14 @@ public class ViewController {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/api/views/default/layout", method=RequestMethod.POST)
-	public List<ViewDisplay> addViewDisplayToView(@RequestBody List<DefaultView> layout) {
-		return viewService.addDefaultViewDisplay(layout);
+	public void addViewDisplayToView(@RequestBody List<DefaultView> layout) {
+		viewService.addDefaultViewDisplay(layout);
 	}
 	
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value="/api/views/user/layout", method=RequestMethod.POST)
-	public List<UserView> addUserViewDisplayToView(@RequestBody List<UserView> layout) {
-		return viewService.addUserViewDisplay(layout);
+	public void addUserViewDisplayToView(@RequestBody List<UserView> layout) {
+		viewService.addUserViewDisplay(layout);
 	}
 	
 	@PreAuthorize("hasRole('USER')")
@@ -92,10 +92,10 @@ public class ViewController {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/api/views/default/layout/{viewApiKey}", method=RequestMethod.PUT)
-	public List<ViewDisplay> updateViewDisplayToView(@RequestBody List<DefaultView> layout,@PathVariable UUID viewApiKey) {
+	public void updateViewDisplayToView(@RequestBody List<DefaultView> layout,@PathVariable UUID viewApiKey) {
 		// delete previous
 		if(viewService.deleteLayoutByViewApiKey(viewApiKey)) {
-			return viewService.addDefaultViewDisplay(layout);	
+			viewService.addDefaultViewDisplay(layout);	
 		}else {
 			throw new PersistenceException("An error has occurred while updating your view. Try again later");
 		}
@@ -104,10 +104,10 @@ public class ViewController {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/api/views/user/layout/{viewApiKey}", method=RequestMethod.PUT)
-	public List<UserView> updateUserViewDisplayToView(@RequestBody List<UserView> layout,@PathVariable UUID viewApiKey) {
+	public void updateUserViewDisplayToView(@RequestBody List<UserView> layout,@PathVariable UUID viewApiKey) {
 		// delete previous
 		if(viewService.deleteLayoutByViewApiKey(viewApiKey)) {
-			return viewService.addUserViewDisplay(layout);	
+			viewService.addUserViewDisplay(layout);	
 		}else {
 			throw new PersistenceException("An error has occurred while updating your view. Try again later");
 		}

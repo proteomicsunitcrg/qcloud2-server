@@ -1,4 +1,4 @@
-package eu.qcloud.threshold.sigmathreshold;
+package eu.qcloud.threshold.sigma;
 
 import eu.qcloud.threshold.ThresholdRepository;
 

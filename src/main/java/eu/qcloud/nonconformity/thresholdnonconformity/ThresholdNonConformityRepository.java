@@ -53,5 +53,10 @@ public interface ThresholdNonConformityRepository extends PagingAndSortingReposi
 	@Modifying
 	@Query(value="delete from threshold_non_conformity where status = ?3 and file_id in (select id from file where labsystem_id = ?1 and sample_type_id = ?2)", nativeQuery = true)
 	public void deletePreviousWarnings(Long labSystemId, Long sampleTypeId, String status);
+	
+	@Transactional
+	@Modifying
+	@Query(value="delete from threshold_non_conformity where status = ?3 and threshold_id = ?4 and file_id in (select id from file where labsystem_id = ?1 and sample_type_id = ?2)", nativeQuery = true)
+	public void deletePreviousParamWarnings(Long labSystemId, Long sampleTypeId, String status, Long thresholdId);
 
 }

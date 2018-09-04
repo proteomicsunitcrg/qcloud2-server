@@ -67,6 +67,9 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	@Query("select t from Threshold t where t.labSystem = null and t.instrument.id = ?1 and t.sampleType.id = ?2")
 	public List<Threshold> findAllDefaultThresholdsByThresholdCVIdAndSampleTypeId(Long cvId, Long sampleTypeId);
 	
+	@Query("select t from Threshold t where t.labSystem = null and t.instrument.id = ?1 and t.sampleType.id = ?2 and t.param.id = ?3")
+	public Optional<Threshold> findDefaultThresholdByThresholdCVIdAndSampleTypeIdAndParamId(Long cvId, Long sampleTypeId, Long paramId);
+	
 	@Query("select t from Threshold t where t.labSystem.id = ?1 and t.isEnabled= true")
 	public List<withParamsWithoutThreshold> findLabSystemThresholds(Long labSystemId);
 	

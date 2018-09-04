@@ -39,8 +39,10 @@ import eu.qcloud.threshold.params.ThresholdParams;
 import eu.qcloud.threshold.params.ThresholdParamsId;
 import eu.qcloud.threshold.params.ThresholdParamsRepository;
 import eu.qcloud.threshold.params.ThresholdParamsRepository.paramsNoThreshold;
-import eu.qcloud.threshold.sigmathreshold.SigmaThreshold;
-import eu.qcloud.threshold.sigmathreshold.SigmaThresholdRepository;
+import eu.qcloud.threshold.sigma.SigmaThreshold;
+import eu.qcloud.threshold.sigma.SigmaThresholdRepository;
+import eu.qcloud.threshold.sigmalog2threshold.SigmaLog2Threshold;
+import eu.qcloud.threshold.sigmalog2threshold.SigmaLog2ThresholdRepository;
 import eu.qcloud.utils.ThresholdUtils;
 import eu.qcloud.utils.factory.ThresholdForPlotFactory;
 import eu.qcloud.utils.factory.ThresholdForPlotImpl;
@@ -51,6 +53,9 @@ public class ThresholdService {
 	@Autowired
 	private ThresholdRepo thresholdRepository;
 
+	@Autowired
+	private SigmaLog2ThresholdRepository sigmaLog2ThresholdRepository;
+	
 	@Autowired
 	private SigmaThresholdRepository sigmaThresholdRepository;
 
@@ -99,6 +104,10 @@ public class ThresholdService {
 	public Threshold saveSigmaThreshold(SigmaThreshold threshold) {
 		return sigmaThresholdRepository.save(threshold);
 	}
+	
+	public Threshold saveSigmaLog2Threshold(SigmaLog2Threshold threshold) {
+		return sigmaLog2ThresholdRepository.save(threshold);
+	}
 
 	public Threshold saveHardLimitThreshold(HardLimitThreshold threshold) {
 		return hardLimitThresholdRepository.save(threshold);
@@ -141,17 +150,17 @@ public class ThresholdService {
 		 * specific son.
 		 */
 		switch (type) {
-		case SIGMA:
-			SigmaThreshold st = new SigmaThreshold();
-			st.setCv(instrument.get());
-			st.setSteps(threshold.getSteps());
-			st.setParam(p);
-			st.setSampleType(sampleType.get());
-			st.setEnabled(true);
-			st.setMonitored(true);
-			st.setIsZeroNoData(threshold.getIsZeroNoData());
-			st.setApiKey(UUID.randomUUID());
-			return saveSigmaThreshold(st);
+		case SIGMALOG2:
+			SigmaLog2Threshold stlog2 = new SigmaLog2Threshold();
+			stlog2.setCv(instrument.get());
+			stlog2.setSteps(threshold.getSteps());
+			stlog2.setParam(p);
+			stlog2.setSampleType(sampleType.get());
+			stlog2.setEnabled(true);
+			stlog2.setMonitored(true);
+			stlog2.setIsZeroNoData(threshold.getIsZeroNoData());
+			stlog2.setApiKey(UUID.randomUUID());
+			return saveSigmaLog2Threshold(stlog2);
 		case HARDLIMIT:
 			HardLimitThreshold ht = new HardLimitThreshold();
 			ht.setCv(instrument.get());
@@ -163,6 +172,17 @@ public class ThresholdService {
 			ht.setIsZeroNoData(threshold.getIsZeroNoData());
 			ht.setApiKey(UUID.randomUUID());
 			return saveHardLimitThreshold(ht);
+		case SIGMA:
+			SigmaThreshold st = new SigmaThreshold();
+			st.setCv(instrument.get());
+			st.setSteps(threshold.getSteps());
+			st.setParam(p);
+			st.setSampleType(sampleType.get());
+			st.setEnabled(true);
+			st.setMonitored(true);
+			st.setIsZeroNoData(threshold.getIsZeroNoData());
+			st.setApiKey(UUID.randomUUID());
+			return saveSigmaThreshold(st);
 		default:
 			return null;
 		}
@@ -180,6 +200,7 @@ public class ThresholdService {
 	 * @param labSystemId
 	 * @return
 	 */
+	/*
 	public Threshold findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(Long sampleTypeId, Long paramId,
 			Long cvId, Long labSystemId) {
 		// check if exists for the current labSystem, if not, create
@@ -198,11 +219,11 @@ public class ThresholdService {
 				t.get().setLabSystem(ls.get());
 				// t.get().setGuideSet(ls.get().getGuideSet(sampleTypeId));
 				switch (t.get().getThresholdType()) {
-				case SIGMA:
+				case SIGMALOG2:
 					entityManager.detach(t.get());
 					t.get().setId(null);
 					// save threshold params for new labsystem threshold
-					Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaThreshold) t.get());
+					Threshold labSystemSigmaThreshold = saveSigmaLog2Threshold((SigmaLog2Threshold) t.get());
 					entityManager.detach(labSystemSigmaThreshold);
 					saveThresholdParams(labSystemSigmaThreshold);
 					return labSystemSigmaThreshold;
@@ -221,6 +242,7 @@ public class ThresholdService {
 		}
 		return null;
 	}
+	*/
 
 	/**
 	 * Find a threshold, if not exists create a new one
@@ -231,6 +253,7 @@ public class ThresholdService {
 	 * @param labSystemApiKey
 	 * @return
 	 */
+	/*
 	public Threshold findThresholdBySampleTypeQCCVAndParamQCCVAndInstrumentQCCVAndLabSystemApiKey(String sampleTypeQCCV,
 			String paramQCCV, String cvId, UUID labSystemApiKey) {
 		// check if threshold exists for the current cv
@@ -259,7 +282,7 @@ public class ThresholdService {
 					entityManager.detach(t.get());
 					t.get().setId(null);
 					// save threshold params for new labsystem threshold
-					Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaThreshold) t.get());
+					Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaLog2Threshold) t.get());
 					entityManager.detach(labSystemSigmaThreshold);
 					saveThresholdParams(labSystemSigmaThreshold);
 					return labSystemSigmaThreshold;
@@ -278,6 +301,7 @@ public class ThresholdService {
 		}
 		return null;
 	}
+	*/
 
 	/**
 	 * Save the params of a new labsystem threshold It is necessary to detach the

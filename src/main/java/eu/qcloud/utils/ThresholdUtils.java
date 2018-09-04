@@ -38,8 +38,10 @@ import eu.qcloud.threshold.params.ThresholdParams;
 import eu.qcloud.threshold.params.ThresholdParamsId;
 import eu.qcloud.threshold.params.ThresholdParamsRepository;
 import eu.qcloud.threshold.processor.ThresholdProcessor;
-import eu.qcloud.threshold.sigmathreshold.SigmaThreshold;
-import eu.qcloud.threshold.sigmathreshold.SigmaThresholdRepository;
+import eu.qcloud.threshold.sigma.SigmaThreshold;
+import eu.qcloud.threshold.sigma.SigmaThresholdRepository;
+import eu.qcloud.threshold.sigmalog2threshold.SigmaLog2Threshold;
+import eu.qcloud.threshold.sigmalog2threshold.SigmaLog2ThresholdRepository;
 
 @Service
 public class ThresholdUtils {
@@ -56,6 +58,9 @@ public class ThresholdUtils {
 	@Autowired
 	private LabSystemRepository labSystemRepository;
 
+	@Autowired
+	private SigmaLog2ThresholdRepository sigmaLog2ThresholdRepository;
+	
 	@Autowired
 	private SigmaThresholdRepository sigmaThresholdRepository;
 
@@ -204,15 +209,15 @@ public class ThresholdUtils {
 			if (t.isPresent()) {
 				t.get().setLabSystem(ls.get());
 				switch (t.get().getThresholdType()) {
-				case SIGMA:
+				case SIGMALOG2:
 					entityManager.detach(t.get());
 					t.get().setId(null);
 					// save threshold params for new labsystem threshold
-					Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaThreshold) t.get());
-					entityManager.detach(labSystemSigmaThreshold);
-					labSystemSigmaThreshold.setApiKey(UUID.randomUUID());
-					saveThresholdParams(labSystemSigmaThreshold);
-					return labSystemSigmaThreshold;
+					Threshold labSystemSigmaLog2Threshold = saveSigmaLog2Threshold((SigmaLog2Threshold) t.get());
+					entityManager.detach(labSystemSigmaLog2Threshold);
+					labSystemSigmaLog2Threshold.setApiKey(UUID.randomUUID());
+					saveThresholdParams(labSystemSigmaLog2Threshold);
+					return labSystemSigmaLog2Threshold;
 				case HARDLIMIT:
 					entityManager.detach(t.get());
 					t.get().setId(null);
@@ -221,6 +226,14 @@ public class ThresholdUtils {
 					labSystemHardLimitThreshold.setApiKey(UUID.randomUUID());
 					saveThresholdParams(labSystemHardLimitThreshold);
 					return labSystemHardLimitThreshold;
+				case SIGMA:
+					entityManager.detach(t.get());
+					t.get().setId(null);
+					Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaThreshold) t.get());
+					entityManager.detach(labSystemSigmaThreshold);
+					labSystemSigmaThreshold.setApiKey(UUID.randomUUID());
+					saveThresholdParams(labSystemSigmaThreshold);
+					return labSystemSigmaThreshold;
 				default:
 					break;
 				}
@@ -233,6 +246,11 @@ public class ThresholdUtils {
 	private Threshold saveSigmaThreshold(SigmaThreshold threshold) {
 		threshold.setApiKey(UUID.randomUUID());
 		return sigmaThresholdRepository.save(threshold);
+	}
+	
+	private Threshold saveSigmaLog2Threshold(SigmaLog2Threshold threshold) {
+		threshold.setApiKey(UUID.randomUUID());
+		return sigmaLog2ThresholdRepository.save(threshold);
 	}
 
 	private Threshold saveHardLimitThreshold(HardLimitThreshold threshold) {

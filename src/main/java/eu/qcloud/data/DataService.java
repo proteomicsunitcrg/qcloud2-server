@@ -190,7 +190,6 @@ public class DataService {
 	 */
 	private List<DataForPlot> normalizeData(List<DataForPlot> list, LabSystem labSystem, SampleType sampleType,
 			Chart chart) {
-		
 
 		HashMap<String, ArrayList<Float>> guideSetValues = new HashMap<>();
 
@@ -250,7 +249,8 @@ public class DataService {
 									data.getContextSource().getId());
 
 					dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-							concentration.getConcentration().toString(), data.getValue()));
+							concentration.getConcentration().toString(), data.getValue(),
+							data.getNonConformityStatus()));
 					Collections.sort(dataForPlot);
 				}
 			} else {
@@ -279,7 +279,8 @@ public class DataService {
 									data.getContextSource().getId());
 
 					dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-							concentration.getConcentration().toString(), data.getCalculatedValue()));
+							concentration.getConcentration().toString(), data.getCalculatedValue(),
+							data.getNonConformityStatus()));
 					Collections.sort(dataForPlot);
 				}
 			} else {
@@ -297,14 +298,15 @@ public class DataService {
 	private void convertDbDataToPlotData(List<Data> dataFromDb, List<DataForPlot> dataForPlot) {
 		for (Data data : dataFromDb) {
 			dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-					data.getContextSource().getAbbreviated(), data.getValue()));
+					data.getContextSource().getAbbreviated(), data.getValue(), data.getNonConformityStatus()));
 		}
 	}
 
 	private void convertDbDataToCalculatedPlotData(List<Data> dataFromDb, List<DataForPlot> dataForPlot) {
 		for (Data data : dataFromDb) {
 			dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-					data.getContextSource().getAbbreviated(), data.getCalculatedValue()));
+					data.getContextSource().getAbbreviated(), data.getCalculatedValue(),
+					data.getNonConformityStatus()));
 		}
 	}
 
@@ -353,8 +355,8 @@ public class DataService {
 					System.out.println("i dont know");
 					break;
 				}
-				
-				//TODO load user guidesets it there is any
+
+				// TODO load user guidesets it there is any
 				Data d = new Data(param, cs, file);
 				d.setValue(dataValue.getValue());
 				d.setDataId(new DataId(param.getId(), cs.getId(), file.getId()));
@@ -362,16 +364,28 @@ public class DataService {
 				d.setCalculatedValue(calc);
 				dataValue.setCalculatedValue(calc);
 				dataRepository.save(d);
+				// Do threshold checks
+				/*
+				if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
+						file.getSampleType().getId()) > minPointsAutoThreshold) {
+					evaluateDataForNonConformities(file, dataFromPipeline);
+					regenerateParamThresholds(file, param);
+					
+				}
+				*/
+				
 
 			}
 		}
 		// Do threshold checks
+		
 		if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
 				file.getSampleType().getId()) > minPointsAutoThreshold) {
-			evaluateDataForNonConformities(file, dataFromPipeline);
-			// Recalculate user thresholds
-			regenerateThresholds(file);
+			 evaluateDataForNonConformities(file, dataFromPipeline);
+			 // Recalculate user thresholds
+			 regenerateThresholds(file);
 		}
+		
 	}
 
 	private Float calculateValueFromGuideSet(Param param, ContextSource cs, File file, Data value) {
@@ -379,8 +393,8 @@ public class DataService {
 		if (processor.isGuideSetRequired()) {
 			if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
 					file.getSampleType().getId()) > minPointsAutoThreshold) {
-				
-				GuideSet guideSet = thresholdUtils.generateGuideSetFromWithFile(file,param,cs);
+
+				GuideSet guideSet = thresholdUtils.generateGuideSetFromWithFile(file, param, cs);
 
 				ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(cs.getId(), param.getId(),
 						guideSet.getStartDate(), guideSet.getEndDate(), file.getLabSystem().getId(),
@@ -404,6 +418,9 @@ public class DataService {
 		} else {
 			processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
 			Float processedValue = processor.processData().get(0).getValue();
+			if(processedValue == null) {
+				System.out.println("null");
+			}
 			if (!processedValue.isNaN() && processedValue != null) {
 				return processedValue;
 			} else {
@@ -411,13 +428,13 @@ public class DataService {
 			}
 		}
 	}
+	private void evaluateDataForParamNonConformities(File file, DataFromPipeline data) {
 
-	private void evaluateDataForNonConformities(File file, DataFromPipeline data) {
-		
 		// delete previous warnings
+		/*
 		thresholdNonConformityRepository.deletePreviousWarnings(file.getLabSystem().getId(),
 				file.getSampleType().getId(), InstrumentStatus.WARNING.toString());
-
+		 */
 		for (ParameterData parameterData : data.getData()) {
 			// Get the threshold for this parameter, sample type and instrument
 			Threshold threshold = thresholdUtils
@@ -428,7 +445,7 @@ public class DataService {
 			if (threshold == null) {
 				continue;
 			}
-			
+
 			Float value = 0f;
 			for (DataValues dataValue : parameterData.getValues()) {
 
@@ -436,19 +453,19 @@ public class DataService {
 						parameterData.getParameter().getIsFor());
 
 				value = dataValue.getCalculatedValue();
-				if(parameterData.getParameter().isZeroNoData()) {
-					if(value == null) {
+				if (parameterData.getParameter().isZeroNoData()) {
+					if (value == null) {
 						continue;
 					}
 				}
 				// Checking if the context source is monitored for this threshold
 				Optional<ThresholdParams> cc = threshold.getThresholdParams().stream().filter(tp -> {
-					return tp.getContextSource().getId() == cs.getId(); 
+					return tp.getContextSource().getId() == cs.getId();
 				}).findFirst();
-				if(!cc.get().getIsEnabled()) {
+				if (!cc.get().getIsEnabled()) {
 					continue;
 				}
-				
+
 				// Compare here
 				InstrumentStatus is = isNonConformity(value,
 						getInitialValueFromThresholdParamByContextSource(threshold.getThresholdParams(),
@@ -465,6 +482,73 @@ public class DataService {
 					tnc.setFile(file);
 					tnc.setThreshold(threshold);
 					thresholdNonConformityRepository.save(tnc);
+					Data d = dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(),
+							threshold.getParam().getId(), cs.getId());
+					d.setNonConformityStatus(is);
+					dataRepository.save(d);
+				}
+			}
+		}
+	}
+	
+
+	private void evaluateDataForNonConformities(File file, DataFromPipeline data) {
+
+		
+		for (ParameterData parameterData : data.getData()) {
+			// Get the threshold for this parameter, sample type and instrument
+			Threshold threshold = thresholdUtils
+					.findOrCreateLabSystemThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
+							file.getSampleType().getId(), parameterData.getParameter().getId(),
+							file.getLabSystem().getMainDataSource().getCv().getId(), file.getLabSystem().getId());
+
+			if (threshold == null) {
+				continue;
+			}
+			// delete previous warnings
+			thresholdNonConformityRepository.deletePreviousParamWarnings(file.getLabSystem().getId(),
+					file.getSampleType().getId(), InstrumentStatus.WARNING.toString(), threshold.getId());
+
+
+			Float value = 0f;
+			for (DataValues dataValue : parameterData.getValues()) {
+				ContextSource cs = getContextSourceFromDatabase(dataValue.getContextSource(),
+						parameterData.getParameter().getIsFor());
+
+				value = dataValue.getCalculatedValue();
+				if (parameterData.getParameter().isZeroNoData()) {
+					if (value == null) {
+						continue;
+					}
+				}
+				// Checking if the context source is monitored for this threshold
+				Optional<ThresholdParams> cc = threshold.getThresholdParams().stream().filter(tp -> {
+					return tp.getContextSource().getId() == cs.getId();
+				}).findFirst();
+				if (!cc.get().getIsEnabled()) {
+					continue;
+				}
+
+				// Compare here
+				InstrumentStatus is = isNonConformity(value,
+						getInitialValueFromThresholdParamByContextSource(threshold.getThresholdParams(),
+								dataValue.getContextSource(), parameterData.getParameter().getIsFor()),
+						getStepValueFromThresholdParamByContextSourceName(threshold.getThresholdParams(),
+								dataValue.getContextSource(), parameterData.getParameter().getIsFor()),
+						threshold.getSteps(), threshold.getNonConformityDirection());
+
+				if (is != InstrumentStatus.OK && threshold.isMonitored()) {
+					logger.info("Storing non conformity");
+					ThresholdNonConformity tnc = new ThresholdNonConformity();
+					tnc.setStatus(is);
+					tnc.setContextSource(cs);
+					tnc.setFile(file);
+					tnc.setThreshold(threshold);
+					thresholdNonConformityRepository.save(tnc);
+					Data d = dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(),
+							threshold.getParam().getId(), cs.getId());
+					d.setNonConformityStatus(is);
+					dataRepository.save(d);
 				}
 			}
 		}
@@ -574,11 +658,11 @@ public class DataService {
 
 		nodeThresholds.forEach(nodeThreshold -> {
 			nodeThreshold.getThresholdParams().forEach(tp -> {
-				
+
 				GuideSet gs = thresholdUtils.generateGuideSetFromWithFile(file, nodeThreshold.getParam(),
 						tp.getContextSource());
-				
-				if(gs != null) {
+
+				if (gs != null) {
 					params.add(thresholdUtils.processThresholdParam(nodeThreshold, gs, tp));
 				}
 			});
@@ -587,6 +671,33 @@ public class DataService {
 			saveThresholdParams(nodeThreshold);
 		});
 
+	}
+
+	private void regenerateParamThresholds(File file, Param param) {
+		Optional<Threshold> defaultThreshold = thresholdRepository.findDefaultThresholdByThresholdCVIdAndSampleTypeIdAndParamId(
+				file.getLabSystem().getMainDataSource().getCv().getId(), file.getSampleType().getId(), param.getId());
+		// Get the labsystem thresholds if any
+		
+		if(defaultThreshold.isPresent()) {
+			Threshold nodeThreshold = thresholdUtils
+					.findOrCreateLabSystemThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
+							file.getSampleType().getId(), defaultThreshold.get().getParam().getId(),
+							defaultThreshold.get().getCv().getId(), file.getLabSystem().getId());
+
+			List<ThresholdParams> params = new ArrayList<>();
+
+			nodeThreshold.getThresholdParams().forEach(tp -> {
+				GuideSet gs = thresholdUtils.generateGuideSetFromWithFile(file, nodeThreshold.getParam(),
+						tp.getContextSource());
+				if (gs != null) {
+					params.add(thresholdUtils.processThresholdParam(nodeThreshold, gs, tp));
+				}
+			});
+
+			nodeThreshold.setThresholdParams(params);
+			saveThresholdParams(nodeThreshold);	
+		}
+		
 	}
 
 	private void saveThresholdParams(Threshold threshold) {

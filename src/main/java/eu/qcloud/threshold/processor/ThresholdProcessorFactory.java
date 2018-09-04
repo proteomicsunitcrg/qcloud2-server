@@ -6,10 +6,12 @@ public class ThresholdProcessorFactory {
 	
 	public static ThresholdProcessor getProcessor(ThresholdType thresholdType) {
 		switch(thresholdType) {
-		case SIGMA:
-			return new AreaProcessor();
+		case SIGMALOG2:
+			return new SigmaLog2Processor();
 		case HARDLIMIT:
-			return new NoProcessor();			
+			return new NoProcessor();
+		case SIGMA:
+			return new SigmaProcessor();
 		default:
 			System.out.println("erro");
 			break;
