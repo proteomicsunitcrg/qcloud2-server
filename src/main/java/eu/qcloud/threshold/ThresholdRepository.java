@@ -103,7 +103,7 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 		List<paramsNoThreshold> getThresholdParams();
 		Direction getNonConformityDirection();
 		Boolean getIsMonitored();
-		Boolean getIsZeroNoData();
+		// Boolean getIsZeroNoData();
 	}
 	
 	interface onlyConstraints {

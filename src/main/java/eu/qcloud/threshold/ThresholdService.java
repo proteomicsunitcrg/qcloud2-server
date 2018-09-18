@@ -158,7 +158,7 @@ public class ThresholdService {
 			stlog2.setSampleType(sampleType.get());
 			stlog2.setEnabled(true);
 			stlog2.setMonitored(true);
-			stlog2.setIsZeroNoData(threshold.getIsZeroNoData());
+//			stlog2.setIsZeroNoData(threshold.getIsZeroNoData());
 			stlog2.setApiKey(UUID.randomUUID());
 			return saveSigmaLog2Threshold(stlog2);
 		case HARDLIMIT:
@@ -169,7 +169,7 @@ public class ThresholdService {
 			ht.setSampleType(sampleType.get());
 			ht.setEnabled(true);
 			ht.setMonitored(true);
-			ht.setIsZeroNoData(threshold.getIsZeroNoData());
+//			ht.setIsZeroNoData(threshold.getIsZeroNoData());
 			ht.setApiKey(UUID.randomUUID());
 			return saveHardLimitThreshold(ht);
 		case SIGMA:
@@ -180,146 +180,11 @@ public class ThresholdService {
 			st.setSampleType(sampleType.get());
 			st.setEnabled(true);
 			st.setMonitored(true);
-			st.setIsZeroNoData(threshold.getIsZeroNoData());
+//			st.setIsZeroNoData(threshold.getIsZeroNoData());
 			st.setApiKey(UUID.randomUUID());
 			return saveSigmaThreshold(st);
 		default:
 			return null;
-		}
-	}
-
-	/**
-	 * Returns a labsystem threshold. In case the labsystem do not have a threshold
-	 * yet, it will get the default threshold (the threshold with null value at
-	 * labsystem field) and save a new threshold for that lab system and then it
-	 * will return it.
-	 * 
-	 * @param sampleTypeId
-	 * @param paramId
-	 * @param cvId
-	 * @param labSystemId
-	 * @return
-	 */
-	/*
-	public Threshold findThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(Long sampleTypeId, Long paramId,
-			Long cvId, Long labSystemId) {
-		// check if exists for the current labSystem, if not, create
-		Optional<Threshold> t = thresholdRepository
-				.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndLabSystemIdAndIsEnabledTrue(sampleTypeId,
-						paramId, cvId, labSystemId);
-		if (t.isPresent()) {
-			return t.get();
-		} else {
-			// create and return
-			Optional<LabSystem> ls = labSystemRepository.findById(labSystemId);
-			t = thresholdRepository
-					.findOptionalBySampleTypeIdAndParamIdAndInstrumentIdAndIsEnabledTrueAndLabSystemIdIsNull(
-							sampleTypeId, paramId, cvId);
-			if (t.isPresent()) {
-				t.get().setLabSystem(ls.get());
-				// t.get().setGuideSet(ls.get().getGuideSet(sampleTypeId));
-				switch (t.get().getThresholdType()) {
-				case SIGMALOG2:
-					entityManager.detach(t.get());
-					t.get().setId(null);
-					// save threshold params for new labsystem threshold
-					Threshold labSystemSigmaThreshold = saveSigmaLog2Threshold((SigmaLog2Threshold) t.get());
-					entityManager.detach(labSystemSigmaThreshold);
-					saveThresholdParams(labSystemSigmaThreshold);
-					return labSystemSigmaThreshold;
-				case HARDLIMIT:
-					entityManager.detach(t.get());
-					t.get().setId(null);
-					Threshold labSystemHardLimitThreshold = saveHardLimitThreshold((HardLimitThreshold) t.get());
-					entityManager.detach(labSystemHardLimitThreshold);
-					saveThresholdParams(labSystemHardLimitThreshold);
-					return labSystemHardLimitThreshold;
-				default:
-					break;
-				}
-			}
-
-		}
-		return null;
-	}
-	*/
-
-	/**
-	 * Find a threshold, if not exists create a new one
-	 * 
-	 * @param sampleTypeQCCV
-	 * @param paramQCCV
-	 * @param cvId
-	 * @param labSystemApiKey
-	 * @return
-	 */
-	/*
-	public Threshold findThresholdBySampleTypeQCCVAndParamQCCVAndInstrumentQCCVAndLabSystemApiKey(String sampleTypeQCCV,
-			String paramQCCV, String cvId, UUID labSystemApiKey) {
-		// check if threshold exists for the current cv
-		Optional<Threshold> t = thresholdRepository
-				.findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccvAndLabSystemApiKeyIsNull(
-						sampleTypeQCCV, paramQCCV, cvId);
-		if (!t.isPresent()) {
-			return null;
-		}
-		// check if exists for the current labSystem, if not, create
-		t = thresholdRepository
-				.findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccvAndLabSystemApiKeyAndIsEnabledTrue(
-						sampleTypeQCCV, paramQCCV, cvId, labSystemApiKey);
-		if (t.isPresent()) {
-			return t.get();
-		} else {
-			// create and return
-			Optional<LabSystem> ls = labSystemRepository.findByApiKey(labSystemApiKey);
-			t = thresholdRepository
-					.findOptionalBySampleTypeQualityControlControlledVocabularyAndParamQccvAndInstrumentQccv(
-							sampleTypeQCCV, paramQCCV, cvId);
-			if (t.isPresent()) {
-				t.get().setLabSystem(ls.get());
-				switch (t.get().getThresholdType()) {
-				case SIGMA:
-					entityManager.detach(t.get());
-					t.get().setId(null);
-					// save threshold params for new labsystem threshold
-					Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaLog2Threshold) t.get());
-					entityManager.detach(labSystemSigmaThreshold);
-					saveThresholdParams(labSystemSigmaThreshold);
-					return labSystemSigmaThreshold;
-				case HARDLIMIT:
-					entityManager.detach(t.get());
-					t.get().setId(null);
-					Threshold labSystemHardLimitThreshold = saveHardLimitThreshold((HardLimitThreshold) t.get());
-					entityManager.detach(labSystemHardLimitThreshold);
-					saveThresholdParams(labSystemHardLimitThreshold);
-					return labSystemHardLimitThreshold;
-				default:
-					break;
-				}
-			}
-
-		}
-		return null;
-	}
-	*/
-
-	/**
-	 * Save the params of a new labsystem threshold It is necessary to detach the
-	 * entity in order to persist because it still hold the threshold, and the
-	 * threshold id of the parent (default) threshold.
-	 * 
-	 * @param labSystemThreshold
-	 */
-	private void saveThresholdParams(Threshold labSystemThreshold) {
-		for (ThresholdParams p : labSystemThreshold.getThresholdParams()) {
-			entityManager.detach(p);
-			p.setThresholdParamsId(null);
-			p.setThreshold(labSystemThreshold);
-			ThresholdParamsId pid = new ThresholdParamsId();
-			pid.setContextSourceId(p.getContextSource().getId());
-			pid.setThresholdId(labSystemThreshold.getId());
-			p.setThresholdParamsId(pid);
-			thresholdParamsRepository.save(p);
 		}
 	}
 

@@ -59,9 +59,9 @@ public class Threshold implements Cloneable {
 	@Column(name="is_enabled", columnDefinition="tinyint(1) default 1")
     private boolean isEnabled;
 	
-	@JsonProperty
-	@Column(name="is_zero_no_data", columnDefinition="tinyint(1) default 0")
-    private boolean isZeroNoData;
+//	@JsonProperty
+//	@Column(name="is_zero_no_data", columnDefinition="tinyint(1) default 0")
+//    private boolean isZeroNoData;
 	
     @Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
@@ -227,13 +227,13 @@ public class Threshold implements Cloneable {
 		this.isEnabled = isEnabled;
 	}
 
-	public boolean getIsZeroNoData() {
-		return isZeroNoData;
-	}
-
-	public void setIsZeroNoData(boolean isZeroNoData) {
-		this.isZeroNoData = isZeroNoData;
-	}
+//	public boolean getIsZeroNoData() {
+//		return isZeroNoData;
+//	}
+//
+//	public void setIsZeroNoData(boolean isZeroNoData) {
+//		this.isZeroNoData = isZeroNoData;
+//	}
 
 	public Direction getNonConformityDirection() {
 		return nonConformityDirection;
