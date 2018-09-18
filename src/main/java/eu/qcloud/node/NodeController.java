@@ -33,6 +33,7 @@ import eu.qcloud.helper.PasswordGenerator;
 import eu.qcloud.security.model.Authority;
 import eu.qcloud.security.model.AuthorityName;
 import eu.qcloud.security.model.User;
+import eu.qcloud.security.model.UserPasswordChange;
 import eu.qcloud.security.repository.UserRepository.UserWithUuid;
 import eu.qcloud.security.service.UserService;
 /**
@@ -216,6 +217,21 @@ public class NodeController {
 	public List<UserWithUuid> getUsers() {
 		User manager = getManagerFromSecurityContext();
 		return userService.findAllNodeUsers(manager.getNode().getId());
+	}
+	
+	@PreAuthorize("hasRole('USER')")
+	@RequestMapping(value = "/api/node/user/password", method = RequestMethod.PUT)
+	public void updateUserPassword(@RequestBody UserPasswordChange userPassword) {
+		// check current password
+		User user = getManagerFromSecurityContext();
+		if(passwordEncoder().matches(userPassword.getCurrentPassword(), user.getPassword())) {
+			// password correct, store
+			user.setPassword(passwordEncoder().encode(userPassword.getNewPassword()));
+			userService.saveUser(user);
+		} else {
+			// throw exception
+			throw new InvalidActionException("Incorrect current password.");
+		}
 	}
 
 	/*
