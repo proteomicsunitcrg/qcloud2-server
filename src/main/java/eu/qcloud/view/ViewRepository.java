@@ -19,7 +19,6 @@ public interface ViewRepository extends CrudRepository<View, Long> {
 	@Query("SELECT v from View v where v.cv.qccv=?1 and v.isDefault=true")
 	List<View> findByCvCVId(String cvId);
 	
-	
 	List<View> findByIsDefaultTrue();
 	
 	View findByCvIdAndSampleTypeCategoryId(Long cvId, Long sampleTypeCategoryId);
@@ -31,6 +30,11 @@ public interface ViewRepository extends CrudRepository<View, Long> {
 		String getName();
 		User getUser();
 		Instrument getCv();
+		UUID getApiKey();
+	}
+	
+	interface OnlyViewApiKey {
+		String getName();
 		UUID getApiKey();
 	}
 	

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -24,6 +26,7 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.node.Node;
+import eu.qcloud.userDefaultView.UserDefaultView;
 
 @Entity
 @Table(name = "user")
@@ -39,6 +42,9 @@ public class User {
     @Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")    
     private UUID apiKey;
     
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="user_default_view_id")
+    private UserDefaultView userDefaultView;
 	
 	@Column(name = "USERNAME", length = 50, unique = true)
     @NotNull
@@ -172,4 +178,14 @@ public class User {
 	public void setApiKey(UUID apiKey) {
 		this.apiKey = apiKey;
 	}
+
+	public UserDefaultView getUserDefaultView() {
+		return userDefaultView;
+	}
+
+	public void setUserDefaultView(UserDefaultView userDefaultView) {
+		this.userDefaultView = userDefaultView;
+	}
+	
+	
 }
