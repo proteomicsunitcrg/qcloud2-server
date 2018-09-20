@@ -128,7 +128,7 @@ public class LabSystemController {
 	
 	
 	
-	@PreAuthorize("hasRole('MANAGER')")
+	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value="/api/system/{apikey}",method= RequestMethod.GET)
 	public LabSystem getSystemById(@PathVariable UUID apikey) {
 		Optional<LabSystem> system = labSystemService.findSystemByApiKey(apikey);

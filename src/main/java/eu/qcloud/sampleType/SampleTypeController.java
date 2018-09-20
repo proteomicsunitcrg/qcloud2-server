@@ -28,7 +28,7 @@ import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
  *
  */
 @RestController
-@PreAuthorize("hasRole('ADMIN')")
+
 public class SampleTypeController {
 	@Autowired
 	private SampleTypeService sampleTypeService;
@@ -38,8 +38,9 @@ public class SampleTypeController {
 	 * @param sampleType the sample type to insert
 	 * @param sampleTypeCategoryApiKey the apikey of the category
 	 * @return the inserted sample type
-	 */
+	 */	
 	@RequestMapping(value="/api/sample/{sampleTypeCategoryApiKey}",method= RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public SampleType addSampleType(@RequestBody SampleType sampleType,@PathVariable UUID sampleTypeCategoryApiKey) {
 		return sampleTypeService.addSampleType(sampleType,sampleTypeCategoryApiKey);
 	}
@@ -48,6 +49,7 @@ public class SampleTypeController {
 	 * Return all sample types
 	 * @return a list with all sample types 
 	 */
+	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value="/api/sample", method=RequestMethod.GET)
 	public List<SampleTypeOnlyName> getAllSampleType() {
 		return sampleTypeService.getAllSampleType();
@@ -58,6 +60,7 @@ public class SampleTypeController {
 	 * HIGHWITHISOTOPOLOGUE complexity
 	 * @return a list of sample types
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/api/sample/noiso", method=RequestMethod.GET)
 	public List<SampleTypeOnlyName> getAllSampleTypesNoIsotopolgues() {
 		return sampleTypeService.getAllSampleTypeNoIsotopologues();		
@@ -68,6 +71,7 @@ public class SampleTypeController {
 	 * HIGHWITHISOTOPOLOGUE complexity
 	 * @return a list of sample types
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/api/sample/yesiso", method=RequestMethod.GET)
 	public List<SampleTypeOnlyName> getAllSampleTypesIsotopolgues() {
 		return sampleTypeService.getAllSampleTypeIsotopologues();		
@@ -78,6 +82,7 @@ public class SampleTypeController {
 	 * the sample type peptides
 	 * @return a list of the sample types with a list its peptides
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/api/sample/composition", method=RequestMethod.GET)
 	public List<WithPeptide> getFullSampleType() {
 		return sampleTypeService.getAllSampleTypeWithPeptide();
@@ -99,6 +104,7 @@ public class SampleTypeController {
 	 * @param sampleType
 	 */
 	@RequestMapping(value="/api/sample/makemain/{sampleTypeCategoryApiKey}/{sampleTypeQCCV}", method=RequestMethod.PUT)
+	@PreAuthorize("hasRole('ADMIN')")
 	public void doMainSampleType(@PathVariable UUID sampleTypeCategoryApiKey,@PathVariable String sampleTypeQCCV) {
 		sampleTypeService.makeMainSampleType(sampleTypeCategoryApiKey,sampleTypeQCCV);
 	}
@@ -109,6 +115,7 @@ public class SampleTypeController {
 	 * @return a list with the requested sample types
 	 */
 	@RequestMapping(value="/api/sample/type/{complexity}", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
 	public List<SampleTypeOnlyName> findAllByCategoryComplexity(@PathVariable(value="complexity") SampleTypeComplexity complexity) {
 		return sampleTypeService.findByCategorySampleTypeComplexity(complexity);
 	}
@@ -118,9 +125,10 @@ public class SampleTypeController {
 	 * @param sampleTypeCategoryId
 	 * @return
 	 */
-	@RequestMapping(value="/api/sample/main/{sampleTypeCategoryQCCV}", method=RequestMethod.GET)
-	public SampleType getDefaultSampleTypeBySampleTypeCategoryId(@PathVariable UUID sampleTypeCategoryQCCV) {
-		return sampleTypeService.getMainSampleTypeBySampleTypeCategoryApiKey(sampleTypeCategoryQCCV);
+	@RequestMapping(value="/api/sample/main/{sampleTypeCategoryApiKey}", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
+	public SampleType getDefaultSampleTypeBySampleTypeCategoryApiKey(@PathVariable UUID sampleTypeCategoryApiKey) {
+		return sampleTypeService.getMainSampleTypeBySampleTypeCategoryApiKey(sampleTypeCategoryApiKey);
 	}
 	
 	

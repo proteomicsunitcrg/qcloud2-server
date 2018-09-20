@@ -27,7 +27,6 @@ import eu.qcloud.sampleType.SampleType;
  *
  */
 @RestController
-@PreAuthorize("hasRole('ADMIN')")
 public class FileController {
 	
 	@Autowired
@@ -38,10 +37,12 @@ public class FileController {
 		return fileService.addNewFile(file);
 	}
 	@RequestMapping(value="/api/file", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
 	public List<File> getAllFiles() {
 		return fileService.getAllFiles();
 	}
 	@RequestMapping(value="/api/file/{fileId}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
 	public OnlySmalls getFileById(@PathVariable Long fileId) {
 		return fileService.getFileById(fileId);
 	}
@@ -54,6 +55,7 @@ public class FileController {
 	 * @return
 	 */
 	@RequestMapping(value="/api/file/{sampleTypeQCCV}/{labSystemApiKey}", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public File addFileSpecial(@RequestBody File file,@PathVariable String sampleTypeQCCV,@PathVariable UUID labSystemApiKey) {
 		return fileService.addFromWorkflow(file, sampleTypeQCCV, labSystemApiKey);
 	}
@@ -65,6 +67,7 @@ public class FileController {
 	 * @return
 	 */
 	@RequestMapping(value="/api/file/{sampleTypeQCCV}/{labSystemApikey}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public File getLastFileBySampleTypeQCCVAndLabSystemApikey(@PathVariable String sampleTypeQCCV,@PathVariable UUID labSystemApikey) {
 		return fileService.getLastFileBySampleTypeQCCVAndLabSystemApikey(sampleTypeQCCV, labSystemApikey);
 	}
@@ -78,6 +81,7 @@ public class FileController {
 	 * @return the inserted file
 	 */
 	@RequestMapping(value="/api/file/add/{sampleTypeQCCV}", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public File addNewFile(@PathVariable String sampleTypeQCCV, @RequestBody File file) {
 		return fileService.addFile(sampleTypeQCCV, file);
 	}
@@ -87,22 +91,20 @@ public class FileController {
 	 * @param checksum
 	 */
 	@RequestMapping(value="/api/file/{checksum}", method = RequestMethod.DELETE)
+	@PreAuthorize("hasRole('ADMIN')")
 	public void deleteNewFile(@PathVariable String checksum) {
 		fileService.deleteFile(checksum);
 	}
-	/**
-	 * Delete this when all the migration is completed
-	 * @param filename
-	 * @return
-	 */
+	
 	@RequestMapping(value="/api/file/name/{filename}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public OnlyChecksum findByFilename(@PathVariable String filename) {
 		return fileService.getFileByFilename(filename);
 	}
 	
 	@RequestMapping(value="/api/file/sampletypes/{labSystemApiKey}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public List<SampleType> findSampleTypesUseByLabSystemByLabSystemApiKey(@PathVariable UUID labSystemApiKey) {
-		
 		return fileService.findSampleTypesByLabSystemApiKey(labSystemApiKey);
 	}
 	

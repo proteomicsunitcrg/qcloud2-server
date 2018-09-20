@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.helper.PasswordGenerator;
+import eu.qcloud.mail.EmailService;
+import eu.qcloud.mail.Mail;
 import eu.qcloud.security.model.Authority;
 import eu.qcloud.security.model.AuthorityName;
 import eu.qcloud.security.model.User;
@@ -51,7 +53,7 @@ public class NodeController {
 	UserService userService;
 
 	@Autowired
-	// private EmailService emailService;
+	private EmailService emailService;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -237,19 +239,19 @@ public class NodeController {
 	/*
 	 * Development functions
 	 */
-	/*
+	
 	@RequestMapping(value = "/api/email", method = RequestMethod.GET)
 	public void sendEmail() {
 		System.out.println("hola");
 		Mail mail = new Mail();
-		mail.setFrom("daniel.mancera.crg@gmail.com");
+		mail.setFrom("qcloud@crg.es");
 		mail.setTo("daniel.mancera@crg.eu");
 		mail.setSubject("Sending Simple Email with JavaMailSender Example");
 		mail.setContent("This tutorial demonstrates how to send a simple email using Spring Framework.");
 
 		emailService.sendSimpleMessage(mail);
 	}
-	*/
+	
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/node/info/{nodeUuidString}", method = RequestMethod.GET)
