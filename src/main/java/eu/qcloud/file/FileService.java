@@ -109,6 +109,10 @@ public class FileService {
 		file.setGuideSet(guideSet);
 		
 		SampleType st = sampleTypeService.getSampleTypeByQCCV(sampleTypeQCCV);
+		if(st == null) {
+			logger.error("ERROR: File NOT inserted because sample type is not found: " + sampleTypeQCCV);
+			throw new DataRetrievalFailureException("Sample type not found.");
+		}
 		Optional<LabSystem> ls = labSystemService.findSystemByApiKey(labSystemApiKey);
 		if(ls.isPresent()) {
 			file.setSampleType(st);
