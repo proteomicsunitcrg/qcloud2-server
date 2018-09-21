@@ -109,7 +109,7 @@ public class FileService {
 		if(ls.isPresent()) {
 			file.setSampleType(st);
 			file.setLabSystem(ls.get());
-			GuideSet mgs = ls.get().getGuideSet(st.getId());
+			GuideSet mgs = ls.get().getGuideActiveSetBySampleType(st.getId());
 			if(mgs!=null) {
 				file.setGuideSet(mgs);
 			}

@@ -142,4 +142,7 @@ public interface FileRepository extends JpaRepository<File, Long>{
 	public Optional<File> findOptionalByChecksum(String fileChecksum);
 	
 	public List<File> findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(UUID labSystemApiKey, String sampleTypeQccv, Date startDate, Date endDate);
+
+	public Long countByLabSystemIdAndSampleTypeIdAndCreationDateBetween(Long id, Long id2, Date startDate,
+			Date endDate);
 }

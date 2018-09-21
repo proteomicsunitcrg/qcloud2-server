@@ -36,7 +36,7 @@ public class LabSystemService {
 			// Getting its active guide sets
 			List<SampleType> sampleTypes = fileRepository.findDistinctSampleTypeByLabSystemId(ls.getId());
 			for(SampleType st: sampleTypes) {
-				GuideSet gs = ls.getGuideSet(st.getId());
+				GuideSet gs = ls.getGuideActiveSetBySampleType(st.getId());
 				if(gs==null) {
 					// generate a guide set
 					AutomaticGuideSet ags = new AutomaticGuideSet();
@@ -45,6 +45,10 @@ public class LabSystemService {
 					ls.getGuideSets().add(ags);
 					// ags.setTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeIdAndCreationDateBetween(ls.getId(), st.getId(), gs.getStartDate(), gs.getEndDate()));
 					ags.setLabSystemTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeId(ls.getId(), st.getId()));
+				} else {
+					// get guideset total files
+					gs.setTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeIdAndCreationDateBetween(ls.getId(), st.getId(), gs.getStartDate(), gs.getEndDate()));
+					gs.setLabSystemTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeId(ls.getId(), st.getId()));
 				}
 			}
 		}

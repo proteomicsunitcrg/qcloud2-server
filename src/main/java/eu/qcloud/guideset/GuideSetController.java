@@ -42,7 +42,7 @@ public class GuideSetController {
 	
 
 	@RequestMapping(value = "/api/guideset/checkfiles/{labSystemApiKey}/{startDate}/{endDate}/{sampleTypeQccv}", method = RequestMethod.GET)
-	public List<GuideSetPeptideStatus> getFilesInThreshold(@PathVariable UUID labSystemApiKey, @PathVariable String startDate,
+	public List<GuideSetContextSourceStatus> getFilesInThreshold(@PathVariable UUID labSystemApiKey, @PathVariable String startDate,
 			@PathVariable String endDate, @PathVariable String sampleTypeQccv) {
 		Date start = Date.valueOf(startDate);
 		Date end = Date.valueOf(endDate);

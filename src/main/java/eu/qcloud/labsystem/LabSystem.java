@@ -74,7 +74,7 @@ public class LabSystem {
 		return enabledGuideSets;
 	}
 	
-	public GuideSet getGuideSet(Long sampleTypeId) {
+	public GuideSet getGuideActiveSetBySampleType(Long sampleTypeId) {
 		GuideSet guideSet = null;
 		if(guideSets == null) {
 			return null;

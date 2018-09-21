@@ -45,18 +45,18 @@ public class GuideSetService {
 						labSystemApiKey, sampleTypeQccv, startDate, endDate);
 	}
 	
-	public List<GuideSetPeptideStatus> evaluateGuideSet(UUID labSystemApiKey, Date startDate, Date endDate, String sampleTypeQccv) {
+	public List<GuideSetContextSourceStatus> evaluateGuideSet(UUID labSystemApiKey, Date startDate, Date endDate, String sampleTypeQccv) {
 		
-		List<GuideSetPeptideStatus> evaluation = new ArrayList<>();
+		List<GuideSetContextSourceStatus> evaluation = new ArrayList<>();
 		List<Threshold> thresholds = thresholdRepository.findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabulary(labSystemApiKey, sampleTypeQccv);
 			
 		for(Threshold threshold: thresholds) {
 			for(ThresholdParams thresholdParam: threshold.getThresholdParams()) {
 				Long count = dataRepository.countByContextSourceIdAndParamIdAndFileLabSystemApiKeyAndFileCreationDateBetweenAndCalculatedValueIsNotNull(thresholdParam.getContextSource().getId(), threshold.getParam().getId(), labSystemApiKey, startDate, endDate);
 				if(count < minValidPointsManualThreshold) {
-					evaluation.add(new GuideSetPeptideStatus(threshold.getParam(), (Peptide) thresholdParam.getContextSource(), PeptideStatus.NO_VALID, count));
+					evaluation.add(new GuideSetContextSourceStatus(threshold.getParam(), thresholdParam.getContextSource(), ContextSourceStatus.NO_VALID, count));
 				} else if(count < recomendedValidPoints) {
-					evaluation.add(new GuideSetPeptideStatus(threshold.getParam(), (Peptide) thresholdParam.getContextSource(), PeptideStatus.NOT_RECOMENDED, count));
+					evaluation.add(new GuideSetContextSourceStatus(threshold.getParam(), thresholdParam.getContextSource(), ContextSourceStatus.NOT_RECOMENDED, count));
 				}
 			}
 		}
