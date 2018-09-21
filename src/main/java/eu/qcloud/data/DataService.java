@@ -325,6 +325,7 @@ public class DataService {
 		dataFromPipeline.setFile(file);
 		// Loop through the parameters
 		for (ParameterData parameterData : dataFromPipeline.getData()) {
+			logger.info("Insert data of :" + parameterData.getParameter().getName());
 			// Loop through the parameters
 			Param param = paramRepository.findByQccv(parameterData.getParameter().getqCCV());
 			if (param == null) {
@@ -352,7 +353,7 @@ public class DataService {
 					}
 					break;
 				default:
-					System.out.println("i dont know");
+					logger.info("Unknown isFor");
 					break;
 				}
 
@@ -364,17 +365,6 @@ public class DataService {
 				d.setCalculatedValue(calc);
 				dataValue.setCalculatedValue(calc);
 				dataRepository.save(d);
-				// Do threshold checks
-				/*
-				if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
-						file.getSampleType().getId()) > minPointsAutoThreshold) {
-					evaluateDataForNonConformities(file, dataFromPipeline);
-					regenerateParamThresholds(file, param);
-					
-				}
-				*/
-				
-
 			}
 		}
 		// Do threshold checks

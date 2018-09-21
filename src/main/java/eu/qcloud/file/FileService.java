@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -37,6 +39,8 @@ public class FileService {
 	
 	@Autowired
 	private AutomaticGuideSetRepository guideSetRepository;
+	
+	private final Log logger = LogFactory.getLog(this.getClass());
 	
 	public File addNewFile(File file) {
 		
@@ -96,9 +100,9 @@ public class FileService {
 	public File addFromWorkflow(File file, String sampleTypeQCCV, UUID labSystemApiKey) {
 		// Find if file already exists
 		if(getFileByChecksum(file.getChecksum())!= null) {
+			logger.error("ERROR: File NOT inserted with duplicated checksum: " + file.getChecksum());
 			throw new DataIntegrityViolationException("A file with that checksum already exists!");
 		}
-				
 		
 		GuideSet guideSet = guideSetRepository.findByIsActiveTrue().get(0);
 		
@@ -113,6 +117,7 @@ public class FileService {
 			if(mgs!=null) {
 				file.setGuideSet(mgs);
 			}
+			logger.info("File inserted with checksum: " + file.getChecksum() + " for labsystem: " + file.getLabSystem().getName());
 			return fileRepository.save(file);
 		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");
