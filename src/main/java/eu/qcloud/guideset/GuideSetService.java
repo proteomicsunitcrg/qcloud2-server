@@ -52,6 +52,9 @@ public class GuideSetService {
 			
 		for(Threshold threshold: thresholds) {
 			for(ThresholdParams thresholdParam: threshold.getThresholdParams()) {
+				if(!thresholdParam.getIsEnabled()) {
+					continue;
+				}
 				Long count = dataRepository.countByContextSourceIdAndParamIdAndFileLabSystemApiKeyAndFileCreationDateBetweenAndCalculatedValueIsNotNull(thresholdParam.getContextSource().getId(), threshold.getParam().getId(), labSystemApiKey, startDate, endDate);
 				if(count < minValidPointsManualThreshold) {
 					evaluation.add(new GuideSetContextSourceStatus(threshold.getParam(), thresholdParam.getContextSource(), ContextSourceStatus.NO_VALID, count));
