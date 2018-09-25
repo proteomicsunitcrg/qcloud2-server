@@ -88,9 +88,23 @@ public class LabSystem {
 			}
 		}
 		return guideSet;
-		
 	}
 	
+	public GuideSet getActiveGuideSetBySampleTypeQccv(String sampleTypeQccv) {
+		GuideSet guideSet = null;
+		if(guideSets == null) {
+			return null;
+		}
+		if(guideSets.size()> 0) {
+			for(GuideSet gs : guideSets) {
+				if (gs.getIsActive() && gs.getSampleType().getQualityControlControlledVocabulary().equals(sampleTypeQccv)) {
+					guideSet= gs;
+					break;
+				}
+			}
+		}
+		return guideSet;	
+	}
 	
 	public UUID getApiKey() {
 		return apiKey;

@@ -17,5 +17,4 @@ public interface GuideSetRepository extends CrudRepository<GuideSet, Long> {
 	
 	// List<GuideSet> findByLabSystemApiKeyAndIsActiveTrue(UUID labSystemApiKey);
 	
-	
 }

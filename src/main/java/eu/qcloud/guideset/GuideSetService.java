@@ -3,19 +3,20 @@ package eu.qcloud.guideset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
-import eu.qcloud.contextSource.peptide.Peptide;
+import eu.qcloud.contextSource.ContextSource;
+import eu.qcloud.contextSource.ContextSourceRepository;
 import eu.qcloud.data.DataRepository;
 import eu.qcloud.file.FileRepository;
-import eu.qcloud.param.Param;
-import eu.qcloud.param.ParamRepository;
-import eu.qcloud.sampleComposition.SampleComposition;
-import eu.qcloud.sampleComposition.SampleCompositionRepository;
+import eu.qcloud.labsystem.LabSystem;
+import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdRepo;
 import eu.qcloud.threshold.params.ThresholdParams;
@@ -31,6 +32,15 @@ public class GuideSetService {
 	
 	@Autowired
 	private ThresholdRepo thresholdRepository;
+	
+	@Autowired
+	private LabSystemRepository labSystemRepository;
+	
+	@Autowired
+	private GuideSetRepository guideSetRepository;
+	
+	@Autowired
+	private ContextSourceRepository contextSourceRepository;
 	
 	@Value("${qcloud.threshold.min-valid-context-source-points}")
 	private int minValidPointsManualThreshold;
@@ -66,25 +76,58 @@ public class GuideSetService {
 		return evaluation;
 	}
 	
-	
+	public GuideSetContextSourceStatus evaluateGuideSetContextSource(UUID labSystemApiKey, Date startDate, Date endDate, String sampleTypeQccv, ContextSource contextSource) {
+		
+		GuideSetContextSourceStatus evaluation = null;
+		List<Threshold> thresholds = thresholdRepository.findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabulary(labSystemApiKey, sampleTypeQccv);
+			
+		for(Threshold threshold: thresholds) {
+			for(ThresholdParams thresholdParam: threshold.getThresholdParams()) {
+				if(thresholdParam.getContextSource().getId() == contextSource.getId()) {
+					Long count = dataRepository.countByContextSourceIdAndParamIdAndFileLabSystemApiKeyAndFileCreationDateBetweenAndCalculatedValueIsNotNull(thresholdParam.getContextSource().getId(), threshold.getParam().getId(), labSystemApiKey, startDate, endDate);
+					if(count < minValidPointsManualThreshold) {
+						return  new GuideSetContextSourceStatus(threshold.getParam(), thresholdParam.getContextSource(), ContextSourceStatus.NO_VALID, count);
+					} else if(count < recomendedValidPoints) {
+						return new GuideSetContextSourceStatus(threshold.getParam(), thresholdParam.getContextSource(), ContextSourceStatus.NOT_RECOMENDED, count);
+					}	
+				}
+			}
+		}
+		return evaluation;
+	}
 
-	
-//	public void setAllLabSystemGuideSetsBySampleTypeDisabled(List<GuideSet> guideSets, GuideSet guideSet) {
-//		guideSets.forEach(gs -> {
-//			if (gs.getSampleType().getQualityControlControlledVocabulary()
-//					.equals(guideSet.getSampleType().getQualityControlControlledVocabulary())) {
-//				gs.setIsActive(false);
-//				guideSetRepository.save(gs);	
-//			}
-//		});
-//
-//	}
-//
-//	public GuideSet addNewGuideSet(GuideSet guideSet) {
-//		guideSet.setIsActive(true);
-//		guideSet.setApiKey(UUID.randomUUID());
-//		return guideSetRepository.save(guideSet);
-//	}
-	
+	public GuideSetContextSourceStatus checkCurrentGuideSet(UUID labSystemApiKey, String sampleTypeQccv,
+			UUID contextSourceApiKey) {
+		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
+		if(!labSystem.isPresent()) {
+			throw new DataRetrievalFailureException("Lab system not found");
+		}
+		
+		GuideSet gs = labSystem.get().getActiveGuideSetBySampleTypeQccv(sampleTypeQccv);
+		if(gs == null) {
+			return null;
+		}
+		Optional<ContextSource> cs = contextSourceRepository.findByApiKey(contextSourceApiKey);
+		if(!cs.isPresent()) {
+			throw new DataRetrievalFailureException("Context source not found");
+		}
+		
+		return evaluateGuideSetContextSource(labSystemApiKey, gs.getStartDate(), gs.getEndDate(), sampleTypeQccv, cs.get());
+		
+	}
+
+	public void resetLabSystemGuideSetBySampleType(UUID labSystemApiKey, Threshold threshold) {
+		if(!labSystemApiKey.equals(threshold.getLabSystem().getApiKey())) {
+			throw new DataRetrievalFailureException("Lab system not found");
+		}
+		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
+		if(!labSystem.isPresent()) {
+			throw new DataRetrievalFailureException("Lab system not found");
+		}
+		GuideSet gs =labSystem.get().getActiveGuideSetBySampleTypeQccv(threshold.getSampleType().getQualityControlControlledVocabulary());
+		gs.setIsActive(false);
+		guideSetRepository.save(gs);
+		
+	}
 
 }
