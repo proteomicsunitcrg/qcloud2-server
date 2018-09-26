@@ -10,6 +10,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.category.Category;
+import eu.qcloud.category.CategoryRepository;
 /**
  * Controlled vocabulary service
  * @author dmancera
@@ -20,8 +21,21 @@ public class InstrumentService {
 	@Autowired
 	private InstrumentRepository cvRepository;
 	
+	@Autowired
+	private CategoryRepository categoryRepository;
+	
 	public Instrument addCV(Instrument cv, Long categoryId) {
 		cv.setCategory(new Category(categoryId,""));
+		cvRepository.save(cv);
+		return cv;
+	}
+	
+	public Instrument addCV(Instrument cv, UUID categoryApiKey) {
+		Optional<Category> category = categoryRepository.findOptionalByApiKey(categoryApiKey);
+		if(!category.isPresent()) {
+			throw new DataRetrievalFailureException("Category not found");
+		}
+		cv.setCategory(category.get());
 		cvRepository.save(cv);
 		return cv;
 	}

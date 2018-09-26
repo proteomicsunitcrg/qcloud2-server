@@ -40,6 +40,13 @@ public class InstrumentController {
 	public Instrument addCV(@RequestBody Instrument cv, @PathVariable Long categoryId) {
 		return instrumentService.addCV(cv, categoryId);
 	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "/api/cv/category/apikey/{categoryApiKey}", method = RequestMethod.POST)
+	public Instrument addCV(@RequestBody Instrument cv, @PathVariable UUID categoryApiKey) {
+		return instrumentService.addCV(cv, categoryApiKey);
+	}
+	
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value="/api/cv", method = RequestMethod.GET)
 	public List<Instrument> getAllCV() {
