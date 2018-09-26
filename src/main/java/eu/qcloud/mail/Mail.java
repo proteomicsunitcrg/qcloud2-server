@@ -1,10 +1,13 @@
 package eu.qcloud.mail;
 
+import java.util.Map;
+
 public class Mail {
 	private String from;
 	private String to;
 	private String subject;
 	private String content;
+	private Map model;
 
 	public Mail() {
 	}
@@ -46,6 +49,14 @@ public class Mail {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+	
+	public Map getModel() {
+		return model;
+	}
+
+	public void setModel(Map model) {
+		this.model = model;
 	}
 
 	@Override

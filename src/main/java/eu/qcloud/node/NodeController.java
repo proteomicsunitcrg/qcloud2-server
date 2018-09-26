@@ -4,9 +4,12 @@ package eu.qcloud.node;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import javax.mail.MessagingException;
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
@@ -38,6 +41,7 @@ import eu.qcloud.security.model.User;
 import eu.qcloud.security.model.UserPasswordChange;
 import eu.qcloud.security.repository.UserRepository.UserWithUuid;
 import eu.qcloud.security.service.UserService;
+import freemarker.template.TemplateException;
 /**
  * NodeController
  * Main controller for node related operations
@@ -120,7 +124,7 @@ public class NodeController {
 				.useLower(true).useUpper(true).build();
 		String password = passwordGenerator.generate(8);
 		// newUser.setPassword(passwordEncoder().encode(newUser.getPassword()));
-		System.out.println("pw: " + password);
+		
 		newUser.setPassword(passwordEncoder().encode(password));
 
 		Authority userRole = new Authority();
@@ -132,6 +136,9 @@ public class NodeController {
 		newUser.setApiKey(userUuid);
 		try {
 			userService.saveUser(newUser);
+			// send email to new user
+			sendNewUserHtmlEmail(newUser, password);
+			
 		} catch (DataIntegrityViolationException e) {
 			throw new DataIntegrityViolationException("Email already in use");
 		} catch (ConstraintViolationException ee) {
@@ -242,14 +249,47 @@ public class NodeController {
 	
 	@RequestMapping(value = "/api/email", method = RequestMethod.GET)
 	public void sendEmail() {
+		// Example.sendEmail();
+		
 		System.out.println("hola");
 		Mail mail = new Mail();
-		mail.setFrom("qcloud@crg.es");
+		mail.setFrom("daniel.mancera@crg.es");
 		mail.setTo("daniel.mancera@crg.eu");
 		mail.setSubject("Sending Simple Email with JavaMailSender Example");
 		mail.setContent("This tutorial demonstrates how to send a simple email using Spring Framework.");
 
 		emailService.sendSimpleMessage(mail);
+		
+	}
+	
+	private void sendNewUserEmail(User user, String password) {
+		Mail mail = new Mail();
+		mail.setFrom("daniel.mancera@crg.es");
+		mail.setTo(user.getEmail());
+		mail.setSubject("Welcome to QCloud 2.0");
+		mail.setContent("Login with your email and this password :" + password);
+
+		emailService.sendSimpleMessage(mail);
+		
+	}
+	
+	private void sendNewUserHtmlEmail(User user, String password) {
+		Mail mail = new Mail();
+		mail.setFrom("daniel.mancera@crg.es");
+		mail.setTo(user.getEmail());
+		mail.setSubject("Welcome to QCloud 2.0");
+		
+		Map<String, String> model = new HashMap<>();
+        model.put("name", user.getFirstname() + " " + user.getLastname());
+        model.put("password", password);
+        mail.setModel(model);
+        
+        try {
+			emailService.sendWelcomeHtmlMessage(mail);
+		} catch (MessagingException | IOException | TemplateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 
