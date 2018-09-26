@@ -571,7 +571,6 @@ public class DataService {
 				if (value < lowerLimit) {
 					return InstrumentStatus.DANGER;
 				} else if (value >= lowerLimit && value < midLimit) {
-					logger.info("ADDING A WARNINGGGG");
 					return InstrumentStatus.WARNING;
 				}
 			}
@@ -580,6 +579,20 @@ public class DataService {
 			if (value < lowerLimit || value > upperLimit) {
 				return InstrumentStatus.DANGER;
 			}
+			break;
+		case UP:
+			if (steps == 1) {
+				if(value > upperLimit) {
+					return InstrumentStatus.DANGER;
+				}	
+			} else {
+				if (value > upperLimit) {
+					return InstrumentStatus.DANGER;
+				} else if (value <= upperLimit && value > midLimit) {
+					return InstrumentStatus.WARNING;
+				}
+			}
+			
 			break;
 		default:
 			System.out.println("Direction not found");
