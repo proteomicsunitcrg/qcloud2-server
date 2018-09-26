@@ -325,7 +325,7 @@ public class DataService {
 		dataFromPipeline.setFile(file);
 		// Loop through the parameters
 		for (ParameterData parameterData : dataFromPipeline.getData()) {
-			logger.info("Insert data of :" + parameterData.getParameter().getName());
+			logger.info("Insert data of :" + parameterData.getParameter().getqCCV());
 			// Loop through the parameters
 			Param param = paramRepository.findByQccv(parameterData.getParameter().getqCCV());
 			if (param == null) {
@@ -821,7 +821,9 @@ public class DataService {
 
 		List<File> files = getFilesForAutoPlot(labSystem.get(), sampleType.get());
 
-		return getDataForPlot(labSystem.get(), param, Arrays.asList(contextSource.get()), sampleType.get(),
+//		return getDataForPlot(labSystem.get(), param, Arrays.asList(contextSource.get()), sampleType.get(),
+//				files.get(files.size() - 1).getCreationDate(), files.get(0).getCreationDate());
+		return getDataForPlot(labSystem.get(), threshold.get().getParam(), Arrays.asList(contextSource.get()), threshold.get().getSampleType(),
 				files.get(files.size() - 1).getCreationDate(), files.get(0).getCreationDate());
 	}
 
