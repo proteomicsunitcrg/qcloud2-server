@@ -323,6 +323,7 @@ public class DataService {
 			throw new DataRetrievalFailureException("File not found");
 		}
 		dataFromPipeline.setFile(file);
+		logger.info("Insert data of file:" + file.getFilename() + " - lab system: " + file.getLabSystem().getName());
 		// Loop through the parameters
 		for (ParameterData parameterData : dataFromPipeline.getData()) {
 			logger.info("Insert data of :" + parameterData.getParameter().getqCCV());
@@ -418,13 +419,9 @@ public class DataService {
 			}
 		}
 	}
+	/*
 	private void evaluateDataForParamNonConformities(File file, DataFromPipeline data) {
 
-		// delete previous warnings
-		/*
-		thresholdNonConformityRepository.deletePreviousWarnings(file.getLabSystem().getId(),
-				file.getSampleType().getId(), InstrumentStatus.WARNING.toString());
-		 */
 		for (ParameterData parameterData : data.getData()) {
 			// Get the threshold for this parameter, sample type and instrument
 			Threshold threshold = thresholdUtils
@@ -480,7 +477,7 @@ public class DataService {
 			}
 		}
 	}
-	
+	*/
 
 	private void evaluateDataForNonConformities(File file, DataFromPipeline data) {
 
@@ -528,7 +525,7 @@ public class DataService {
 						threshold.getSteps(), threshold.getNonConformityDirection());
 
 				if (is != InstrumentStatus.OK && threshold.isMonitored()) {
-					logger.info("Storing non conformity");
+					logger.info("NC -> " + file.getFilename());
 					ThresholdNonConformity tnc = new ThresholdNonConformity();
 					tnc.setStatus(is);
 					tnc.setContextSource(cs);
