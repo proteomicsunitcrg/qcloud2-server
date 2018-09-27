@@ -103,7 +103,7 @@ public class ThresholdUtils {
 				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
 		List<File> files = null;
 
-		if (param.isZeroNoData()) {
+		if (param.getIsZeroNoData()) {
 
 			files = fileRepository.findFilesExcludingZeroValuesFromDate(file.getLabSystem().getId(),
 					file.getSampleType().getId(), file.getCreationDate(), param.getId(), contextSource.getId(),
@@ -147,7 +147,7 @@ public class ThresholdUtils {
 				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
 		List<File> files = null;
 
-		if (param.isZeroNoData()) {
+		if (param.getIsZeroNoData()) {
 
 			files = fileRepository.findFilesExcludingZeroValuesFromDate(file.getLabSystem().getId(),
 					file.getSampleType().getId(), file.getCreationDate(), param.getId(), contextSource.getId(),

@@ -396,7 +396,7 @@ public class DataService {
 				List<DataForPlot> processedValue = processor.processData();
 
 				if (processedValue.get(0).getValue() != null && !processedValue.get(0).getValue().isNaN()) {
-					if (param.isZeroNoData() && value.getValue() == 0f) {
+					if (param.getIsZeroNoData() && value.getValue() == 0f) {
 						return null;
 					}
 					return processedValue.get(0).getValue();
@@ -503,7 +503,7 @@ public class DataService {
 						parameterData.getParameter().getIsFor());
 
 				value = dataValue.getCalculatedValue();
-				if (parameterData.getParameter().isZeroNoData()) {
+				if (parameterData.getParameter().getIsZeroNoData()) {
 					if (value == null) {
 						continue;
 					}

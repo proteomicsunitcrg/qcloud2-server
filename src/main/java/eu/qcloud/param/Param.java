@@ -76,11 +76,11 @@ public class Param {
 		this.name = name;
 	}
 
-	public boolean isZeroNoData() {
+	public boolean getIsZeroNoData() {
 		return isZeroNoData;
 	}
 
-	public void setZeroNoData(boolean isZeroNoData) {
+	public void setIsZeroNoData(boolean isZeroNoData) {
 		this.isZeroNoData = isZeroNoData;
 	}
 	
