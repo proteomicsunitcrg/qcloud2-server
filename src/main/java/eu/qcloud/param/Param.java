@@ -32,7 +32,7 @@ public class Param {
 	@Column(name="QCCV", unique=true)
 	private String qccv;
 	
-	@Column(name="is_zero_no_data", columnDefinition="tinyint(1) default 0")
+	@Column(name="is_zero_no_data", columnDefinition="bit default 0")
     private boolean isZeroNoData;
 	
 	public String getqCCV() {

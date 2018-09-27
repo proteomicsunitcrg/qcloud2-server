@@ -12,6 +12,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Type;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
@@ -29,7 +31,7 @@ public class Category {
     @Size(min = 4, max = 50)
     private String name;
     
-    @Column(name="MAIN", columnDefinition="boolean default false")
+    @Column(name="MAIN", columnDefinition="bit default 0")
     private boolean isMainDataSource;
     
     @Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")

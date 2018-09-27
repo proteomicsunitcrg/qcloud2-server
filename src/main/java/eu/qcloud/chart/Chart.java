@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.Instrument.Instrument;
@@ -43,14 +45,15 @@ public class Chart {
     @Column(name="name")
     private String name;
     
-    @Column(name="is_threshold", columnDefinition="tinyint(1) default 0")
+    @Column(name="is_threshold", columnDefinition="bit default 0")
     private boolean isThresholdEnabled;
 
     @Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
     private UUID apiKey;
     
-    @Column(name="is_normalized", columnDefinition="tinyint(1) default 0")
+    @Column(name="is_normalized", columnDefinition="bit default 0")
+    @Type(type = "org.hibernate.type.BooleanType")
     private boolean isNormalized;
     
     public UUID getApiKey() {

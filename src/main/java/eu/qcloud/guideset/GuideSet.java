@@ -53,7 +53,7 @@ public class GuideSet {
 	@Transient
 	private long labSystemTotalFiles;
 	
-	@Column(name="is_active", columnDefinition="tinyint(1) default 0")
+	@Column(name="is_active", columnDefinition="bit default 0")
 	private Boolean isActive;
 	
 	

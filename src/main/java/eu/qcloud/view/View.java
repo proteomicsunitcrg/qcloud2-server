@@ -38,7 +38,7 @@ public class View {
 	
 	private String name;
 	
-	@Column(name ="is_default",nullable= false,columnDefinition="tinyint(1) default 0")
+	@Column(name ="is_default", nullable= false, columnDefinition="bit default 1")
 	private boolean isDefault;
 
 	@ManyToOne

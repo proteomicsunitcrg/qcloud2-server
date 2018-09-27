@@ -19,7 +19,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.labsystem.LabSystem;
@@ -53,10 +52,10 @@ public class Threshold implements Cloneable {
 	@Column(name="name")
 	protected String name;
 	
-	@Column(name="is_monitored", columnDefinition="tinyint(1) default 1")
+	@Column(name="is_monitored", columnDefinition="bit default 1")
     private boolean isMonitored;
 	
-	@Column(name="is_enabled", columnDefinition="tinyint(1) default 1")
+	@Column(name="is_enabled", columnDefinition="bit default 1")
     private boolean isEnabled;
 	
 //	@JsonProperty

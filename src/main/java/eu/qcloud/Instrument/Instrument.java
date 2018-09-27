@@ -45,7 +45,7 @@ public class Instrument {
     @Column(name="cv_id")
     private String qccv;
     
-    @Column(name="enabled")
+    @Column(name="enabled", columnDefinition="bit default 0")
     private boolean enabled;
 
     @JsonIgnore

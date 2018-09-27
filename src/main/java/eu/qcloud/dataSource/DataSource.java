@@ -34,7 +34,7 @@ public class DataSource {
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
 	
-	@Column(name="enabled",columnDefinition="tinyint(1) default 1")
+	@Column(name="enabled", columnDefinition="bit default 1")
 	private boolean enabled;
 	
 	@ManyToOne
