@@ -46,11 +46,11 @@ public class EmailService {
 
         Template t = freemarkerConfig.getTemplate("new-user.ftl");
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, mail.getModel());
-
         helper.setTo(mail.getTo());
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
-        helper.setFrom(mail.getFrom());
+        // helper.setFrom(mail.getFrom());
+        helper.setFrom(mail.getFrom(), "QCloud 2.0");
 
         emailSender.send(message);
     }

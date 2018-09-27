@@ -247,35 +247,9 @@ public class NodeController {
 	 * Development functions
 	 */
 	
-	@RequestMapping(value = "/api/email", method = RequestMethod.GET)
-	public void sendEmail() {
-		// Example.sendEmail();
-		
-		System.out.println("hola");
-		Mail mail = new Mail();
-		mail.setFrom("daniel.mancera@crg.es");
-		mail.setTo("daniel.mancera@crg.eu");
-		mail.setSubject("Sending Simple Email with JavaMailSender Example");
-		mail.setContent("This tutorial demonstrates how to send a simple email using Spring Framework.");
-
-		emailService.sendSimpleMessage(mail);
-		
-	}
-	
-	private void sendNewUserEmail(User user, String password) {
-		Mail mail = new Mail();
-		mail.setFrom("daniel.mancera@crg.es");
-		mail.setTo(user.getEmail());
-		mail.setSubject("Welcome to QCloud 2.0");
-		mail.setContent("Login with your email and this password :" + password);
-
-		emailService.sendSimpleMessage(mail);
-		
-	}
-	
 	private void sendNewUserHtmlEmail(User user, String password) {
 		Mail mail = new Mail();
-		mail.setFrom("daniel.mancera@crg.es");
+		mail.setFrom("qcloud@crg.eu");
 		mail.setTo(user.getEmail());
 		mail.setSubject("Welcome to QCloud 2.0");
 		
