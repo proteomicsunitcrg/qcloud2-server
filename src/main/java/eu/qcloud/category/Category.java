@@ -20,8 +20,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Category {
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "user_seq")
-    @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "category_seq")
+    @SequenceGenerator(name = "category_seq", sequenceName = "category_seq", allocationSize = 1)
     private Long id;
     
     @Column(name = "NAME", length = 50, unique = true)
