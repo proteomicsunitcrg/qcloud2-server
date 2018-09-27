@@ -74,7 +74,8 @@ public class AuthenticationRestController {
     private Date generateExpirationDate() {
         return new Date(System.currentTimeMillis() + expiration * 1000);
     }
-
+    // I have commented it in order to test JWT
+    /*
     @RequestMapping(value = "${jwt.route.authentication.refresh}", method = RequestMethod.GET)
     public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);
@@ -88,5 +89,6 @@ public class AuthenticationRestController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+    */
 
 }
