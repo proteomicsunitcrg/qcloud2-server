@@ -144,6 +144,7 @@ public class ThresholdController {
 	}
 
 	@RequestMapping(value = "/api/threshold/params", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public void saveThresholdParams(@RequestBody List<ThresholdParams> thresholdParams) {
 		thresholdService.saveThresholdParams(thresholdParams);
 	}

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ import eu.qcloud.security.repository.UserRepository.UserWithUuid;
 public class UserService {
 	@Autowired
 	private UserRepository userRepository;
+	
+	private final Log logger = LogFactory.getLog(this.getClass());
 	
 	public User saveUser(User u) {
 		return userRepository.save(u);		
@@ -41,7 +45,8 @@ public class UserService {
 		// Check if suicidal
 		User u = userRepository.findOneByApiKeyAndNodeId(userUuid, manager.getNode().getId());		
 		try {
-			userRepository.delete(u);			
+			userRepository.delete(u);	
+			logger.info("Node: " + manager.getNode().getName() +" "+ manager.getUsername() + " deleted user: " + u.getUsername());
 		} catch (Exception e) {
 			return false;
 		}

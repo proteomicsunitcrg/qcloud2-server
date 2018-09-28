@@ -14,6 +14,8 @@ import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -58,6 +60,8 @@ public class NodeController {
 
 	@Autowired
 	private EmailService emailService;
+	
+	private final Log logger = LogFactory.getLog(this.getClass());
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -103,6 +107,7 @@ public class NodeController {
 		} catch (CannotCreateTransactionException eee) {
 			throw new PersistenceException("No connection to the database");
 		}
+		logger.info("Node created: "+ n.getName() +" "+ n.getUsers().get(0).getEmail());
 		return insertedNode;
 	}
 
@@ -138,6 +143,7 @@ public class NodeController {
 			userService.saveUser(newUser);
 			// send email to new user
 			sendNewUserHtmlEmail(newUser, password);
+			logger.info("Node: " + manager.getNode().getName() + " added user: " + newUser.getUsername());
 			
 		} catch (DataIntegrityViolationException e) {
 			throw new DataIntegrityViolationException("Email already in use");
@@ -202,6 +208,7 @@ public class NodeController {
 		}
 		if (userService.deleteUser(userUuid, manager)) {
 			// return list
+			
 			return userService.getUsersByNodeId(manager.getNode().getId());
 		} else {
 			// throw exception
