@@ -96,15 +96,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-resources/**",
                         "/swagger-ui.html",
                         "/v2/api-docs",
-                        "/api/gs-guide-websocket/**"
+                        "/api/gs-guide-websocket/**",
+                        "/api/passwordreset/check/**"
                 ).permitAll()
                 .antMatchers(HttpMethod.POST,
                 		"/user",
                 		"/api/node",
-                		"/api/gs-guide-websocket/**"
+                		"/api/gs-guide-websocket/**",
+                		"/api/passwordreset"
                 		).permitAll()
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/ws/**").permitAll()
+                .antMatchers(HttpMethod.PUT,
+                		"/api/passwordreset/reset/**").permitAll()
                 .anyRequest().authenticated();
 
         // Custom JWT based security filter
