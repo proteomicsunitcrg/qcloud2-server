@@ -3,6 +3,7 @@ package eu.qcloud.data;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -326,8 +327,8 @@ public class DataService {
 		logger.info("Insert data of file:" + file.getFilename() + " - lab system: " + file.getLabSystem().getName());
 		// Loop through the parameters
 		for (ParameterData parameterData : dataFromPipeline.getData()) {
-			logger.info("Insert data:" + parameterData.getParameter().getqCCV() + " ls: "
-					+ file.getLabSystem().getId() + " - " +file.getLabSystem().getName() + " checksum:" + file.getChecksum());
+			logger.info("Insert data:" + parameterData.getParameter().getqCCV() + " ls: " + file.getLabSystem().getId()
+					+ " - " + file.getLabSystem().getName() + " checksum:" + file.getChecksum());
 			// Loop through the parameters
 			Param param = paramRepository.findByQccv(parameterData.getParameter().getqCCV());
 			if (param == null) {
@@ -794,8 +795,14 @@ public class DataService {
 	private List<DataForPlot> getDataForPlot(LabSystem labSystem, Param param, List<ContextSource> contextSources,
 			SampleType sampleType, java.util.Date startDate, java.util.Date endDate) {
 		List<DataForPlot> dataForPlot = new ArrayList<>();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(endDate);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 59);
+		cal.set(Calendar.MILLISECOND, 0);
 		contextSources.forEach(cs -> {
-			List<Data> data = dataRepository.findParamData(cs.getId(), param.getId(), startDate, endDate,
+			List<Data> data = dataRepository.findParamData(cs.getId(), param.getId(), startDate, cal.getTime(),
 					labSystem.getId(), sampleType.getId());
 			List<DataForPlot> contextSourceDataForPlot = prepareCalculatedDataForPlot(data, sampleType, param);
 			dataForPlot.addAll(contextSourceDataForPlot);
