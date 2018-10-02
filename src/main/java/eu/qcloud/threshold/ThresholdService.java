@@ -395,6 +395,9 @@ public class ThresholdService {
 		
 		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(paramId,
 				sampleTypeId, labSystem.get().getId());
+		if(threshold == null) {
+			return null;
+		}
 		
 		return ThresholdForPlotFactory.create(threshold);
 	}
