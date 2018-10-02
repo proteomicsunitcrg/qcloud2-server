@@ -92,10 +92,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/assets/**",
                         "/login",
                         "/application/**",
-                        "/actuator/**",
-                        "/swagger-resources/**",
-                        "/swagger-ui.html",
-                        "/v2/api-docs",
                         "/api/gs-guide-websocket/**",
                         "/api/passwordreset/check/**"
                 ).permitAll()
