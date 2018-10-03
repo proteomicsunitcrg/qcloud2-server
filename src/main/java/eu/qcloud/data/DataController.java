@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -118,14 +120,14 @@ public class DataController {
 	 */
 	@RequestMapping(value="/api/data/{startDate}/{endDate}/{chartApiKey}/{labSystemApiKey}/{sampleTypeQCCV}", method=RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
-	public List<DataForPlot> getPlotData(@PathVariable String startDate,
-			@PathVariable  String endDate,
+	public List<DataForPlot> getPlotData(@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date startDate,
+			@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date endDate,
 			@PathVariable UUID chartApiKey, 
 			@PathVariable UUID labSystemApiKey,
 			@PathVariable String sampleTypeQCCV) {
-		Date start = Date.valueOf(startDate);
-		Date end = Date.valueOf(endDate);
-		return dataService.getPlotData(start, end, chartApiKey, labSystemApiKey, sampleTypeQCCV);
+		
+		return dataService.getPlotData(startDate, endDate, chartApiKey, labSystemApiKey, sampleTypeQCCV);
+		
 	}
 	
 	@RequestMapping(value="/api/data/auto/{labSystemApiKey}/{paramQccv}/{contextSourceApiKey}/{sampleTypeQccv}/{thresholdApiKey}", method=RequestMethod.GET)
