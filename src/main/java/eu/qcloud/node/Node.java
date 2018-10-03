@@ -35,6 +35,17 @@ public class Node {
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
 	
+	@Column
+	private String country;
+	
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
 	public UUID getApiKey() {
 		return apiKey;
 	}
@@ -87,6 +98,5 @@ public class Node {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
 	
 }

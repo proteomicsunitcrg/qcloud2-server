@@ -1,0 +1,2 @@
+ALTER TABLE `node` 
+ADD COLUMN `country` VARCHAR(255) NULL AFTER `name`;
