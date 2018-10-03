@@ -22,7 +22,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<jjwt.version>0.9.1</jjwt.version>
+		<jjwt.version>0.10.5</jjwt.version>
 	</properties>
 
 	<dependencies>
@@ -78,11 +78,24 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+        <dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-api</artifactId>
+		    <version>${jjwt.version}</version>
+		</dependency>
 		<dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>${jjwt.version}</version>
-        </dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-impl</artifactId>
+		    <version>${jjwt.version}</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-jackson</artifactId>
+		    <version>${jjwt.version}</version>
+		    <scope>runtime</scope>
+		</dependency>
         
         <!-- <dependency>
         	<groupId>io.springfox</groupId>
@@ -129,6 +142,7 @@
                 	<profiles>
             			<profile>development</profile>
             			<profile>production</profile>
+            			<profile>test</profile>
           			</profiles>
             	</configuration>
 			</plugin>

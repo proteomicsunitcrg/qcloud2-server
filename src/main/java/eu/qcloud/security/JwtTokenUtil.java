@@ -1,20 +1,22 @@
 package eu.qcloud.security;
 
 import java.io.Serializable;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtTokenUtil implements Serializable {
@@ -80,12 +82,17 @@ public class JwtTokenUtil implements Serializable {
         }
         return audience;
     }
-
+    /**
+     * here
+     * @param token
+     * @return
+     */
     private Claims getClaimsFromToken(String token) {
-        Claims claims;
+    	SecretKey k = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret.getBytes()));
+    	Claims claims;
         try {
             claims = Jwts.parser()
-                    .setSigningKey(secret)
+                    .setSigningKey(k)
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
@@ -183,13 +190,25 @@ public class JwtTokenUtil implements Serializable {
         return generateToken(claims, generateExpirationDate);
 		
 	}
-
+/*
 	private String generateToken(Map<String, Object> claims, Date generateExpirationDate) {
 		return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate)
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
-
+	}
+	*/
+	private String generateToken(Map<String, Object> claims, Date generateExpirationDate) {
+		
+		SecretKey k = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret.getBytes()));
+				
+		// SecretKey secretKey = new SecretKeySpec(Base64.getDecoder().decode(secret.getBytes()), "HS512");
+		// .signWith(SignatureAlgorithm.HS512, Base64.getDecoder().decode("L+0P1i+38a26pHiW10iHqPBYAyklvqPdySy98BV9PPCZyDogMggoSZkYxULqCF+WG6Nimlfxd53H6zjdIUJNJA==".getBytes()))
+		return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(generateExpirationDate())
+                .signWith(k)
+                .compact();
 	}
 }
