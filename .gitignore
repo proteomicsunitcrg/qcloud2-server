@@ -25,3 +25,7 @@ nbdist/
 
 ### PROPERTIES FILE ###
 src/main/resources/application.yml
+
+### LOG FILES
+*.log
+*.gz
