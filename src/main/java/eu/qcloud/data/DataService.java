@@ -345,6 +345,8 @@ public class DataService {
 						continue;
 					}
 					if (!peptideBelongsToSampleType(file.getSampleType(), dataValue.getContextSource())) {
+						logger.debug("Peptide: " + dataValue.getContextSource() + " do not belongs to this sample type("
+								+ file.getSampleType().getName() + ")");
 						continue;
 					}
 					break;
