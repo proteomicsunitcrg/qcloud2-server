@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -58,13 +60,13 @@ public class Threshold implements Cloneable {
 	@Column(name="is_enabled", columnDefinition="bit default 1")
     private boolean isEnabled;
 	
-//	@JsonProperty
-//	@Column(name="is_zero_no_data", columnDefinition="tinyint(1) default 0")
-//    private boolean isZeroNoData;
-	
     @Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
     private UUID apiKey;
+    
+    @Enumerated(EnumType.STRING)
+	@Column(name="non_conformity_direction", columnDefinition="varchar(255)")
+    private Direction nonConformityDirection;
 	
 	@Transient
 	protected ThresholdConstraint adminThresholdConstraint;
@@ -74,9 +76,6 @@ public class Threshold implements Cloneable {
 	
 	@Transient
 	protected Direction direction;
-	
-	@Transient
-	protected Direction nonConformityDirection;
 	
 	@Transient
 	protected ThresholdType thresholdType;

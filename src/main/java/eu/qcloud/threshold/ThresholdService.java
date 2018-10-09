@@ -158,6 +158,7 @@ public class ThresholdService {
 			stlog2.setSampleType(sampleType.get());
 			stlog2.setEnabled(true);
 			stlog2.setMonitored(true);
+			stlog2.setNonConformityDirection(threshold.getNonConformityDirection());
 //			stlog2.setIsZeroNoData(threshold.getIsZeroNoData());
 			stlog2.setApiKey(UUID.randomUUID());
 			return saveSigmaLog2Threshold(stlog2);
@@ -167,6 +168,7 @@ public class ThresholdService {
 			ht.setSteps(threshold.getSteps());
 			ht.setParam(p);
 			ht.setSampleType(sampleType.get());
+			ht.setNonConformityDirection(threshold.getNonConformityDirection());
 			ht.setEnabled(true);
 			ht.setMonitored(true);
 //			ht.setIsZeroNoData(threshold.getIsZeroNoData());
@@ -180,6 +182,7 @@ public class ThresholdService {
 			st.setSampleType(sampleType.get());
 			st.setEnabled(true);
 			st.setMonitored(true);
+			st.setNonConformityDirection(threshold.getNonConformityDirection());
 //			st.setIsZeroNoData(threshold.getIsZeroNoData());
 			st.setApiKey(UUID.randomUUID());
 			return saveSigmaThreshold(st);
@@ -359,22 +362,13 @@ public class ThresholdService {
 			
 			List<ThresholdNonConformity> tncs = thresholdNonConformityRepository.findByFileId(lastFile.getId());
 			tncs.forEach(tnc -> {
-				labSystemStatus.add(createLabSystemStatusByThresholdNonConformity(tnc));
+				labSystemStatus.add(thresholdUtils.createLabSystemStatusByThresholdNonConformity(tnc));
 			});
 		}
 		return labSystemStatus;
 	}
 	
-	private LabSystemStatus createLabSystemStatusByThresholdNonConformity(ThresholdNonConformity tnc) {
-		LabSystemStatus ls = new LabSystemStatus();
-		ls.setContextSource(tnc.getContextSource());
-		ls.setParam(tnc.getThreshold().getParam());
-		ls.setSampleTypeQccv(tnc.getFile().getSampleType().getQualityControlControlledVocabulary());
-		ls.setStatus(tnc.getStatus());
-		ls.setFileChecksum(tnc.getFile().getChecksum());
-		ls.setThresholdApiKey(tnc.getThreshold().getApiKey());
-		return ls;
-	}
+
 	
 	public ThresholdForPlot findThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(Long paramId,
 			Long sampleTypeId, UUID labSystemApiKey) {
@@ -404,7 +398,6 @@ public class ThresholdService {
 
 	public ThresholdForPlotImpl getNonConformityThresholdWithoutGuideSet(UUID thresholdApiKey, String fileChecksum,
 			UUID contextSourceApiKey) {
-		// TODO Auto-generated method stub
 		Optional<Threshold> threshold = thresholdRepository.findByApiKey(thresholdApiKey);
 		File file = fileRepository.findByChecksum(fileChecksum);
 		

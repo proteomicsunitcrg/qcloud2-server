@@ -13,8 +13,8 @@ public class SigmaLog2Threshold extends Threshold {
 	
 	public SigmaLog2Threshold() {
 		super();
-		this.direction = Direction.UPDOWN;
-		this.nonConformityDirection = Direction.DOWN;
+		this.direction = Direction.DOWN;
+		// this.nonConformityDirection = Direction.DOWN;
 		this.processor = new SigmaLog2Processor();
 		this.adminThresholdConstraint = new ThresholdConstraint(false,false,false,true,false,false);
 		this.managerThresholdConstraint = new ThresholdConstraint(false,false,false,false,false,false);
