@@ -29,3 +29,4 @@ src/main/resources/application.yml
 ### LOG FILES
 *.log
 *.gz
+*.tmp
