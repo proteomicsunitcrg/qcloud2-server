@@ -1,6 +1,5 @@
 package eu.qcloud.data;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,6 +58,7 @@ import eu.qcloud.threshold.ThresholdRepository;
 import eu.qcloud.threshold.params.ThresholdParams;
 import eu.qcloud.threshold.params.ThresholdParamsRepository;
 import eu.qcloud.utils.ThresholdUtils;
+import eu.qcloud.websocket.WebSocketService;
 
 /**
  * Service for the data
@@ -113,6 +113,9 @@ public class DataService {
 
 	@Autowired
 	private ThresholdNonConformityRepository thresholdNonConformityRepository;
+
+	@Autowired
+	private WebSocketService webSocketService;
 
 	@Value("${qcloud.threshold.min-points-auto}")
 	private int minPointsAutoThreshold;
@@ -327,6 +330,9 @@ public class DataService {
 		logger.info("Insert data of file:" + file.getFilename() + " - lab system: " + file.getLabSystem().getName());
 		// Loop through the parameters
 		for (ParameterData parameterData : dataFromPipeline.getData()) {
+			if(parameterData.getValues().size()==0) {
+				continue;
+			}
 			logger.info("Insert data:" + parameterData.getParameter().getqCCV() + " ls: " + file.getLabSystem().getId()
 					+ " - " + file.getLabSystem().getName() + " checksum:" + file.getChecksum());
 			// Loop through the parameters
@@ -345,8 +351,8 @@ public class DataService {
 						continue;
 					}
 					if (!peptideBelongsToSampleType(file.getSampleType(), dataValue.getContextSource())) {
-						logger.debug("Peptide: " + dataValue.getContextSource() + " do not belongs to this sample type("
-								+ file.getSampleType().getName() + ")");
+						logger.debug("Peptide: " + dataValue.getContextSource()
+								+ " does not belong to this sample type(" + file.getSampleType().getName() + ")");
 						continue;
 					}
 					break;
@@ -362,7 +368,6 @@ public class DataService {
 					break;
 				}
 
-				// TODO load user guidesets it there is any
 				Data d = new Data(param, cs, file);
 				d.setValue(dataValue.getValue());
 				d.setDataId(new DataId(param.getId(), cs.getId(), file.getId()));
@@ -371,15 +376,47 @@ public class DataService {
 				dataValue.setCalculatedValue(calc);
 				dataRepository.save(d);
 			}
-		}
-		// Do threshold checks
+			// Do threshold checks
+			if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
+					file.getSampleType().getId()) > minPointsAutoThreshold) {
+				evaluateDataForNonConformities(file, dataFromPipeline);
+				// Recalculate user thresholds
+				regenerateThresholds(file, param);
 
-		if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
-				file.getSampleType().getId()) > minPointsAutoThreshold) {
-			evaluateDataForNonConformities(file, dataFromPipeline);
-			// Recalculate user thresholds
-			regenerateThresholds(file);
+			}
 		}
+
+	}
+
+	private void regenerateThresholds(File file, Param param) {
+		List<Threshold> defaultThresholds = new ArrayList<>();
+		List<Threshold> nodeThresholds = new ArrayList<>();
+		thresholdRepository.findAllDefaultThresholdsByThresholdCVIdAndSampleTypeIdAndParamId(
+				file.getLabSystem().getMainDataSource().getCv().getId(), file.getSampleType().getId(), param.getId())
+				.forEach(defaultThresholds::add);
+		// Get the labsystem thresholds if any
+		defaultThresholds.forEach(defaultThreshold -> {
+			nodeThresholds
+					.add(thresholdUtils.findOrCreateLabSystemThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
+							file.getSampleType().getId(), defaultThreshold.getParam().getId(),
+							defaultThreshold.getCv().getId(), file.getLabSystem().getId()));
+		});
+		List<ThresholdParams> params = new ArrayList<>();
+
+		nodeThresholds.forEach(nodeThreshold -> {
+			nodeThreshold.getThresholdParams().forEach(tp -> {
+
+				GuideSet gs = thresholdUtils.generateGuideSetFromWithFile(file, nodeThreshold.getParam(),
+						tp.getContextSource());
+
+				if (gs != null) {
+					params.add(thresholdUtils.processThresholdParam(nodeThreshold, gs, tp));
+				}
+			});
+
+			nodeThreshold.setThresholdParams(params);
+			saveThresholdParams(nodeThreshold);
+		});
 
 	}
 
@@ -423,52 +460,10 @@ public class DataService {
 			}
 		}
 	}
-	/*
-	 * private void evaluateDataForParamNonConformities(File file, DataFromPipeline
-	 * data) {
-	 * 
-	 * for (ParameterData parameterData : data.getData()) { // Get the threshold for
-	 * this parameter, sample type and instrument Threshold threshold =
-	 * thresholdUtils
-	 * .findOrCreateLabSystemThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
-	 * file.getSampleType().getId(), parameterData.getParameter().getId(),
-	 * file.getLabSystem().getMainDataSource().getCv().getId(),
-	 * file.getLabSystem().getId());
-	 * 
-	 * if (threshold == null) { continue; }
-	 * 
-	 * Float value = 0f; for (DataValues dataValue : parameterData.getValues()) {
-	 * 
-	 * ContextSource cs = getContextSourceFromDatabase(dataValue.getContextSource(),
-	 * parameterData.getParameter().getIsFor());
-	 * 
-	 * value = dataValue.getCalculatedValue(); if
-	 * (parameterData.getParameter().isZeroNoData()) { if (value == null) {
-	 * continue; } } // Checking if the context source is monitored for this
-	 * threshold Optional<ThresholdParams> cc =
-	 * threshold.getThresholdParams().stream().filter(tp -> { return
-	 * tp.getContextSource().getId() == cs.getId(); }).findFirst(); if
-	 * (!cc.get().getIsEnabled()) { continue; }
-	 * 
-	 * // Compare here InstrumentStatus is = isNonConformity(value,
-	 * getInitialValueFromThresholdParamByContextSource(threshold.getThresholdParams
-	 * (), dataValue.getContextSource(), parameterData.getParameter().getIsFor()),
-	 * getStepValueFromThresholdParamByContextSourceName(threshold.
-	 * getThresholdParams(), dataValue.getContextSource(),
-	 * parameterData.getParameter().getIsFor()), threshold.getSteps(),
-	 * threshold.getNonConformityDirection());
-	 * 
-	 * if (is != InstrumentStatus.OK && threshold.isMonitored()) {
-	 * logger.info("Storing non conformity"); ThresholdNonConformity tnc = new
-	 * ThresholdNonConformity(); tnc.setStatus(is); tnc.setContextSource(cs);
-	 * tnc.setFile(file); tnc.setThreshold(threshold);
-	 * thresholdNonConformityRepository.save(tnc); Data d =
-	 * dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(),
-	 * threshold.getParam().getId(), cs.getId()); d.setNonConformityStatus(is);
-	 * dataRepository.save(d); } } } }
-	 */
 
 	private void evaluateDataForNonConformities(File file, DataFromPipeline data) {
+
+		List<ThresholdNonConformity> thresholdNonConformities = new ArrayList<>();
 
 		for (ParameterData parameterData : data.getData()) {
 			// Get the threshold for this parameter, sample type and instrument
@@ -523,9 +518,18 @@ public class DataService {
 							threshold.getParam().getId(), cs.getId());
 					d.setNonConformityStatus(is);
 					dataRepository.save(d);
+					thresholdNonConformities.add(tnc);
+
+					// webSocketService.sendNonConformityToNodeUsers(file.getLabSystem().getMainDataSource().getNode(),
+					// tnc);
 				}
 			}
 		}
+		if (!thresholdNonConformities.isEmpty()) {
+			webSocketService.sendNonConformityToNodeUsers(file.getLabSystem().getMainDataSource().getNode(),
+					thresholdNonConformities);
+		}
+
 	}
 
 	private ContextSource getContextSourceFromDatabase(String name, String isFor) {
@@ -660,38 +664,9 @@ public class DataService {
 
 	}
 
-	private void regenerateParamThresholds(File file, Param param) {
-		Optional<Threshold> defaultThreshold = thresholdRepository
-				.findDefaultThresholdByThresholdCVIdAndSampleTypeIdAndParamId(
-						file.getLabSystem().getMainDataSource().getCv().getId(), file.getSampleType().getId(),
-						param.getId());
-		// Get the labsystem thresholds if any
-
-		if (defaultThreshold.isPresent()) {
-			Threshold nodeThreshold = thresholdUtils
-					.findOrCreateLabSystemThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
-							file.getSampleType().getId(), defaultThreshold.get().getParam().getId(),
-							defaultThreshold.get().getCv().getId(), file.getLabSystem().getId());
-
-			List<ThresholdParams> params = new ArrayList<>();
-
-			nodeThreshold.getThresholdParams().forEach(tp -> {
-				GuideSet gs = thresholdUtils.generateGuideSetFromWithFile(file, nodeThreshold.getParam(),
-						tp.getContextSource());
-				if (gs != null) {
-					params.add(thresholdUtils.processThresholdParam(nodeThreshold, gs, tp));
-				}
-			});
-
-			nodeThreshold.setThresholdParams(params);
-			saveThresholdParams(nodeThreshold);
-		}
-
-	}
-
 	private void saveThresholdParams(Threshold threshold) {
 		for (ThresholdParams p : threshold.getThresholdParams()) {
-			if (!p.getInitialValue().isNaN() || !p.getStepValue().isNaN()) {
+			if (!p.getInitialValue().isNaN() && !p.getStepValue().isNaN()) {
 				thresholdParamsRepository.save(p);
 			}
 		}

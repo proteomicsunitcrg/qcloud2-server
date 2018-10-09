@@ -1,5 +1,6 @@
 package eu.qcloud.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -28,12 +29,14 @@ import eu.qcloud.guideset.manual.ManualGuideSet;
 import eu.qcloud.guideset.manual.ManualGuideSetRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
+import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformity;
 import eu.qcloud.param.Param;
 import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdRepo;
 import eu.qcloud.threshold.ThresholdType;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThresholdRepository;
+import eu.qcloud.threshold.labsystemstatus.LabSystemStatus;
 import eu.qcloud.threshold.params.ThresholdParams;
 import eu.qcloud.threshold.params.ThresholdParamsId;
 import eu.qcloud.threshold.params.ThresholdParamsRepository;
@@ -60,7 +63,7 @@ public class ThresholdUtils {
 
 	@Autowired
 	private SigmaLog2ThresholdRepository sigmaLog2ThresholdRepository;
-	
+
 	@Autowired
 	private SigmaThresholdRepository sigmaThresholdRepository;
 
@@ -72,7 +75,7 @@ public class ThresholdUtils {
 
 	@Autowired
 	private DataRepository dataRepository;
-	
+
 	@Autowired
 	private ManualGuideSetRepository manualGuideSetRepository;
 
@@ -80,25 +83,26 @@ public class ThresholdUtils {
 	private EntityManager entityManager;
 
 	private final Log logger = LogFactory.getLog(this.getClass());
-	
+
 	/**
 	 * Generate a guide set with the first and last file with valid values
+	 * 
 	 * @param file
 	 * @param param
 	 * @param contextSource
 	 * @return
 	 */
-	
+
 	public GuideSet generateGuideSetFromWithFile(File file, Param param, ContextSource contextSource) {
-		
+
 		Optional<ManualGuideSet> mg = manualGuideSetRepository.findById(file.getGuideSet().getId());
-		
-		if(mg.isPresent()) {
+
+		if (mg.isPresent()) {
 			return mg.get();
 		}
-		
+
 		AutomaticGuideSet automaticGuideSet = (AutomaticGuideSet) file.getGuideSet();
-		
+
 		Pageable maxFiles = PageRequest.of(0, automaticGuideSet.getFiles(),
 				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
 		List<File> files = null;
@@ -113,37 +117,41 @@ public class ThresholdUtils {
 					file.getSampleType().getId(), file.getCreationDate(), param.getId(), contextSource.getId(),
 					maxFiles);
 		}
-		
+
 		try {
 			File firstFile = files.get(files.size() - 1);
 			File lastFile = files.get(0);
 			automaticGuideSet.setStartDate(firstFile.getCreationDate());
 			automaticGuideSet.setEndDate(lastFile.getCreationDate());
 			automaticGuideSet.setSampleType(file.getSampleType());
-		} catch(ArrayIndexOutOfBoundsException e) {
-			logger.info("There are no files to build this guide set. Maybe it is the first file of the labsystem.");
+		} catch (ArrayIndexOutOfBoundsException e) {
+			logger.info("There are no files to build this guide set: " + param.getName() + " "
+					+ contextSource.getAbbreviated());
+			return null;
 		}
-		
+
 		return automaticGuideSet;
 	}
-	
+
 	/**
-	 * Generate a guideset with the first and the last minus one files with valid values
+	 * Generate a guideset with the first and the last minus one files with valid
+	 * values
+	 * 
 	 * @param file
 	 * @param param
 	 * @param contextSource
 	 * @return
 	 */
 	public GuideSet generateGuideSetFromBeforeFile(File file, Param param, ContextSource contextSource) {
-		
+
 		Optional<ManualGuideSet> mg = manualGuideSetRepository.findById(file.getGuideSet().getId());
-		
-		if(mg.isPresent()) {
+
+		if (mg.isPresent()) {
 			return mg.get();
 		}
-		
+
 		AutomaticGuideSet automaticGuideSet = (AutomaticGuideSet) file.getGuideSet();
-		Pageable maxFiles = PageRequest.of(0, automaticGuideSet.getFiles()+1,
+		Pageable maxFiles = PageRequest.of(0, automaticGuideSet.getFiles() + 1,
 				new Sort(Sort.Direction.DESC, Arrays.asList("creationDate")));
 		List<File> files = null;
 
@@ -247,7 +255,7 @@ public class ThresholdUtils {
 		threshold.setApiKey(UUID.randomUUID());
 		return sigmaThresholdRepository.save(threshold);
 	}
-	
+
 	private Threshold saveSigmaLog2Threshold(SigmaLog2Threshold threshold) {
 		threshold.setApiKey(UUID.randomUUID());
 		return sigmaLog2ThresholdRepository.save(threshold);
@@ -334,6 +342,35 @@ public class ThresholdUtils {
 		return dataRepository.findParamData(p.getContextSource().getId(), threshold.getParam().getId(),
 				guideSet.getStartDate(), guideSet.getEndDate(), threshold.getLabSystem().getId(),
 				threshold.getSampleType().getId());
+	}
+
+	public LabSystemStatus createLabSystemStatusByThresholdNonConformity(ThresholdNonConformity tnc) {
+
+		LabSystemStatus ls = new LabSystemStatus();
+		ls.setContextSource(tnc.getContextSource());
+		ls.setParam(tnc.getThreshold().getParam());
+		ls.setSampleTypeQccv(tnc.getFile().getSampleType().getQualityControlControlledVocabulary());
+		ls.setStatus(tnc.getStatus());
+		ls.setFileChecksum(tnc.getFile().getChecksum());
+		ls.setThresholdApiKey(tnc.getThreshold().getApiKey());
+
+		return ls;
+	}
+
+	public List<LabSystemStatus> createLabSystemStatusByThresholdNonConformity(List<ThresholdNonConformity> tncs) {
+		List<LabSystemStatus> labSystemsStatus = new ArrayList<>();
+		tncs.forEach(tnc -> {
+			LabSystemStatus ls = new LabSystemStatus();
+			ls.setContextSource(tnc.getContextSource());
+			ls.setParam(tnc.getThreshold().getParam());
+			ls.setSampleTypeQccv(tnc.getFile().getSampleType().getQualityControlControlledVocabulary());
+			ls.setStatus(tnc.getStatus());
+			ls.setFileChecksum(tnc.getFile().getChecksum());
+			ls.setThresholdApiKey(tnc.getThreshold().getApiKey());
+			labSystemsStatus.add(ls);
+		});
+
+		return labSystemsStatus;
 	}
 
 }
