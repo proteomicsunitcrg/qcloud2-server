@@ -545,7 +545,8 @@ public class DataService {
 	private InstrumentStatus isNonConformity(Float value, Float initialValue, Float stepValue, int steps,
 			Direction direction) {
 		Float upperLimit = initialValue + (stepValue * steps);
-		Float midLimit = initialValue - (stepValue * (steps - 1));
+		Float midDownLimit = initialValue - (stepValue * (steps - 1));
+		Float midUpLimit = initialValue + (stepValue * (steps - 1));
 		Float lowerLimit = initialValue - (stepValue * steps);
 		switch (direction) {
 		case DOWN:
@@ -558,7 +559,7 @@ public class DataService {
 			} else {
 				if (value < lowerLimit) {
 					return InstrumentStatus.DANGER;
-				} else if (value >= lowerLimit && value < midLimit) {
+				} else if (value >= lowerLimit && value < midDownLimit) {
 					return InstrumentStatus.WARNING;
 				}
 			}
@@ -576,7 +577,7 @@ public class DataService {
 			} else {
 				if (value > upperLimit) {
 					return InstrumentStatus.DANGER;
-				} else if (value <= upperLimit && value > midLimit) {
+				} else if (value <= upperLimit && value > midUpLimit) {
 					return InstrumentStatus.WARNING;
 				}
 			}

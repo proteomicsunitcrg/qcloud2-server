@@ -370,7 +370,7 @@ public class ThresholdService {
 				
 				return labSystemStatus;
 			}
-			
+
 			List<ThresholdNonConformity> tncs = thresholdNonConformityRepository.findByFileId(lastFile.getId());
 			tncs.forEach(tnc -> {
 				labSystemStatus.add(thresholdUtils.createLabSystemStatusByThresholdNonConformity(tnc));
