@@ -11,20 +11,19 @@ public class LabSystemStatus {
 	private Param param;
 	private ContextSource contextSource;
 	private InstrumentStatus status;
-	// private Long thresholdId;
 	private UUID thresholdApiKey;
-	private String sampleTypeQccv;
+	private String sampleTypeName;
 	private String fileChecksum;
 
 	public LabSystemStatus() {
 	}
 
-	public LabSystemStatus(Param param, ContextSource contextSource, InstrumentStatus status, UUID thresholdApiKey, String sampleTypeQccv) {
+	public LabSystemStatus(Param param, ContextSource contextSource, InstrumentStatus status, UUID thresholdApiKey, String sampleTypeName) {
 		this.param = param;
 		this.contextSource = contextSource;
 		this.status = status;
 		this.thresholdApiKey = thresholdApiKey;
-		this.sampleTypeQccv = sampleTypeQccv;
+		this.sampleTypeName = sampleTypeName;
 	}
 
 	public Param getParam() {
@@ -58,13 +57,13 @@ public class LabSystemStatus {
 	public void setThresholdApiKey(UUID thresholdApiKey) {
 		this.thresholdApiKey = thresholdApiKey;
 	}
-
-	public String getSampleTypeQccv() {
-		return sampleTypeQccv;
+	
+	public String getSampleTypeName() {
+		return sampleTypeName;
 	}
 
-	public void setSampleTypeQccv(String sampleTypeQccv) {
-		this.sampleTypeQccv = sampleTypeQccv;
+	public void setSampleTypeName(String sampleTypeName) {
+		this.sampleTypeName = sampleTypeName;
 	}
 
 	public String getFileChecksum() {

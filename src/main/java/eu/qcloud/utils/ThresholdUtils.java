@@ -2,6 +2,8 @@ package eu.qcloud.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,6 +34,7 @@ import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformity;
 import eu.qcloud.param.Param;
+import eu.qcloud.threshold.InstrumentStatus;
 import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdRepo;
 import eu.qcloud.threshold.ThresholdType;
@@ -83,6 +87,9 @@ public class ThresholdUtils {
 	private EntityManager entityManager;
 
 	private final Log logger = LogFactory.getLog(this.getClass());
+	
+	@Value("${qcloud.instrument-status.max-offline-hours}")
+	private int maxOfflineHours;
 
 	/**
 	 * Generate a guide set with the first and last file with valid values
@@ -349,11 +356,17 @@ public class ThresholdUtils {
 		LabSystemStatus ls = new LabSystemStatus();
 		ls.setContextSource(tnc.getContextSource());
 		ls.setParam(tnc.getThreshold().getParam());
-		ls.setSampleTypeQccv(tnc.getFile().getSampleType().getQualityControlControlledVocabulary());
+		ls.setSampleTypeName(tnc.getFile().getSampleType().getSampleTypeCategory().getName());
 		ls.setStatus(tnc.getStatus());
 		ls.setFileChecksum(tnc.getFile().getChecksum());
 		ls.setThresholdApiKey(tnc.getThreshold().getApiKey());
 
+		return ls;
+	}
+	
+	public LabSystemStatus createOfflineThresholdNonConformity(LabSystem labSystem) {
+		LabSystemStatus ls = new LabSystemStatus();
+		ls.setStatus(InstrumentStatus.OFFLINE);
 		return ls;
 	}
 
@@ -363,7 +376,7 @@ public class ThresholdUtils {
 			LabSystemStatus ls = new LabSystemStatus();
 			ls.setContextSource(tnc.getContextSource());
 			ls.setParam(tnc.getThreshold().getParam());
-			ls.setSampleTypeQccv(tnc.getFile().getSampleType().getQualityControlControlledVocabulary());
+			ls.setSampleTypeName(tnc.getFile().getSampleType().getSampleTypeCategory().getName());
 			ls.setStatus(tnc.getStatus());
 			ls.setFileChecksum(tnc.getFile().getChecksum());
 			ls.setThresholdApiKey(tnc.getThreshold().getApiKey());
@@ -371,6 +384,14 @@ public class ThresholdUtils {
 		});
 
 		return labSystemsStatus;
+	}
+	
+	public Date getOfflineDate() {
+		Date now = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(now);
+		cal.add(Calendar.HOUR, maxOfflineHours * -1);
+		return cal.getTime();
 	}
 
 }

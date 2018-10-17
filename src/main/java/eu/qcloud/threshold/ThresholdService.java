@@ -1,6 +1,8 @@
 package eu.qcloud.threshold;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,6 +32,7 @@ import eu.qcloud.param.Param;
 import eu.qcloud.param.ParamRepository;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
+import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
@@ -359,6 +362,14 @@ public class ThresholdService {
 		List<SampleType> sampleTypes = fileRepository.findDistinctSampleTypeByLabSystemId(labSystem.getId());
 		for(SampleType sampleType : sampleTypes) {
 			File lastFile = fileRepository.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.getId(), sampleType.getId());
+			// Check for time
+			if(lastFile.getCreationDate().before(thresholdUtils.getOfflineDate()) 
+					&& lastFile.getSampleType().getSampleTypeCategory().getSampleTypeComplexity() == SampleTypeComplexity.LOW) {
+				labSystemStatus.clear();
+				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
+				
+				return labSystemStatus;
+			}
 			
 			List<ThresholdNonConformity> tncs = thresholdNonConformityRepository.findByFileId(lastFile.getId());
 			tncs.forEach(tnc -> {

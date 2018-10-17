@@ -216,7 +216,6 @@ public class ThresholdController {
 		if (ls.isPresent()) {
 			LabSystem labSystem = ls.get();
 			return thresholdService.getLabSystemStatus(labSystem);
-			// return thresholdService.getLabSystemLastFileStatus(labSystem);
 		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");
 		}
