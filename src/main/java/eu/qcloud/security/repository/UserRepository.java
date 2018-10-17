@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     List<UserWithUuid> findAllUsersByNodeId(Long nodeId);
     
-    List<UserWithUuid> findAllByNodeId(Long nodeId);  
+    List<UserWithUuid> findAllByNodeIdAndEnabledTrue(Long nodeId);  
     
     interface UserWithUuid {
     	String getUsername();

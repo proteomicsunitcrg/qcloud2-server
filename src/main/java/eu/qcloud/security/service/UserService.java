@@ -36,7 +36,7 @@ public class UserService {
 	
 	public List<UserWithUuid> getUsersByNodeId(Long nodeId) {
 		List<UserWithUuid> users = new ArrayList<>();
-		userRepository.findAllByNodeId(nodeId)
+		userRepository.findAllByNodeIdAndEnabledTrue(nodeId)
 		.forEach(users::add);
 		return users;
 	}
@@ -45,13 +45,13 @@ public class UserService {
 		// Check if suicidal
 		User u = userRepository.findOneByApiKeyAndNodeId(userUuid, manager.getNode().getId());		
 		try {
-			userRepository.delete(u);	
+			u.setEnabled(false);
+			userRepository.save(u);
 			logger.info("Node: " + manager.getNode().getName() +" "+ manager.getUsername() + " deleted user: " + u.getUsername());
+			return true;
 		} catch (Exception e) {
 			return false;
 		}
-		u = userRepository.findOneByApiKey(userUuid);
-		return u==null;
 	}
 
 	public List<User> findAllUsers() {
@@ -62,7 +62,7 @@ public class UserService {
 	
 	public List<UserWithUuid> findAllNodeUsers(Long nodeId) {
 		List<UserWithUuid> users = new ArrayList<>();
-		userRepository.findAllUsersByNodeId(nodeId).forEach(users::add);
+		userRepository.findAllByNodeIdAndEnabledTrue(nodeId).forEach(users::add);
 		return users;
 	}
 
