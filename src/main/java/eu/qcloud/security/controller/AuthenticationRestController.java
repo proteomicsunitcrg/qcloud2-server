@@ -63,7 +63,7 @@ public class AuthenticationRestController {
         
         // Return the token
         HttpHeaders headers = new HttpHeaders();
-        headers.set("tokenExpiration",Long.toString((expirationDate.getTime())));
+        headers.set("tokenexpiration",Long.toString((expirationDate.getTime())));
         //headers.set("tokenExpiration",expirationDate.toString());
         
         //return ResponseEntity.ok(new JwtAuthenticationResponse(token));
