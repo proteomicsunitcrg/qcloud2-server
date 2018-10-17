@@ -130,15 +130,14 @@ public class DataController {
 		
 	}
 	
-	@RequestMapping(value="/api/data/auto/{labSystemApiKey}/{paramQccv}/{contextSourceApiKey}/{sampleTypeQccv}/{thresholdApiKey}", method=RequestMethod.GET)
+	@RequestMapping(value="/api/data/auto/{labSystemApiKey}/{paramQccv}/{contextSourceApiKey}/{thresholdApiKey}", method=RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public List<DataForPlot> getAutoPlotData(@PathVariable UUID labSystemApiKey,
 			@PathVariable String paramQccv,
 			@PathVariable UUID contextSourceApiKey,
-			@PathVariable String sampleTypeQccv,
 			@PathVariable UUID thresholdApiKey) {
 		
-		return dataService.getAutoPlotData(labSystemApiKey, paramQccv, contextSourceApiKey, sampleTypeQccv, thresholdApiKey);
+		return dataService.getAutoPlotData(labSystemApiKey, paramQccv, contextSourceApiKey, thresholdApiKey);
 	}
 	
 	@RequestMapping(value="/api/data/nonconformity/{labSystemApiKey}/{paramQccv}/{contextSourceApiKey}/{sampleTypeQccv}/{fileChecksum}", method=RequestMethod.GET)

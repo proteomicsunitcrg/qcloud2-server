@@ -507,7 +507,7 @@ public class DataService {
 						threshold.getSteps(), threshold.getNonConformityDirection());
 
 				if (is != InstrumentStatus.OK && threshold.isMonitored()) {
-					logger.info("NC -> " + file.getFilename());
+					logger.info("NC -> " + file.getFilename() + " param: "+ parameterData.getParameter().getName() +" cs:" + dataValue.getContextSource());
 					ThresholdNonConformity tnc = new ThresholdNonConformity();
 					tnc.setStatus(is);
 					tnc.setContextSource(cs);
@@ -782,18 +782,17 @@ public class DataService {
 		return dataForPlot;
 	}
 
-	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey,
-			String sampleTypeQccv, UUID thresholdApiKey) {
+	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey, UUID thresholdApiKey) {
 
 		Optional<Threshold> threshold = thresholdRepository.findByApiKey(thresholdApiKey);
 		Param param = paramRepository.findByQccv(paramQccv);
 		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
 		Optional<ContextSource> contextSource = contextSourceRepository.findByApiKey(contextSourceApiKey);
-		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQccv);
+		// Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQccv);
 
-		checkAutoPlotParameters(threshold, param, labSystem, contextSource, sampleType);
+		checkAutoPlotParameters(threshold, param, labSystem, contextSource, null);
 
-		List<File> files = getFilesForAutoPlot(labSystem.get(), sampleType.get());
+		List<File> files = getFilesForAutoPlot(labSystem.get(), threshold.get().getSampleType());
 
 		// return getDataForPlot(labSystem.get(), param,
 		// Arrays.asList(contextSource.get()), sampleType.get(),
@@ -874,9 +873,11 @@ public class DataService {
 		if (!contextSource.isPresent()) {
 			throw new DataRetrievalFailureException("No context source found.");
 		}
+		/*
 		if (!sampleType.isPresent()) {
 			throw new DataRetrievalFailureException("No sample type found.");
 		}
+		*/
 	}
 
 	/**
