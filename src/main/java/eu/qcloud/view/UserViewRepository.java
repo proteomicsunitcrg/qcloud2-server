@@ -11,7 +11,6 @@ import eu.qcloud.labsystem.LabSystem;
 public interface UserViewRepository extends CrudRepository<UserView, Long> {
 
 	interface UserDisplayWithOutViewDisplay {
-		Long getId();
 		NoView getChart();
 		int getCol();
 		int getRow();
