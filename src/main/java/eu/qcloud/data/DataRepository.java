@@ -17,6 +17,10 @@ public interface DataRepository extends PagingAndSortingRepository<Data, DataId>
 	@Query("SELECT d as d from Data d where (d.contextSource, d.param) in (select c.contextSource, c.param from ChartParams c where c.chart.id=?1 ) and d.file in (select f from File f where f.creationDate between ?2 and ?3 and f.labSystem.id=?4 and f.sampleType.id=?5) order by d.file.creationDate asc")
 	List<Data> findPlotData(Long chartId, java.util.Date start, java.util.Date end, Long labSystemId, Long sampleTypeId);
 	
+	
+	@Query("SELECT d as d from Data d where d.param.id=?1 and d.file.id = ?2 and d.contextSource.id = ?3")
+	List<Data> findParamDataByFileAndContextSource(Long paramId, Long fileId, Long contextSourceId);
+	
 	/**
 	 * Retrieve data of a single context source
 	 * @param contextSourceId
@@ -27,7 +31,6 @@ public interface DataRepository extends PagingAndSortingRepository<Data, DataId>
 	 * @param sampleTypeId
 	 * @return
 	 */
-	//@Query("SELECT d as d from Data d where d.contextSource.id=?1 and d.param.id=?2 and d.file in (select f from File f where f.creationDate between ?3 and ?4 and f.labSystem.id=?5 and f.sampleType.id=?6) order by d.file.creationDate asc")
 	@Query("SELECT d as d from Data d, File f where d.contextSource.id=?1 and d.param.id=?2 and d.file.id = f.id and f.creationDate between ?3 and ?4 and f.labSystem.id=?5 and f.sampleType.id=?6 order by d.file.creationDate asc")
 	List<Data> findParamData(Long contextSourceId, Long paramId, java.util.Date start, java.util.Date end, Long labSystemId, Long sampleTypeId);
 	
