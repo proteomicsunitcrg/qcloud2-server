@@ -114,10 +114,12 @@ public class ChartController {
 	public List<ChartParams> updateChartParamsByChart(@RequestBody List<ChartParams> chartParams,@PathVariable UUID chartApiKey) {
 		// Delete previous chartparams
 		List<ChartParams> previous = chartService.getChartParamsByChartApiKey(chartApiKey);
+		Param p = paramRepository.findByQccv(previous.get(0).getParam().getqCCV());
 		chartService.deleteChartParams(previous);
 		// Add new ones
 		List<ChartParams> chartParamsList = new ArrayList<>();		
 		for(ChartParams chartParam: chartParams) {
+			chartParam.setParam(p);
 			chartParamsList.add(chartService.addParamToChart(chartParam));
 			
 		}
