@@ -54,7 +54,7 @@ public class DataController {
 	@Autowired
 	private InstrumentSampleService instrumentSampleService;
 	
-	
+	/*
 	@RequestMapping(value="/api/data",method= RequestMethod.GET)
 	public List<Data> getData() {
 		return dataService.getAllData();
@@ -64,6 +64,7 @@ public class DataController {
 	public Data addData(@RequestBody Data data) {
 		return dataService.addData(data);
 	}
+	*/
 	/**
 	 * Insert new data into the database. Before add new data there
 	 * must be a file of reference. Use this function if your parameter
@@ -75,6 +76,7 @@ public class DataController {
 	 * @return
 	 */
 	@RequestMapping(value="/api/data/{paramQCCV}/{quantificationSourceSequence}/{checksum}",method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public Data insertData(@PathVariable String paramQCCV,
 			@PathVariable String quantificationSourceSequence,
 			@PathVariable String checksum,@RequestBody Data data) {
@@ -97,6 +99,7 @@ public class DataController {
 	 * @return
 	 */
 	@RequestMapping(value="/api/data/simple/{paramQCCV}/{instrumentSampleQCCV}/{checksum}",method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public Data insertSimpleData(@PathVariable String paramQCCV,
 			@PathVariable String instrumentSampleQCCV,
 			@PathVariable String checksum,@RequestBody Data data) {
@@ -153,6 +156,7 @@ public class DataController {
 	}
 	
 	@RequestMapping(value="/api/data/iso/{checksum}/{abbreviated}", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public List<DataForPlot> isotopologueData(@PathVariable String checksum,@PathVariable String abbreviated ) {
 		return dataService.getIsotopologueData(checksum, abbreviated);
 	}
@@ -162,6 +166,7 @@ public class DataController {
 	 * @param dataFromPipeline the data to insert
 	 */
 	@RequestMapping(value="/api/data/pipeline", method=RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public void insertDataFromPipeline(@RequestBody DataFromPipeline dataFromPipeline) {
 		dataService.insertDataFromPipeline(dataFromPipeline);		
 	}
