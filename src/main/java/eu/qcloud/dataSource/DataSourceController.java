@@ -121,6 +121,7 @@ public class DataSourceController {
 		// Check if node has this instrument		
 		if(dataSourceService.checkIfNodeHasDataSource(ds.getId(),u.getNode().getId())) {
 			ds.setName(dataSource.getName());
+			ds.setSerialNumber(dataSource.getSerialNumber());
 			return dataSourceService.updateDataSource(ds);
 		}else {
 			throw new InvalidActionException("You do not own this instrument.");

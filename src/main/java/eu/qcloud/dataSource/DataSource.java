@@ -45,6 +45,7 @@ public class DataSource {
 	@JoinColumn(name="node_id")
 	private Node node;
 	
+	private String serialNumber;
 	
 	@JsonIgnore
 	public Node getNode() {
@@ -94,6 +95,14 @@ public class DataSource {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+	
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
 	}
 
 	@Override
