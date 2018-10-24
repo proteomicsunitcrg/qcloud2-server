@@ -33,6 +33,7 @@ public class FileController {
 	private FileService fileService;
 	
 	@RequestMapping(value="/api/file", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public File addFile(@RequestBody File file) {
 		return fileService.addNewFile(file);
 	}
