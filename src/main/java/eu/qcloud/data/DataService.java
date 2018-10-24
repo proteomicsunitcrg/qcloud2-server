@@ -333,11 +333,12 @@ public class DataService {
 			if(parameterData.getValues().size()==0) {
 				continue;
 			}
-			logger.info("Insert data:" + parameterData.getParameter().getqCCV() + " ls: " + file.getLabSystem().getId()
+			logger.info("Inserting data:" + parameterData.getParameter().getqCCV() + " ls: " + file.getLabSystem().getId()
 					+ " - " + file.getLabSystem().getName() + " checksum:" + file.getChecksum());
 			// Loop through the parameters
 			Param param = paramRepository.findByQccv(parameterData.getParameter().getqCCV());
 			if (param == null) {
+				logger.warn("Param " + parameterData.getParameter().getqCCV() + " not found!");
 				continue;
 			}
 			parameterData.setParameter(param);
@@ -375,6 +376,7 @@ public class DataService {
 				d.setCalculatedValue(calc);
 				dataValue.setCalculatedValue(calc);
 				dataRepository.save(d);
+				logger.info("Data inserted for " + param.getqCCV() + " - " + cs.getAbbreviated() + " file: " +file.getChecksum() );
 			}
 			// Do threshold checks
 			if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
