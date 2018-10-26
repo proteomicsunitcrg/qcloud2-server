@@ -775,14 +775,35 @@ public class DataService {
 	private List<DataForPlot> getDataForPlot(LabSystem labSystem, Param param, List<ContextSource> contextSources,
 			SampleType sampleType, java.util.Date startDate, java.util.Date endDate) {
 		List<DataForPlot> dataForPlot = new ArrayList<>();
-		contextSources.forEach(cs -> {
-			List<Data> data = dataRepository.findParamData(cs.getId(), param.getId(), startDate, endDate,
-					labSystem.getId(), sampleType.getId());
-			List<DataForPlot> contextSourceDataForPlot = prepareCalculatedDataForPlot(data, sampleType, param);
-			dataForPlot.addAll(contextSourceDataForPlot);
-		});
-
+		switch(param.getIsFor()) {
+			case "Peptide":
+				List<Peptide> peptides = new ArrayList<>();
+				contextSources.forEach((cs) -> {
+					peptides.add(peptideRepository.findById(cs.getId()).get());
+				});
+				Collections.sort(peptides, (p1,p2)-> p2.getMz().compareTo(p1.getMz()));
+				peptides.forEach(cs -> {
+					dataForPlot.addAll(getContextSourceDataForPlot(cs,param,startDate,endDate,labSystem,sampleType));
+				});
+				break;
+			case "InstrumentSample":
+				Collections.sort(contextSources, (cs1, cs2) -> cs1.getAbbreviated().compareTo(cs2.getAbbreviated()));
+				contextSources.forEach(cs -> {
+					dataForPlot.addAll(getContextSourceDataForPlot(cs,param,startDate,endDate,labSystem,sampleType));
+				});
+				break;
+			default:
+				logger.error("Unknown isfor at getDataForPlot()");
+				break;
+		}
 		return dataForPlot;
+	}
+	
+	private List<DataForPlot> getContextSourceDataForPlot(ContextSource cs, Param param, Date startDate, Date endDate, LabSystem labSystem, SampleType sampleType) {
+		List<Data> data = dataRepository.findParamData(cs.getId(), param.getId(), startDate, endDate,
+				labSystem.getId(), sampleType.getId());
+		
+		return prepareCalculatedDataForPlot(data, sampleType, param);
 	}
 
 	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey, UUID thresholdApiKey) {
