@@ -378,13 +378,13 @@ public class DataService {
 				dataRepository.save(d);
 				logger.info("Data inserted for " + param.getqCCV() + " - " + cs.getAbbreviated() + " file: " +file.getChecksum() );
 			}
+			// webSocketService.sendDataParameterToNodeUsers(file.getLabSystem().getMainDataSource().getNode(), param);
 			// Do threshold checks
 			if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
 					file.getSampleType().getId()) > minPointsAutoThreshold) {
 				evaluateDataForNonConformities(file, dataFromPipeline);
 				// Recalculate user thresholds
 				regenerateThresholds(file, param);
-
 			}
 		}
 
@@ -529,7 +529,7 @@ public class DataService {
 		}
 		if (!thresholdNonConformities.isEmpty()) {
 			webSocketService.sendNonConformityToNodeUsers(file.getLabSystem().getMainDataSource().getNode(),
-					thresholdNonConformities);
+					thresholdNonConformities, file.getLabSystem());
 		}
 
 	}
