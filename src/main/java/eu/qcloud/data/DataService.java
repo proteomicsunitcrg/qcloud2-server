@@ -505,22 +505,21 @@ public class DataService {
 								dataValue.getContextSource(), parameterData.getParameter().getIsFor()),
 						threshold.getSteps(), threshold.getNonConformityDirection());
 
-				if (is != InstrumentStatus.OK && threshold.isMonitored()) {
-					logger.info("NC -> " + file.getFilename() + " param: "+ parameterData.getParameter().getName() +" cs:" + dataValue.getContextSource());
-					ThresholdNonConformity tnc = new ThresholdNonConformity();
-					tnc.setStatus(is);
-					tnc.setContextSource(cs);
-					tnc.setFile(file);
-					tnc.setThreshold(threshold);
-					thresholdNonConformityRepository.save(tnc);
-					Data d = dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(),
-							threshold.getParam().getId(), cs.getId());
-					d.setNonConformityStatus(is);
-					dataRepository.save(d);
-					thresholdNonConformities.add(tnc);
-
-					// webSocketService.sendNonConformityToNodeUsers(file.getLabSystem().getMainDataSource().getNode(),
-					// tnc);
+				if (threshold.isMonitored()) {
+					if(is != InstrumentStatus.OK) {
+						logger.info("NC -> " + file.getFilename() + " param: "+ parameterData.getParameter().getName() +" cs:" + dataValue.getContextSource());
+					}
+						ThresholdNonConformity tnc = new ThresholdNonConformity();
+						tnc.setStatus(is);
+						tnc.setContextSource(cs);
+						tnc.setFile(file);
+						tnc.setThreshold(threshold);
+						thresholdNonConformityRepository.save(tnc);
+						Data d = dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(),
+								threshold.getParam().getId(), cs.getId());
+						d.setNonConformityStatus(is);
+						dataRepository.save(d);
+						thresholdNonConformities.add(tnc);	
 				}
 			}
 		}
@@ -528,7 +527,6 @@ public class DataService {
 			webSocketService.sendNonConformityToNodeUsers(file.getLabSystem().getMainDataSource().getNode(),
 					thresholdNonConformities, file.getLabSystem());
 		}
-
 	}
 
 	private ContextSource getContextSourceFromDatabase(String name, String isFor) {
