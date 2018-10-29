@@ -19,6 +19,7 @@ import org.hibernate.annotations.Type;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.Instrument.Instrument;
+import eu.qcloud.param.Param;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.view.ViewDisplay;
 
@@ -55,6 +56,10 @@ public class Chart {
     @Column(name="is_normalized", columnDefinition="bit default 0")
     @Type(type = "org.hibernate.type.BooleanType")
     private boolean isNormalized;
+    
+    @ManyToOne
+    @JoinColumn(name="paramId",insertable=true, updatable= false, nullable=false)
+    private Param param;
     
     public UUID getApiKey() {
 		return apiKey;
@@ -129,6 +134,14 @@ public class Chart {
 
 	public void setNormalized(boolean isNormalized) {
 		this.isNormalized = isNormalized;
+	}
+
+	public Param getParam() {
+		return param;
+	}
+
+	public void setParam(Param param) {
+		this.param = param;
 	}
     
 }

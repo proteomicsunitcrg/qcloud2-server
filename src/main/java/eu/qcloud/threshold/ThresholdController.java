@@ -129,7 +129,7 @@ public class ThresholdController {
 		// get the param
 		ChartParams chartParam = chartService.getTopChartParamByChartApiKey(chartApiKey);
 		return thresholdService.calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(
-				chartParam.getParam().getId(), chartParam.getChart().getSampleType().getId(), labSystemApiKey);
+				chartApiKey, chartParam.getChart().getSampleType().getId(), labSystemApiKey);
 	}
 	
 	@PreAuthorize("hasRole('USER')")

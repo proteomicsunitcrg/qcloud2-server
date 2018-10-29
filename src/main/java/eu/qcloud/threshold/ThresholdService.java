@@ -1,8 +1,6 @@
 package eu.qcloud.threshold;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.Instrument.InstrumentRepository;
+import eu.qcloud.chart.Chart;
+import eu.qcloud.chart.ChartRepository;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.contextSource.ContextSourceRepository;
 import eu.qcloud.exceptions.InvalidActionException;
@@ -91,6 +91,9 @@ public class ThresholdService {
 	
 	@Autowired
 	private ContextSourceRepository contextSourceRepository;
+	
+	@Autowired
+	private ChartRepository chartRepository;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -162,7 +165,6 @@ public class ThresholdService {
 			stlog2.setEnabled(true);
 			stlog2.setMonitored(true);
 			stlog2.setNonConformityDirection(threshold.getNonConformityDirection());
-//			stlog2.setIsZeroNoData(threshold.getIsZeroNoData());
 			stlog2.setApiKey(UUID.randomUUID());
 			return saveSigmaLog2Threshold(stlog2);
 		case HARDLIMIT:
@@ -174,7 +176,6 @@ public class ThresholdService {
 			ht.setNonConformityDirection(threshold.getNonConformityDirection());
 			ht.setEnabled(true);
 			ht.setMonitored(true);
-//			ht.setIsZeroNoData(threshold.getIsZeroNoData());
 			ht.setApiKey(UUID.randomUUID());
 			return saveHardLimitThreshold(ht);
 		case SIGMA:
@@ -186,7 +187,6 @@ public class ThresholdService {
 			st.setEnabled(true);
 			st.setMonitored(true);
 			st.setNonConformityDirection(threshold.getNonConformityDirection());
-//			st.setIsZeroNoData(threshold.getIsZeroNoData());
 			st.setApiKey(UUID.randomUUID());
 			return saveSigmaThreshold(st);
 		default:
@@ -391,14 +391,14 @@ public class ThresholdService {
 				labSystem.get().getId());
 	}
 	
-	public ThresholdForPlotImpl calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(Long paramId,
+	public ThresholdForPlotImpl calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(UUID chartApiKey,
 			Long sampleTypeId, UUID labSystemApiKey) {
 		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
 		if (!labSystem.isPresent()) {
 			throw new DataRetrievalFailureException("Labsystem do not exists.");
 		}
-		
-		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(paramId,
+		Optional<Chart> chart = chartRepository.findByApiKey(chartApiKey);
+		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(chart.get().getParam().getId(),
 				sampleTypeId, labSystem.get().getId());
 		if(threshold == null) {
 			return null;

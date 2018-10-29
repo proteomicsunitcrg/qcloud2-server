@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import eu.qcloud.contextSource.ContextSource;
-import eu.qcloud.param.Param;
 
 public interface ChartParamsRepository extends CrudRepository<ChartParams, ChartParamsId>{
 	
@@ -16,8 +15,6 @@ public interface ChartParamsRepository extends CrudRepository<ChartParams, Chart
 	public ChartParams findTopByChartId(Long chartId);
 	
 	public ChartParams findTopByChartApiKey(UUID chartApiKey);
-	
-	public List<ChartParams> findByChartIdAndParamId(Long chartId, Long paramId);
 	
 	interface OnlyParams {
 		Long getChartId();
@@ -35,8 +32,9 @@ public interface ChartParamsRepository extends CrudRepository<ChartParams, Chart
 	 *
 	 */
 	interface FullParams {
-		Param getParam();
 		ContextSource getContextSource();
 	}
+
+	public List<ChartParams> findByChartId(Long chartId);
 	
 }

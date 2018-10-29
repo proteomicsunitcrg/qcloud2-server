@@ -24,8 +24,6 @@ import eu.qcloud.chart.ChartRepository.NoView;
 import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
 import eu.qcloud.exceptions.InvalidActionException;
-import eu.qcloud.param.Param;
-import eu.qcloud.param.ParamRepository;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeService;
 /**
@@ -42,10 +40,6 @@ public class ChartController {
 	
 	@Autowired
 	private SampleTypeService sampleTypeService;
-	
-	@Autowired
-	private ParamRepository paramRepository;
-	
 	
 	/**
 	 * Add a new chart into the database
@@ -114,14 +108,11 @@ public class ChartController {
 	public List<ChartParams> updateChartParamsByChart(@RequestBody List<ChartParams> chartParams,@PathVariable UUID chartApiKey) {
 		// Delete previous chartparams
 		List<ChartParams> previous = chartService.getChartParamsByChartApiKey(chartApiKey);
-		Param p = paramRepository.findByQccv(previous.get(0).getParam().getqCCV());
 		chartService.deleteChartParams(previous);
 		// Add new ones
 		List<ChartParams> chartParamsList = new ArrayList<>();		
 		for(ChartParams chartParam: chartParams) {
-			chartParam.setParam(p);
 			chartParamsList.add(chartService.addParamToChart(chartParam));
-			
 		}
 		if(chartParamsList.size()!=chartParams.size()) {
 			// delete previous
@@ -146,14 +137,12 @@ public class ChartController {
 		if(chartParams.size() == 0) {
 			throw new InvalidActionException("You need at least one param");
 		}
-		Param p = paramRepository.findByQccv(chartParams.get(0).getParam().getqCCV());
 		List<ChartParams> chartParamsList = new ArrayList<>();
 		for(ChartParams chartParam: chartParams) {
 			chartParam.setChart(chart.get());
-			chartParam.setParam(p);
 			chartParamsList.add(chartService.addParamToChart(chartParam));
-			
 		}
+		
 		if(chartParamsList.size()!=chartParams.size()) {
 			// delete previous
 			chartService.deleteChartParams(chartParamsList);

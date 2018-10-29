@@ -15,10 +15,7 @@ public class ChartParamsId implements Serializable {
 	@Column(nullable = false, updatable = false)
 	private Long chartId;
 	@Column(nullable = false, updatable = false)
-	private Long paramId;
-	@Column(nullable = false, updatable = false)
 	private Long contextSourceId;
-	
 	
 	public ChartParamsId() {}
 
@@ -28,14 +25,6 @@ public class ChartParamsId implements Serializable {
 
 	public void setChartId(Long chartId) {
 		this.chartId = chartId;
-	}
-
-	public Long getParamId() {
-		return paramId;
-	}
-
-	public void setParamId(Long paramId) {
-		this.paramId = paramId;
 	}
 
 	public Long getContextSourceId() {
@@ -51,7 +40,6 @@ public class ChartParamsId implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((chartId == null) ? 0 : chartId.hashCode());
-		result = prime * result + ((paramId == null) ? 0 : paramId.hashCode());
 		result = prime * result + ((contextSourceId == null) ? 0 : contextSourceId.hashCode());
 		return result;
 	}
@@ -70,11 +58,6 @@ public class ChartParamsId implements Serializable {
 				return false;
 		} else if (!chartId.equals(other.chartId))
 			return false;
-		if (paramId == null) {
-			if (other.paramId != null)
-				return false;
-		} else if (!paramId.equals(other.paramId))
-			return false;
 		if (contextSourceId == null) {
 			if (other.contextSourceId != null)
 				return false;
@@ -82,9 +65,5 @@ public class ChartParamsId implements Serializable {
 			return false;
 		return true;
 	}
-	
-	
-	
-	
 
 }

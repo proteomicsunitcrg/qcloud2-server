@@ -161,11 +161,8 @@ public class DataService {
 		if (!chart.isPresent() || !labSystem.isPresent() || !sampleType.isPresent()) {
 			throw new DataRetrievalFailureException("Wrong chart, system or sample type");
 		}
-		// Get the param
-		Param param = chartParamRepository.findTopByChartId(chart.get().getId()).getParam();
-
-		List<ChartParams> chartParams = chartParamRepository.findByChartIdAndParamId(chart.get().getId(),
-				param.getId());
+		
+		List<ChartParams> chartParams = chartParamRepository.findByChartId(chart.get().getId());
 
 		List<ContextSource> contextSources = new ArrayList<>();
 
@@ -173,7 +170,7 @@ public class DataService {
 			contextSources.add(cp.getContextSource());
 		});
 
-		List<DataForPlot> dataForPlot = getDataForPlot(labSystem.get(), param, contextSources, sampleType.get(), start,
+		List<DataForPlot> dataForPlot = getDataForPlot(labSystem.get(), chart.get().getParam(), contextSources, sampleType.get(), start,
 				end);
 
 		if (chart.get().isNormalized()) {
@@ -634,39 +631,6 @@ public class DataService {
 
 	}
 
-	private void regenerateThresholds(File file) {
-		List<Threshold> defaultThresholds = new ArrayList<>();
-		List<Threshold> nodeThresholds = new ArrayList<>();
-		thresholdRepository
-				.findAllDefaultThresholdsByThresholdCVIdAndSampleTypeId(
-						file.getLabSystem().getMainDataSource().getCv().getId(), file.getSampleType().getId())
-				.forEach(defaultThresholds::add);
-		// Get the labsystem thresholds if any
-		defaultThresholds.forEach(defaultThreshold -> {
-			nodeThresholds
-					.add(thresholdUtils.findOrCreateLabSystemThresholdBySampleTypeIdAndParamIdAndCvIdAndLabSystemId(
-							file.getSampleType().getId(), defaultThreshold.getParam().getId(),
-							defaultThreshold.getCv().getId(), file.getLabSystem().getId()));
-		});
-		List<ThresholdParams> params = new ArrayList<>();
-
-		nodeThresholds.forEach(nodeThreshold -> {
-			nodeThreshold.getThresholdParams().forEach(tp -> {
-
-				GuideSet gs = thresholdUtils.generateGuideSetFromWithFile(file, nodeThreshold.getParam(),
-						tp.getContextSource());
-
-				if (gs != null) {
-					params.add(thresholdUtils.processThresholdParam(nodeThreshold, gs, tp));
-				}
-			});
-
-			nodeThreshold.setThresholdParams(params);
-			saveThresholdParams(nodeThreshold);
-		});
-
-	}
-
 	private void saveThresholdParams(Threshold threshold) {
 		for (ThresholdParams p : threshold.getThresholdParams()) {
 			if (!p.getInitialValue().isNaN() && !p.getStepValue().isNaN()) {
@@ -818,10 +782,6 @@ public class DataService {
 
 		List<File> files = getFilesForAutoPlot(labSystem.get(), threshold.get().getSampleType());
 
-		// return getDataForPlot(labSystem.get(), param,
-		// Arrays.asList(contextSource.get()), sampleType.get(),
-		// files.get(files.size() - 1).getCreationDate(),
-		// files.get(0).getCreationDate());
 		return getDataForPlot(labSystem.get(), threshold.get().getParam(), Arrays.asList(contextSource.get()),
 				threshold.get().getSampleType(), files.get(files.size() - 1).getCreationDate(),
 				files.get(0).getCreationDate());

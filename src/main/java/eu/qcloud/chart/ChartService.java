@@ -53,12 +53,14 @@ public class ChartService {
 		chart.setApiKey(UUID.randomUUID());
 		Optional<Instrument> cv = cVRepository.getByCVId(chart.getCv().getCVId());
 		Optional<SampleType> st = sampleTypeRepository.findByQualityControlControlledVocabulary(chart.getSampleType().getQualityControlControlledVocabulary());
+		Optional<Param> param = paramRepository.findOptionalByQccv(chart.getParam().getqCCV());
 		
-		if(!cv.isPresent() || !st.isPresent()) {
-			throw new DataRetrievalFailureException("Chart/ sample type not found");
+		if(!cv.isPresent() || !st.isPresent() || !param.isPresent()) {
+			throw new DataRetrievalFailureException("Chart/ param / sample type not found");
 		}
 		chart.setCv(cv.get());
 		chart.setSampleType(st.get());
+		chart.setParam(param.get());
 		return chartRepository.save(chart);		
 	}
 	
@@ -70,6 +72,7 @@ public class ChartService {
 		Chart chart = original.get();
 		updatedChart.setId(chart.getId());
 		updatedChart.setSampleType(chart.getSampleType());
+		updatedChart.setParam(chart.getParam());
 		
 		return chartRepository.save(updatedChart);
 		
@@ -92,7 +95,6 @@ public class ChartService {
 		for(ChartParams chartParam: chartParams) {
 			ChartParamsId id = new ChartParamsId();
 			id.setChartId(chartParam.getChart().getId());
-			id.setParamId(chartParam.getParam().getId());
 			id.setContextSourceId(chartParam.getContextSource().getId());
 			chartParam.setChartParamsId(id);
 			if(chartParamsRepository.saveAll(chartParams) !=null) {
@@ -109,15 +111,12 @@ public class ChartService {
 	}
 	public ChartParams addParamToChart(ChartParams chartParam) {
 		Optional<Chart> c = chartRepository.findByApiKey(chartParam.getChart().getApiKey());
-		Param p = paramRepository.findByQccv(chartParam.getParam().getqCCV());
-		if(!c.isPresent() || p == null) {
+		if(!c.isPresent()) {
 			throw new DataRetrievalFailureException("Chart not found");
 		}
 		chartParam.setChart(c.get());
-		chartParam.setParam(p);
 		ChartParamsId id = new ChartParamsId();
 		id.setChartId(c.get().getId());
-		id.setParamId(p.getId());
 		id.setContextSourceId(chartParam.getContextSource().getId());
 		chartParam.setChartParamsId(id);
 		return chartParamsRepository.save(chartParam);

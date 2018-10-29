@@ -14,10 +14,6 @@ public interface DataRepository extends PagingAndSortingRepository<Data, DataId>
 
 	MiniData findByDataIdFileId(Long fileId);
 	
-	@Query("SELECT d as d from Data d where (d.contextSource, d.param) in (select c.contextSource, c.param from ChartParams c where c.chart.id=?1 ) and d.file in (select f from File f where f.creationDate between ?2 and ?3 and f.labSystem.id=?4 and f.sampleType.id=?5) order by d.file.creationDate asc")
-	List<Data> findPlotData(Long chartId, java.util.Date start, java.util.Date end, Long labSystemId, Long sampleTypeId);
-	
-	
 	@Query("SELECT d as d from Data d where d.param.id=?1 and d.file.id = ?2 and d.contextSource.id = ?3")
 	List<Data> findParamDataByFileAndContextSource(Long paramId, Long fileId, Long contextSourceId);
 	

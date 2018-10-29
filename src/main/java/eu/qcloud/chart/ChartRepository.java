@@ -9,6 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import eu.qcloud.Instrument.Instrument;
+import eu.qcloud.param.Param;
 import eu.qcloud.sampleType.SampleType;
 
 @Repository
@@ -43,6 +44,7 @@ public interface ChartRepository extends CrudRepository<Chart, Long>{
 		Instrument getCv();
 		boolean getIsThresholdEnabled();
 		UUID getApiKey();
+		Param getParam();
 	}
 
 	Optional<Chart> findByApiKey(UUID chartApiKey);
