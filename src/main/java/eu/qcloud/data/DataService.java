@@ -42,6 +42,7 @@ import eu.qcloud.file.FileRepository;
 import eu.qcloud.guideset.GuideSet;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
+import eu.qcloud.node.Node;
 import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformity;
 import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformityRepository;
 import eu.qcloud.param.Param;
@@ -58,6 +59,7 @@ import eu.qcloud.threshold.ThresholdRepository;
 import eu.qcloud.threshold.params.ThresholdParams;
 import eu.qcloud.threshold.params.ThresholdParamsRepository;
 import eu.qcloud.utils.ThresholdUtils;
+import eu.qcloud.utils.factory.ThresholdForPlotFactory;
 import eu.qcloud.websocket.WebSocketService;
 
 /**
@@ -317,6 +319,7 @@ public class DataService {
 	 * @param dataFromPipeline
 	 */
 	public void insertDataFromPipeline(DataFromPipeline dataFromPipeline) {
+		List<Data> insertedData = new ArrayList<>();
 		// Check if file exists
 		File file = fileRepository.findByChecksum(dataFromPipeline.getFile().getChecksum());
 		if (file == null) {
@@ -373,9 +376,9 @@ public class DataService {
 				d.setCalculatedValue(calc);
 				dataValue.setCalculatedValue(calc);
 				dataRepository.save(d);
+				insertedData.add(d);
 				logger.info("Data inserted for " + param.getqCCV() + " - " + cs.getAbbreviated() + " file: " +file.getChecksum() );
 			}
-			// webSocketService.sendDataParameterToNodeUsers(file.getLabSystem().getMainDataSource().getNode(), param);
 			// Do threshold checks
 			if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
 					file.getSampleType().getId()) > minPointsAutoThreshold) {
@@ -384,7 +387,39 @@ public class DataService {
 				regenerateThresholds(file, param);
 			}
 		}
+		// before send new data send threhold if any
+		sendThresholdToConnectedUsers(dataFromPipeline, file);
+		
+		webSocketService.sendDataParameterToNodeUsers(getNodeFromFile(file),
+				dataFromPipeline.getData().get(0).getParameter(),
+				prepareCalculatedDataForPlot(insertedData, file.getSampleType(),
+						dataFromPipeline.getData().get(0).getParameter()),
+				file.getLabSystem(),
+				file.getSampleType());
 
+	}
+
+	private void sendThresholdToConnectedUsers(DataFromPipeline dataFromPipeline, File file) {
+		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(dataFromPipeline.getData().get(0).getParameter().getId(),
+				file.getSampleType().getId(), file.getLabSystem().getId());
+		
+		if(threshold == null) {
+			return;
+		}
+		
+		webSocketService.sendThresholdToNodeUsers(getNodeFromFile(file),
+				getParamFromDataFromPipeline(dataFromPipeline),
+				ThresholdForPlotFactory.create(threshold),
+				file.getLabSystem(),
+				file.getSampleType());
+	}
+	
+	private Node getNodeFromFile(File file) {
+		return file.getLabSystem().getMainDataSource().getNode();
+	}
+	
+	private Param getParamFromDataFromPipeline(DataFromPipeline dataFromPipeline) {
+		return dataFromPipeline.getData().get(0).getParameter();
 	}
 
 	private void regenerateThresholds(File file, Param param) {
