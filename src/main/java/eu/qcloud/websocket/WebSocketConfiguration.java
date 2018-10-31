@@ -11,11 +11,9 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -32,14 +30,6 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 	@Autowired
     private UserDetailsService userDetailsService;
 	
-	/*
-	@Override
-	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/topic");
-		config.setApplicationDestinationPrefixes("/app");
-	}
-	*/
-	
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic", "/queue" ,"/user");
@@ -49,15 +39,8 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		// registry.addEndpoint("/api/gs-guide-websocket").addInterceptors(new HttpHandshakeInterceptor()).withSockJS();
-		
 		registry.addEndpoint("/api/gs-guide-websocket").withSockJS();
-		
-			
-		// registry.addEndpoint("/api/gs-guide-websocket").addInterceptors(new HttpHandshakeInterceptor());
 	}
-	
-    
 	
 	@Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
