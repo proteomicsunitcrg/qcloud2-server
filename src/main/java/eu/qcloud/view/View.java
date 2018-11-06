@@ -16,6 +16,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
 import eu.qcloud.security.model.User;
@@ -41,6 +43,7 @@ public class View {
 	@Column(name ="is_default", nullable= false, columnDefinition="bit default 1")
 	private boolean isDefault;
 
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name="userId",insertable=true, updatable= false,nullable=true)
 	private User user;
