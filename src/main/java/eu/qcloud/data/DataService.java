@@ -59,6 +59,7 @@ import eu.qcloud.threshold.ThresholdRepository;
 import eu.qcloud.threshold.params.ThresholdParams;
 import eu.qcloud.threshold.params.ThresholdParamsRepository;
 import eu.qcloud.utils.ThresholdUtils;
+import eu.qcloud.utils.TraceHashMap;
 import eu.qcloud.utils.factory.ThresholdForPlotFactory;
 import eu.qcloud.websocket.WebSocketService;
 
@@ -163,7 +164,7 @@ public class DataService {
 		if (!chart.isPresent() || !labSystem.isPresent() || !sampleType.isPresent()) {
 			throw new DataRetrievalFailureException("Wrong chart, system or sample type");
 		}
-		
+
 		List<ChartParams> chartParams = chartParamRepository.findByChartId(chart.get().getId());
 
 		List<ContextSource> contextSources = new ArrayList<>();
@@ -172,8 +173,8 @@ public class DataService {
 			contextSources.add(cp.getContextSource());
 		});
 
-		List<DataForPlot> dataForPlot = getDataForPlot(labSystem.get(), chart.get().getParam(), contextSources, sampleType.get(), start,
-				end);
+		List<DataForPlot> dataForPlot = getDataForPlot(labSystem.get(), chart.get().getParam(), contextSources,
+				sampleType.get(), start, end);
 
 		if (chart.get().isNormalized()) {
 			return normalizeData(dataForPlot, labSystem.get(), sampleType.get(), chart.get());
@@ -330,11 +331,12 @@ public class DataService {
 		logger.info("Insert data of file:" + file.getFilename() + " - lab system: " + file.getLabSystem().getName());
 		// Loop through the parameters
 		for (ParameterData parameterData : dataFromPipeline.getData()) {
-			if(parameterData.getValues().size()==0) {
+			if (parameterData.getValues().size() == 0) {
 				continue;
 			}
-			logger.info("Inserting data:" + parameterData.getParameter().getqCCV() + " ls: " + file.getLabSystem().getId()
-					+ " - " + file.getLabSystem().getName() + " checksum:" + file.getChecksum());
+			logger.info(
+					"Inserting data:" + parameterData.getParameter().getqCCV() + " ls: " + file.getLabSystem().getId()
+							+ " - " + file.getLabSystem().getName() + " checksum:" + file.getChecksum());
 			// Loop through the parameters
 			Param param = paramRepository.findByQccv(parameterData.getParameter().getqCCV());
 			if (param == null) {
@@ -377,7 +379,8 @@ public class DataService {
 				dataValue.setCalculatedValue(calc);
 				dataRepository.save(d);
 				insertedData.add(d);
-				logger.info("Data inserted for " + param.getqCCV() + " - " + cs.getAbbreviated() + " file: " +file.getChecksum() );
+				logger.info("Data inserted for " + param.getqCCV() + " - " + cs.getAbbreviated() + " file: "
+						+ file.getChecksum());
 			}
 			// Do threshold checks
 			if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
@@ -389,35 +392,50 @@ public class DataService {
 		}
 		// before send new data send threhold if any
 		sendThresholdToConnectedUsers(dataFromPipeline, file);
-		
-		webSocketService.sendDataParameterToNodeUsers(getNodeFromFile(file),
-				dataFromPipeline.getData().get(0).getParameter(),
-				prepareCalculatedDataForPlot(insertedData, file.getSampleType(),
-						dataFromPipeline.getData().get(0).getParameter()),
-				file.getLabSystem(),
-				file.getSampleType());
 
+		
+		webSocketService.sendTracePointDataToNodeUsers(getNodeFromFile(file),
+				dataFromPipeline.getData().get(0).getParameter(), generatePlotTraceList(insertedData,
+						file.getSampleType(), dataFromPipeline.getData().get(0).getParameter()),
+				file.getLabSystem(), file.getSampleType());
+		/*
+		webSocketService.sendDataParameterToNodeUsers(getNodeFromFile(file),
+				dataFromPipeline.getData().get(0).getParameter(), prepareCalculatedDataForPlot(insertedData,
+						file.getSampleType(), dataFromPipeline.getData().get(0).getParameter()),
+				file.getLabSystem(), file.getSampleType());
+		*/
+
+	}
+	
+	private List<PlotTrace> generatePlotTraceList(List<Data> dataFromDb, SampleType sampleType, Param param) {
+		TraceHashMap<String, PlotTrace> traces = new TraceHashMap<>();
+		for(Data d: dataFromDb) {
+			if(!traces.containsKey(d.getContextSource().getAbbreviated())) {
+				traces.put(d.getContextSource().getAbbreviated(), generatePlotTraceFromContextSource(d.getContextSource()));
+			}
+			traces.get(d.getContextSource().getAbbreviated()).getPlotTracePoints()
+				.add(generatePlotTracePointFromData(d));
+		}
+		return traces.toList();
 	}
 
 	private void sendThresholdToConnectedUsers(DataFromPipeline dataFromPipeline, File file) {
-		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(dataFromPipeline.getData().get(0).getParameter().getId(),
-				file.getSampleType().getId(), file.getLabSystem().getId());
-		
-		if(threshold == null) {
+		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(
+				dataFromPipeline.getData().get(0).getParameter().getId(), file.getSampleType().getId(),
+				file.getLabSystem().getId());
+
+		if (threshold == null) {
 			return;
 		}
-		
-		webSocketService.sendThresholdToNodeUsers(getNodeFromFile(file),
-				getParamFromDataFromPipeline(dataFromPipeline),
-				ThresholdForPlotFactory.create(threshold),
-				file.getLabSystem(),
-				file.getSampleType());
+
+		webSocketService.sendThresholdToNodeUsers(getNodeFromFile(file), getParamFromDataFromPipeline(dataFromPipeline),
+				ThresholdForPlotFactory.create(threshold), file.getLabSystem(), file.getSampleType());
 	}
-	
+
 	private Node getNodeFromFile(File file) {
 		return file.getLabSystem().getMainDataSource().getNode();
 	}
-	
+
 	private Param getParamFromDataFromPipeline(DataFromPipeline dataFromPipeline) {
 		return dataFromPipeline.getData().get(0).getParameter();
 	}
@@ -541,20 +559,21 @@ public class DataService {
 						threshold.getSteps(), threshold.getNonConformityDirection());
 
 				if (threshold.isMonitored()) {
-					if(is != InstrumentStatus.OK) {
-						logger.info("NC -> " + file.getFilename() + " param: "+ parameterData.getParameter().getName() +" cs:" + dataValue.getContextSource());
+					if (is != InstrumentStatus.OK) {
+						logger.info("NC -> " + file.getFilename() + " param: " + parameterData.getParameter().getName()
+								+ " cs:" + dataValue.getContextSource());
 					}
-						ThresholdNonConformity tnc = new ThresholdNonConformity();
-						tnc.setStatus(is);
-						tnc.setContextSource(cs);
-						tnc.setFile(file);
-						tnc.setThreshold(threshold);
-						thresholdNonConformityRepository.save(tnc);
-						Data d = dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(),
-								threshold.getParam().getId(), cs.getId());
-						d.setNonConformityStatus(is);
-						dataRepository.save(d);
-						thresholdNonConformities.add(tnc);	
+					ThresholdNonConformity tnc = new ThresholdNonConformity();
+					tnc.setStatus(is);
+					tnc.setContextSource(cs);
+					tnc.setFile(file);
+					tnc.setThreshold(threshold);
+					thresholdNonConformityRepository.save(tnc);
+					Data d = dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(),
+							threshold.getParam().getId(), cs.getId());
+					d.setNonConformityStatus(is);
+					dataRepository.save(d);
+					thresholdNonConformities.add(tnc);
 				}
 			}
 		}
@@ -772,44 +791,47 @@ public class DataService {
 	private List<DataForPlot> getDataForPlot(LabSystem labSystem, Param param, List<ContextSource> contextSources,
 			SampleType sampleType, java.util.Date startDate, java.util.Date endDate) {
 		List<DataForPlot> dataForPlot = new ArrayList<>();
-		switch(param.getIsFor()) {
-			case "Peptide":
-				List<Peptide> peptides = new ArrayList<>();
-				contextSources.forEach((cs) -> {
-					peptides.add(peptideRepository.findById(cs.getId()).get());
-				});
-				Collections.sort(peptides, (p1,p2)-> p2.getMz().compareTo(p1.getMz()));
-				peptides.forEach(cs -> {
-					dataForPlot.addAll(getContextSourceDataForPlot(cs,param,startDate,endDate,labSystem,sampleType));
-				});
-				break;
-			case "InstrumentSample":
-				Collections.sort(contextSources, (cs1, cs2) -> cs1.getAbbreviated().compareTo(cs2.getAbbreviated()));
-				contextSources.forEach(cs -> {
-					dataForPlot.addAll(getContextSourceDataForPlot(cs,param,startDate,endDate,labSystem,sampleType));
-				});
-				break;
-			default:
-				logger.error("Unknown isfor at getDataForPlot()");
-				break;
+		switch (param.getIsFor()) {
+		case "Peptide":
+			List<Peptide> peptides = new ArrayList<>();
+			contextSources.forEach((cs) -> {
+				peptides.add(peptideRepository.findById(cs.getId()).get());
+			});
+			Collections.sort(peptides, (p1, p2) -> p2.getMz().compareTo(p1.getMz()));
+			peptides.forEach(cs -> {
+				dataForPlot.addAll(getContextSourceDataForPlot(cs, param, startDate, endDate, labSystem, sampleType));
+			});
+			break;
+		case "InstrumentSample":
+			Collections.sort(contextSources, (cs1, cs2) -> cs1.getAbbreviated().compareTo(cs2.getAbbreviated()));
+			contextSources.forEach(cs -> {
+				dataForPlot.addAll(getContextSourceDataForPlot(cs, param, startDate, endDate, labSystem, sampleType));
+			});
+			break;
+		default:
+			logger.error("Unknown isfor at getDataForPlot()");
+			break;
 		}
 		return dataForPlot;
 	}
-	
-	private List<DataForPlot> getContextSourceDataForPlot(ContextSource cs, Param param, Date startDate, Date endDate, LabSystem labSystem, SampleType sampleType) {
-		List<Data> data = dataRepository.findParamData(cs.getId(), param.getId(), startDate, endDate,
-				labSystem.getId(), sampleType.getId());
-		
+
+	private List<DataForPlot> getContextSourceDataForPlot(ContextSource cs, Param param, Date startDate, Date endDate,
+			LabSystem labSystem, SampleType sampleType) {
+		List<Data> data = dataRepository.findParamData(cs.getId(), param.getId(), startDate, endDate, labSystem.getId(),
+				sampleType.getId());
+
 		return prepareCalculatedDataForPlot(data, sampleType, param);
 	}
 
-	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey, UUID thresholdApiKey) {
+	public List<DataForPlot> getAutoPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey,
+			UUID thresholdApiKey) {
 
 		Optional<Threshold> threshold = thresholdRepository.findByApiKey(thresholdApiKey);
 		Param param = paramRepository.findByQccv(paramQccv);
 		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
 		Optional<ContextSource> contextSource = contextSourceRepository.findByApiKey(contextSourceApiKey);
-		// Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQccv);
+		// Optional<SampleType> sampleType =
+		// sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQccv);
 
 		checkAutoPlotParameters(threshold, param, labSystem, contextSource, null);
 
@@ -891,10 +913,9 @@ public class DataService {
 			throw new DataRetrievalFailureException("No context source found.");
 		}
 		/*
-		if (!sampleType.isPresent()) {
-			throw new DataRetrievalFailureException("No sample type found.");
-		}
-		*/
+		 * if (!sampleType.isPresent()) { throw new
+		 * DataRetrievalFailureException("No sample type found."); }
+		 */
 	}
 
 	/**
@@ -932,6 +953,54 @@ public class DataService {
 				throw new DataRetrievalFailureException("No guide set found.");
 			}
 		}
+	}
+
+	public List<PlotTrace> getTraceData(Date startDate, Date endDate, UUID chartApiKey, UUID labSystemApiKey,
+			String sampleTypeQCCV) {
+		Optional<Chart> chart = chartRepository.findByApiKey(chartApiKey);
+		
+		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
+		
+		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQCCV);
+		
+		List<ChartParams> chartParams = chartParamRepository.findByChartId(chart.get().getId());
+
+		List<ContextSource> contextSources = new ArrayList<>();
+		
+		TraceHashMap<String, PlotTrace> traces = new TraceHashMap<>();
+
+		chartParams.forEach(cp -> {
+			contextSources.add(cp.getContextSource());
+		});
+		
+		List<Data> data = new ArrayList<>();
+		
+		contextSources.forEach(cs -> {
+			data.addAll(dataRepository.findParamData(cs.getId(), chart.get().getParam().getId(), startDate, endDate,
+					labSystem.get().getId(), sampleType.get().getId()));
+		});
+		
+		for(Data d: data) {
+			if(!traces.containsKey(d.getContextSource().getAbbreviated())) {
+				traces.put(d.getContextSource().getAbbreviated(), generatePlotTraceFromContextSource(d.getContextSource()));
+			}
+			traces.get(d.getContextSource().getAbbreviated()).getPlotTracePoints()
+				.add(generatePlotTracePointFromData(d));
+		}
+		return traces.toList();
+	}
+	
+	private PlotTracePoint generatePlotTracePointFromData(Data d) {
+		return new PlotTracePoint(d.getFile(), d.getCalculatedValue(), d.getNonConformityStatus());
+	}
+	
+	private PlotTrace generatePlotTraceFromContextSource(ContextSource contextSource) {
+		PlotTrace plotTrace = new PlotTrace();
+		plotTrace.setAbbreviated(contextSource.getAbbreviated());
+		plotTrace.setTraceColor(contextSource.getTraceColor());
+		plotTrace.setShade(contextSource.getShadeGrade());
+		plotTrace.setPlotTracePoints(new ArrayList<>());
+		return plotTrace;
 	}
 
 }

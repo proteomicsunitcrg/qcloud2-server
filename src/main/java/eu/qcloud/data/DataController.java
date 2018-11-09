@@ -1,7 +1,6 @@
 package eu.qcloud.data;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,17 +53,7 @@ public class DataController {
 	@Autowired
 	private InstrumentSampleService instrumentSampleService;
 	
-	/*
-	@RequestMapping(value="/api/data",method= RequestMethod.GET)
-	public List<Data> getData() {
-		return dataService.getAllData();
-	}
-	
-	@RequestMapping(value="/api/data",method= RequestMethod.POST)	
-	public Data addData(@RequestBody Data data) {
-		return dataService.addData(data);
-	}
-	*/
+
 	/**
 	 * Insert new data into the database. Before add new data there
 	 * must be a file of reference. Use this function if your parameter
@@ -170,6 +159,18 @@ public class DataController {
 	public void insertDataFromPipeline(@RequestBody DataFromPipeline dataFromPipeline) {
 		dataService.insertDataFromPipeline(dataFromPipeline);		
 	}
+	
+	@RequestMapping(value="/api/data/traces/{startDate}/{endDate}/{chartApiKey}/{labSystemApiKey}/{sampleTypeQCCV}", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
+	public List<PlotTrace> getTrace(@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date startDate,
+			@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date endDate,
+			@PathVariable UUID chartApiKey, 
+			@PathVariable UUID labSystemApiKey,
+			@PathVariable String sampleTypeQCCV) {
+		
+		return dataService.getTraceData(startDate, endDate, chartApiKey, labSystemApiKey, sampleTypeQCCV);
+	}
+	
 	
 	/*
 	 * Helper classes

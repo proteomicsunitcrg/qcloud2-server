@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.data.DataForPlot;
+import eu.qcloud.data.PlotTrace;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.node.Node;
 import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformity;
@@ -57,7 +58,21 @@ public class WebSocketService {
 		}
 	}
 
+	@Deprecated
 	public void sendDataParameterToNodeUsers(Node node, Param param, List<DataForPlot> dataForPlot, LabSystem labSystem,
+			SampleType sampleType) {
+		for (SimpUser s : userRegistry.getUsers()) {
+			User user = userRepository.findByUsername(s.getName());
+			if (user.getNode().getId() == node.getId()) {
+				// send message
+				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
+						new WebSocketNotification("data-" + param.getqCCV(), labSystem.getApiKey(),
+								sampleType.getQualityControlControlledVocabulary(), dataForPlot));
+			}
+		}
+	}
+	
+	public void sendTracePointDataToNodeUsers(Node node, Param param, List<PlotTrace> dataForPlot, LabSystem labSystem,
 			SampleType sampleType) {
 		for (SimpUser s : userRegistry.getUsers()) {
 			User user = userRepository.findByUsername(s.getName());
