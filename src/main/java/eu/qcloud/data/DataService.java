@@ -398,12 +398,6 @@ public class DataService {
 				dataFromPipeline.getData().get(0).getParameter(), generatePlotTraceList(insertedData,
 						file.getSampleType(), dataFromPipeline.getData().get(0).getParameter()),
 				file.getLabSystem(), file.getSampleType());
-		/*
-		webSocketService.sendDataParameterToNodeUsers(getNodeFromFile(file),
-				dataFromPipeline.getData().get(0).getParameter(), prepareCalculatedDataForPlot(insertedData,
-						file.getSampleType(), dataFromPipeline.getData().get(0).getParameter()),
-				file.getLabSystem(), file.getSampleType());
-		*/
 
 	}
 	
