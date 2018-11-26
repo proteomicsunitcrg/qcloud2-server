@@ -110,6 +110,7 @@ public class DataController {
 	 * @param sampleTypeId
 	 * @return a list of data in a form of a DataForPlot, another class.
 	 */
+	/*
 	@RequestMapping(value="/api/data/{startDate}/{endDate}/{chartApiKey}/{labSystemApiKey}/{sampleTypeQCCV}", method=RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public List<DataForPlot> getPlotData(@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date startDate,
@@ -121,6 +122,7 @@ public class DataController {
 		return dataService.getPlotData(startDate, endDate, chartApiKey, labSystemApiKey, sampleTypeQCCV);
 		
 	}
+	*/
 	
 	@RequestMapping(value="/api/data/auto/{labSystemApiKey}/{paramQccv}/{contextSourceApiKey}/{thresholdApiKey}", method=RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")

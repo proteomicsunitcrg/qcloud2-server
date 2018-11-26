@@ -23,6 +23,13 @@ public class TraceColor {
 	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
+	
+	public TraceColor() {}
+
+	public TraceColor(String mainColor, UUID apiKey) {
+		this.mainColor = mainColor;
+		this.apiKey = apiKey;
+	}
 
 	public Long getId() {
 		return id;

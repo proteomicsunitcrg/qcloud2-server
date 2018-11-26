@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -58,6 +59,8 @@ import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdRepository;
 import eu.qcloud.threshold.params.ThresholdParams;
 import eu.qcloud.threshold.params.ThresholdParamsRepository;
+import eu.qcloud.traceColor.TraceColor;
+import eu.qcloud.traceColor.TraceColorRepository;
 import eu.qcloud.utils.ThresholdUtils;
 import eu.qcloud.utils.TraceHashMap;
 import eu.qcloud.utils.factory.ThresholdForPlotFactory;
@@ -119,6 +122,9 @@ public class DataService {
 
 	@Autowired
 	private WebSocketService webSocketService;
+	
+	@Autowired
+	private TraceColorRepository traceColorRepository;
 
 	@Value("${qcloud.threshold.min-points-auto}")
 	private int minPointsAutoThreshold;
@@ -981,7 +987,9 @@ public class DataService {
 			traces.get(d.getContextSource().getAbbreviated()).getPlotTracePoints()
 				.add(generatePlotTracePointFromData(d));
 		}
-		return traces.toList();
+		List<PlotTrace> plotTraces = traces.toList();
+		checkTracesForTraceColor(plotTraces);
+		return plotTraces;
 	}
 	
 	private PlotTracePoint generatePlotTracePointFromData(Data d) {
@@ -996,5 +1004,90 @@ public class DataService {
 		plotTrace.setPlotTracePoints(new ArrayList<>());
 		return plotTrace;
 	}
+	
+	private void checkTracesForTraceColor(List<PlotTrace> traces) {
+		int colored = 0;
+		int notColored = 0;
+		// check if all have trace color
+		for(PlotTrace trace: traces) {
+			if(trace.getTraceColor() == null) {
+				notColored++;
+			} else {
+				colored++;
+			}
+		}
+		
+		if(traces.size() == colored) {
+			return;
+		}
+		
+		// check if all miss
+		if(traces.size() == notColored) {
+			List<TraceColor> colors = getAllTraceColors();
+			if(colors.size() >= notColored) {
+				// put colors
+				for(int i = 0 ; i < traces.size(); i++) {
+					traces.get(i).setTraceColor(colors.get(i));
+				}
+			} else {
+				logger.info("Insuficient trace colors, generating random trace colors");
+				// fill colors until end the list, then, create new ones
+				int missingColors = traces.size() - colored;
+				for(int i = 0; i < missingColors; i++) {
+					colors.add(createRandomColor());
+				}
+				for(int i = 0 ; i < traces.size(); i++) {
+					traces.get(i).setTraceColor(colors.get(i));
+				}
+			}
+			
+		} else {
+			List<Long> ids = getTraceColorIdListFromPlotTrace(traces);
+			List<TraceColor> colors = new ArrayList<>();
+			List<TraceColor> freeColors = traceColorRepository.findByIdNotIn(ids);
+			colors.addAll(freeColors);			
+			int missingColors = traces.size() - colored;
+			logger.info("Insuficient trace colors, generating random trace colors");
+			for(int i = colors.size(); i < missingColors; i++) {
+				colors.add(createRandomColor());
+			}
+			List<PlotTrace> tracesWithoutColors = getPlotTraceWithoutColor(traces);
+			for(int i = 0 ; i < tracesWithoutColors.size(); i++) {
+				tracesWithoutColors.get(i).setTraceColor(colors.get(i));
+			}
+		}
+	}
+	
+	private List<Long> getTraceColorIdListFromPlotTrace(List<PlotTrace> plotTraces) {
+		List<Long> traces = new ArrayList<>();
+		plotTraces.forEach(pt -> {
+			if(pt.getTraceColor() != null) {
+				traces.add(pt.getTraceColor().getId());
+			}
+		});
+		return traces;
+	}
+	
+	private TraceColor createRandomColor() {
+		// rgb(170, 170, 17)
+		int r = ThreadLocalRandom.current().nextInt(0, 254 + 1);
+		int g = ThreadLocalRandom.current().nextInt(0, 254 + 1);
+		int b = ThreadLocalRandom.current().nextInt(0, 254 + 1);
 
+		return new TraceColor("rgb("+r+","+g+","+b+")", null);
+	}
+	
+	private List<TraceColor> getAllTraceColors() {
+		List<TraceColor> colors = new ArrayList<>();
+		traceColorRepository.findAll().forEach(colors::add);
+		return colors;
+	}
+	
+	private List<PlotTrace> getPlotTraceWithoutColor(List<PlotTrace> traces) {
+		List<PlotTrace> tracesWithoutColor = new ArrayList<>();
+		traces.stream().filter(t -> t.getTraceColor() == null).forEach(tracesWithoutColor::add);
+		return tracesWithoutColor;
+		
+	}
+	
 }
