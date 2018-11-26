@@ -1023,7 +1023,6 @@ public class DataService {
 		
 		// check if all miss
 		if(traces.size() == notColored) {
-			logger.info("Missing all colors");
 			List<TraceColor> colors = getAllTraceColors();
 			if(colors.size() >= notColored) {
 				// put colors
