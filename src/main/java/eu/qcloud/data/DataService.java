@@ -53,6 +53,7 @@ import eu.qcloud.sampleComposition.SampleCompositionRepository;
 import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
+import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 import eu.qcloud.threshold.Direction;
 import eu.qcloud.threshold.InstrumentStatus;
 import eu.qcloud.threshold.Threshold;
@@ -979,21 +980,46 @@ public class DataService {
 			data.addAll(dataRepository.findParamData(cs.getId(), chart.get().getParam().getId(), startDate, endDate,
 					labSystem.get().getId(), sampleType.get().getId()));
 		});
-		
-		for(Data d: data) {
-			if(!traces.containsKey(d.getContextSource().getAbbreviated())) {
-				traces.put(d.getContextSource().getAbbreviated(), generatePlotTraceFromContextSource(d.getContextSource()));
+
+		if(chart.get().getSampleType().getSampleTypeCategory().getSampleTypeComplexity() == SampleTypeComplexity.HIGHWITHISOTOPOLOGUES && chart.get().getParam().getIsFor().equals("Peptide")) {
+			for(Data d: data) {
+				SampleComposition concentration = sampleCompositionRepository
+						.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.get().getId(),
+								d.getContextSource().getId());
+				if(!traces.containsKey(concentration.getConcentration().toString())) {
+					traces.put(concentration.getConcentration().toString(), generateIsotopologuePlotTraceFromContextSource(d.getContextSource(), concentration.getConcentration().toString()));
+				}
+				traces.get(concentration.getConcentration().toString()).getPlotTracePoints()
+					.add(generatePlotTracePointFromData(d));
 			}
-			traces.get(d.getContextSource().getAbbreviated()).getPlotTracePoints()
-				.add(generatePlotTracePointFromData(d));
+		} else {
+			for(Data d: data) {
+				if(!traces.containsKey(d.getContextSource().getAbbreviated())) {
+					traces.put(d.getContextSource().getAbbreviated(), generatePlotTraceFromContextSource(d.getContextSource()));
+				}
+				traces.get(d.getContextSource().getAbbreviated()).getPlotTracePoints()
+					.add(generatePlotTracePointFromData(d));
+			}	
 		}
+		
+		
 		List<PlotTrace> plotTraces = traces.toList();
+		Collections.sort(plotTraces);
 		checkTracesForTraceColor(plotTraces);
 		return plotTraces;
 	}
 	
 	private PlotTracePoint generatePlotTracePointFromData(Data d) {
 		return new PlotTracePoint(d.getFile(), d.getCalculatedValue(), d.getNonConformityStatus());
+	}
+	
+	private PlotTrace generateIsotopologuePlotTraceFromContextSource(ContextSource contextSource, String concentration) {
+		PlotTrace plotTrace = new PlotTrace();
+		plotTrace.setAbbreviated(concentration);
+		plotTrace.setTraceColor(contextSource.getTraceColor());
+		plotTrace.setShade(contextSource.getShadeGrade());
+		plotTrace.setPlotTracePoints(new ArrayList<>());
+		return plotTrace;
 	}
 	
 	private PlotTrace generatePlotTraceFromContextSource(ContextSource contextSource) {
