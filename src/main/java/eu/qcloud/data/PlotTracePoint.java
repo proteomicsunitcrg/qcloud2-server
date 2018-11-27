@@ -31,6 +31,7 @@ public class PlotTracePoint {
 		this.file = new File();
 		this.file.setFilename(file.getFilename());
 		this.file.setCreationDate(file.getCreationDate());
+		this.file.setChecksum(file.getChecksum());
 		this.value = value;
 		this.nonConformityStatus = nonConformityStatus;
 	}
