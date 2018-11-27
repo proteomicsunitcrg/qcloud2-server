@@ -5,7 +5,7 @@ import java.util.List;
 
 import eu.qcloud.traceColor.TraceColor;
 
-public class PlotTrace {
+public class PlotTrace implements Comparable<PlotTrace>{
 	
 	private String abbreviated;
 	
@@ -50,6 +50,23 @@ public class PlotTrace {
 
 	public void setPlotTracePoints(List<PlotTracePoint> plotTracePoints) {
 		this.plotTracePoints = plotTracePoints;
+	}
+	
+	@Override
+	public int compareTo(PlotTrace o) {
+		try {
+			Float me = Float.parseFloat(abbreviated);
+			Float other = Float.parseFloat(o.getAbbreviated());
+			if(me>other) {
+				return -1;
+			}else {
+				return 1;
+			}	
+		}catch (NullPointerException npe) {
+			return 0;
+		}catch (NumberFormatException nfe) {
+			return 0;
+		}
 	}
 
 }
