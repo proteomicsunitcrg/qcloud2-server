@@ -134,6 +134,18 @@
 
 	<build>
 		<plugins>
+		<plugin>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-maven-plugin</artifactId>
+            <configuration>
+                <url>jdbc:mysql://localhost:3306</url>
+                <user>qcloud</user>
+                <password>qcloud</password>
+                <schemas>
+                    <schema>qcloud2</schema>
+                </schemas>
+            </configuration>
+        </plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
