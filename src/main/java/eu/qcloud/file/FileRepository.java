@@ -39,6 +39,15 @@ public interface FileRepository extends JpaRepository<File, Long>{
 	@Query("select distinct(f.sampleType) from File f where f.labSystem.apiKey=?1")
 	public List<SampleType> findDistinctSampleTypeByLabSystemApiKey(UUID labSystemApiKey);
 	
+	/**
+	 * Find how many files exists after the given file
+	 * @param labSystemId
+	 * @param sampleTypeId
+	 * @param creationDate
+	 * @return
+	 */
+	public long countByLabSystemIdAndSampleTypeIdAndCreationDateGreaterThan(Long labSystemId, Long sampleTypeId, Date creationDate);
+	
 	public List<OnlySmalls> findTop10ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(Long labSystemId,Long sampleTypeId);
 	
 	public File findTop1BySampleTypeQualityControlControlledVocabularyAndLabSystemApiKeyOrderByCreationDateDesc(String sampleTypeQCCV, UUID labSystemApikey);
