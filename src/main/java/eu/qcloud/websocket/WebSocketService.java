@@ -14,11 +14,11 @@ import eu.qcloud.data.DataForPlot;
 import eu.qcloud.data.PlotTrace;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.node.Node;
-import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformity;
 import eu.qcloud.param.Param;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.repository.UserRepository;
+import eu.qcloud.thresholdnonconformity.ThresholdNonConformity;
 import eu.qcloud.utils.ThresholdUtils;
 import eu.qcloud.utils.factory.ThresholdForPlotImpl;
 

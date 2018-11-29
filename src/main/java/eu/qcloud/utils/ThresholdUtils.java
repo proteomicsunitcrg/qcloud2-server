@@ -32,7 +32,6 @@ import eu.qcloud.guideset.manual.ManualGuideSet;
 import eu.qcloud.guideset.manual.ManualGuideSetRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
-import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformity;
 import eu.qcloud.param.Param;
 import eu.qcloud.threshold.InstrumentStatus;
 import eu.qcloud.threshold.Threshold;
@@ -49,6 +48,7 @@ import eu.qcloud.threshold.sigma.SigmaThreshold;
 import eu.qcloud.threshold.sigma.SigmaThresholdRepository;
 import eu.qcloud.threshold.sigmalog2threshold.SigmaLog2Threshold;
 import eu.qcloud.threshold.sigmalog2threshold.SigmaLog2ThresholdRepository;
+import eu.qcloud.thresholdnonconformity.ThresholdNonConformity;
 
 @Service
 public class ThresholdUtils {

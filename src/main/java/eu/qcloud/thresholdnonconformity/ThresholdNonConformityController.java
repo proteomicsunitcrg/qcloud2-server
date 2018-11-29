@@ -1,4 +1,4 @@
-package eu.qcloud.nonconformity.thresholdnonconformity;
+package eu.qcloud.thresholdnonconformity;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformityRepository.ThreholdNonConformityWithoutThresholdParams;
+import eu.qcloud.thresholdnonconformity.ThresholdNonConformityRepository.ThreholdNonConformityWithoutThresholdParams;
 
 @RestController
 public class ThresholdNonConformityController {

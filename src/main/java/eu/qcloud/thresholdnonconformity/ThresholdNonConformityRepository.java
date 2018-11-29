@@ -1,4 +1,4 @@
-package eu.qcloud.nonconformity.thresholdnonconformity;
+package eu.qcloud.thresholdnonconformity;
 
 import java.util.List;
 import java.util.UUID;

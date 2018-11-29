@@ -1,4 +1,4 @@
-package eu.qcloud.nonconformity.thresholdnonconformity;
+package eu.qcloud.thresholdnonconformity;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,7 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
-import eu.qcloud.nonconformity.thresholdnonconformity.ThresholdNonConformityRepository.ThreholdNonConformityWithoutThresholdParams;
+import eu.qcloud.thresholdnonconformity.ThresholdNonConformityRepository.ThreholdNonConformityWithoutThresholdParams;
 
 @Service
 public class ThresholdNonConformityService {

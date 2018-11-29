@@ -1,4 +1,4 @@
-package eu.qcloud.nonconformity.thresholdnonconformity;
+package eu.qcloud.thresholdnonconformity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
