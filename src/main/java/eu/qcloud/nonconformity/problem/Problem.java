@@ -1,19 +1,12 @@
 package eu.qcloud.nonconformity.problem;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import eu.qcloud.nonconformity.action.Action;
-import eu.qcloud.nonconformity.reason.Reason;
 
 @Entity
 @Table(name="non_conformity_problem")
@@ -29,12 +22,6 @@ public class Problem {
 	
 	private String description;
 	
-	@ManyToMany(cascade = {CascadeType.PERSIST})
-	List<Reason> reasons;
-	
-	@ManyToMany(cascade = {CascadeType.PERSIST})
-	List<Action> actions;
-
 	public Long getId() {
 		return id;
 	}
@@ -57,22 +44,6 @@ public class Problem {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public List<Reason> getReasons() {
-		return reasons;
-	}
-
-	public void setReasons(List<Reason> reasons) {
-		this.reasons = reasons;
-	}
-
-	public List<Action> getActions() {
-		return actions;
-	}
-
-	public void setActions(List<Action> actions) {
-		this.actions = actions;
 	}
 
 }
