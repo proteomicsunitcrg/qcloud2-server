@@ -1,4 +1,4 @@
-package eu.qcloud.nonconformity.annotation;
+package eu.qcloud.troubleshooting.annotation;
 
 import java.util.Date;
 import java.util.List;
@@ -13,9 +13,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import eu.qcloud.nonconformity.action.Action;
-import eu.qcloud.nonconformity.problem.Problem;
-import eu.qcloud.nonconformity.reason.Reason;
+import eu.qcloud.troubleshooting.action.Action;
+import eu.qcloud.troubleshooting.problem.Problem;
+import eu.qcloud.troubleshooting.reason.Reason;
 
 @Entity
 @Table(name="non_conformity_annotation")

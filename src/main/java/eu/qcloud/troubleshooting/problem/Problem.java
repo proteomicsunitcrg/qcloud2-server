@@ -1,4 +1,4 @@
-package eu.qcloud.nonconformity.action;
+package eu.qcloud.troubleshooting.problem;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,19 +9,19 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="non_conformity_action")
-public class Action {
+@Table(name="non_conformity_problem")
+public class Problem {
 	
 	@Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "action_seq")
-    @SequenceGenerator(name = "action_seq", sequenceName = "action_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "problem_seq")
+    @SequenceGenerator(name = "problem_seq", sequenceName = "problem_seq", allocationSize = 1)
 	private Long id;
 	
 	private String name;
 	
 	private String description;
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -45,5 +45,5 @@ public class Action {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 }

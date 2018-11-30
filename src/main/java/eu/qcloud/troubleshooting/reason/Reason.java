@@ -1,4 +1,4 @@
-package eu.qcloud.nonconformity.reason;
+package eu.qcloud.troubleshooting.reason;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
