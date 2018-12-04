@@ -1,49 +1,18 @@
 package eu.qcloud.troubleshooting.problem;
 
-import javax.persistence.Column;
+import java.util.UUID;
+
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 
-@Entity
-@Table(name="non_conformity_problem")
-public class Problem {
+import eu.qcloud.troubleshooting.Troubleshooting;
+
+@Entity(name = "problem")
+public class Problem extends Troubleshooting {
 	
-	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "problem_seq")
-    @SequenceGenerator(name = "problem_seq", sequenceName = "problem_seq", allocationSize = 1)
-	private Long id;
-	
-	private String name;
-	
-	private String description;
-	
-	public Long getId() {
-		return id;
-	}
+	public Problem() {}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
+	public Problem(String name, String description, String qccv, UUID apiKey) {
+		super(name, description, qccv, apiKey);
 	}
 
 }

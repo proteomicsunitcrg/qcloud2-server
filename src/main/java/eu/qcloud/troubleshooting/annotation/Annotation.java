@@ -2,6 +2,7 @@ package eu.qcloud.troubleshooting.annotation;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,11 +15,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import eu.qcloud.troubleshooting.action.Action;
+import eu.qcloud.troubleshooting.cause.Cause;
 import eu.qcloud.troubleshooting.problem.Problem;
-import eu.qcloud.troubleshooting.reason.Reason;
 
 @Entity
-@Table(name="non_conformity_annotation")
+@Table(name="annotation")
 public class Annotation {
 	
 	@Id
@@ -35,7 +36,13 @@ public class Annotation {
 	List<Action> actions;
 	
 	@ManyToMany(cascade = {CascadeType.PERSIST})
-	List<Reason> reasons;
+	List<Cause> reasons;
+	
+	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+	private UUID apiKey;
+	
+	private String description;
 
 	public Long getId() {
 		return id;
@@ -69,12 +76,28 @@ public class Annotation {
 		this.actions = actions;
 	}
 
-	public List<Reason> getReasons() {
+	public List<Cause> getReasons() {
 		return reasons;
 	}
 
-	public void setReasons(List<Reason> reasons) {
+	public void setReasons(List<Cause> reasons) {
 		this.reasons = reasons;
+	}
+
+	public UUID getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(UUID apiKey) {
+		this.apiKey = apiKey;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }
