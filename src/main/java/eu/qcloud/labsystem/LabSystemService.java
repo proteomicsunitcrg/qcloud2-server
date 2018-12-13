@@ -117,13 +117,13 @@ public class LabSystemService {
 
 	}
 
-	public List<QcrawlerLabSystem> findAllByNodeForQcrawler(Long nodeId) {
+	public QcrawlerLabSystemList findAllByNodeForQcrawler(Long nodeId) {
 		List<LabSystem> labSystems = systemRepository.findAllByNode(nodeId);
 		List<QcrawlerLabSystem> qCrawlerLabSystems = new ArrayList<>();
 		for (LabSystem ls : labSystems) {
 			qCrawlerLabSystems.add(QcrawlerLabSystemUtils.createQcrawlerLabSystem(ls));
 		}
 
-		return qCrawlerLabSystems;
+		return new QcrawlerLabSystemList(qCrawlerLabSystems);
 	}
 }

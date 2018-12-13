@@ -98,7 +98,7 @@ public class LabSystemController {
 	
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value="/api/system/qcrawler",method= RequestMethod.GET)
-	public List<QcrawlerLabSystem> getNodeLabSystemsForQcrawler() {
+	public QcrawlerLabSystemList getNodeLabSystemsForQcrawler() {
 		User u = getManagerFromSecurityContext();
 		return labSystemService.findAllByNodeForQcrawler(u.getNode().getId());
 	}
