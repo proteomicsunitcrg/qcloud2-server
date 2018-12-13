@@ -16,83 +16,90 @@ import eu.qcloud.guideset.GuideSet;
 import eu.qcloud.guideset.automatic.AutomaticGuideSet;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.security.model.User;
+import eu.qcloud.utils.factory.QcrawlerLabSystemUtils;
 import eu.qcloud.websocket.WebSocketService;
+
 /**
  * Service for system
+ * 
  * @author dmancera
  *
  */
 @Service
 public class LabSystemService {
-	
+
 	@Autowired
 	private LabSystemRepository systemRepository;
-	
+
 	@Autowired
 	private FileRepository fileRepository;
-	
+
 	@Autowired
 	private WebSocketService websocketService;
-	
+
 	@Autowired
 	private DataSourceRepository dataSourceRepository;
-	
+
 	public LabSystem saveSystem(LabSystem system) {
-		
+
 		return systemRepository.save(system);
 	}
 
 	public List<LabSystem> findAllByNode(Long nodeId) {
 		List<LabSystem> labSystems = systemRepository.findAllByNode(nodeId);
-		
-		for(LabSystem ls : labSystems) {
+		List<LabSystem> labSystemsR = new ArrayList<>();
+		for (LabSystem ls : labSystems) {
 			// Getting its active guide sets
 			List<SampleType> sampleTypes = fileRepository.findDistinctSampleTypeByLabSystemId(ls.getId());
-			for(SampleType st: sampleTypes) {
+			for (SampleType st : sampleTypes) {
 				GuideSet gs = ls.getGuideActiveSetBySampleType(st.getId());
-				if(gs==null) {
+				if (gs == null) {
 					// generate a guide set
 					AutomaticGuideSet ags = new AutomaticGuideSet();
 					ags.setIsActive(true);
 					ags.setSampleType(st);
 					ls.getGuideSets().add(ags);
-					// ags.setTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeIdAndCreationDateBetween(ls.getId(), st.getId(), gs.getStartDate(), gs.getEndDate()));
-					ags.setLabSystemTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeId(ls.getId(), st.getId()));
+					// ags.setTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeIdAndCreationDateBetween(ls.getId(),
+					// st.getId(), gs.getStartDate(), gs.getEndDate()));
+					ags.setLabSystemTotalFiles(
+							fileRepository.countByLabSystemIdAndSampleTypeId(ls.getId(), st.getId()));
 				} else {
 					// get guideset total files
-					gs.setTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeIdAndCreationDateBetween(ls.getId(), st.getId(), gs.getStartDate(), gs.getEndDate()));
+					gs.setTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeIdAndCreationDateBetween(ls.getId(),
+							st.getId(), gs.getStartDate(), gs.getEndDate()));
 					gs.setLabSystemTotalFiles(fileRepository.countByLabSystemIdAndSampleTypeId(ls.getId(), st.getId()));
 				}
 			}
+			labSystemsR.add(ls);
 		}
-		
-		return systemRepository.findAllByNode(nodeId);
+
+		return labSystemsR;
 	}
 
 	public Optional<LabSystem> findSystemBySystemId(Long systemId) {
 		return systemRepository.findById(systemId);
 	}
-	
+
 	public Optional<LabSystem> findSystemByApiKey(UUID apikey) {
-		return systemRepository.findByApiKey(apikey);		
+		return systemRepository.findByApiKey(apikey);
 	}
-	
+
 	public List<LabSystem> findLabSystemByDataSourceId(Long dataSourceId) {
 		return systemRepository.findAllByDataSourcesId(dataSourceId);
 	}
-	
+
 	/**
-	 * This method will check if the datasources belongs to
-	 * the node, and will return an array with the proper data source
-	 * entities from the database.
-	 * If not it will throw an exception
+	 * This method will check if the datasources belongs to the node, and will
+	 * return an array with the proper data source entities from the database. If
+	 * not it will throw an exception
+	 * 
 	 * @param dataSources
 	 */
 	private List<DataSource> checkDataSources(User manager, List<DataSource> dataSources) {
 		List<DataSource> data = new ArrayList<>();
-		for(DataSource ds: dataSources) {
+		for (DataSource ds : dataSources) {
 			DataSource d = dataSourceRepository.findByApiKey(ds.getApiKey());
-			if(!d.getNode().getApiKey().equals(manager.getNode().getApiKey())) {
+			if (!d.getNode().getApiKey().equals(manager.getNode().getApiKey())) {
 				throw new InvalidActionException("You do not own this data sources");
 			}
 			data.add(d);
@@ -107,6 +114,16 @@ public class LabSystemService {
 		labSystem.setDataSources(dataSources);
 		// save the system
 		websocketService.sendNewLabSystemToNodeUsers(manager.getNode(), saveSystem(labSystem));
-		
+
+	}
+
+	public List<QcrawlerLabSystem> findAllByNodeForQcrawler(Long nodeId) {
+		List<LabSystem> labSystems = systemRepository.findAllByNode(nodeId);
+		List<QcrawlerLabSystem> qCrawlerLabSystems = new ArrayList<>();
+		for (LabSystem ls : labSystems) {
+			qCrawlerLabSystems.add(QcrawlerLabSystemUtils.createQcrawlerLabSystem(ls));
+		}
+
+		return qCrawlerLabSystems;
 	}
 }

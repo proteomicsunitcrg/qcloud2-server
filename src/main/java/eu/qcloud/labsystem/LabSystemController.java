@@ -96,6 +96,13 @@ public class LabSystemController {
 		return null;
 	}
 	
+	@PreAuthorize("hasRole('USER')")
+	@RequestMapping(value="/api/system/qcrawler",method= RequestMethod.GET)
+	public List<QcrawlerLabSystem> getNodeLabSystemsForQcrawler() {
+		User u = getManagerFromSecurityContext();
+		return labSystemService.findAllByNodeForQcrawler(u.getNode().getId());
+	}
+	
 	
 	
 	@PreAuthorize("hasRole('USER')")
@@ -115,7 +122,7 @@ public class LabSystemController {
 	 * @return a list of systems
 	 */
 	@RequestMapping(value="/api/system",method= RequestMethod.GET)
-	public List<LabSystem> findAllNodeSystems() {		
+	public List<LabSystem> findAllNodeSystems() {
 		User u = getManagerFromSecurityContext();
 		return labSystemService.findAllByNode(u.getNode().getId());
 	}
