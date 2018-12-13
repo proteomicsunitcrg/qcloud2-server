@@ -24,4 +24,6 @@ public interface InstrumentRepository extends JpaRepository<Instrument, Long> {
     public Optional<Instrument> getByCVId(String cvId);
 
 	public List<Instrument> findByCategoryApiKeyAndEnabled(UUID categoryApiKey, Boolean b);
+
+	public Optional<Instrument> findByQccv(String cvId);
 }

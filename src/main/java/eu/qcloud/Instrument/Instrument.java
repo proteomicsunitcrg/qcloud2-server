@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.category.Category;
 import eu.qcloud.dataSource.DataSource;
+import eu.qcloud.sampleType.SampleType;
 
 @Entity
 @Table(name = "cv")
@@ -51,6 +53,10 @@ public class Instrument {
     @JsonIgnore
     @OneToMany(mappedBy="cv")
     private List<DataSource> dataSource;
+    
+    @ManyToMany
+    private List<SampleType> sampleTypes;
+    
     
     public List<DataSource> getDataSource() {
 		return dataSource;
@@ -109,6 +115,22 @@ public class Instrument {
 
 	public void setCVId(String cVId) {
 		qccv = cVId;
-	}    
-    
+	}
+
+	public String getQccv() {
+		return qccv;
+	}
+
+	public void setQccv(String qccv) {
+		this.qccv = qccv;
+	}
+
+	public List<SampleType> getSampleTypes() {
+		return sampleTypes;
+	}
+
+	public void setSampleTypes(List<SampleType> sampleTypes) {
+		this.sampleTypes = sampleTypes;
+	}
+	
 }

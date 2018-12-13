@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.qcloud.sampleType.SampleType;
+
 /**
  * Controlled vocabulary controller
  * @author dmancera
@@ -73,6 +75,14 @@ public class InstrumentController {
 	public Instrument changeEnabled(@PathVariable String cvId) {
 		Instrument cv = instrumentService.getCvByCVId(cvId);		
 		return instrumentService.changeEnabled(cv);
+	}
+	
+	// CV default sample types end points
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="/api/cv/sampletype/{cvId}", method = RequestMethod.PUT)
+	public void addRelatedSampleTypeToInstrument(@PathVariable String cvId, @RequestBody SampleType sampleType) {
+		instrumentService.addSampleTypeToInstrument(cvId, sampleType);
 	}
 	
 	/*

@@ -1,7 +1,6 @@
 package eu.qcloud.labsystem;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.dataSource.DataSource;
-import eu.qcloud.dataSource.DataSourceRepository;
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.guideset.manual.ManualGuideSet;
 import eu.qcloud.guideset.manual.ManualGuideSetService;
@@ -42,9 +40,6 @@ public class LabSystemController {
 	
 	@Autowired
 	private UserService userService;
-	
-	@Autowired
-	private DataSourceRepository dataSourceRepository;
 	
 	@Autowired
 	private ManualGuideSetService manualGuideSetService;
@@ -113,8 +108,6 @@ public class LabSystemController {
 			throw new InvalidActionException("System not found");
 		}
 	}
-	
-	
 	
 	/**
 	 * Returns all the systems in the database
