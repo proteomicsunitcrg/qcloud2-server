@@ -15,6 +15,7 @@ import eu.qcloud.file.FileRepository;
 import eu.qcloud.guideset.GuideSet;
 import eu.qcloud.guideset.automatic.AutomaticGuideSet;
 import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.security.model.User;
 import eu.qcloud.utils.factory.QcrawlerLabSystemUtils;
 import eu.qcloud.websocket.WebSocketService;
@@ -39,6 +40,9 @@ public class LabSystemService {
 
 	@Autowired
 	private DataSourceRepository dataSourceRepository;
+
+	@Autowired
+	private SampleTypeRepository sampleTypeRepository;
 
 	public LabSystem saveSystem(LabSystem system) {
 
@@ -120,10 +124,28 @@ public class LabSystemService {
 	public QcrawlerLabSystemList findAllByNodeForQcrawler(Long nodeId) {
 		List<LabSystem> labSystems = systemRepository.findAllByNode(nodeId);
 		List<QcrawlerLabSystem> qCrawlerLabSystems = new ArrayList<>();
+		setDefaultSampleTypesIfNotDefined(labSystems);
 		for (LabSystem ls : labSystems) {
 			qCrawlerLabSystems.add(QcrawlerLabSystemUtils.createQcrawlerLabSystem(ls));
 		}
 
 		return new QcrawlerLabSystemList(qCrawlerLabSystems);
+	}
+
+	private void setDefaultSampleTypesIfNotDefined(List<LabSystem> labSystems) {
+		// get the defaults
+		List<SampleType> defaultSampleTypes = sampleTypeRepository.findByIsMainSampleTypeTrue();
+		for (LabSystem ls : labSystems) {
+			if (ls.getMainDataSource().getCv().getSampleTypes().size() == 0) {
+				ls.getMainDataSource().getCv().setSampleTypes(defaultSampleTypes);
+			} else {
+				for(SampleType defaultSampleType: defaultSampleTypes) {
+					if(!ls.getMainDataSource().getCv().getSampleTypes().stream().anyMatch(s -> s.getSampleTypeCategory().getId() == defaultSampleType.getSampleTypeCategory().getId())) {
+						ls.getMainDataSource().getCv().getSampleTypes().add(defaultSampleType);
+					}
+				}
+			}
+		}
+
 	}
 }

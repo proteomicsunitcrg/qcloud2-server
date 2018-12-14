@@ -51,5 +51,7 @@ public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
 	public SampleType findByIsMainSampleTypeTrueAndSampleTypeCategoryApiKey(UUID sampleTypeCategoryApiKey);
 	
 	public List<SampleTypeOnlyName> findBySampleTypeCategorySampleTypeComplexity(SampleTypeComplexity complexity);
+	
+	public List<SampleType> findByIsMainSampleTypeTrue();
     
 }

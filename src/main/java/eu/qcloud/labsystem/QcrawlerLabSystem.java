@@ -3,15 +3,13 @@ package eu.qcloud.labsystem;
 import java.util.List;
 import java.util.UUID;
 
-import eu.qcloud.sampleType.SampleType;
-
 public class QcrawlerLabSystem {
 	
 	private String name;
 	
 	private UUID apiKey;
 	
-	private List<SampleType> sampleTypes;
+	private List<QcrawlerSampleType> sampleTypes;
 
 	public String getName() {
 		return name;
@@ -29,11 +27,11 @@ public class QcrawlerLabSystem {
 		this.apiKey = apiKey;
 	}
 
-	public List<SampleType> getSampleTypes() {
+	public List<QcrawlerSampleType> getSampleTypes() {
 		return sampleTypes;
 	}
 
-	public void setSampleTypes(List<SampleType> sampleTypes) {
+	public void setSampleTypes(List<QcrawlerSampleType> sampleTypes) {
 		this.sampleTypes = sampleTypes;
 	}
 
@@ -43,7 +41,7 @@ public class QcrawlerLabSystem {
 	 * @param apiKey
 	 * @param sampleTypes
 	 */
-	public QcrawlerLabSystem(String name, UUID apiKey, List<SampleType> sampleTypes) {
+	public QcrawlerLabSystem(String name, UUID apiKey, List<QcrawlerSampleType> sampleTypes) {
 		this.name = name;
 		this.apiKey = apiKey;
 		this.sampleTypes = sampleTypes;
