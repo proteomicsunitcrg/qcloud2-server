@@ -20,6 +20,7 @@ import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemService;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeService;
+import eu.qcloud.security.model.User;
 
 /**
  * File service
@@ -100,7 +101,7 @@ public class FileService {
 		return fileRepository.save(file);
 	}
 
-	public File addFromWorkflow(File file, String sampleTypeQCCV, UUID labSystemApiKey) {
+	public File addFromWorkflow(File file, String sampleTypeQCCV, UUID labSystemApiKey, User user) {
 		// Find if file already exists
 		if (getFileByChecksum(file.getChecksum()) != null) {
 			logger.error("ERROR: File NOT inserted with duplicated checksum: " + file.getChecksum());
@@ -118,9 +119,8 @@ public class FileService {
 			throw new DataRetrievalFailureException("Sample type not found.");
 		}
 
-
 		Optional<LabSystem> ls = labSystemService.findSystemByApiKey(labSystemApiKey);
-		
+
 		if (!isLastFile(file, st, ls.get())) {
 			throw new DataIntegrityViolationException("Can not insert this file because it is not the last file!");
 		}
@@ -140,7 +140,8 @@ public class FileService {
 	}
 
 	private boolean isLastFile(File file, SampleType st, LabSystem labSystem) {
-		return fileRepository.countByLabSystemIdAndSampleTypeIdAndCreationDateGreaterThan(labSystem.getId(), st.getId(), file.getCreationDate()) == 0;
+		return fileRepository.countByLabSystemIdAndSampleTypeIdAndCreationDateGreaterThan(labSystem.getId(), st.getId(),
+				file.getCreationDate()) == 0;
 	}
 
 	public void deleteFile(String checksum) {
@@ -160,6 +161,15 @@ public class FileService {
 
 	public List<SampleType> findSampleTypesByLabSystemApiKey(UUID labSystemApiKey) {
 		return fileRepository.findDistinctSampleTypeByLabSystemApiKey(labSystemApiKey);
+	}
+
+	public File getFileByChecksumWithUserCheck(String checksum, User userFromSecurityContext) {
+		File file = fileRepository.findByChecksum(checksum);
+		if(file.getLabSystem().getMainDataSource().getNode().getId() != userFromSecurityContext.getNode().getId()) {
+			throw new DataRetrievalFailureException("Not your file");
+		}else {
+			return file;
+		}
 	}
 
 }

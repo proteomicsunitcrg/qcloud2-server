@@ -1,0 +1,80 @@
+package eu.qcloud.troubleshooting.annotation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.stereotype.Service;
+
+import eu.qcloud.labsystem.LabSystem;
+import eu.qcloud.labsystem.LabSystemRepository;
+import eu.qcloud.troubleshooting.action.Action;
+import eu.qcloud.troubleshooting.action.ActionRepository;
+import eu.qcloud.troubleshooting.annotation.AnnotationRepository.AnnotationForPlot;
+import eu.qcloud.troubleshooting.problem.Problem;
+import eu.qcloud.troubleshooting.problem.ProblemRepository;
+
+@Service
+public class AnnotationService {
+	
+	@Autowired
+	private AnnotationRepository annotationRepository;
+	
+	@Autowired
+	private ProblemRepository problemRepository;
+	
+	@Autowired
+	private ActionRepository actionRepository;
+	
+	@Autowired
+	private LabSystemRepository labSystemRepository;
+	
+	public void addAnnotation(Annotation annotation) {
+		attachLabSystemFromDb(annotation);		
+		
+		attachAnnotationProblemsFromDb(annotation);
+		attachAnnotationActionsFromDb(annotation);
+		annotation.setApiKey(UUID.randomUUID());
+		
+		annotationRepository.save(annotation);
+		
+	}
+	
+	private void attachLabSystemFromDb(Annotation annotation) {
+		Optional<LabSystem> ls = labSystemRepository.findByApiKey(annotation.getLabSystem().getApiKey());
+		if(!ls.isPresent()) {
+			throw new DataRetrievalFailureException("Lab system not found");
+		}
+		annotation.setLabSystem(ls.get());
+	}
+	
+	private void attachAnnotationProblemsFromDb(Annotation annotation) {
+		List<Problem> problems = new ArrayList<>();
+		annotation.getProblems().stream().forEach(p -> {
+			Optional<Problem> problem = problemRepository.findByQccv(p.getQccv());
+			if(problem.isPresent()) {
+				problems.add(problem.get());
+			}
+		});
+		annotation.setProblems(problems);
+	}
+	
+	private void attachAnnotationActionsFromDb(Annotation annotation) {
+		List<Action> actions = new ArrayList<>();
+		annotation.getActions().stream().forEach(a -> {
+			Optional<Action> action = actionRepository.findByQccv(a.getQccv());
+			if(action.isPresent()) {
+				actions.add(action.get());
+			}
+		});
+		annotation.setActions(actions);
+	}
+
+	public List<AnnotationForPlot> getAllAnnotations() {
+		return annotationRepository.getAll();
+	}
+
+}

@@ -10,10 +10,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.troubleshooting.action.Action;
 import eu.qcloud.troubleshooting.cause.Cause;
 import eu.qcloud.troubleshooting.problem.Problem;
@@ -29,14 +32,19 @@ public class Annotation {
 	private Long id;
 	
 	private Date date;
-	@ManyToMany(cascade = {CascadeType.PERSIST})
-	List<Problem> problems;
 	
 	@ManyToMany(cascade = {CascadeType.PERSIST})
-	List<Action> actions;
+	private List<Problem> problems;
 	
 	@ManyToMany(cascade = {CascadeType.PERSIST})
-	List<Cause> reasons;
+	private List<Action> actions;
+	
+	@ManyToMany(cascade = {CascadeType.PERSIST})
+	private List<Cause> causes;
+	
+	@ManyToOne
+	@JoinColumn(name="lab_system_id")
+	private LabSystem labSystem;
 	
 	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
@@ -77,11 +85,11 @@ public class Annotation {
 	}
 
 	public List<Cause> getReasons() {
-		return reasons;
+		return causes;
 	}
 
 	public void setReasons(List<Cause> reasons) {
-		this.reasons = reasons;
+		this.causes = reasons;
 	}
 
 	public UUID getApiKey() {
@@ -98,6 +106,22 @@ public class Annotation {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public List<Cause> getCauses() {
+		return causes;
+	}
+
+	public void setCauses(List<Cause> causes) {
+		this.causes = causes;
+	}
+
+	public LabSystem getLabSystem() {
+		return labSystem;
+	}
+
+	public void setLabSystem(LabSystem labSystem) {
+		this.labSystem = labSystem;
 	}
 	
 }

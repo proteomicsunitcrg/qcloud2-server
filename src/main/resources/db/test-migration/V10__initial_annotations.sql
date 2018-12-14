@@ -27,8 +27,11 @@ CREATE TABLE `annotation` (
   `api_key` binary(16) NOT NULL,
   `date` datetime(6) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
+  `lab_system_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_rsuvoe92l9tyqeii9i2bisdtx` (`api_key`)
+  UNIQUE KEY `UK_rsuvoe92l9tyqeii9i2bisdtx` (`api_key`),
+  KEY `FK3aon3k7pmcfihdijuj19b7t24` (`lab_system_id`),
+  CONSTRAINT `FK3aon3k7pmcfihdijuj19b7t24` FOREIGN KEY (`lab_system_id`) REFERENCES `labsystem` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -68,6 +71,32 @@ LOCK TABLES `annotation_actions` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `annotation_causes`
+--
+
+DROP TABLE IF EXISTS `annotation_causes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `annotation_causes` (
+  `annotation_id` bigint(20) NOT NULL,
+  `causes_id` bigint(20) NOT NULL,
+  KEY `FK8xxa04bokfh812wrqbxc874lc` (`causes_id`),
+  KEY `FKbpxnqudig12rmhuyhv2l81d0c` (`annotation_id`),
+  CONSTRAINT `FK8xxa04bokfh812wrqbxc874lc` FOREIGN KEY (`causes_id`) REFERENCES `troubleshooting` (`id`),
+  CONSTRAINT `FKbpxnqudig12rmhuyhv2l81d0c` FOREIGN KEY (`annotation_id`) REFERENCES `annotation` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `annotation_causes`
+--
+
+LOCK TABLES `annotation_causes` WRITE;
+/*!40000 ALTER TABLE `annotation_causes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `annotation_causes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `annotation_problems`
 --
 
@@ -91,32 +120,6 @@ CREATE TABLE `annotation_problems` (
 LOCK TABLES `annotation_problems` WRITE;
 /*!40000 ALTER TABLE `annotation_problems` DISABLE KEYS */;
 /*!40000 ALTER TABLE `annotation_problems` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `annotation_reasons`
---
-
-DROP TABLE IF EXISTS `annotation_reasons`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `annotation_reasons` (
-  `annotation_id` bigint(20) NOT NULL,
-  `reasons_id` bigint(20) NOT NULL,
-  KEY `FKdyt6quohb9ugai9kyc4o2j3c3` (`reasons_id`),
-  KEY `FKgfphln3wkpqk7ehi261xhh97v` (`annotation_id`),
-  CONSTRAINT `FKdyt6quohb9ugai9kyc4o2j3c3` FOREIGN KEY (`reasons_id`) REFERENCES `troubleshooting` (`id`),
-  CONSTRAINT `FKgfphln3wkpqk7ehi261xhh97v` FOREIGN KEY (`annotation_id`) REFERENCES `annotation` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `annotation_reasons`
---
-
-LOCK TABLES `annotation_reasons` WRITE;
-/*!40000 ALTER TABLE `annotation_reasons` DISABLE KEYS */;
-/*!40000 ALTER TABLE `annotation_reasons` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -167,6 +170,7 @@ CREATE TABLE `troubleshooting` (
 
 LOCK TABLES `troubleshooting` WRITE;
 /*!40000 ALTER TABLE `troubleshooting` DISABLE KEYS */;
+INSERT INTO `troubleshooting` VALUES ('problem',1,_binary '\æ\Ú\á¬\à\ZK<vÂ¥X\Ùþ',NULL,'Decrease of MS1 signal','TS:0000003'),('problem',2,_binary 'ý\nÐ\ZLÖ¶~\Ù\Åx\Â\×!',NULL,'MS1 signal fluctuation','TS:0000011'),('action',3,_binary 'U\é\à\à|@\î@Éš ¢\Ã',NULL,'Column changed','TS:0000028'),('action',4,_binary 'ûn\n/¢E~ª|Ú\Õ\æ',NULL,'Pre-column changed','TS:0000029');
 /*!40000 ALTER TABLE `troubleshooting` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,7 +192,7 @@ CREATE TABLE `troubleshooting_seq` (
 
 LOCK TABLES `troubleshooting_seq` WRITE;
 /*!40000 ALTER TABLE `troubleshooting_seq` DISABLE KEYS */;
-INSERT INTO `troubleshooting_seq` VALUES (1);
+INSERT INTO `troubleshooting_seq` VALUES (5);
 /*!40000 ALTER TABLE `troubleshooting_seq` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -201,4 +205,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-11-30 14:25:26
+-- Dump completed on 2018-12-14 12:36:58

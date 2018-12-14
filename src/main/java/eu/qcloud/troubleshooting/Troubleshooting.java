@@ -11,10 +11,13 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.SequenceGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity(name="troubleshooting")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class Troubleshooting {
 	
+	@JsonIgnore
 	@Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "troubleshooting_seq")

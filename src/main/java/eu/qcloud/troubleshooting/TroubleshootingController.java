@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,11 +27,13 @@ public class TroubleshootingController {
 	private TroubleshootingService troubleshootingService;
 
 	@RequestMapping(value = "/{troubleshootingType}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
 	public List<Troubleshooting> getAllTroubleshootingsByType(@PathVariable TroubleshootingType troubleshootingType) {
 		return troubleshootingService.getAllTroubleshotingByType(troubleshootingType);
 	}
 
 	@RequestMapping(value = "/{troubleshootingType}", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public Troubleshooting addTroubleshootingItem(@RequestBody Troubleshooting troubleshooting, @PathVariable TroubleshootingType troubleshootingType) {
 		return troubleshootingService.addTroubleshootingItem(troubleshooting, troubleshootingType);
 	}
