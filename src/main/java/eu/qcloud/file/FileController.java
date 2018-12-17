@@ -116,6 +116,12 @@ public class FileController {
 		return fileService.getFileByChecksumWithUserCheck(checksum, getUserFromSecurityContext());
 	}
 	
+	@RequestMapping(value="/api/file/checksum/qcrawler/{checksum}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public void checkIfFileExistsByChecksum(@PathVariable String checksum) {
+		fileService.checkIfFileExistsByChecksum(checksum);
+	}
+	
 	@RequestMapping(value="/api/file/sampletypes/{labSystemApiKey}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public List<SampleType> findSampleTypesUseByLabSystemByLabSystemApiKey(@PathVariable UUID labSystemApiKey) {

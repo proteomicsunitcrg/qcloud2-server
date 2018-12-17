@@ -165,10 +165,17 @@ public class FileService {
 
 	public File getFileByChecksumWithUserCheck(String checksum, User userFromSecurityContext) {
 		File file = fileRepository.findByChecksum(checksum);
-		if(file.getLabSystem().getMainDataSource().getNode().getId() != userFromSecurityContext.getNode().getId()) {
+		if (file.getLabSystem().getMainDataSource().getNode().getId() != userFromSecurityContext.getNode().getId()) {
 			throw new DataRetrievalFailureException("Not your file");
-		}else {
+		} else {
 			return file;
+		}
+	}
+
+	public void checkIfFileExistsByChecksum(String checksum) {
+		File file = fileRepository.findByChecksum(checksum);
+		if (file == null) {
+			throw new DataRetrievalFailureException("File not found");
 		}
 	}
 
