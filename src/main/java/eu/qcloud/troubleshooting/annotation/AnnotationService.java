@@ -1,16 +1,20 @@
 package eu.qcloud.troubleshooting.annotation;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
+import eu.qcloud.security.model.User;
 import eu.qcloud.troubleshooting.action.Action;
 import eu.qcloud.troubleshooting.action.ActionRepository;
 import eu.qcloud.troubleshooting.annotation.AnnotationRepository.AnnotationForPlot;
@@ -19,62 +23,87 @@ import eu.qcloud.troubleshooting.problem.ProblemRepository;
 
 @Service
 public class AnnotationService {
-	
+
 	@Autowired
 	private AnnotationRepository annotationRepository;
-	
+
 	@Autowired
 	private ProblemRepository problemRepository;
-	
+
 	@Autowired
 	private ActionRepository actionRepository;
-	
+
 	@Autowired
 	private LabSystemRepository labSystemRepository;
-	
+
+	private final Log logger = LogFactory.getLog(this.getClass());
+
 	public void addAnnotation(Annotation annotation) {
-		attachLabSystemFromDb(annotation);		
-		
+		attachLabSystemFromDb(annotation);
+
 		attachAnnotationProblemsFromDb(annotation);
 		attachAnnotationActionsFromDb(annotation);
 		annotation.setApiKey(UUID.randomUUID());
-		
+
 		annotationRepository.save(annotation);
-		
+
 	}
-	
+
 	private void attachLabSystemFromDb(Annotation annotation) {
 		Optional<LabSystem> ls = labSystemRepository.findByApiKey(annotation.getLabSystem().getApiKey());
-		if(!ls.isPresent()) {
+		if (!ls.isPresent()) {
 			throw new DataRetrievalFailureException("Lab system not found");
 		}
 		annotation.setLabSystem(ls.get());
 	}
-	
+
 	private void attachAnnotationProblemsFromDb(Annotation annotation) {
 		List<Problem> problems = new ArrayList<>();
 		annotation.getProblems().stream().forEach(p -> {
 			Optional<Problem> problem = problemRepository.findByQccv(p.getQccv());
-			if(problem.isPresent()) {
+			if (problem.isPresent()) {
 				problems.add(problem.get());
 			}
 		});
 		annotation.setProblems(problems);
 	}
-	
+
 	private void attachAnnotationActionsFromDb(Annotation annotation) {
 		List<Action> actions = new ArrayList<>();
 		annotation.getActions().stream().forEach(a -> {
 			Optional<Action> action = actionRepository.findByQccv(a.getQccv());
-			if(action.isPresent()) {
+			if (action.isPresent()) {
 				actions.add(action.get());
 			}
 		});
 		annotation.setActions(actions);
 	}
 
-	public List<AnnotationForPlot> getAllAnnotations() {
-		return annotationRepository.getAll();
+	public List<AnnotationForPlot> getAnnotationsBetweenDates(UUID labSystemApiKey, Date startDate, Date endDate,
+			User user) {
+		// check for lab system
+		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
+		if (!labSystem.isPresent()) {
+			throw new DataRetrievalFailureException("Lab system not found");
+		}
+		// check for user first
+		checkIfLabSystemBelongsToUserNode(labSystem.get(), user);
+		return annotationRepository.findByLabSystemIdAndDateBetween(labSystem.get().getId(), startDate, endDate);
+	}
+
+	/**
+	 * It will throw an exception if an user is trying to access a other node lab
+	 * system
+	 * 
+	 * @param labSystem
+	 * @param user
+	 */
+	private void checkIfLabSystemBelongsToUserNode(LabSystem labSystem, User user) {
+		if (labSystem.getMainDataSource().getNode().getId() != user.getNode().getId()) {
+			logger.warn("User " + user.getEmail() + " tried to access other node lab system");
+			throw new DataRetrievalFailureException("Lab system not found");
+		}
+
 	}
 
 }

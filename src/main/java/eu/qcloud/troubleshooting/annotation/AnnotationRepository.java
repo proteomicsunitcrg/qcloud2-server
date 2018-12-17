@@ -14,16 +14,23 @@ import eu.qcloud.troubleshooting.problem.Problem;
 
 @Repository
 public interface AnnotationRepository extends CrudRepository<Annotation, Long> {
-	
+
 	@Query("select c from Annotation c")
 	List<AnnotationForPlot> getAll();
-	
+
+	List<AnnotationForPlot> findByLabSystemIdAndDateBetween(Long labSystemId, Date startDate, Date endDate);
+
 	interface AnnotationForPlot {
 		Date getDate();
+
 		List<Problem> getProblems();
+
 		List<Action> getActions();
+
 		LabSystemNameAndApiKey getLabSystem();
+
 		UUID getApiKey();
+
 		String getDescription();
 	}
 
