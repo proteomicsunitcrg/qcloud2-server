@@ -26,12 +26,15 @@ CREATE TABLE `annotation` (
   `id` bigint(20) NOT NULL,
   `api_key` binary(16) NOT NULL,
   `date` datetime(6) DEFAULT NULL,
+  `annotation_date` datetime(6) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `lab_system_id` bigint(20) DEFAULT NULL,
+  `user_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_rsuvoe92l9tyqeii9i2bisdtx` (`api_key`),
   KEY `FK3aon3k7pmcfihdijuj19b7t24` (`lab_system_id`),
-  CONSTRAINT `FK3aon3k7pmcfihdijuj19b7t24` FOREIGN KEY (`lab_system_id`) REFERENCES `labsystem` (`id`)
+  CONSTRAINT `FK3aon3k7pmcfihdijuj19b7t24` FOREIGN KEY (`lab_system_id`) REFERENCES `labsystem` (`id`),
+  CONSTRAINT `FK3aon3k8pm8fih8iju819b8t24` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

@@ -17,6 +17,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import eu.qcloud.labsystem.LabSystem;
+import eu.qcloud.security.model.User;
 import eu.qcloud.troubleshooting.action.Action;
 import eu.qcloud.troubleshooting.cause.Cause;
 import eu.qcloud.troubleshooting.problem.Problem;
@@ -31,7 +32,11 @@ public class Annotation {
     @SequenceGenerator(name = "annotation_seq", sequenceName = "annotation_seq", allocationSize = 1)
 	private Long id;
 	
+	@Column(name="date")
 	private Date date;
+	
+	@Column(name="annotation_date")
+	private Date annotationDate;
 	
 	@ManyToMany(cascade = {CascadeType.PERSIST})
 	private List<Problem> problems;
@@ -46,10 +51,15 @@ public class Annotation {
 	@JoinColumn(name="lab_system_id")
 	private LabSystem labSystem;
 	
-	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
+	@ManyToOne
+	@JoinColumn(name="user_id")
+	private User user;
+	
+	@Column(name = "api_key", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
 	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
 	
+	@Column(name="description")
 	private String description;
 
 	public Long getId() {
@@ -122,6 +132,22 @@ public class Annotation {
 
 	public void setLabSystem(LabSystem labSystem) {
 		this.labSystem = labSystem;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Date getAnnotationDate() {
+		return annotationDate;
+	}
+
+	public void setAnnotationDate(Date annotationDate) {
+		this.annotationDate = annotationDate;
 	}
 	
 }

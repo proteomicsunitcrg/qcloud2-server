@@ -20,6 +20,7 @@ import eu.qcloud.troubleshooting.action.ActionRepository;
 import eu.qcloud.troubleshooting.annotation.AnnotationRepository.AnnotationForPlot;
 import eu.qcloud.troubleshooting.problem.Problem;
 import eu.qcloud.troubleshooting.problem.ProblemRepository;
+import eu.qcloud.websocket.WebSocketService;
 
 @Service
 public class AnnotationService {
@@ -35,17 +36,24 @@ public class AnnotationService {
 
 	@Autowired
 	private LabSystemRepository labSystemRepository;
+	
+	@Autowired
+	private WebSocketService webSocketService;
 
 	private final Log logger = LogFactory.getLog(this.getClass());
 
-	public void addAnnotation(Annotation annotation) {
+	public void addAnnotation(Annotation annotation, User user) {
 		attachLabSystemFromDb(annotation);
+		annotation.setUser(user);
+		annotation.setAnnotationDate(new Date());
 
 		attachAnnotationProblemsFromDb(annotation);
 		attachAnnotationActionsFromDb(annotation);
 		annotation.setApiKey(UUID.randomUUID());
 
 		annotationRepository.save(annotation);
+		
+		webSocketService.sendAnnotationToNodeUsers(user.getNode(), annotation);
 
 	}
 
@@ -103,7 +111,70 @@ public class AnnotationService {
 			logger.warn("User " + user.getEmail() + " tried to access other node lab system");
 			throw new DataRetrievalFailureException("Lab system not found");
 		}
-
 	}
+	
+	private void checkIfAnnotationBelongsToUser(Annotation annotation, User user) {
+		if(annotation.getLabSystem().getMainDataSource().getNode().getId() != user.getNode().getId()) {
+			logger.warn("User " + user.getEmail() + " tried to modify other node annotation");
+			throw new DataRetrievalFailureException("Annotation not found");
+		}
+	}
+
+	public AnnotationForPlot getAnnotationByLabSystemApiKeyAndDate(UUID labSystemApiKey, Date date) {
+		
+		return annotationRepository.findByLabSystemApiKeyAndDate(labSystemApiKey, date);
+	}
+
+	public void deleteAnnotationByAnnotationApiKey(UUID annotationApiKey, User user) {
+		Optional<Annotation> annotation = annotationRepository.findByApiKey(annotationApiKey);
+		if(!annotation.isPresent()) {
+			throw new DataRetrievalFailureException("Annotation not found");
+		}
+		annotationRepository.delete(annotation.get());
+		webSocketService.sendDeleteAnnotationToNodeUsers(user.getNode(), annotation.get().getApiKey());
+	}
+
+	public AnnotationForPlot updateAnnotation(UUID annotationApiKey, Annotation annotation,
+			User user) {
+		// check for annotation
+		Optional<Annotation> annotationFromDb = annotationRepository.findByApiKey(annotationApiKey);
+		if(!annotationFromDb.isPresent()) {
+			throw new DataRetrievalFailureException("Annotation not found");
+		}
+		checkIfAnnotationBelongsToUser(annotationFromDb.get(), user);
+		
+		annotationFromDb.get().setActions(getActionsFromDb(annotation.getActions()));
+		// annotationFromDb.get().setCauses(annotation.getCauses());
+		annotationFromDb.get().setProblems(getProblemsFromDb(annotation.getProblems()));
+		// annotationFromDb.get().setReasons(annotation.getReasons());
+		
+		annotationFromDb.get().setUser(user);
+		annotationFromDb.get().setAnnotationDate(new Date());
+		annotationFromDb.get().setDescription(annotation.getDescription());
+		
+		Annotation savedAnnotation =  annotationRepository.save(annotationFromDb.get());
+		
+		webSocketService.sendUpdateAnnotationToNodeUsers(user.getNode(), savedAnnotation);
+		
+		return annotationRepository.findAnnotationForPlotById(savedAnnotation.getId());
+	}
+	
+	private List<Action> getActionsFromDb(List<Action> actions) {
+		List<Action> actionsFromDb = new ArrayList<>();
+		actions.forEach(a -> {
+			actionsFromDb.add(actionRepository.findByQccv(a.getQccv()).get());
+		});
+		return actionsFromDb;
+	}
+	
+	private List<Problem> getProblemsFromDb(List<Problem> problems) {
+		List<Problem> problemsFromDb = new ArrayList<>();
+		problems.forEach(a -> {
+			problemsFromDb.add(problemRepository.findByQccv(a.getQccv()).get());
+		});
+		return problemsFromDb;
+	}
+	
+	
 
 }

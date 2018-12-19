@@ -32,6 +32,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     	String getEmail();
     	List<Authority> getAuthorities();
     	UUID getApiKey();
-    }    
+    }
+    
+    interface UserForAnnotation {
+    	String getFirstname();
+    	String getLastname();
+    }
     
 }

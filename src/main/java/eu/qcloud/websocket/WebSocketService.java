@@ -1,16 +1,14 @@
 package eu.qcloud.websocket;
 
-import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 
-import eu.qcloud.data.DataForPlot;
 import eu.qcloud.data.PlotTrace;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.node.Node;
@@ -19,6 +17,7 @@ import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.repository.UserRepository;
 import eu.qcloud.thresholdnonconformity.ThresholdNonConformity;
+import eu.qcloud.troubleshooting.annotation.Annotation;
 import eu.qcloud.utils.ThresholdUtils;
 import eu.qcloud.utils.factory.ThresholdForPlotImpl;
 
@@ -37,11 +36,6 @@ public class WebSocketService {
 	@Autowired
 	private ThresholdUtils thresholdUtils;
 
-	@MessageMapping("/bye")
-	public void greetingDos(Principal principal, String message) throws Exception {
-
-		messagingTemplate.convertAndSendToUser("dmance@outlook.es", "/queue/reply", "caca " + message);
-	}
 
 	public void sendNonConformityToNodeUsers(Node node, List<ThresholdNonConformity> thresholdNonConformities,
 			LabSystem labSystem) {
@@ -58,16 +52,38 @@ public class WebSocketService {
 		}
 	}
 
-	@Deprecated
-	public void sendDataParameterToNodeUsers(Node node, Param param, List<DataForPlot> dataForPlot, LabSystem labSystem,
-			SampleType sampleType) {
+	public void sendAnnotationToNodeUsers(Node node, Annotation annotation) {
 		for (SimpUser s : userRegistry.getUsers()) {
 			User user = userRepository.findByUsername(s.getName());
 			if (user.getNode().getId() == node.getId()) {
 				// send message
 				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
-						new WebSocketNotification("data-" + param.getqCCV(), labSystem.getApiKey(),
-								sampleType.getQualityControlControlledVocabulary(), dataForPlot));
+						new WebSocketNotification("annotation-" + annotation.getLabSystem().getApiKey(), null,
+								null, annotation));
+			}
+		}
+	}
+	
+	public void sendDeleteAnnotationToNodeUsers(Node node, UUID annotationApiKey) {
+		for (SimpUser s : userRegistry.getUsers()) {
+			User user = userRepository.findByUsername(s.getName());
+			if (user.getNode().getId() == node.getId()) {
+				// send message
+				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
+						new WebSocketNotification("deleteannotation-", null,
+								null, annotationApiKey));
+			}
+		}
+	}
+	
+	public void sendUpdateAnnotationToNodeUsers(Node node, Annotation annotation) {
+		for (SimpUser s : userRegistry.getUsers()) {
+			User user = userRepository.findByUsername(s.getName());
+			if (user.getNode().getId() == node.getId()) {
+				// send message
+				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
+						new WebSocketNotification("updateannotation-" + annotation.getLabSystem().getApiKey(), null,
+								null, annotation));
 			}
 		}
 	}

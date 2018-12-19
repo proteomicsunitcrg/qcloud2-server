@@ -38,7 +38,7 @@ public class AnnotationController {
 	@RequestMapping(value = "/api/troubleshooting/annotation", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('USER')")
 	public void addAnnotation(@RequestBody Annotation annotation) {
-		annotationService.addAnnotation(annotation);
+		annotationService.addAnnotation(annotation, getUserFromSecurityContext());
 	}
 
 	@RequestMapping(value = "/api/troubleshooting/annotation/dates/{startDate}/{endDate}/{labSystemApiKey}", method = RequestMethod.GET)
@@ -49,13 +49,23 @@ public class AnnotationController {
 			@PathVariable UUID labSystemApiKey) {
 		return annotationService.getAnnotationsBetweenDates(labSystemApiKey, startDate, endDate, getUserFromSecurityContext());
 	}
-
-	public void removeAnnotation() {
-
+	
+	@RequestMapping(value = "/api/troubleshooting/annotation/labsystem/{labSystemApiKey}/{date}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
+	public AnnotationForPlot getAnnotationByLabSystemApiKeyAndDate(@PathVariable UUID labSystemApiKey, @PathVariable Date date) {
+		return annotationService.getAnnotationByLabSystemApiKeyAndDate(labSystemApiKey, date);
 	}
 
-	public void updateAnnotation() {
+	@RequestMapping(value = "/api/troubleshooting/annotation/{annotationApiKey}", method = RequestMethod.DELETE)
+	@PreAuthorize("hasRole('USER')")
+	public void removeAnnotation(@PathVariable UUID annotationApiKey) {
+		annotationService.deleteAnnotationByAnnotationApiKey(annotationApiKey, getUserFromSecurityContext());
+	}
 
+	@RequestMapping(value = "/api/troubleshooting/annotation/{annotationApiKey}", method = RequestMethod.PUT)
+	@PreAuthorize("hasRole('USER')")
+	public AnnotationForPlot updateAnnotation(@PathVariable UUID annotationApiKey, @RequestBody Annotation annotation) {
+		return annotationService.updateAnnotation(annotationApiKey, annotation, getUserFromSecurityContext());
 	}
 
 	@ExceptionHandler(DataRetrievalFailureException.class)
