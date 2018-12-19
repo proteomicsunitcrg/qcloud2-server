@@ -27,7 +27,7 @@ public class TroubleshootingController {
 	private TroubleshootingService troubleshootingService;
 
 	@RequestMapping(value = "/{troubleshootingType}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER')")
 	public List<Troubleshooting> getAllTroubleshootingsByType(@PathVariable TroubleshootingType troubleshootingType) {
 		return troubleshootingService.getAllTroubleshotingByType(troubleshootingType);
 	}
