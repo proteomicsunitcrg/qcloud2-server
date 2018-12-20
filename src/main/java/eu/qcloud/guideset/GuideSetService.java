@@ -17,6 +17,7 @@ import eu.qcloud.data.DataRepository;
 import eu.qcloud.file.FileRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
+import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdRepo;
 import eu.qcloud.threshold.params.ThresholdParams;
@@ -116,7 +117,7 @@ public class GuideSetService {
 		
 	}
 
-	public void resetLabSystemGuideSetBySampleType(UUID labSystemApiKey, Threshold threshold) {
+	public void resetLabSystemGuideSetByThresholdSampleType(UUID labSystemApiKey, Threshold threshold) {
 		if(!labSystemApiKey.equals(threshold.getLabSystem().getApiKey())) {
 			throw new DataRetrievalFailureException("Lab system not found");
 		}
@@ -129,5 +130,16 @@ public class GuideSetService {
 		guideSetRepository.save(gs);
 		
 	}
+	
+	public void resetLabSystemGuideSetBySampleType(UUID labSystemApiKey, SampleType sampleType) {
+		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
+		if(!labSystem.isPresent()) {
+			throw new DataRetrievalFailureException("Lab system not found");
+		}
+		GuideSet gs =labSystem.get().getActiveGuideSetBySampleTypeQccv(sampleType.getQualityControlControlledVocabulary());
+		gs.setIsActive(false);
+		guideSetRepository.save(gs);
+	}
+	
 
 }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.guideset.automatic.AutomaticGuideSet;
 import eu.qcloud.guideset.automatic.AutomaticGuideSetService;
+import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.threshold.Threshold;
 
 @RestController
@@ -64,7 +65,13 @@ public class GuideSetController {
 	@RequestMapping(value = "/api/guideset/reset/{labSystemApiKey}", method = RequestMethod.PUT)
 	@PreAuthorize("hasRole('MANAGER')")
 	public void resetLabSystemGuideSet(@PathVariable UUID labSystemApiKey,@RequestBody Threshold threshold) {
-		guideSetService.resetLabSystemGuideSetBySampleType(labSystemApiKey, threshold);
+		guideSetService.resetLabSystemGuideSetByThresholdSampleType(labSystemApiKey, threshold);
+	}
+	
+	@RequestMapping(value = "/api/guideset/reset/sampletype/{labSystemApiKey}", method = RequestMethod.PUT)
+	@PreAuthorize("hasRole('MANAGER')")
+	public void resetLabSystemGuideSetBySampleType(@PathVariable UUID labSystemApiKey, @RequestBody SampleType sampleType) {
+		guideSetService.resetLabSystemGuideSetBySampleType(labSystemApiKey, sampleType);
 	}
 	
 	@RequestMapping(value="/api/guideset/automatic", method=RequestMethod.POST)
