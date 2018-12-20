@@ -292,6 +292,7 @@ public class ThresholdUtils {
 			ThresholdParamsId pid = new ThresholdParamsId();
 			pid.setContextSourceId(p.getContextSource().getId());
 			pid.setThresholdId(labSystemThreshold.getId());
+			p.setIsEnabled(false);
 			p.setThresholdParamsId(pid);
 			thresholdParamsRepository.save(p);
 		}

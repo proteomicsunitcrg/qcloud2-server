@@ -33,6 +33,9 @@ public interface FileRepository extends JpaRepository<File, Long>{
 	
 	public long countByLabSystemIdAndSampleTypeId(Long labSystemId, Long sampleTypeId);
 	
+	@Query("select count(f) from File f where f.labSystem.id = ?1 and f.sampleType.id=?2 and f.id in (select d.file.id from Data d where d.param.id = ?3 and d.contextSource.id = ?4 and d.file.labSystem.id = ?1)")
+	public long countByLabSystemIdAndSampleTypeIdAndParamIdAndContextSourceId(Long labSystemId, Long sampleTypeId, Long paramId, Long contextSourceId);
+	
 	@Query("select distinct(f.sampleType) from File f where f.labSystem.id=?1")
 	public List<SampleType> findDistinctSampleTypeByLabSystemId(Long labSystemId);
 	

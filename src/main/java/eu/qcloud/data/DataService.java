@@ -123,7 +123,7 @@ public class DataService {
 
 	@Autowired
 	private WebSocketService webSocketService;
-	
+
 	@Autowired
 	private TraceColorRepository traceColorRepository;
 
@@ -400,22 +400,22 @@ public class DataService {
 		// before send new data send threhold if any
 		sendThresholdToConnectedUsers(dataFromPipeline, file);
 
-		
 		webSocketService.sendTracePointDataToNodeUsers(getNodeFromFile(file),
 				dataFromPipeline.getData().get(0).getParameter(), generatePlotTraceList(insertedData,
 						file.getSampleType(), dataFromPipeline.getData().get(0).getParameter()),
 				file.getLabSystem(), file.getSampleType());
 
 	}
-	
+
 	private List<PlotTrace> generatePlotTraceList(List<Data> dataFromDb, SampleType sampleType, Param param) {
 		TraceHashMap<String, PlotTrace> traces = new TraceHashMap<>();
-		for(Data d: dataFromDb) {
-			if(!traces.containsKey(d.getContextSource().getAbbreviated())) {
-				traces.put(d.getContextSource().getAbbreviated(), generatePlotTraceFromContextSource(d.getContextSource()));
+		for (Data d : dataFromDb) {
+			if (!traces.containsKey(d.getContextSource().getAbbreviated())) {
+				traces.put(d.getContextSource().getAbbreviated(),
+						generatePlotTraceFromContextSource(d.getContextSource()));
 			}
 			traces.get(d.getContextSource().getAbbreviated()).getPlotTracePoints()
-				.add(generatePlotTracePointFromData(d));
+					.add(generatePlotTracePointFromData(d));
 		}
 		return traces.toList();
 	}
@@ -476,10 +476,15 @@ public class DataService {
 	private Float calculateValueFromGuideSet(Param param, ContextSource cs, File file, Data value) {
 		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 		if (processor.isGuideSetRequired()) {
-			if (fileRepository.countByLabSystemIdAndSampleTypeId(file.getLabSystem().getId(),
-					file.getSampleType().getId()) > minPointsAutoThreshold) {
+			if (fileRepository.countByLabSystemIdAndSampleTypeIdAndParamIdAndContextSourceId(
+					file.getLabSystem().getId(), file.getSampleType().getId(), param.getId(),
+					cs.getId()) > minPointsAutoThreshold) {
 
 				GuideSet guideSet = thresholdUtils.generateGuideSetFromWithFile(file, param, cs);
+				
+				if(guideSet == null) {
+					return null;
+				}
 
 				ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(cs.getId(), param.getId(),
 						guideSet.getStartDate(), guideSet.getEndDate(), file.getLabSystem().getId(),
@@ -569,7 +574,9 @@ public class DataService {
 					tnc.setContextSource(cs);
 					tnc.setFile(file);
 					tnc.setThreshold(threshold);
-					thresholdNonConformityRepository.save(tnc);
+					if (is != InstrumentStatus.OK) {
+						thresholdNonConformityRepository.save(tnc);
+					}
 					Data d = dataRepository.findByFileIdAndParamIdAndContextSourceId(file.getId(),
 							threshold.getParam().getId(), cs.getId());
 					d.setNonConformityStatus(is);
@@ -959,61 +966,66 @@ public class DataService {
 	public List<PlotTrace> getTraceData(Date startDate, Date endDate, UUID chartApiKey, UUID labSystemApiKey,
 			String sampleTypeQCCV) {
 		Optional<Chart> chart = chartRepository.findByApiKey(chartApiKey);
-		
+
 		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
-		
+
 		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQCCV);
-		
+
 		List<ChartParams> chartParams = chartParamRepository.findByChartId(chart.get().getId());
 
 		List<ContextSource> contextSources = new ArrayList<>();
-		
+
 		TraceHashMap<String, PlotTrace> traces = new TraceHashMap<>();
 
 		chartParams.forEach(cp -> {
 			contextSources.add(cp.getContextSource());
 		});
-		
+
 		List<Data> data = new ArrayList<>();
-		
+
 		contextSources.forEach(cs -> {
 			data.addAll(dataRepository.findParamData(cs.getId(), chart.get().getParam().getId(), startDate, endDate,
 					labSystem.get().getId(), sampleType.get().getId()));
 		});
 
-		if(chart.get().getSampleType().getSampleTypeCategory().getSampleTypeComplexity() == SampleTypeComplexity.HIGHWITHISOTOPOLOGUES && chart.get().getParam().getIsFor().equals("Peptide")) {
-			for(Data d: data) {
+		if (chart.get().getSampleType().getSampleTypeCategory()
+				.getSampleTypeComplexity() == SampleTypeComplexity.HIGHWITHISOTOPOLOGUES
+				&& chart.get().getParam().getIsFor().equals("Peptide")) {
+			for (Data d : data) {
 				SampleComposition concentration = sampleCompositionRepository
 						.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.get().getId(),
 								d.getContextSource().getId());
-				if(!traces.containsKey(concentration.getConcentration().toString())) {
-					traces.put(concentration.getConcentration().toString(), generateIsotopologuePlotTraceFromContextSource(d.getContextSource(), concentration.getConcentration().toString()));
+				if (!traces.containsKey(concentration.getConcentration().toString())) {
+					traces.put(concentration.getConcentration().toString(),
+							generateIsotopologuePlotTraceFromContextSource(d.getContextSource(),
+									concentration.getConcentration().toString()));
 				}
 				traces.get(concentration.getConcentration().toString()).getPlotTracePoints()
-					.add(generatePlotTracePointFromData(d));
+						.add(generatePlotTracePointFromData(d));
 			}
 		} else {
-			for(Data d: data) {
-				if(!traces.containsKey(d.getContextSource().getAbbreviated())) {
-					traces.put(d.getContextSource().getAbbreviated(), generatePlotTraceFromContextSource(d.getContextSource()));
+			for (Data d : data) {
+				if (!traces.containsKey(d.getContextSource().getAbbreviated())) {
+					traces.put(d.getContextSource().getAbbreviated(),
+							generatePlotTraceFromContextSource(d.getContextSource()));
 				}
 				traces.get(d.getContextSource().getAbbreviated()).getPlotTracePoints()
-					.add(generatePlotTracePointFromData(d));
-			}	
+						.add(generatePlotTracePointFromData(d));
+			}
 		}
-		
-		
+
 		List<PlotTrace> plotTraces = traces.toList();
 		Collections.sort(plotTraces);
 		checkTracesForTraceColor(plotTraces);
 		return plotTraces;
 	}
-	
+
 	private PlotTracePoint generatePlotTracePointFromData(Data d) {
 		return new PlotTracePoint(d.getFile(), d.getCalculatedValue(), d.getNonConformityStatus());
 	}
-	
-	private PlotTrace generateIsotopologuePlotTraceFromContextSource(ContextSource contextSource, String concentration) {
+
+	private PlotTrace generateIsotopologuePlotTraceFromContextSource(ContextSource contextSource,
+			String concentration) {
 		PlotTrace plotTrace = new PlotTrace();
 		plotTrace.setAbbreviated(concentration);
 		plotTrace.setTraceColor(contextSource.getTraceColor());
@@ -1021,7 +1033,7 @@ public class DataService {
 		plotTrace.setPlotTracePoints(new ArrayList<>());
 		return plotTrace;
 	}
-	
+
 	private PlotTrace generatePlotTraceFromContextSource(ContextSource contextSource) {
 		PlotTrace plotTrace = new PlotTrace();
 		plotTrace.setAbbreviated(contextSource.getAbbreviated());
@@ -1030,90 +1042,90 @@ public class DataService {
 		plotTrace.setPlotTracePoints(new ArrayList<>());
 		return plotTrace;
 	}
-	
+
 	private void checkTracesForTraceColor(List<PlotTrace> traces) {
 		int colored = 0;
 		int notColored = 0;
 		// check if all have trace color
-		for(PlotTrace trace: traces) {
-			if(trace.getTraceColor() == null) {
+		for (PlotTrace trace : traces) {
+			if (trace.getTraceColor() == null) {
 				notColored++;
 			} else {
 				colored++;
 			}
 		}
-		
-		if(traces.size() == colored) {
+
+		if (traces.size() == colored) {
 			return;
 		}
-		
+
 		// check if all miss
-		if(traces.size() == notColored) {
+		if (traces.size() == notColored) {
 			List<TraceColor> colors = getAllTraceColors();
-			if(colors.size() >= notColored) {
+			if (colors.size() >= notColored) {
 				// put colors
-				for(int i = 0 ; i < traces.size(); i++) {
+				for (int i = 0; i < traces.size(); i++) {
 					traces.get(i).setTraceColor(colors.get(i));
 				}
 			} else {
 				logger.info("Insuficient trace colors, generating random trace colors");
 				// fill colors until end the list, then, create new ones
 				int missingColors = traces.size() - colored;
-				for(int i = 0; i < missingColors; i++) {
+				for (int i = 0; i < missingColors; i++) {
 					colors.add(createRandomColor());
 				}
-				for(int i = 0 ; i < traces.size(); i++) {
+				for (int i = 0; i < traces.size(); i++) {
 					traces.get(i).setTraceColor(colors.get(i));
 				}
 			}
-			
+
 		} else {
 			List<Long> ids = getTraceColorIdListFromPlotTrace(traces);
 			List<TraceColor> colors = new ArrayList<>();
 			List<TraceColor> freeColors = traceColorRepository.findByIdNotIn(ids);
-			colors.addAll(freeColors);			
+			colors.addAll(freeColors);
 			int missingColors = traces.size() - colored;
 			logger.info("Insuficient trace colors, generating random trace colors");
-			for(int i = colors.size(); i < missingColors; i++) {
+			for (int i = colors.size(); i < missingColors; i++) {
 				colors.add(createRandomColor());
 			}
 			List<PlotTrace> tracesWithoutColors = getPlotTraceWithoutColor(traces);
-			for(int i = 0 ; i < tracesWithoutColors.size(); i++) {
+			for (int i = 0; i < tracesWithoutColors.size(); i++) {
 				tracesWithoutColors.get(i).setTraceColor(colors.get(i));
 			}
 		}
 	}
-	
+
 	private List<Long> getTraceColorIdListFromPlotTrace(List<PlotTrace> plotTraces) {
 		List<Long> traces = new ArrayList<>();
 		plotTraces.forEach(pt -> {
-			if(pt.getTraceColor() != null) {
+			if (pt.getTraceColor() != null) {
 				traces.add(pt.getTraceColor().getId());
 			}
 		});
 		return traces;
 	}
-	
+
 	private TraceColor createRandomColor() {
 		// rgb(170, 170, 17)
 		int r = ThreadLocalRandom.current().nextInt(0, 254 + 1);
 		int g = ThreadLocalRandom.current().nextInt(0, 254 + 1);
 		int b = ThreadLocalRandom.current().nextInt(0, 254 + 1);
 
-		return new TraceColor("rgb("+r+","+g+","+b+")", null);
+		return new TraceColor("rgb(" + r + "," + g + "," + b + ")", null);
 	}
-	
+
 	private List<TraceColor> getAllTraceColors() {
 		List<TraceColor> colors = new ArrayList<>();
 		traceColorRepository.findAll().forEach(colors::add);
 		return colors;
 	}
-	
+
 	private List<PlotTrace> getPlotTraceWithoutColor(List<PlotTrace> traces) {
 		List<PlotTrace> tracesWithoutColor = new ArrayList<>();
 		traces.stream().filter(t -> t.getTraceColor() == null).forEach(tracesWithoutColor::add);
 		return tracesWithoutColor;
-		
+
 	}
-	
+
 }
