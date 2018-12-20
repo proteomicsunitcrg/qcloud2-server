@@ -29,6 +29,7 @@
             <td style="padding: 40px 30px 40px 30px;">
                 <p>Dear ${name},</p>
                 <p>Welcome to QCloud 2.0, you now can login with your email and this password: <b>${password}</b></p>
+                <p><a href="http://qcloud2.crg.eu">Go to QCLOUD2!</a></p>
                 <p>Thanks</p>
             </td>
         </tr>

@@ -30,11 +30,9 @@
                 <p>Dear ${name},</p>
                 <p>We are sorry you have forgot your password.</p>
                 <p>Please use follow this link in order to reset your password and choose a new one.</p>
-                <p><a href="">Reset password</a></p>
-                <p>${token}</p>
+                <p><a href="http://qcloud2.crg.eu/recovery?a=${base}&token={token}">Reset password</a></p>
                 <p>This link will expire in 24 hours.</p>
                 <p>Thanks</p>
-                <p>${base}</p>
             </td>
         </tr>
         <tr>
