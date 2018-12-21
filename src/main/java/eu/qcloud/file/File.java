@@ -53,6 +53,9 @@ public class File {
 	@ManyToOne
 	@JoinColumn(name="guideSetId")
 	private GuideSet guideSet;
+	
+	@Column(name="is_valid_checksum", columnDefinition="bit default 1")
+	private Boolean isValidChecksum;
 
 	public String getChecksum() {
 		return checksum;
@@ -110,5 +113,15 @@ public class File {
 	public void setGuideSet(GuideSet guideSet) {
 		this.guideSet = guideSet;
 	}
+
+	public Boolean getIsValidChecksum() {
+		return isValidChecksum;
+	}
+
+	public void setIsValidChecksum(Boolean isValidChecksum) {
+		this.isValidChecksum = isValidChecksum;
+	}
+	
+	
 	
 }

@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.validator.internal.constraintvalidators.bv.NotNullValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -165,6 +166,9 @@ public class FileService {
 
 	public File getFileByChecksumWithUserCheck(String checksum, User userFromSecurityContext) {
 		File file = fileRepository.findByChecksum(checksum);
+		if(file == null ) {
+			throw new DataRetrievalFailureException("Not your");
+		}
 		if (file.getLabSystem().getMainDataSource().getNode().getId() != userFromSecurityContext.getNode().getId()) {
 			throw new DataRetrievalFailureException("Not your file");
 		} else {
@@ -177,6 +181,17 @@ public class FileService {
 		if (file == null) {
 			throw new DataRetrievalFailureException("File not found");
 		}
+	}
+
+	public void updateFile(String checksum, File file) {
+		File f = fileRepository.findByChecksum(checksum);
+		if(f == null) {
+			throw new DataRetrievalFailureException("File not found");
+		}
+		f.setIsValidChecksum(file.getIsValidChecksum());
+		fileRepository.save(f);
+		
+		
 	}
 
 }

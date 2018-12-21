@@ -122,6 +122,11 @@ public class FileController {
 		fileService.checkIfFileExistsByChecksum(checksum);
 	}
 	
+	@RequestMapping(value="/api/file/checksum/qcrawler/{checksum}", method = RequestMethod.PUT)
+	public void updateQCrawlerFile(@PathVariable String checksum, @RequestBody File file) {
+		fileService.updateFile(checksum, file);
+	}
+	
 	@RequestMapping(value="/api/file/sampletypes/{labSystemApiKey}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public List<SampleType> findSampleTypesUseByLabSystemByLabSystemApiKey(@PathVariable UUID labSystemApiKey) {
