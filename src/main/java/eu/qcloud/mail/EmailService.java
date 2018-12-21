@@ -63,7 +63,7 @@ public class EmailService {
 
         helper.addAttachment("logo.png", new ClassPathResource("images/logo-qcloud.png"));
 
-        Template t = freemarkerConfig.getTemplate("password-reset.ftl");
+        Template t = freemarkerConfig.getTemplate("password-reset-template.ftl");
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, mail.getModel());
         helper.setTo(mail.getTo());
         helper.setText(html, true);
