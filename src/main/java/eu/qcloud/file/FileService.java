@@ -123,7 +123,7 @@ public class FileService {
 		Optional<LabSystem> ls = labSystemService.findSystemByApiKey(labSystemApiKey);
 
 		if (!isLastFile(file, st, ls.get())) {
-			throw new DataIntegrityViolationException("Can not insert this file because it is not the last file!");
+			throw new DataIntegrityViolationException("Can not insert this file because it is not the last file! " + file.getChecksum());
 		}
 		if (ls.isPresent()) {
 			file.setSampleType(st);
