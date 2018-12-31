@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +48,7 @@ public class ChartController {
 	 * @return the saved chart
 	 */
 	@RequestMapping(value="/api/chart", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public Chart addNewChart(@RequestBody Chart chart) {
 		return chartService.addNewChart(chart);
 	}
@@ -57,6 +59,7 @@ public class ChartController {
 	 * @return the updated chart
 	 */
 	@RequestMapping(value="/api/chart", method = RequestMethod.PUT)
+	@PreAuthorize("hasRole('ADMIN')")
 	public Chart updateChart(@RequestBody Chart chart) {
 		return chartService.updateChart(chart);
 	}
@@ -65,6 +68,7 @@ public class ChartController {
 	 * @return a List with the charts found
 	 */
 	@RequestMapping(value="/api/chart", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public List<NoView> allCharts() {
 		//List<Chart> charts =chartService.getAllCharts();
 		List<NoView> charts =chartService.getAllChartsWithoutView();
@@ -76,11 +80,13 @@ public class ChartController {
 	 * @return a list with the results
 	 */
 	@RequestMapping(value="/api/chart/cv/{cvId}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public List<NoView> getChartByCVId(@PathVariable String cvId) {
 		return chartService.getChartsByCVIdWithoutView(cvId);
 	}
 	
 	@RequestMapping(value="/api/chart/cv/{cvId}/{sampleTypeQCCV}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public List<NoView> getChartsByCVIdAndSampleTypeQCCV(@PathVariable String cvId,@PathVariable String sampleTypeQCCV) {
 		return chartService.getChartsByCVIdAndSampleTypeQCCVWithoutView(cvId, sampleTypeQCCV);
 	}
@@ -92,6 +98,7 @@ public class ChartController {
 	 * @return
 	 */
 	@RequestMapping(value="/api/chart/cv/{cvId}/category/{sampleTypeCategoryApiKey}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public List<NoView> getChartsByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,@PathVariable UUID sampleTypeCategoryApiKey) {
 		// get the main sample type of the given category
 		SampleType sampleType = sampleTypeService.getMainSampleTypeBySampleTypeCategoryApiKey(sampleTypeCategoryApiKey);
@@ -105,6 +112,7 @@ public class ChartController {
 	 * @return a list with the new chart params
 	 */
 	@RequestMapping(value="/api/chart/{chartApiKey}", method = RequestMethod.PUT)
+	@PreAuthorize("hasRole('ADMIN')")
 	public List<ChartParams> updateChartParamsByChart(@RequestBody List<ChartParams> chartParams,@PathVariable UUID chartApiKey) {
 		// Delete previous chartparams
 		List<ChartParams> previous = chartService.getChartParamsByChartApiKey(chartApiKey);
@@ -130,6 +138,7 @@ public class ChartController {
 	 * @return a list with the chart params added
 	 */
 	@RequestMapping(value="/api/chart/{chartApiKey}", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public List<ChartParams> addParamsToChart(@RequestBody List<ChartParams> chartParams,@PathVariable UUID chartApiKey) {
 		// get the chart id
 		Optional<Chart> chart = chartService.getChartByApiKey(chartApiKey);
@@ -161,6 +170,7 @@ public class ChartController {
 	 * repository itself.
 	 */
 	@RequestMapping(value="/api/chart/params/{chartApiKey}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public List<FullParams> getChartParamsByChartId(@PathVariable UUID chartApiKey) {
 		return chartService.getFullChartParamsByChartApiKey(chartApiKey);
 	}
@@ -171,6 +181,7 @@ public class ChartController {
 	 * @return a chart
 	 */
 	@RequestMapping(value="/api/chart/{chartApiKey}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public Optional<Chart> getChartByChartId(@PathVariable UUID chartApiKey) {
 		return chartService.getChartByApiKey(chartApiKey);
 	}

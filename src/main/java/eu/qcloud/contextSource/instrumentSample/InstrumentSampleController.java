@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,16 +29,19 @@ public class InstrumentSampleController {
 	private InstrumentSampleService instrumentSampleService;
 	
 	@RequestMapping(value="/api/contextsource/instrumentsample",method= RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
 	public InstrumentSample addElement(@RequestBody InstrumentSample element) {
 		return instrumentSampleService.addElement(element);
 	}
 	
 	@RequestMapping(value="/api/contextsource/instrumentsample",method= RequestMethod.PUT)
+	@PreAuthorize("hasRole('ADMIN')")
 	public InstrumentSample updateInstrumentSample(@RequestBody InstrumentSample instrumentSample) {
 		return instrumentSampleService.updateInstrumentSample(instrumentSample);
 	}
 	
 	@RequestMapping(value="/api/contextsource/instrumentsample",method= RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
 	public List<InstrumentSample> getAllInstrumentSamples() {
 		return instrumentSampleService.getAllInstrumentSample();
 	}
