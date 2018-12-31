@@ -53,13 +53,3 @@ This application uses flyway migration system to keep the database integrity.
 If you want to alter a current entity or create a new one you should first create the migration for that particular case.
 
 This is a critical step and it is highly recommended to create database backup before do it.
-
-
-
-
-
-
-
-
-
-
