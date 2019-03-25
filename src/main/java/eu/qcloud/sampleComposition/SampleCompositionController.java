@@ -89,6 +89,7 @@ public class SampleCompositionController {
 	 * @param qqcv
 	 * @return
 	 */
+	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value="/api/samplecomposition/qqcv/{qqcv}", method=RequestMethod.GET)
 	public List<SampleComposition> findAllBySampleTypeQQCV(@PathVariable String qqcv) {
 		return sampleCompositionService.getAllSampleCompositionBySampleTypeQQCV(qqcv);		
