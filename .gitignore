@@ -23,6 +23,9 @@ dist/
 nbdist/
 .nb-gradle/
 
+### VSCode ###
+.vscode
+
 ### PROPERTIES FILE ###
 src/main/resources/application.yml
 
