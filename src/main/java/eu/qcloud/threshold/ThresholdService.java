@@ -360,14 +360,15 @@ public class ThresholdService {
 	public List<LabSystemStatus> getLabSystemStatus(LabSystem labSystem) {
 		List<LabSystemStatus> labSystemStatus = new ArrayList<>();
 		List<SampleType> sampleTypes = fileRepository.findDistinctSampleTypeByLabSystemId(labSystem.getId());
+		if (sampleTypes.size()<=0) {	// if the lab system is new and it has no data should be offline
+			labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
+		}
 		for(SampleType sampleType : sampleTypes) {
 			File lastFile = fileRepository.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.getId(), sampleType.getId());
-			// Check for time
 			if(lastFile.getCreationDate().before(thresholdUtils.getOfflineDate()) 
 					&& lastFile.getSampleType().getSampleTypeCategory().getSampleTypeComplexity() == SampleTypeComplexity.LOW) {
 				labSystemStatus.clear();
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
-				
 				return labSystemStatus;
 			}
 
@@ -375,6 +376,7 @@ public class ThresholdService {
 			tncs.forEach(tnc -> {
 				labSystemStatus.add(thresholdUtils.createLabSystemStatusByThresholdNonConformity(tnc));
 			});
+			i++;
 		}
 		return labSystemStatus;
 	}
