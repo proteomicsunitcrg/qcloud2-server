@@ -376,7 +376,6 @@ public class ThresholdService {
 			tncs.forEach(tnc -> {
 				labSystemStatus.add(thresholdUtils.createLabSystemStatusByThresholdNonConformity(tnc));
 			});
-			i++;
 		}
 		return labSystemStatus;
 	}
