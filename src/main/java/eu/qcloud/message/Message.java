@@ -17,7 +17,8 @@ public class Message {
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "msg_increment")
+    @SequenceGenerator(name = "msg_increment", sequenceName = "msg_increment", allocationSize = 1)
     private Long id;
 
     @Column(name = "Title")
@@ -27,10 +28,14 @@ public class Message {
     @Column(name = "Message")
     @NotBlank
     private String message;
+    // wrong column type encountered in column [show_msg] in table [message]; found [bit (Types#BIT)], but expecting [boolean (Types#BOOLEAN)]
+    @NotNull
+    @Column(name = "Show_msg", columnDefinition = "BIT")
+    private boolean show;
 
     @NotNull
-    @Column(name = "Show", columnDefinition = "BOOLEAN")
-    private boolean show;
+    @Column(name = "Message_type")
+    private String message_type;
 
     public void setId(Long id) {
         this.id = id;
@@ -44,6 +49,9 @@ public class Message {
     public void setShow(boolean show) {
         this.show = show;
     }
+    public void setType(String message_type){
+        this.message_type = message_type;
+    }
     
     public Long getId() {
         return this.id;
@@ -56,6 +64,9 @@ public class Message {
     }
     public boolean getShow() {
         return this.show;
+    }
+    public String getMessageType() {
+        return this.message_type;
     }
 
 
