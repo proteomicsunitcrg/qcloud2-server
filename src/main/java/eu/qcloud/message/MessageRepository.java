@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MessageRepository extends CrudRepository<Message, Long> {
 	
-	
+	public Message findFirstByOrderByIdDesc();
 	// Node findByApiKey(UUID apiKey);
 	
 	// Node findOneByApiKey(UUID apikey);

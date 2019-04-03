@@ -2,7 +2,6 @@ package eu.qcloud.message;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +54,10 @@ public class MessageService {
 		List<Message> messages = new ArrayList<>();
 		messageRepository.findAll().forEach(messages::add);
 		return messages;		
+	}
+
+	public Message getLastMessage() {
+		return messageRepository.findFirstByOrderByIdDesc();
 	}
 
 	public Message saveMessage(Message msg) {
