@@ -223,7 +223,7 @@ public class ThresholdController {
 	}
 
 	/*
-	 * Exception handlers
+	 * Exception handlers test
 	 */
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
