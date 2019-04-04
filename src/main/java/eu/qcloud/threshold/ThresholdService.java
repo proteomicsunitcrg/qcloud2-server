@@ -356,7 +356,6 @@ public class ThresholdService {
 			return false;
 		}
 	}
-
 	public List<LabSystemStatus> getLabSystemStatus(LabSystem labSystem) {
 		List<LabSystemStatus> labSystemStatus = new ArrayList<>();
 		List<SampleType> sampleTypes = fileRepository.findDistinctSampleTypeByLabSystemId(labSystem.getId());
@@ -365,8 +364,7 @@ public class ThresholdService {
 		}
 		for(SampleType sampleType : sampleTypes) {
 			File lastFile = fileRepository.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.getId(), sampleType.getId());
-			if(lastFile.getCreationDate().before(thresholdUtils.getOfflineDate()) 
-					&& lastFile.getSampleType().getSampleTypeCategory().getSampleTypeComplexity() == SampleTypeComplexity.LOW) {
+			if(lastFile.getCreationDate().before(thresholdUtils.getOfflineDate()) ) {
 				labSystemStatus.clear();
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
 				return labSystemStatus;
