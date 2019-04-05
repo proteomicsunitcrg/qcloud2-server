@@ -62,6 +62,8 @@ public class EmailService {
                 StandardCharsets.UTF_8.name());
 
         helper.addAttachment("logo.png", new ClassPathResource("images/logo-qcloud.png"));
+        helper.addAttachment("logoCrg.png", new ClassPathResource("images/crgLogo.png"));
+        helper.addAttachment("logoUpf.png", new ClassPathResource("images/upfLogo.png"));
 
         Template t = freemarkerConfig.getTemplate("password-reset-template.ftl");
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, mail.getModel());
