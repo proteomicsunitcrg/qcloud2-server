@@ -36,3 +36,6 @@ src/main/resources/application.yml
 
 ### ECLIPSE FILES ###
 .metadata/
+
+### CLIENT SIDE FILES ###
+src/main/resources/static
