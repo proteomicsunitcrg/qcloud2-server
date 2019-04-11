@@ -41,13 +41,11 @@
         </tr>
         <tr>
             <td style="padding: 25px 0 0 0">
-            <img src="cid:logoCrg.png" alt="CRG Logo" style="display: block;" />
-            </td>
+            <img src="cid:logoCrg.png" alt="CRG Logo"  />
+            <img src="cid:logoUpf.png" alt="UPF Logo" style="padding-left: 30px;" />
         </tr>
         <tr>
-            <td style="padding: 25px 0 0 0">
-            <img src="cid:logoUpf.png" alt="UPF Logo" style="display: block;" />
-            </td>
+            
         </tr>
     </table>
 
