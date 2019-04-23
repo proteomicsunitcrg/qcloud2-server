@@ -55,7 +55,7 @@ public class PasswordResetService {
 		Optional<PasswordReset> passwordReset = passwordResetRepository.findOptionalByUserId(user.getId());
 
 		if (passwordReset.isPresent()) {
-			if (passwordReset.get().getNumberOfRequests() > 3) {
+			if (passwordReset.get().getNumberOfRequests() > 10) {
 				throw new InvalidActionException(
 						"Too many password reset requests. "
 						+ "If you have problems in order to reset your "

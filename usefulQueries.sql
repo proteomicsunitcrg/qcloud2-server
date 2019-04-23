@@ -1,0 +1,2 @@
+-- Get all data an files from labSystem, parameter, sampleType and dates limit 10
+select data.*, file.* from data JOIN `file` where file.id = data.file_id and data.param_id=6 and file.labsystem_id=3 and file.sample_type_id = 1 and file.creation_date between '2018-12-18' and '2018-12-22' limit 10\G
