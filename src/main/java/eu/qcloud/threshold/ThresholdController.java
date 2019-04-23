@@ -60,13 +60,13 @@ public class ThresholdController {
 	 * @return all the trhresholds
 	 */
 	@RequestMapping(value = "/api/threshold", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('MANAGER')")
 	public List<withParamsWithoutThreshold> getAll() {
 		return thresholdService.getAll();
 	}
 
 	@RequestMapping(value = "/api/threshold/mini", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('MANAGER')")
 	public List<withParamsWithoutThreshold> getAllMini() {
 		return thresholdService.getMini();
 	}
@@ -77,7 +77,7 @@ public class ThresholdController {
 	 * @return a string array with the values
 	 */
 	@RequestMapping(value = "/api/threshold/types", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('MANAGER')")
 	public List<String> getThresholdTypes() {
 		List<String> thresholds = new ArrayList<>();
 		for (ThresholdType t : ThresholdType.values()) {
@@ -92,7 +92,7 @@ public class ThresholdController {
 	 * @return
 	 */
 	@RequestMapping(value = "/api/threshold/directions", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('MANAGER')")
 	public List<String> getThresholdDirections() {
 		List<String> directions = new ArrayList<>();
 		for (Direction d : Direction.values()) {
@@ -108,7 +108,7 @@ public class ThresholdController {
 	 *            the threshold to be saved
 	 */
 	@RequestMapping(value = "/api/threshold/{type}", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('MANAGER')")
 	public Threshold addNewThreshold(@PathVariable ThresholdType type, @RequestBody Threshold threshold) {
 		// Check if a threshold of that param already exists
 
@@ -144,7 +144,7 @@ public class ThresholdController {
 	}
 
 	@RequestMapping(value = "/api/threshold/params", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('MANAGER')")
 	public void saveThresholdParams(@RequestBody List<ThresholdParams> thresholdParams) {
 		thresholdService.saveThresholdParams(thresholdParams);
 	}
@@ -156,7 +156,7 @@ public class ThresholdController {
 	 * @return
 	 */
 	@RequestMapping(value = "/api/threshold/constraints/admin/{thresholdType}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('<MANAGER>')")
 	public ThresholdConstraint getThresholdConstraint(@PathVariable ThresholdType thresholdType) {
 		return ThresholdFactory.getAdminConstraints(thresholdType);
 	}
@@ -194,7 +194,7 @@ public class ThresholdController {
 	 *            the new threshold parameters
 	 */
 	@RequestMapping(value = "/api/threshold/{thresholdApiKey}", method = RequestMethod.PUT)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('MANAGER')")
 	public void updateThresholdParams(@PathVariable UUID thresholdApiKey,
 			@RequestBody List<ThresholdParams> thresholdParams) {
 		// get threshold
