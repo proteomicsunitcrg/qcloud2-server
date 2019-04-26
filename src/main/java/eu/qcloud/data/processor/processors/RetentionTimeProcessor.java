@@ -41,6 +41,7 @@ public class RetentionTimeProcessor extends Processor {
 		HashMap<String, Float> means = new HashMap<>();
 		
 		for(Map.Entry<String, ArrayList<Float>> entry: guideSetValues.entrySet()) {
+			System.out.println("Entry" + entry.getKey());
 			means.put(entry.getKey(), calculateMeanOfArrayList(entry.getValue()));
 		}
 		
@@ -56,6 +57,7 @@ public class RetentionTimeProcessor extends Processor {
 				continue;
 			}
 			Float nV = (value-means.get(d.getContextSourceName()))/60;
+			System.out.println("MEAAAAAAAAAAAAAAAAAAAAAAAAAAN: " + means.get(d.getContextSourceName()));
 			if(nV.isNaN()) {
 				//d.setValue(Float.NaN);
 				continue;

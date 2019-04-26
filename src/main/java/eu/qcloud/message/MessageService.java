@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import eu.qcloud.websocket.WebSocketService;
 /**
  * Main service for node
  * @author Daniel Mancera <daniel.mancera@crg.eu>
@@ -15,6 +17,9 @@ public class MessageService {
 	
 	@Autowired
 	MessageRepository messageRepository;
+
+	@Autowired
+	private WebSocketService webSocketService;
 	
 	/**
 	 * Try to insert a new node in the database
@@ -61,6 +66,7 @@ public class MessageService {
 	}
 
 	public Message saveMessage(Message msg) {
+		webSocketService.sendMessageToAllUsers(msg);
 		return messageRepository.save(msg);
 	}
 	

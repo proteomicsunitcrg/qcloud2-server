@@ -476,24 +476,32 @@ public class DataService {
 	private Float calculateValueFromGuideSet(Param param, ContextSource cs, File file, Data value) {
 		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 		if (processor.isGuideSetRequired()) {
+			System.out.println("GUIDESET IS REQUIRED");
+			System.out.println("FILES: " + fileRepository.countByLabSystemIdAndSampleTypeIdAndParamIdAndContextSourceId(
+				file.getLabSystem().getId(), file.getSampleType().getId(), param.getId(),
+				cs.getId()));
+			System.out.println("MIN POINTS" + minPointsAutoThreshold);
 			if (fileRepository.countByLabSystemIdAndSampleTypeIdAndParamIdAndContextSourceId(
 					file.getLabSystem().getId(), file.getSampleType().getId(), param.getId(),
 					cs.getId()) > minPointsAutoThreshold) {
 
 				GuideSet guideSet = thresholdUtils.generateGuideSetFromWithFile(file, param, cs);
-				
 				if(guideSet == null) {
+					System.out.println("GUIDESET IS NULL");
 					return null;
 				}
+				System.out.println("GUIDESET TOTAL FILES" + guideSet.getTotalFiles());
 
 				ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(cs.getId(), param.getId(),
 						guideSet.getStartDate(), guideSet.getEndDate(), file.getLabSystem().getId(),
 						file.getSampleType().getId());
+				for (Data dato : guideSetData){
+					System.out.println("DATA DEL GUIDESET" + dato.getValue());
+				}
 				processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
 				processor.setGuideSet(guideSet);
 				processor.setGuideSetData(guideSetData);
 				List<DataForPlot> processedValue = processor.processData();
-
 				if (processedValue.get(0).getValue() != null && !processedValue.get(0).getValue().isNaN()) {
 					if (param.getIsZeroNoData() && value.getValue() == 0f) {
 						return null;
@@ -506,6 +514,7 @@ public class DataService {
 				return null;
 			}
 		} else {
+			System.out.println("GUIDESET IS NOT REQUIRED");
 			processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
 			Float processedValue = processor.processData().get(0).getValue();
 			if (processedValue == null) {

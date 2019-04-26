@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.data.PlotTrace;
 import eu.qcloud.labsystem.LabSystem;
+import eu.qcloud.message.Message;
 import eu.qcloud.node.Node;
 import eu.qcloud.param.Param;
 import eu.qcloud.sampleType.SampleType;
@@ -123,6 +124,13 @@ public class WebSocketService {
 						new WebSocketNotification("labsystem-" + labSystem.getMainDataSource().getCv().getCVId(),
 								labSystem.getApiKey(), null, labSystem));
 			}
+		}
+	}
+
+	public void sendMessageToAllUsers(Message message) {
+		for (SimpUser s : userRegistry.getUsers()) {
+			messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
+				new WebSocketNotification("message-", null, null, message));
 		}
 	}
 
