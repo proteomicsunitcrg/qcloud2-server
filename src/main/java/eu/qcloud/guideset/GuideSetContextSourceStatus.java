@@ -1,7 +1,6 @@
 package eu.qcloud.guideset;
 
 import eu.qcloud.contextSource.ContextSource;
-import eu.qcloud.contextSource.peptide.Peptide;
 import eu.qcloud.param.Param;
 
 public class GuideSetContextSourceStatus {

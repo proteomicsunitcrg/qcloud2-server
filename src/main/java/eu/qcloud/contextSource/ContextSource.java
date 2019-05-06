@@ -14,7 +14,6 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.GenericGenerator;
 
 import eu.qcloud.traceColor.TraceColor;
-import eu.qcloud.traceColor.TraceColorRepository;
 
 @Entity(name="context_source")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)

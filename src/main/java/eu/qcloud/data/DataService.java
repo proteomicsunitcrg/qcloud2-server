@@ -499,6 +499,7 @@ public class DataService {
 					System.out.println("DATA DEL GUIDESET" + dato.getValue());
 				}
 				processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
+				System.out.println("CS NAME INDEX 0: " + processor.getData().get(0).getContextSourceName());
 				processor.setGuideSet(guideSet);
 				processor.setGuideSetData(guideSetData);
 				List<DataForPlot> processedValue = processor.processData();

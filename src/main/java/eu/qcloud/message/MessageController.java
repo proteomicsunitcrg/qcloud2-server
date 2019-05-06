@@ -2,8 +2,6 @@
 package eu.qcloud.message;
 
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,9 +19,6 @@ public class MessageController {
 
 	@Autowired
 	MessageService messageService;
-
-	
-	private final Log logger = LogFactory.getLog(this.getClass());
 	
 	
 	@PreAuthorize("hasRole('ADMIN')")

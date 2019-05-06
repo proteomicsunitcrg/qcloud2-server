@@ -1,6 +1,5 @@
 package eu.qcloud.data.processor.processors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import eu.qcloud.data.Data;
