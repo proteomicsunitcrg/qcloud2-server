@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * NodeController
- * Main controller for node related operations
- * @author Daniel Mancera <daniel.mancera@crg.eu> 
+ * MessageController
+ * Main controller for message related operations
+ * @author Marc Serret <marc.serret@crg.eu> 
  */
 @RestController
 public class MessageController {

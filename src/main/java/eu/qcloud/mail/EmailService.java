@@ -8,6 +8,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,16 +18,16 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+
 @Service
 public class EmailService {
-	@Autowired
+    @Autowired
     private JavaMailSender emailSender;
-	
+
     @Autowired
     private Configuration freemarkerConfig;
 
-
-    public void sendSimpleMessage(final Mail mail){
+    public void sendSimpleMessage(final Mail mail) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setSubject(mail.getSubject());
         message.setText(mail.getContent());
@@ -35,11 +36,26 @@ public class EmailService {
 
         emailSender.send(message);
     }
-    
+
+    public boolean sendManualEmail(Mail mail) {
+        try {
+            MimeMessage message = emailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+            helper.setTo(mail.getTo());
+            helper.setText(mail.getContent());
+            helper.setFrom(mail.getFrom(), "QCloud 2.0");
+            emailSender.send(message);
+            return true;
+            
+        } catch (MessagingException | IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public void sendWelcomeHtmlMessage(Mail mail) throws MessagingException, IOException, TemplateException {
-    	MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message,
-                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
 
         helper.addAttachment("logo.png", new ClassPathResource("images/logo-qcloud.png"));
@@ -54,11 +70,10 @@ public class EmailService {
 
         emailSender.send(message);
     }
-    
+
     public void sendPasswordResetHtmlMessage(Mail mail) throws MessagingException, IOException, TemplateException {
-    	MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message,
-                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
 
         helper.addAttachment("logo.png", new ClassPathResource("images/logo-qcloud.png"));
