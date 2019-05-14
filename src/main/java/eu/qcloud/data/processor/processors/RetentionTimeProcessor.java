@@ -69,7 +69,7 @@ public class RetentionTimeProcessor extends Processor {
 				//d.setValue(Float.NaN);
 				continue;
 			}
-			Float rounded =round(nV,1);
+			Float rounded =round(nV,2);
 			d.setValue(rounded);
 		}
 		return this.data;
