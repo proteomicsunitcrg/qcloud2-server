@@ -211,4 +211,20 @@ public class ViewService {
 
 	}
 
+	@Transactional
+	public View deleteView(View view) {
+		Optional<View> v = viewRepository.findOptionalByApiKey(view.getApiKey());
+		if (v.isPresent()) {
+			if(deleteLayoutByViewApiKey(v.get().getApiKey())) {
+				getDefaultViewDisplayByViewId(v.get().getId());
+				viewRepository.delete(v.get());
+				return view;
+			} else{
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
 }

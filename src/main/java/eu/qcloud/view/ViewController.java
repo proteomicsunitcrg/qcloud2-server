@@ -159,6 +159,11 @@ public class ViewController {
 	public List<UserDisplayWithOutViewDisplay> getUserViewDisplayByViewApiKey(@PathVariable UUID viewApiKey) {
 		return viewService.getUserViewDisplayByViewApiKey(viewApiKey);
 	}
+
+	@RequestMapping(value = "/api/views/user", method = RequestMethod.DELETE)
+	public View deleteUserView(@RequestBody View view) {
+		return viewService.deleteView(view);
+	}
 	
 	/*
 	 * Exception handlers
