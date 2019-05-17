@@ -34,6 +34,7 @@ public class ViewDisplay {
 	
 	private int col;
 	
+	@Column(name = "row1")
 	private int row;
 	
 	public ViewDisplay() {}

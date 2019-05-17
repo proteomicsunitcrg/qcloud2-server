@@ -1,0 +1,1 @@
+ALTER TABLE view_display CHANGE `row` `row1` int(11);
