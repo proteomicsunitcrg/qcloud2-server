@@ -220,11 +220,9 @@ public class ViewService {
 				viewRepository.delete(v.get());
 				return view;
 			} else{
-				System.out.println("Fails");
 				return null;
 			}
 		} else {
-			System.out.println("Not present");
 			return null;
 		}
 	}
