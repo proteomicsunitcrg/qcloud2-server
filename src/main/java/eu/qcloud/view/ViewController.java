@@ -160,7 +160,7 @@ public class ViewController {
 		return viewService.getUserViewDisplayByViewApiKey(viewApiKey);
 	}
 
-	@RequestMapping(value = "/api/views/user", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/api/views", method = RequestMethod.DELETE)
 	public View deleteUserView(@RequestBody View view) {
 		return viewService.deleteView(view);
 	}
