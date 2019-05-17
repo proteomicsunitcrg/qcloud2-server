@@ -7,7 +7,7 @@ public class Mail {
 	private String to;
 	private String subject;
 	private String content;
-	private Map model;
+	private Map<String, String> model;
 
 	public Mail() {
 	}
@@ -51,11 +51,11 @@ public class Mail {
 		this.content = content;
 	}
 	
-	public Map getModel() {
+	public Map<String, String> getModel() {
 		return model;
 	}
 
-	public void setModel(Map model) {
+	public void setModel(Map<String, String> model) {
 		this.model = model;
 	}
 

@@ -1,6 +1,6 @@
 package eu.qcloud.data.processor.processors;
 
-import java.math.BigDecimal;
+// import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -94,11 +94,11 @@ public class RetentionTimeProcessor extends Processor {
 		}
 		return sum/values.size();
 	}
-	private static float round(float d, int decimalPlace) {
-        BigDecimal bd = new BigDecimal(Float.toString(d));
-        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
-        return bd.floatValue();
-    }
+	// private static float round(float d, int decimalPlace) {
+    //     BigDecimal bd = new BigDecimal(Float.toString(d));
+    //     bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+    //     return bd.floatValue();
+    // }
 	
 
 	

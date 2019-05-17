@@ -2,7 +2,6 @@ package eu.qcloud.websocket;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;

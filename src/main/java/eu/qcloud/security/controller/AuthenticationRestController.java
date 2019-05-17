@@ -2,7 +2,6 @@ package eu.qcloud.security.controller;
 
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.security.JwtAuthenticationRequest;
 import eu.qcloud.security.JwtTokenUtil;
-import eu.qcloud.security.JwtUser;
 import eu.qcloud.security.service.JwtAuthenticationResponse;
 
 @RestController

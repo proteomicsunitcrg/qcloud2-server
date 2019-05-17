@@ -26,7 +26,6 @@ import eu.qcloud.mail.EmailService;
 import eu.qcloud.mail.Mail;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.repository.UserRepository;
-import eu.qcloud.security.service.UserService;
 import freemarker.template.TemplateException;
 
 @Service

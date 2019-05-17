@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 @Component
@@ -28,10 +26,10 @@ public class JwtTokenUtil implements Serializable {
     static final String CLAIM_KEY_CREATED = "created";
     static final String CLAIM_KEY_AUTHORITIES = "authorities";
 
-    private static final String AUDIENCE_UNKNOWN = "unknown";
+    // private static final String AUDIENCE_UNKNOWN = "unknown"; Commented to supress IDE warning
     private static final String AUDIENCE_WEB = "web";
-    private static final String AUDIENCE_MOBILE = "mobile";
-    private static final String AUDIENCE_TABLET = "tablet";
+    // private static final String AUDIENCE_MOBILE = "mobile";Commented to supress IDE warning
+    // private static final String AUDIENCE_TABLET = "tablet";Commented to supress IDE warning
 
     @Value("${jwt.secret}")
     private String secret;
@@ -127,10 +125,10 @@ public class JwtTokenUtil implements Serializable {
     }
     */
 
-    private Boolean ignoreTokenExpiration(String token) {
-        String audience = getAudienceFromToken(token);
-        return (AUDIENCE_TABLET.equals(audience) || AUDIENCE_MOBILE.equals(audience));
-    }
+    // private Boolean ignoreTokenExpiration(String token) {
+    //     String audience = getAudienceFromToken(token);
+    //     return (AUDIENCE_TABLET.equals(audience) || AUDIENCE_MOBILE.equals(audience));
+    // }
     // Lo he comentado para probar las firmas del token
 /*
     public String generateToken(UserDetails userDetails) {        
