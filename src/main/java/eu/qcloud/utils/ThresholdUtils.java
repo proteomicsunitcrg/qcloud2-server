@@ -105,6 +105,8 @@ public class ThresholdUtils {
 		Optional<ManualGuideSet> mg = manualGuideSetRepository.findById(file.getGuideSet().getId());
 
 		if (mg.isPresent()) {
+			System.out.println("is present");
+			System.out.println("Guideset id: " + mg.get().getId());
 			return mg.get();
 		}
 
@@ -136,7 +138,7 @@ public class ThresholdUtils {
 					+ contextSource.getAbbreviated());
 			return null;
 		}
-
+		System.out.println("automatic guideset: " + automaticGuideSet.toString());
 		return automaticGuideSet;
 	}
 

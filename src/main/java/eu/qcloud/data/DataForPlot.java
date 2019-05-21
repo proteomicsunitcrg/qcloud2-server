@@ -93,6 +93,13 @@ public class DataForPlot implements Comparable<DataForPlot>{
 			return 0;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "DataForPlot [contextSourceName=" + contextSourceName + ", fileCreationDate=" + fileCreationDate
+				+ ", fileFilename=" + fileFilename + ", nonConformityStatus=" + nonConformityStatus + ", value=" + value
+				+ "]";
+	}
 	
 	
 }

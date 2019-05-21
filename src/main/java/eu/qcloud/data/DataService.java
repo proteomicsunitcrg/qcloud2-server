@@ -247,11 +247,13 @@ public class DataService {
 	 * @return
 	 */
 	private List<DataForPlot> prepareDataForPlot(List<Data> dataFromDb, SampleType sampleType, Param param) {
-
+		System.out.println("pRAM: " +  param.getqCCV());
 		List<DataForPlot> dataForPlot = new ArrayList<>();
 		switch (sampleType.getSampleTypeCategory().getSampleTypeComplexity()) {
 		case HIGHWITHISOTOPOLOGUES:
-			if (param.getIsFor().equals("Peptide")) {
+			// QC:1000894 is RT and we don't need concentration and the processor dies with the concentration
+			if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894")) {
+				System.out.println("HIGHWITHISOTOPOLOGUES peptide");
 				for (Data data : dataFromDb) {
 					// Instead of getting the full name or the abbreviated one we need to get the
 					// concentration
@@ -264,7 +266,9 @@ public class DataService {
 							data.getNonConformityStatus()));
 					Collections.sort(dataForPlot);
 				}
+				System.out.println("DATA FOR PLOT 0 " + dataForPlot.get(0).toString());
 			} else {
+				System.out.println("HIGHWITHISOTOPOLOGUES else");
 				convertDbDataToPlotData(dataFromDb, dataForPlot);
 			}
 			break;
@@ -490,16 +494,18 @@ public class DataService {
 					System.out.println("GUIDESET IS NULL");
 					return null;
 				}
+				System.out.println("Guideset id: " + guideSet.getId());
 				System.out.println("GUIDESET TOTAL FILES" + guideSet.getTotalFiles());
 
 				ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(cs.getId(), param.getId(),
 						guideSet.getStartDate(), guideSet.getEndDate(), file.getLabSystem().getId(),
 						file.getSampleType().getId());
 				for (Data dato : guideSetData){
-					System.out.println("DATA DEL GUIDESET" + dato.getValue());
+					System.out.println("DATA DEL GUIDESET: " + dato.getValue());
 				}
 				processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
 				System.out.println("CS NAME INDEX 0: " + processor.getData().get(0).getContextSourceName());
+				System.out.println("Processor data list: " + Arrays.asList(processor.getData()));
 				processor.setGuideSet(guideSet);
 				processor.setGuideSetData(guideSetData);
 				List<DataForPlot> processedValue = processor.processData();
