@@ -2,6 +2,8 @@ package eu.qcloud.mail;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -39,16 +41,24 @@ public class EmailService {
 
     public boolean sendManualEmail(Mail mail) {
         try {
+            Map<String, String> model = new HashMap<>();
+            model.put("mailContent", mail.getContent());
+            mail.setModel(model);
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+            helper.addAttachment("logo.png", new ClassPathResource("images/logo-qcloud.png"));
+            helper.addAttachment("logoCrg.png", new ClassPathResource("images/crgLogo.png"));
+            helper.addAttachment("logoUpf.png", new ClassPathResource("images/upfLogo.png"));
+            Template t = freemarkerConfig.getTemplate("default-mail.ftl");
+            String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, mail.getModel());
             helper.setTo(mail.getTo());
             helper.setSubject(mail.getSubject());
-            helper.setText(mail.getContent());
+            helper.setText(html,true);
             helper.setFrom(mail.getFrom(), "QCloud 2.0");
             emailSender.send(message);
             return true;
             
-        } catch (MessagingException | IOException e) {
+        } catch (MessagingException | IOException | TemplateException e) {
             e.printStackTrace();
             return false;
         }
