@@ -42,6 +42,7 @@ public class EmailService {
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
             helper.setTo(mail.getTo());
+            helper.setSubject(mail.getSubject());
             helper.setText(mail.getContent());
             helper.setFrom(mail.getFrom(), "QCloud 2.0");
             emailSender.send(message);
