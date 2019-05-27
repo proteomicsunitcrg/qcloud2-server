@@ -109,6 +109,13 @@ public class Data {
 	public void setNonConformityStatus(InstrumentStatus nonConformityStatus) {
 		this.nonConformityStatus = nonConformityStatus;
 	}
+
+	@Override
+	public String toString() {
+		return "Data [calculatedValue=" + calculatedValue + ", contextSource=" + contextSource + ", dataId=" + dataId
+				+ ", file=" + file + ", nonConformityStatus=" + nonConformityStatus + ", param=" + param + ", value="
+				+ value + "]";
+	}
 	
 
 }

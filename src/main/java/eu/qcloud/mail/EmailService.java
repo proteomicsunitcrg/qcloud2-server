@@ -54,7 +54,7 @@ public class EmailService {
             helper.setTo(mail.getTo());
             helper.setSubject(mail.getSubject());
             helper.setText(html,true);
-            helper.setFrom(mail.getFrom(), "QCloud 2.0");
+            helper.setFrom("qcloud@crg.eu", "QCloud 2.0");
             emailSender.send(message);
             return true;
             

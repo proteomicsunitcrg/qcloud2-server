@@ -247,13 +247,12 @@ public class DataService {
 	 * @return
 	 */
 	private List<DataForPlot> prepareDataForPlot(List<Data> dataFromDb, SampleType sampleType, Param param) {
-		System.out.println("pRAM: " +  param.getqCCV());
 		List<DataForPlot> dataForPlot = new ArrayList<>();
 		switch (sampleType.getSampleTypeCategory().getSampleTypeComplexity()) {
 		case HIGHWITHISOTOPOLOGUES:
-			// QC:1000894 is RT and we don't need concentration and the processor dies with the concentration
+			// QC:1000894 is RT and we don't need concentration and the processor dies with
+			// the concentration
 			if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894")) {
-				System.out.println("HIGHWITHISOTOPOLOGUES peptide");
 				for (Data data : dataFromDb) {
 					// Instead of getting the full name or the abbreviated one we need to get the
 					// concentration
@@ -266,9 +265,7 @@ public class DataService {
 							data.getNonConformityStatus()));
 					Collections.sort(dataForPlot);
 				}
-				System.out.println("DATA FOR PLOT 0 " + dataForPlot.get(0).toString());
 			} else {
-				System.out.println("HIGHWITHISOTOPOLOGUES else");
 				convertDbDataToPlotData(dataFromDb, dataForPlot);
 			}
 			break;
@@ -482,15 +479,14 @@ public class DataService {
 		if (processor.isGuideSetRequired()) {
 			System.out.println("GUIDESET IS REQUIRED");
 			System.out.println("FILES: " + fileRepository.countByLabSystemIdAndSampleTypeIdAndParamIdAndContextSourceId(
-				file.getLabSystem().getId(), file.getSampleType().getId(), param.getId(),
-				cs.getId()));
+					file.getLabSystem().getId(), file.getSampleType().getId(), param.getId(), cs.getId()));
 			System.out.println("MIN POINTS" + minPointsAutoThreshold);
 			if (fileRepository.countByLabSystemIdAndSampleTypeIdAndParamIdAndContextSourceId(
 					file.getLabSystem().getId(), file.getSampleType().getId(), param.getId(),
 					cs.getId()) > minPointsAutoThreshold) {
 
 				GuideSet guideSet = thresholdUtils.generateGuideSetFromWithFile(file, param, cs);
-				if(guideSet == null) {
+				if (guideSet == null) {
 					System.out.println("GUIDESET IS NULL");
 					return null;
 				}
@@ -500,7 +496,7 @@ public class DataService {
 				ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(cs.getId(), param.getId(),
 						guideSet.getStartDate(), guideSet.getEndDate(), file.getLabSystem().getId(),
 						file.getSampleType().getId());
-				for (Data dato : guideSetData){
+				for (Data dato : guideSetData) {
 					System.out.println("DATA DEL GUIDESET: " + dato.getValue());
 				}
 				processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
@@ -521,12 +517,8 @@ public class DataService {
 				return null;
 			}
 		} else {
-			System.out.println("GUIDESET IS NOT REQUIRED");
 			processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
 			Float processedValue = processor.processData().get(0).getValue();
-			if (processedValue == null) {
-				System.out.println("null");
-			}
 			if (!processedValue.isNaN() && processedValue != null) {
 				return processedValue;
 			} else {
@@ -1020,6 +1012,12 @@ public class DataService {
 						.add(generatePlotTracePointFromData(d));
 			}
 		} else {
+			if (!isAllTraceNaN(data)) {
+				List<PlotTrace> plotTraces = traces.toList();
+				return plotTraces;
+
+			}
+
 			for (Data d : data) {
 				if (!traces.containsKey(d.getContextSource().getAbbreviated())) {
 					traces.put(d.getContextSource().getAbbreviated(),
@@ -1034,6 +1032,15 @@ public class DataService {
 		Collections.sort(plotTraces);
 		checkTracesForTraceColor(plotTraces);
 		return plotTraces;
+	}
+
+	private boolean isAllTraceNaN(List<Data> data) {
+		for (Data w : data) {
+			if (!Float.isNaN(w.getCalculatedValue())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private PlotTracePoint generatePlotTracePointFromData(Data d) {
