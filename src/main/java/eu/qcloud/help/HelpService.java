@@ -7,9 +7,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 /**
- * Main service for node
+ * Main service for help
  * 
- * @author Daniel Mancera <daniel.mancera@crg.eu>
+ * @author Daniel Mancera <marc.serret@crg.eu>
  */
 
 @Service
