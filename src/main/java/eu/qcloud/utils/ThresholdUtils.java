@@ -138,7 +138,6 @@ public class ThresholdUtils {
 					+ contextSource.getAbbreviated());
 			return null;
 		}
-		System.out.println("automatic guideset: " + automaticGuideSet.toString());
 		return automaticGuideSet;
 	}
 

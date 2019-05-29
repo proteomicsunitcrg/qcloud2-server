@@ -505,6 +505,7 @@ public class DataService {
 				processor.setGuideSet(guideSet);
 				processor.setGuideSetData(guideSetData);
 				List<DataForPlot> processedValue = processor.processData();
+				System.out.println(param.getIsZeroNoData() + "    " + value.getValue());
 				if (processedValue.get(0).getValue() != null && !processedValue.get(0).getValue().isNaN()) {
 					if (param.getIsZeroNoData() && value.getValue() == 0f) {
 						return null;
@@ -517,6 +518,9 @@ public class DataService {
 				return null;
 			}
 		} else {
+			if (param.getIsZeroNoData() && value.getValue() == 0f) {
+				return null;
+			}
 			processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
 			Float processedValue = processor.processData().get(0).getValue();
 			if (!processedValue.isNaN() && processedValue != null) {
