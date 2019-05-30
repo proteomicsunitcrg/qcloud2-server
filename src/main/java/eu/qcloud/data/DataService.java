@@ -1000,9 +1000,15 @@ public class DataService {
 					labSystem.get().getId(), sampleType.get().getId()));
 		});
 
+		if (!isAllTraceNaN(data)) {
+			List<PlotTrace> plotTraces = traces.toList();
+			return plotTraces;
+
+		}
+
 		if (chart.get().getSampleType().getSampleTypeCategory()
 				.getSampleTypeComplexity() == SampleTypeComplexity.HIGHWITHISOTOPOLOGUES
-				&& chart.get().getParam().getIsFor().equals("Peptide")) {
+				&& chart.get().getParam().getIsFor().equals("Peptide") ) {
 			for (Data d : data) {
 				SampleComposition concentration = sampleCompositionRepository
 						.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.get().getId(),
@@ -1011,17 +1017,12 @@ public class DataService {
 					traces.put(concentration.getConcentration().toString(),
 							generateIsotopologuePlotTraceFromContextSource(d.getContextSource(),
 									concentration.getConcentration().toString()));
+									System.out.println(chart.get().getName());
 				}
 				traces.get(concentration.getConcentration().toString()).getPlotTracePoints()
 						.add(generatePlotTracePointFromData(d));
 			}
 		} else {
-			if (!isAllTraceNaN(data)) {
-				List<PlotTrace> plotTraces = traces.toList();
-				return plotTraces;
-
-			}
-
 			for (Data d : data) {
 				if (!traces.containsKey(d.getContextSource().getAbbreviated())) {
 					traces.put(d.getContextSource().getAbbreviated(),
