@@ -104,8 +104,7 @@ public class ThresholdController {
 	/**
 	 * Save a new threshold in the database.
 	 * 
-	 * @param threshold
-	 *            the threshold to be saved
+	 * @param threshold the threshold to be saved
 	 */
 	@RequestMapping(value = "/api/threshold/{type}", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('MANAGER')")
@@ -128,15 +127,16 @@ public class ThresholdController {
 	public ThresholdForPlotImpl getPlotThreshold(@PathVariable UUID chartApiKey, @PathVariable UUID labSystemApiKey) {
 		// get the param
 		ChartParams chartParam = chartService.getTopChartParamByChartApiKey(chartApiKey);
-		return thresholdService.calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(
-				chartApiKey, chartParam.getChart().getSampleType().getId(), labSystemApiKey);
+		return thresholdService.calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(chartApiKey,
+				chartParam.getChart().getSampleType().getId(), labSystemApiKey);
 	}
-	
+
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/api/threshold/nonconformityplot/{thresholdApiKey}/{fileChecksum}/{contextSourceApiKey}", method = RequestMethod.GET)
 	public ThresholdForPlotImpl getNonConformityPlotThresholdWithoutGuideSet(@PathVariable UUID thresholdApiKey,
 			@PathVariable String fileChecksum, @PathVariable UUID contextSourceApiKey) {
-		return thresholdService.getNonConformityThresholdWithoutGuideSet(thresholdApiKey, fileChecksum, contextSourceApiKey);
+		return thresholdService.getNonConformityThresholdWithoutGuideSet(thresholdApiKey, fileChecksum,
+				contextSourceApiKey);
 	}
 
 	public paramsNoThreshold getThresholdParams(Long thresholdId) {
@@ -178,20 +178,19 @@ public class ThresholdController {
 	public void switchThresholdMonitoring(@PathVariable UUID thresholdApiKey) {
 		thresholdService.switchThresholdMonitoring(thresholdApiKey);
 	}
-	
+
 	@RequestMapping(value = "/api/threshold/switchcontextsource/{thresholdApiKey}/{contextSourceApiKey}", method = RequestMethod.PUT)
 	@PreAuthorize("hasRole('MANAGER')")
-	public void switchThresholdContextSourceMonitoring(@PathVariable UUID thresholdApiKey, @PathVariable UUID contextSourceApiKey) {
+	public void switchThresholdContextSourceMonitoring(@PathVariable UUID thresholdApiKey,
+			@PathVariable UUID contextSourceApiKey) {
 		thresholdService.switchThresholdContextSourceMonitoring(thresholdApiKey, contextSourceApiKey);
 	}
 
 	/**
 	 * Update a threshold with new threshold parameters
 	 * 
-	 * @param thresholdId
-	 *            the threshold id
-	 * @param thresholdParams
-	 *            the new threshold parameters
+	 * @param thresholdId     the threshold id
+	 * @param thresholdParams the new threshold parameters
 	 */
 	@RequestMapping(value = "/api/threshold/{thresholdApiKey}", method = RequestMethod.PUT)
 	@PreAuthorize("hasRole('MANAGER')")
@@ -205,8 +204,7 @@ public class ThresholdController {
 	 * Return the lab system status. It will check the monitored values of the last
 	 * file of the system.
 	 * 
-	 * @param the
-	 *            lab system apikey
+	 * @param UUID labSystemApiKey
 	 * @return the labsystem status
 	 */
 	@RequestMapping(value = "/api/threshold/status/{labSystemApiKey}", method = RequestMethod.GET)
