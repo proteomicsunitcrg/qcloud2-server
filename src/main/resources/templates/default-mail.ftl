@@ -21,7 +21,7 @@
     <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
         <tr>
             <td align="center" style="padding: 40px 0 30px 0;">
-                <img src="cid:logo.png" alt="qcloud2.crg.eu" style="display: block;" />
+                <img src="cid:logo.png" alt="qcloud2.crg.eu" style="display: block; width: 325px" />
                 
             </td>
         </tr>
@@ -36,9 +36,9 @@
             </td>
         </tr>
         <tr>
-            <td style="padding: 25px 0 0 0">
-            <img src="cid:logoCrg.png" alt="CRG Logo"  />
-            <img src="cid:logoUpf.png" alt="UPF Logo" style="padding-left: 30px;" />
+            <td style="padding: 25px 0 0 0; text-align: center;">
+            <img src="cid:logoCrg.png" alt="CRG Logo"  style=""/>
+            <img src="cid:logoUpf.png" alt="UPF Logo" style="padding-left: 30px;"/>
         </tr>
         <tr>
             
