@@ -252,7 +252,7 @@ public class DataService {
 		case HIGHWITHISOTOPOLOGUES:
 			// QC:1000894 is RT and we don't need concentration and the processor dies with
 			// the concentration
-			if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894")) {
+			if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894") && !param.getqCCV().equals("QC:1000014")) {
 				for (Data data : dataFromDb) {
 					// Instead of getting the full name or the abbreviated one we need to get the
 					// concentration
@@ -282,7 +282,7 @@ public class DataService {
 		List<DataForPlot> dataForPlot = new ArrayList<>();
 		switch (sampleType.getSampleTypeCategory().getSampleTypeComplexity()) {
 		case HIGHWITHISOTOPOLOGUES:
-			if (param.getIsFor().equals("Peptide")) {
+			if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894") && !param.getqCCV().equals("QC:1000014")) {
 				for (Data data : dataFromDb) {
 					// Instead of getting the full name or the abbreviated one we need to get the
 					// concentration
@@ -1008,7 +1008,8 @@ public class DataService {
 
 		if (chart.get().getSampleType().getSampleTypeCategory()
 				.getSampleTypeComplexity() == SampleTypeComplexity.HIGHWITHISOTOPOLOGUES
-				&& chart.get().getParam().getIsFor().equals("Peptide") ) {
+				&& chart.get().getParam().getIsFor().equals("Peptide") && !chart.get().getParam().getqCCV().equals("QC:1000894")
+				&& !chart.get().getParam().getqCCV().equals("QC:1000014")) {
 			for (Data d : data) {
 				SampleComposition concentration = sampleCompositionRepository
 						.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.get().getId(),
