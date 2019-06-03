@@ -70,7 +70,8 @@ public class EmailService {
                 StandardCharsets.UTF_8.name());
 
         helper.addAttachment("logo.png", new ClassPathResource("images/logo-qcloud.png"));
-
+        helper.addAttachment("logoCrg.png", new ClassPathResource("images/crgLogo.png"));
+        helper.addAttachment("logoUpf.png", new ClassPathResource("images/upfLogo.png"));
         Template t = freemarkerConfig.getTemplate("new-user.ftl");
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, mail.getModel());
         helper.setTo(mail.getTo());
@@ -78,7 +79,6 @@ public class EmailService {
         helper.setSubject(mail.getSubject());
         // helper.setFrom(mail.getFrom());
         helper.setFrom(mail.getFrom(), "QCloud 2.0");
-
         emailSender.send(message);
     }
 

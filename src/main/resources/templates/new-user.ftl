@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -20,13 +21,18 @@
 
     <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
         <tr>
-            <td align="center" style="padding: 40px 0 30px 0;">
-                <img src="cid:logo.png" alt="https://www.qcloud.crg.eu" style="display: block;" />
+            <td align="center" style="padding: 40px 0 30px 0; background-color: #f4f9f4">
+                <img src="cid:logo.png" alt="qcloud2.crg.eu" style="display: block; width: 325px" />
                 
             </td>
         </tr>
+        <#--  <tr>
+            <td>
+            <hr>
+            </td>
+        </tr>  -->
         <tr>
-            <td style="padding: 40px 30px 40px 30px;">
+            <td style="padding: 30px 30px 40px 30px;">
                 <p>Dear ${name},</p>
                 <p>Welcome to QCloud 2.0, you now can login with your email and this password: <b>${password}</b></p>
                 <p><a href="http://qcloud2.crg.eu">Go to QCLOUD2!</a></p>
@@ -34,10 +40,27 @@
             </td>
         </tr>
         <tr>
-            <td bgcolor="#eaeaea" style="padding: 30px 30px 30px 30px;">
-                <p>Roger Olivella</p>
-                <p>Center for Genomic Regulation</p>
+            <td style="padding: 30px 30px 30px 30px; font-weight: bold;">
+                <p>The QCloud team</p>
             </td>
+        </tr>
+        <tr>
+            <td>
+            <hr style = "background-color: #f6f6f6; border: none; height: 10px; " >
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 25px 0 25px 0; text-align: center;">
+            <img src="cid:logoCrg.png" alt="CRG Logo"  style=""/>
+            <img src="cid:logoUpf.png" alt="UPF Logo" style="padding-left: 30px;"/>
+        </tr>
+        <tr>
+        <tr>
+            <td style="padding: 30px 30px 40px 30px; background-color: #f6f6f6; text-align: center">
+                <p>Please do not reply to this email. If you have any questions <a href="mailto:qcloud@crg.eu">email us</a>.</p>
+            </td>
+        </tr>
+            
         </tr>
     </table>
 
