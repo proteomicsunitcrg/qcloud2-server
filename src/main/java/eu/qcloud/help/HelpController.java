@@ -21,7 +21,7 @@ public class HelpController {
 	@Autowired
 	HelpService helpService;
 
-	@RequestMapping(value = "/api/help/{filename}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/help/{filename}", method = RequestMethod.GET, produces = "application/pdf; charset=utf-8")
 	public Resource getFileFromFileSystem(@PathVariable String filename, HttpServletResponse response) {
 		return helpService.getClassPathFile(filename, response);
 	}
