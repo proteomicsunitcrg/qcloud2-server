@@ -257,7 +257,7 @@ public class NodeController {
 	private void sendNewUserHtmlEmail(User user, String password) {
 		Mail mail = new Mail();
 		mail.setFrom("qcloud@crg.eu");
-		mail.setTo(user.getEmail());
+		mail.setTo(new String[]{user.getEmail()});
 		mail.setSubject("Welcome to QCloud 2.0");
 		
 		Map<String, String> model = new HashMap<>();
