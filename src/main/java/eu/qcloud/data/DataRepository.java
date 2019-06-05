@@ -33,7 +33,6 @@ public interface DataRepository extends PagingAndSortingRepository<Data, DataId>
 	Data findByFileIdAndParamIdAndContextSourceId(Long fileId, Long paramId, Long contextSourceId);
 	
 	Long countByContextSourceIdAndParamIdAndFileLabSystemApiKeyAndFileCreationDateBetweenAndCalculatedValueIsNotNull(Long contextSourceId, Long paramId, UUID labSystemApiKey, Date startDate, Date endDate);
-	
 	public interface MiniData {
 		
 		String getFileFilename();

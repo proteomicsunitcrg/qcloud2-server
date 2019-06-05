@@ -35,6 +35,8 @@ public interface SampleTypeRepository extends CrudRepository<SampleType, Long> {
     public Optional<SampleType> findByQualityControlControlledVocabularyAndSampleTypeCategoryApiKey(String qCCV, UUID apiKey);
     
     public List<SampleTypeOnlyName> findBySampleTypeCategorySampleTypeComplexityNot(SampleTypeComplexity stc);
+
+    public SampleType findAllByName(String name);
     
     public interface SampleTypeOnlyName {
     	// Long getId();

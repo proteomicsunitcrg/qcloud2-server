@@ -1,5 +1,6 @@
 package eu.qcloud.file;
 
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import eu.qcloud.guideset.automatic.AutomaticGuideSetRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemService;
 import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.sampleType.SampleTypeService;
 import eu.qcloud.security.model.User;
 
@@ -43,6 +45,10 @@ public class FileService {
 	@Autowired
 	private AutomaticGuideSetRepository guideSetRepository;
 
+	@Autowired
+	private SampleTypeRepository sampleTypeRepository;
+
+	
 	private final Log logger = LogFactory.getLog(this.getClass());
 
 	public File addNewFile(File file) {
@@ -191,6 +197,16 @@ public class FileService {
 		fileRepository.save(f);
 		
 		
+	}
+
+	public Long getCountDataBetweenDates(UUID labSystemApiKey, String sampleTypeName, Date startDate, Date endDate) {
+		SampleType sample = sampleNameToQQCV(sampleTypeName);
+		return fileRepository.countByLabSystemApiKeyAndSampleTypeIdAndCreationDateBetween(labSystemApiKey, sample.getId(), startDate, endDate);
+	}
+
+	private SampleType sampleNameToQQCV(String sampleTypeName) {
+		SampleType sample = sampleTypeRepository.findAllByName(sampleTypeName);
+		return sample;
 	}
 
 }

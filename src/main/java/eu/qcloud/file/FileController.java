@@ -9,12 +9,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -140,6 +143,14 @@ public class FileController {
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
+	}
+
+	@RequestMapping(value = "/api/data/between/{startDate}/{endDate}/{labSystemApiKey}/{sampleTypeName}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('MANAGER')")
+	public Long getDataBetweenDates(@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date startDate,
+	@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date endDate,
+	@PathVariable UUID labSystemApiKey, @PathVariable String sampleTypeName) {
+		return fileService.getCountDataBetweenDates( labSystemApiKey,  sampleTypeName,  startDate,  endDate);
 	}
 	
 	private User getUserFromSecurityContext() {

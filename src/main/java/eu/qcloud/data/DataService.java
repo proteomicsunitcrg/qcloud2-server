@@ -518,7 +518,7 @@ public class DataService {
 				return null;
 			}
 		} else {
-			if (param.getIsZeroNoData() && value.getValue() == 0f) {
+			if (param.getIsZeroNoData() && value.getValue() == 0) {
 				return null;
 			}
 			processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
@@ -1156,5 +1156,7 @@ public class DataService {
 		return tracesWithoutColor;
 
 	}
+
+	
 
 }
