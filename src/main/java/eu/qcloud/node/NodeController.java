@@ -2,6 +2,7 @@
 package eu.qcloud.node;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.exceptions.InvalidActionException;
-import eu.qcloud.helper.PasswordGenerator;
 import eu.qcloud.mail.EmailService;
 import eu.qcloud.mail.Mail;
 import eu.qcloud.security.model.Authority;
@@ -124,13 +124,9 @@ public class NodeController {
 		User manager = getManagerFromSecurityContext();
 		UUID userUuid = UUID.randomUUID();
 		newUser.setNode(manager.getNode());
-		PasswordGenerator passwordGenerator = new PasswordGenerator.PasswordGeneratorBuilder().useDigits(true)
-				.useLower(true).useUpper(true).build();
-		String password = passwordGenerator.generate(8);
-		// newUser.setPassword(passwordEncoder().encode(newUser.getPassword()));
-
-		newUser.setPassword(passwordEncoder().encode(password));
-
+		String passwordNormal = getEmailUsername(newUser.getEmail()) + "." + LocalDate.now().getYear();
+		newUser.setPassword(passwordEncoder().encode(passwordNormal));
+		System.out.println(newUser.getPassword());
 		Authority userRole = new Authority();
 		userRole.setId(1L);
 		userRole.setName(AuthorityName.ROLE_USER);
@@ -141,7 +137,7 @@ public class NodeController {
 		try {
 			userService.saveUser(newUser);
 			// send email to new user
-			sendNewUserHtmlEmail(newUser, password);
+			sendNewUserHtmlEmail(newUser, passwordNormal);
 			logger.info("Node: " + manager.getNode().getName() + " added user: " + newUser.getUsername());
 
 		} catch (DataIntegrityViolationException e) {
@@ -301,6 +297,10 @@ public class NodeController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User manager = userService.getUserByUsername(authentication.getName());
 		return manager;
+	}
+
+	private String getEmailUsername(String someEmail) {
+		return someEmail.substring(0, someEmail.indexOf("@"));
 	}
 
 	/*
