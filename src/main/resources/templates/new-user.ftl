@@ -35,6 +35,7 @@
             <td style="padding: 30px 30px 40px 30px;">
                 <p>Dear ${name},</p>
                 <p>Welcome to QCloud 2.0! Now you can login with your email with password: <b>${password}</b></p>
+                <p>As soon as possible change your password for a stronger one in the Profile > Manage profile section in the QCloud website.</p>
                 <p>Before adding your instrument to the QCloud, please send us a QC1 and/or QC2 file and we will check that the system is able to see all the monitored peptides. The QCloud is only able to monitorize a set of peptides from BSA and HeLa. If you are using another kind of samples for the QC, we suggest you to inject only 1 BSA per day and 1 HeLa per week. In this way you can still use your own QC samples and compare them with the QCloud.</p>
                 <p>You can send us (qcloud@crg.eu) the raw files with your own FTP server or by Dropbox or WeTransfer.</p>
             </td>
