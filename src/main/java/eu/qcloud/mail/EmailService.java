@@ -10,8 +10,6 @@ import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.MailSendException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -29,16 +27,6 @@ public class EmailService {
     @Autowired
     private Configuration freemarkerConfig;
 
-    public void sendSimpleMessage(final Mail mail) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setSubject(mail.getSubject());
-        message.setText(mail.getContent());
-        message.setTo(mail.getTo());
-        message.setFrom(mail.getFrom());
-
-        emailSender.send(message);
-    }
-
     public boolean sendManualEmail(Mail mail) {
         try {
             Map<String, String> model = new HashMap<>();
@@ -51,7 +39,7 @@ public class EmailService {
             helper.addAttachment("logoUpf.png", new ClassPathResource("images/upfLogo.png"));
             Template t = freemarkerConfig.getTemplate("default-mail.ftl");
             String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, mail.getModel());
-            helper.setTo(mail.getTo());
+            helper.setBcc(mail.getTo());
             helper.setSubject(mail.getSubject());
             helper.setText(html,true);
             helper.setFrom("qcloud@crg.eu", "QCloud 2.0");
@@ -65,6 +53,7 @@ public class EmailService {
     }
 
     public void sendWelcomeHtmlMessage(Mail mail) throws MessagingException, IOException, TemplateException {
+        System.out.println("ewlcome msg");
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
@@ -101,5 +90,11 @@ public class EmailService {
 
         emailSender.send(message);
     }
+
+	// public List<Mail> getAllTemplates() {
+    //     // Resource resource = new ClassPathResource("help/" + filename);
+    //     ClassPathResource resources = new ClassPathResource("src/main/resources/templates/htmlMails");
+    //     resources.
+	// }
 
 }

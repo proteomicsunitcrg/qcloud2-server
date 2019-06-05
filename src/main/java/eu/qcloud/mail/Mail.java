@@ -1,10 +1,11 @@
 package eu.qcloud.mail;
 
+import java.util.List;
 import java.util.Map;
 
 public class Mail {
 	private String from;
-	private String to;
+	private String[] to;
 	private String subject;
 	private String content;
 	private Map<String, String> model;
@@ -12,7 +13,7 @@ public class Mail {
 	public Mail() {
 	}
 
-	public Mail(String from, String to, String subject, String content) {
+	public Mail(String from, String[] to, String subject, String content) {
 		this.from = from;
 		this.to = to;
 		this.subject = subject;
@@ -27,11 +28,11 @@ public class Mail {
 		this.from = from;
 	}
 
-	public String getTo() {
+	public String[] getTo() {
 		return to;
 	}
 
-	public void setTo(String to) {
+	public void setTo(String[] to) {
 		this.to = to;
 	}
 
