@@ -44,10 +44,11 @@ import eu.qcloud.security.model.UserPasswordChange;
 import eu.qcloud.security.repository.UserRepository.UserWithUuid;
 import eu.qcloud.security.service.UserService;
 import freemarker.template.TemplateException;
+
 /**
- * NodeController
- * Main controller for node related operations
- * @author Daniel Mancera <daniel.mancera@crg.eu> 
+ * NodeController Main controller for node related operations
+ * 
+ * @author Daniel Mancera <daniel.mancera@crg.eu>
  */
 @RestController
 public class NodeController {
@@ -60,7 +61,7 @@ public class NodeController {
 
 	@Autowired
 	private EmailService emailService;
-	
+
 	private final Log logger = LogFactory.getLog(this.getClass());
 
 	@Bean
@@ -71,8 +72,7 @@ public class NodeController {
 	/**
 	 * Add a new node with a manager user to the database
 	 * 
-	 * @param n
-	 *            a JSON formed node with a user in the users array
+	 * @param n a JSON formed node with a user in the users array
 	 * @return <Node> the inserted node
 	 */
 	@RequestMapping(value = "/api/node", method = RequestMethod.POST)
@@ -107,15 +107,14 @@ public class NodeController {
 		} catch (CannotCreateTransactionException eee) {
 			throw new PersistenceException("No connection to the database");
 		}
-		logger.info("Node created: "+ n.getName() +" "+ n.getUsers().get(0).getEmail());
+		logger.info("Node created: " + n.getName() + " " + n.getUsers().get(0).getEmail());
 		return insertedNode;
 	}
 
 	/**
 	 * Add a new user to the current node
 	 * 
-	 * @param newUser
-	 *            the user to add
+	 * @param newUser the user to add
 	 * @return A list of the current node users
 	 */
 	@PreAuthorize("hasRole('MANAGER')")
@@ -129,7 +128,7 @@ public class NodeController {
 				.useLower(true).useUpper(true).build();
 		String password = passwordGenerator.generate(8);
 		// newUser.setPassword(passwordEncoder().encode(newUser.getPassword()));
-		
+
 		newUser.setPassword(passwordEncoder().encode(password));
 
 		Authority userRole = new Authority();
@@ -144,7 +143,7 @@ public class NodeController {
 			// send email to new user
 			sendNewUserHtmlEmail(newUser, password);
 			logger.info("Node: " + manager.getNode().getName() + " added user: " + newUser.getUsername());
-			
+
 		} catch (DataIntegrityViolationException e) {
 			throw new DataIntegrityViolationException("Email already in use");
 		} catch (ConstraintViolationException ee) {
@@ -157,8 +156,7 @@ public class NodeController {
 	/**
 	 * Add a new manager to the current node
 	 * 
-	 * @param newUser
-	 *            the user to add
+	 * @param newUser the user to add
 	 * @return A list of the current node users
 	 */
 	@PreAuthorize("hasRole('MANAGER')")
@@ -195,20 +193,19 @@ public class NodeController {
 	/**
 	 * Delete a node member from the database
 	 * 
-	 * @param userUuid
-	 *            the user apikey
+	 * @param userUuid the user apikey
 	 * @return the list of node members
 	 */
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/api/node/user/{userUuid}", method = RequestMethod.DELETE)
 	public List<UserWithUuid> deleteLabMember(@PathVariable UUID userUuid) {
 		User manager = getManagerFromSecurityContext();
-		if(manager.getApiKey().equals(userUuid)) {
+		if (manager.getApiKey().equals(userUuid)) {
 			throw new InvalidActionException("You can not remove yourself. Ask another lab manager to do it.");
 		}
 		if (userService.deleteUser(userUuid, manager)) {
 			// return list
-			
+
 			return userService.getUsersByNodeId(manager.getNode().getId());
 		} else {
 			// throw exception
@@ -221,10 +218,10 @@ public class NodeController {
 	@RequestMapping(value = "/api/node/user/change/{userUuid}", method = RequestMethod.PUT)
 	public UserWithUuid changeMemberRole(@PathVariable UUID userUuid) {
 		User manager = getManagerFromSecurityContext();
-		if(manager.getApiKey().equals(userUuid)) {
+		if (manager.getApiKey().equals(userUuid)) {
 			throw new InvalidActionException("You can not change your role. Ask another lab manager to do it.");
 		}
-		
+
 		return userService.changeMemberRole(userUuid, manager.getNode().getId());
 	}
 
@@ -234,13 +231,13 @@ public class NodeController {
 		User manager = getManagerFromSecurityContext();
 		return userService.findAllNodeUsers(manager.getNode().getId());
 	}
-	
+
 	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/api/node/user/password", method = RequestMethod.PUT)
 	public void updateUserPassword(@RequestBody UserPasswordChange userPassword) {
 		// check current password
 		User user = getManagerFromSecurityContext();
-		if(passwordEncoder().matches(userPassword.getCurrentPassword(), user.getPassword())) {
+		if (passwordEncoder().matches(userPassword.getCurrentPassword(), user.getPassword())) {
 			// password correct, store
 			user.setPassword(passwordEncoder().encode(userPassword.getNewPassword()));
 			userService.saveUser(user);
@@ -253,26 +250,25 @@ public class NodeController {
 	/*
 	 * Development functions
 	 */
-	
+
 	private void sendNewUserHtmlEmail(User user, String password) {
 		Mail mail = new Mail();
 		mail.setFrom("qcloud@crg.eu");
-		mail.setTo(new String[]{user.getEmail()});
+		mail.setTo(new String[] { user.getEmail() });
 		mail.setSubject("Welcome to QCloud 2.0");
-		
+
 		Map<String, String> model = new HashMap<>();
-        model.put("name", user.getFirstname() + " " + user.getLastname());
-        model.put("password", password);
-        mail.setModel(model);
-        
-        try {
+		model.put("name", user.getFirstname() + " " + user.getLastname());
+		model.put("password", password);
+		mail.setModel(model);
+
+		try {
 			emailService.sendWelcomeHtmlMessage(mail);
 		} catch (MessagingException | IOException | TemplateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/node/info/{nodeUuidString}", method = RequestMethod.GET)
@@ -319,10 +315,10 @@ public class NodeController {
 	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), e.getMessage());
 	}
+
 	@ExceptionHandler(InvalidActionException.class)
-	void handleBadAction(HttpServletResponse response, Exception e) throws IOException{
+	void handleBadAction(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
 	}
-
 
 }
