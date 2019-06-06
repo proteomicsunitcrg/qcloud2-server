@@ -9,19 +9,14 @@
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 
     <!-- use the font -->
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            font-size: 48px;
-        }
-    </style>
+
 </head>
-<body style="margin: 0; padding: 0;">
+<body style="margin: 0; padding: 0; font-size: 15px; background-color: #f5f5f5;" >
 
     <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
         <tr>
-            <td align="center" style="padding: 40px 0 30px 0; background-color: #f4f9f4">
-                <img src="cid:logo.png" alt="qcloud2.crg.eu" style="display: block; width: 325px" />
+            <td align="center" style="padding: 40px 0 30px 0; background-color: #c6e3d8">
+                <img id  = "headerImg"src="https://i.imgur.com/xV9j3T2.png" alt="qcloud2.crg.eu" style="display: block; width: 325px; height: 105px;" />
                 
             </td>
         </tr>
@@ -31,33 +26,32 @@
             </td>
         </tr>  -->
         <tr>
-            <td style="padding: 30px 30px 40px 30px;">
+            <td style="padding: 30px 30px 40px 30px; background-color: #fdfdfd;">
                 <p>Dear ${name},</p>
                 <p>Please follow this link in order to reset your password:</p>
                 <p><a href="http://qcloud2.crg.eu/recovery?a=${base}&token={token}">Reset password link</a></p>
                 <p>This link will expire in 24 hours.</p>
-                <p>Best regards</p>
-            </td>
+                <p>Best regards</p>            </td>
         </tr>
         <tr>
-            <td style="padding: 30px 30px 30px 30px; font-weight: bold;">
+            <td style="padding: 30px 30px 30px 30px; font-weight: bold; background-color: #fdfdfd;">
                 <p>The QCloud team</p>
             </td>
         </tr>
         <tr>
-            <td>
-            <hr style = "background-color: #f6f6f6; border: none; height: 10px; " >
+            <td  style= "background-color: #fdfdfd;">
+            <hr style = "background-color: #c6e3d8; border: none; height: 10px; " >
             </td>
         </tr>
         <tr>
-            <td style="padding: 25px 0 25px 0; text-align: center;">
-            <img src="cid:logoCrg.png" alt="CRG Logo"  style=""/>
-            <img src="cid:logoUpf.png" alt="UPF Logo" style="padding-left: 30px;"/>
+            <td style="padding: 25px 0 25px 0; text-align: center; background-color: #fdfdfd;">
+            <img src="https://i.imgur.com/AwP7A7g.png" alt="CRG Logo"  style=""/>
+            <img src="https://i.imgur.com/NCVL8DN.png" alt="UPF Logo" style="padding-left: 30px; "/>
         </tr>
         <tr>
         <tr>
-            <td style="padding: 30px 30px 40px 30px; background-color: #f6f6f6; text-align: center">
-                <p>Please do not reply to this email. If you have any questions <a href="mailto:qcloud@crg.eu">email us</a>.</p>
+            <td style="padding: 30px 30px 40px 30px; background-color: #c6e3d8; text-align: center">
+                <p>Please do not reply to this email. If you have any questions <a href="mailto:qcloud@crg.eu" style = "color: #5c8d89; text-decoration: none">email us</a>.</p>
             </td>
         </tr>
             
