@@ -275,7 +275,7 @@ public class NodeController {
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/api/nodes", method = RequestMethod.GET)
-	public List<Node> getAllNodes() {
+	public List<NodeWithTotalFiles> getAllNodes() {
 		return nodeService.getAllNodes();
 	}
 
