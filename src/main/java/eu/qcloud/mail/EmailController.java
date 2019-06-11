@@ -1,8 +1,11 @@
 
 package eu.qcloud.mail;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,10 +29,17 @@ public class EmailController {
 		return emailService.sendManualEmail(email);
 	}
 
-	// @PreAuthorize("hasRole('ADMIN')")
-	// @RequestMapping(value = "/api/email/templates", method = RequestMethod.GET)
-	// public List<Mail> getAllTemplates(){
-    //     return emailService.getAllTemplates();
-	// }
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "/api/email/templates", method = RequestMethod.GET)
+	public List<String> getAllTemplates(){
+        return emailService.getAllTemplates();
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "/api/email/template/{template}", method = RequestMethod.GET)
+	public String getTemplate(@PathVariable String template){
+        return emailService.getTemplate(template);
+	}
+	
 
 }

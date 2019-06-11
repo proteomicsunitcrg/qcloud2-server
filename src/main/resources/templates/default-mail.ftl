@@ -37,7 +37,7 @@
         </tr>
         <tr>
             <td style="padding: 30px 30px 30px 30px; font-weight: bold; background-color: #fdfdfd;">
-                <p>The QCloud team</p>
+                <p style="text-align: justify:">The QCloud team</p>
             </td>
         </tr>
         <tr>

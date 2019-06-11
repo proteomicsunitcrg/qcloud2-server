@@ -1,8 +1,13 @@
 package eu.qcloud.mail;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
@@ -10,17 +15,24 @@ import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
+import eu.qcloud.utils.FileUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 @Service
 public class EmailService {
+
+    private FileUtils fileUtils = new FileUtils();
+
     @Autowired
     private JavaMailSender emailSender;
 
@@ -33,7 +45,8 @@ public class EmailService {
             model.put("mailContent", mail.getContent());
             mail.setModel(model);
             MimeMessage message = emailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name());
             helper.addAttachment("logo.png", new ClassPathResource("images/logo-qcloud.png"));
             helper.addAttachment("logoCrg.png", new ClassPathResource("images/crgLogo.png"));
             helper.addAttachment("logoUpf.png", new ClassPathResource("images/upfLogo.png"));
@@ -41,11 +54,11 @@ public class EmailService {
             String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, mail.getModel());
             helper.setBcc(mail.getTo());
             helper.setSubject(mail.getSubject());
-            helper.setText(html,true);
+            helper.setText(html, true);
             helper.setFrom("qcloud@crg.eu", "QCloud 2.0");
             emailSender.send(message);
             return true;
-            
+
         } catch (MessagingException | IOException | TemplateException e) {
             e.printStackTrace();
             return false;
@@ -91,10 +104,24 @@ public class EmailService {
         emailSender.send(message);
     }
 
-	// public List<Mail> getAllTemplates() {
-    //     // Resource resource = new ClassPathResource("help/" + filename);
-    //     ClassPathResource resources = new ClassPathResource("src/main/resources/templates/htmlMails");
-    //     resources.
-	// }
+    public List<String> getAllTemplates() {
+        try {
+            return fileUtils.listDirFiles("templates/htmlMails");
+            
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+	public String getTemplate(String template) {
+		try {
+            return fileUtils.readFile("templates/htmlMails/" + template, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+	}
+
+    
 
 }
