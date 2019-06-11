@@ -156,7 +156,7 @@ public class ThresholdController {
 	 * @return
 	 */
 	@RequestMapping(value = "/api/threshold/constraints/admin/{thresholdType}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('<MANAGER>')")
+	@PreAuthorize("hasRole('MANAGER')")
 	public ThresholdConstraint getThresholdConstraint(@PathVariable ThresholdType thresholdType) {
 		return ThresholdFactory.getAdminConstraints(thresholdType);
 	}
