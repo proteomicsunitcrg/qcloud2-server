@@ -24,9 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import eu.qcloud.utils.FileUtils;
+import freemarker.core.ParseException;
 import freemarker.template.Configuration;
+import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateNotFoundException;
 
 @Service
 public class EmailService {
@@ -77,6 +80,27 @@ public class EmailService {
         Template t = freemarkerConfig.getTemplate("new-user.ftl");
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, mail.getModel());
         helper.setTo(mail.getTo());
+        helper.setBcc("roger.olivella@crg.eu");
+        helper.setText(html, true);
+        helper.setSubject(mail.getSubject());
+        // helper.setFrom(mail.getFrom());
+        helper.setFrom(mail.getFrom(), "QCloud 2.0");
+        emailSender.send(message);
+    }
+
+    public void sendWelcomeNodeHtmlMessage(Mail mail) throws MessagingException, TemplateNotFoundException,
+            MalformedTemplateNameException, ParseException, IOException, TemplateException {
+        System.out.println("wry");
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name());
+        helper.addAttachment("logo.png", new ClassPathResource("images/logo-qcloud.png"));
+        helper.addAttachment("logoCrg.png", new ClassPathResource("images/crgLogo.png"));
+        helper.addAttachment("logoUpf.png", new ClassPathResource("images/upfLogo.png"));
+        Template t = freemarkerConfig.getTemplate("new-node.ftl");
+        String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, mail.getModel());
+        helper.setTo(mail.getTo());
+        helper.setBcc("roger.olivella@crg.eu");
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
         // helper.setFrom(mail.getFrom());
@@ -107,21 +131,19 @@ public class EmailService {
     public List<String> getAllTemplates() {
         try {
             return fileUtils.listDirFiles("templates/htmlMails");
-            
+
         } catch (IOException e) {
             return null;
         }
     }
 
-	public String getTemplate(String template) {
-		try {
+    public String getTemplate(String template) {
+        try {
             return fileUtils.readFile("templates/htmlMails/" + template, StandardCharsets.UTF_8);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-	}
-
-    
+    }
 
 }

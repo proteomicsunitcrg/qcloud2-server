@@ -51,7 +51,7 @@
         <tr>
         <tr>
             <td style="padding: 30px 30px 40px 30px; background-color: #c6e3d8; text-align: center">
-                <p>Please do not reply to this email. If you have any questions <a href="mailto:qcloud@crg.eu" style = "color: #5c8d89; text-decoration: none">email us</a>.</p>
+                <p>If you have any questions <a href="mailto:qcloud@crg.eu" style = "color: #5c8d89; text-decoration: none">email us</a>.</p>
             </td>
         </tr>
             

@@ -108,6 +108,7 @@ public class NodeController {
 			throw new PersistenceException("No connection to the database");
 		}
 		logger.info("Node created: " + n.getName() + " " + n.getUsers().get(0).getEmail());
+		sendNewNodeHtmlEmail(n.getUsers().get(0));
 		return insertedNode;
 	}
 
@@ -247,6 +248,24 @@ public class NodeController {
 	 * Development functions
 	 */
 
+
+	private void sendNewNodeHtmlEmail(User user) {
+		Mail mail = new Mail();
+		mail.setFrom("qcloud@crg.eu");
+		mail.setTo(new String[] { user.getEmail() });
+		mail.setSubject("Welcome to QCloud 2.0");
+
+		Map<String, String> model = new HashMap<>();
+		mail.setModel(model);
+
+		try {
+			emailService.sendWelcomeNodeHtmlMessage(mail);
+		} catch (MessagingException | IOException | TemplateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	private void sendNewUserHtmlEmail(User user, String password) {
 		Mail mail = new Mail();
 		mail.setFrom("qcloud@crg.eu");
@@ -265,6 +284,8 @@ public class NodeController {
 			e.printStackTrace();
 		}
 	}
+
+	
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/node/info/{nodeUuidString}", method = RequestMethod.GET)
