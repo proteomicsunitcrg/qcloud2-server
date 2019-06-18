@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -59,6 +61,9 @@ public class EmailService {
             helper.setSubject(mail.getSubject());
             helper.setText(html, true);
             helper.setFrom("qcloud@crg.eu", "QCloud 2.0");
+            helper.setReplyTo("qcloud@crg.eu", "QCloud 2.0 ");
+            message.setContentLanguage(new String[] {"en"});
+            message.setDescription("Informative email");
             emailSender.send(message);
             return true;
 
@@ -90,7 +95,6 @@ public class EmailService {
 
     public void sendWelcomeNodeHtmlMessage(Mail mail) throws MessagingException, TemplateNotFoundException,
             MalformedTemplateNameException, ParseException, IOException, TemplateException {
-        System.out.println("wry");
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
@@ -103,6 +107,8 @@ public class EmailService {
         helper.setBcc("roger.olivella@crg.eu");
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
+        helper.setReplyTo("qcloud@crg.eu", "QCloud 2.0 ");
+        helper.notify();
         // helper.setFrom(mail.getFrom());
         helper.setFrom(mail.getFrom(), "QCloud 2.0");
         emailSender.send(message);
