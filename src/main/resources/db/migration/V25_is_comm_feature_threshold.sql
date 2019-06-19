@@ -1,0 +1,1 @@
+ALTER TABLE threshold ADD COLUMN isCommFeat boolean default false AFTER non_conformity_direction;

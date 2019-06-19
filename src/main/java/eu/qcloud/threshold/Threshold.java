@@ -104,6 +104,9 @@ public class Threshold implements Cloneable {
 	
 	@OneToMany(mappedBy="threshold")
 	protected List<ThresholdParams> thresholdParams;
+
+	@Column(name = "isCommFeat", columnDefinition = "bit default 0")
+	private boolean isCommFeat;
 	
 	public LabSystem getLabSystem() {
 		return labSystem;
@@ -257,6 +260,14 @@ public class Threshold implements Cloneable {
 
 		}
 		return null;
+	}
+
+	public boolean isCommFeat() {
+		return isCommFeat;
+	}
+
+	public void setCommFeat(boolean isCommFeat) {
+		this.isCommFeat = isCommFeat;
 	}
 
 	
