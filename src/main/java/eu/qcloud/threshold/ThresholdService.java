@@ -33,6 +33,8 @@ import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
+import eu.qcloud.threshold.communitythresholds.CommunityThreshold;
+import eu.qcloud.threshold.communitythresholds.CommunityThresholdsRepository;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThresholdRepository;
 import eu.qcloud.threshold.labsystemstatus.LabSystemStatus;
@@ -58,12 +60,15 @@ public class ThresholdService {
 
 	@Autowired
 	private SigmaLog2ThresholdRepository sigmaLog2ThresholdRepository;
-	
+
 	@Autowired
 	private SigmaThresholdRepository sigmaThresholdRepository;
 
 	@Autowired
 	private HardLimitThresholdRepository hardLimitThresholdRepository;
+
+	@Autowired
+	private CommunityThresholdsRepository communityThresholdsRepository;
 
 	@Autowired
 	private LabSystemRepository labSystemRepository;
@@ -85,13 +90,13 @@ public class ThresholdService {
 
 	@Autowired
 	private ParamRepository paramRepository;
-	
+
 	@Autowired
 	private ThresholdNonConformityRepository thresholdNonConformityRepository;
-	
+
 	@Autowired
 	private ContextSourceRepository contextSourceRepository;
-	
+
 	@Autowired
 	private ChartRepository chartRepository;
 
@@ -110,13 +115,17 @@ public class ThresholdService {
 	public Threshold saveSigmaThreshold(SigmaThreshold threshold) {
 		return sigmaThresholdRepository.save(threshold);
 	}
-	
+
 	public Threshold saveSigmaLog2Threshold(SigmaLog2Threshold threshold) {
 		return sigmaLog2ThresholdRepository.save(threshold);
 	}
 
 	public Threshold saveHardLimitThreshold(HardLimitThreshold threshold) {
 		return hardLimitThresholdRepository.save(threshold);
+	}
+
+	public Threshold saveCommunityThreshold(CommunityThreshold threshold) {
+		return communityThresholdsRepository.save(threshold);
 	}
 
 	/**
@@ -163,6 +172,7 @@ public class ThresholdService {
 			stlog2.setParam(p);
 			stlog2.setSampleType(sampleType.get());
 			stlog2.setEnabled(true);
+			stlog2.setName(threshold.getName());
 			stlog2.setMonitored(true);
 			stlog2.setNonConformityDirection(threshold.getNonConformityDirection());
 			stlog2.setApiKey(UUID.randomUUID());
@@ -171,6 +181,7 @@ public class ThresholdService {
 			HardLimitThreshold ht = new HardLimitThreshold();
 			ht.setCv(instrument.get());
 			ht.setSteps(threshold.getSteps());
+			ht.setName(threshold.getName());
 			ht.setParam(p);
 			ht.setSampleType(sampleType.get());
 			ht.setNonConformityDirection(threshold.getNonConformityDirection());
@@ -181,6 +192,7 @@ public class ThresholdService {
 		case SIGMA:
 			SigmaThreshold st = new SigmaThreshold();
 			st.setCv(instrument.get());
+			st.setName(threshold.getName());
 			st.setSteps(threshold.getSteps());
 			st.setParam(p);
 			st.setSampleType(sampleType.get());
@@ -189,6 +201,19 @@ public class ThresholdService {
 			st.setNonConformityDirection(threshold.getNonConformityDirection());
 			st.setApiKey(UUID.randomUUID());
 			return saveSigmaThreshold(st);
+		case COMM1:
+		System.out.println("case comm");
+			CommunityThreshold ct = new CommunityThreshold();
+			ct.setCv(instrument.get());
+			ct.setName(threshold.getName());
+			ct.setSteps(threshold.getSteps());
+			ct.setParam(p);
+			ct.setSampleType(sampleType.get());
+			ct.setNonConformityDirection(threshold.getNonConformityDirection());
+			ct.setEnabled(true);
+			ct.setMonitored(true);
+			ct.setApiKey(UUID.randomUUID());
+			return saveCommunityThreshold(ct);
 		default:
 			return null;
 		}
@@ -250,8 +275,8 @@ public class ThresholdService {
 	 * non-conformities.
 	 * 
 	 * @param thresholdId
-	 * @param thresholdParams
-	 *            TODO: check if the threshold belongs to the current user
+	 * @param thresholdParams TODO: check if the threshold belongs to the current
+	 *                        user
 	 */
 	public void updateThresholdParams(UUID thresholdApiKey, List<ThresholdParams> thresholdParams) {
 		// get the threshold
@@ -356,16 +381,18 @@ public class ThresholdService {
 			return false;
 		}
 	}
+
 	public List<LabSystemStatus> getLabSystemStatus(LabSystem labSystem) {
 		List<LabSystemStatus> labSystemStatus = new ArrayList<>();
 		List<SampleType> sampleTypes = fileRepository.findDistinctSampleTypeByLabSystemId(labSystem.getId());
-		if (sampleTypes.size()<=0) {	// if the lab system is new and it has no data should be offline
+		if (sampleTypes.size() <= 0) { // if the lab system is new and it has no data should be offline
 			labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
 		}
-		for(SampleType sampleType : sampleTypes) {
-			File lastFile = fileRepository.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.getId(), sampleType.getId());
-			if(lastFile.getCreationDate().before(thresholdUtils.getOfflineDate()) 
-					&& lastFile.getSampleType().getSampleTypeCategory().getSampleTypeComplexity() == SampleTypeComplexity.LOW) {
+		for (SampleType sampleType : sampleTypes) {
+			File lastFile = fileRepository
+					.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.getId(), sampleType.getId());
+			if (lastFile.getCreationDate().before(thresholdUtils.getOfflineDate()) && lastFile.getSampleType()
+					.getSampleTypeCategory().getSampleTypeComplexity() == SampleTypeComplexity.LOW) {
 				labSystemStatus.clear();
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
 				return labSystemStatus;
@@ -378,9 +405,7 @@ public class ThresholdService {
 		}
 		return labSystemStatus;
 	}
-	
 
-	
 	public ThresholdForPlot findThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(Long paramId,
 			Long sampleTypeId, UUID labSystemApiKey) {
 		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
@@ -390,7 +415,7 @@ public class ThresholdService {
 		return thresholdRepository.findByParamIdAndSampleTypeIdAndLabSystemId(paramId, sampleTypeId,
 				labSystem.get().getId());
 	}
-	
+
 	public ThresholdForPlotImpl calculateThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(UUID chartApiKey,
 			Long sampleTypeId, UUID labSystemApiKey) {
 		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
@@ -398,12 +423,12 @@ public class ThresholdService {
 			throw new DataRetrievalFailureException("Labsystem do not exists.");
 		}
 		Optional<Chart> chart = chartRepository.findByApiKey(chartApiKey);
-		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(chart.get().getParam().getId(),
-				sampleTypeId, labSystem.get().getId());
-		if(threshold == null) {
+		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(
+				chart.get().getParam().getId(), sampleTypeId, labSystem.get().getId());
+		if (threshold == null) {
 			return null;
 		}
-		
+
 		return ThresholdForPlotFactory.create(threshold);
 	}
 
@@ -411,15 +436,14 @@ public class ThresholdService {
 			UUID contextSourceApiKey) {
 		Optional<Threshold> threshold = thresholdRepository.findByApiKey(thresholdApiKey);
 		File file = fileRepository.findByChecksum(fileChecksum);
-		
-		
+
 		Optional<ContextSource> cs = contextSourceRepository.findByApiKey(contextSourceApiKey);
-		if(!cs.isPresent()) {
+		if (!cs.isPresent()) {
 			throw new DataRetrievalFailureException("Context source do not exists.");
 		}
 
-		GuideSet gs =thresholdUtils.generateGuideSetFromBeforeFile(file,threshold.get().getParam(), cs.get());
-		
+		GuideSet gs = thresholdUtils.generateGuideSetFromBeforeFile(file, threshold.get().getParam(), cs.get());
+
 		thresholdUtils.processThreshold(threshold.get(), gs);
 
 		return ThresholdForPlotFactory.create(threshold.get());
@@ -436,13 +460,14 @@ public class ThresholdService {
 	public void switchThresholdContextSourceMonitoring(UUID thresholdApiKey, UUID contextSourceApiKey) {
 		Threshold threshold = findThresholdByApiKey(thresholdApiKey);
 		Optional<ContextSource> contextSource = contextSourceRepository.findByApiKey(contextSourceApiKey);
-		if(!contextSource.isPresent()) {
-			throw new DataRetrievalFailureException("Context source do not exists.");	
+		if (!contextSource.isPresent()) {
+			throw new DataRetrievalFailureException("Context source do not exists.");
 		}
-		ThresholdParams tp = thresholdParamsRepository.findByThresholdIdAndContextSourceId(threshold.getId(), contextSource.get().getId());
+		ThresholdParams tp = thresholdParamsRepository.findByThresholdIdAndContextSourceId(threshold.getId(),
+				contextSource.get().getId());
 		tp.setIsEnabled(!tp.getIsEnabled());
 		thresholdParamsRepository.save(tp);
-				
+
 	}
 
 }
