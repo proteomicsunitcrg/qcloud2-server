@@ -17,7 +17,7 @@ public class CommunityThreshold extends Threshold {
 		// this.nonConformityDirection = Direction.UPDOWN;
 		this.processor = new NoProcessor();
 		this.adminThresholdConstraint = new ThresholdConstraint(false,false,false,true,true,true);
-		this.managerThresholdConstraint = new ThresholdConstraint(false,false,false,false,true,true);
+		this.managerThresholdConstraint = new ThresholdConstraint(false,false,false,false,false,false);
         this.thresholdType = ThresholdType.COMM1;
         this.setCommFeat(true);
 	}
