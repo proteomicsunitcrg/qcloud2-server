@@ -252,7 +252,8 @@ public class DataService {
 		case HIGHWITHISOTOPOLOGUES:
 			// QC:1000894 is RT and we don't need concentration and the processor dies with
 			// the concentration
-			if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894") && !param.getqCCV().equals("QC:1000014")) {
+			if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894")
+					&& !param.getqCCV().equals("QC:1000014")) {
 				for (Data data : dataFromDb) {
 					// Instead of getting the full name or the abbreviated one we need to get the
 					// concentration
@@ -282,7 +283,8 @@ public class DataService {
 		List<DataForPlot> dataForPlot = new ArrayList<>();
 		switch (sampleType.getSampleTypeCategory().getSampleTypeComplexity()) {
 		case HIGHWITHISOTOPOLOGUES:
-			if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894") && !param.getqCCV().equals("QC:1000014")) {
+			if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894")
+					&& !param.getqCCV().equals("QC:1000014")) {
 				for (Data data : dataFromDb) {
 					// Instead of getting the full name or the abbreviated one we need to get the
 					// concentration
@@ -1008,7 +1010,8 @@ public class DataService {
 
 		if (chart.get().getSampleType().getSampleTypeCategory()
 				.getSampleTypeComplexity() == SampleTypeComplexity.HIGHWITHISOTOPOLOGUES
-				&& chart.get().getParam().getIsFor().equals("Peptide") && !chart.get().getParam().getqCCV().equals("QC:1000894")
+				&& chart.get().getParam().getIsFor().equals("Peptide")
+				&& !chart.get().getParam().getqCCV().equals("QC:1000894")
 				&& !chart.get().getParam().getqCCV().equals("QC:1000014")) {
 			for (Data d : data) {
 				SampleComposition concentration = sampleCompositionRepository
@@ -1018,7 +1021,6 @@ public class DataService {
 					traces.put(concentration.getConcentration().toString(),
 							generateIsotopologuePlotTraceFromContextSource(d.getContextSource(),
 									concentration.getConcentration().toString()));
-									System.out.println(chart.get().getName());
 				}
 				traces.get(concentration.getConcentration().toString()).getPlotTracePoints()
 						.add(generatePlotTracePointFromData(d));
@@ -1033,13 +1035,25 @@ public class DataService {
 						.add(generatePlotTracePointFromData(d));
 			}
 		}
-
+		Float median = getMid(data);
+		List<File> files = fileRepository
+		.findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(
+			labSystemApiKey, sampleTypeQCCV, startDate, endDate);
+			files.forEach(file -> {
+				List<Data> dataError = dataRepository.findByFileIdAndParamId(file.getId(), new Long(2));
+				if (dataError.size() == 0) {
+					if (!traces.containsKey("ERROR")) {
+						traces.put("ERROR", generatePlotTraceError(contextSourceRepository.findById(new Long(97)).get()));	// Id 97 is error CS
+					}
+					traces.get("ERROR").getPlotTracePoints().add(generatePlotTracePointError(file, median));
+				}
+			});
+			
 		List<PlotTrace> plotTraces = traces.toList();
 		Collections.sort(plotTraces);
 		checkTracesForTraceColor(plotTraces);
 		return plotTraces;
 	}
-
 	private boolean isAllTraceNaN(List<Data> data) {
 		for (Data w : data) {
 			if (!Float.isNaN(w.getCalculatedValue())) {
@@ -1049,8 +1063,23 @@ public class DataService {
 		return false;
 	}
 
+	private Float getMid(List<Data> data) {
+		Float result = 0f;
+		for (Data d : data) {
+			if (d.getCalculatedValue().isNaN()) {
+				continue;
+			}
+			result += d.getCalculatedValue();
+		}
+		return result/data.size();
+	}
+
 	private PlotTracePoint generatePlotTracePointFromData(Data d) {
 		return new PlotTracePoint(d.getFile(), d.getCalculatedValue(), d.getNonConformityStatus());
+	}
+
+	private PlotTracePoint generatePlotTracePointError(File f, float value) {
+		return new PlotTracePoint(f, value, InstrumentStatus.OFFLINE);
 	}
 
 	private PlotTrace generateIsotopologuePlotTraceFromContextSource(ContextSource contextSource,
@@ -1069,6 +1098,16 @@ public class DataService {
 		plotTrace.setTraceColor(contextSource.getTraceColor());
 		plotTrace.setShade(contextSource.getShadeGrade());
 		plotTrace.setPlotTracePoints(new ArrayList<>());
+		return plotTrace;
+	}
+
+	private PlotTrace generatePlotTraceError(ContextSource cs) {
+		PlotTrace plotTrace = new PlotTrace();
+		plotTrace.setAbbreviated(cs.getAbbreviated());
+		plotTrace.setTraceColor(cs.getTraceColor());
+		plotTrace.setShade(cs.getShadeGrade());
+		plotTrace.setPlotTracePoints(new ArrayList<>());
+		plotTrace.setContextSourceId(cs.getId());
 		return plotTrace;
 	}
 
@@ -1156,7 +1195,5 @@ public class DataService {
 		return tracesWithoutColor;
 
 	}
-
-	
 
 }

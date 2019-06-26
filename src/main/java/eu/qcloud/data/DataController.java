@@ -175,7 +175,6 @@ public class DataController {
 
 		return dataService.getTraceData(startDate, endDate, chartApiKey, labSystemApiKey, sampleTypeQCCV);
 	}
-
 	
 
 	/*

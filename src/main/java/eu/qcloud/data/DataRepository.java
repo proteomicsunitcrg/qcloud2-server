@@ -32,6 +32,8 @@ public interface DataRepository extends PagingAndSortingRepository<Data, DataId>
 	
 	Data findByFileIdAndParamIdAndContextSourceId(Long fileId, Long paramId, Long contextSourceId);
 	
+	List<Data> findByFileIdAndParamId(Long fileId, Long paramId);
+
 	Long countByContextSourceIdAndParamIdAndFileLabSystemApiKeyAndFileCreationDateBetweenAndCalculatedValueIsNotNull(Long contextSourceId, Long paramId, UUID labSystemApiKey, Date startDate, Date endDate);
 	public interface MiniData {
 		

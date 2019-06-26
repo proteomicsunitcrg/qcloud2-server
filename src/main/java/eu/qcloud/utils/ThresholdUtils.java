@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataRepository;
+import eu.qcloud.data.NonConformityStatus;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileRepository;
 import eu.qcloud.guideset.GuideSet;
@@ -394,6 +395,13 @@ public class ThresholdUtils {
 		cal.setTime(now);
 		cal.add(Calendar.HOUR, maxOfflineHours * -1);
 		return cal.getTime();
+	}
+
+	public LabSystemStatus createPipelineErrorThresholdNonConformity(File f) {
+		LabSystemStatus ls = new LabSystemStatus();
+		ls.setStatus(InstrumentStatus.DANGER);
+		ls.setFileChecksum(f.getChecksum());
+		return ls;
 	}
 
 }

@@ -15,6 +15,7 @@ public class PlotTrace implements Comparable<PlotTrace>{
 	
 	private List<PlotTracePoint> plotTracePoints;
 	
+	private Long contextSourceId;
 
 	public PlotTrace() {
 		this.plotTracePoints = new ArrayList<>();
@@ -67,6 +68,14 @@ public class PlotTrace implements Comparable<PlotTrace>{
 		}catch (NumberFormatException nfe) {
 			return 0;
 		}
+	}
+
+	public Long getContextSourceId() {
+		return contextSourceId;
+	}
+
+	public void setContextSourceId(Long contextSourceId) {
+		this.contextSourceId = contextSourceId;
 	}
 
 }

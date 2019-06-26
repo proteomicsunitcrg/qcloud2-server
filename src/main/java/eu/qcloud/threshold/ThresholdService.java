@@ -20,6 +20,8 @@ import eu.qcloud.chart.Chart;
 import eu.qcloud.chart.ChartRepository;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.contextSource.ContextSourceRepository;
+import eu.qcloud.data.Data;
+import eu.qcloud.data.DataRepository;
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileRepository;
@@ -99,6 +101,9 @@ public class ThresholdService {
 
 	@Autowired
 	private ChartRepository chartRepository;
+
+	@Autowired
+	private DataRepository datarepository;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -397,13 +402,28 @@ public class ThresholdService {
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
 				return labSystemStatus;
 			}
-
+			if(lastFile.getCreationDate().before(thresholdUtils.getOfflineDate())) {
+				continue;
+			}
+			if(!isLastFileValid(lastFile) && lastFile.getCreationDate().after(thresholdUtils.getOfflineDate())) {
+				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
+				// labSystemStatus.add(thresholdUtils.createPipelineErrorThresholdNonConformity(lastFile));
+			}
 			List<ThresholdNonConformity> tncs = thresholdNonConformityRepository.findByFileId(lastFile.getId());
 			tncs.forEach(tnc -> {
 				labSystemStatus.add(thresholdUtils.createLabSystemStatusByThresholdNonConformity(tnc));
 			});
 		}
 		return labSystemStatus;
+	}
+
+	public boolean isLastFileValid(File f) {
+		List <Data> data = datarepository.findByFileIdAndParamId(f.getId(), 2l);
+		if (data.size() == 0) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	public ThresholdForPlot findThresholdForPlotByParamIdAndSampleTypeIdAndLabSystemApiKey(Long paramId,
