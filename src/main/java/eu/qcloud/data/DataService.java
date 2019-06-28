@@ -1033,20 +1033,26 @@ public class DataService {
 						.add(generatePlotTracePointFromData(d));
 			}
 		}
-		Float median = getMid(data);
-		List<File> files = fileRepository
-		.findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(
-			labSystemApiKey, sampleTypeQCCV, startDate, endDate);
-			files.forEach(file -> {
-				List<Data> dataError = dataRepository.findByFileIdAndParamId(file.getId(), new Long(2));
-				if (dataError.size() == 0) {
-					if (!traces.containsKey("ERROR")) {
-						traces.put("ERROR", generatePlotTraceError(contextSourceRepository.findById(new Long(97)).get()));	// Id 97 is error CS
+		/**
+		 * TODO Remove the harcoded 1l and use DB to determine if the error trace has to be shown
+		 * 
+		 * THis adds the trace error, this only appears if the plot to draw is about th param Peak Area (id 1 in the DB)
+		 */
+		if (chart.get().getParam().getId().equals(1l)) {
+			Float median = getMid(data);
+			List<File> files = fileRepository
+			.findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(
+				labSystemApiKey, sampleTypeQCCV, startDate, endDate);
+				files.forEach(file -> {
+					List<Data> dataError = dataRepository.findByFileIdAndParamId(file.getId(), new Long(2));
+					if (dataError.size() == 0) {
+						if (!traces.containsKey("ERROR")) {
+							traces.put("ERROR", generatePlotTraceError(contextSourceRepository.findById(new Long(97)).get()));	// Id 97 is error CS
+						}
+						traces.get("ERROR").getPlotTracePoints().add(generatePlotTracePointError(file, median));
 					}
-					traces.get("ERROR").getPlotTracePoints().add(generatePlotTracePointError(file, median));
-				}
-			});
-			
+				});
+		}
 		List<PlotTrace> plotTraces = traces.toList();
 		Collections.sort(plotTraces);
 		checkTracesForTraceColor(plotTraces);
