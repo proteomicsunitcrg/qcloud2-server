@@ -38,6 +38,8 @@ import eu.qcloud.threshold.InstrumentStatus;
 import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdRepo;
 import eu.qcloud.threshold.ThresholdType;
+import eu.qcloud.threshold.communitythresholds.CommunityThreshold;
+import eu.qcloud.threshold.communitythresholds.CommunityThresholdsRepository;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThresholdRepository;
 import eu.qcloud.threshold.labsystemstatus.LabSystemStatus;
@@ -76,6 +78,9 @@ public class ThresholdUtils {
 	private HardLimitThresholdRepository hardLimitThresholdRepository;
 
 	@Autowired
+	private CommunityThresholdsRepository communityThresholdRepository;
+
+	@Autowired
 	private ThresholdParamsRepository thresholdParamsRepository;
 
 	@Autowired
@@ -88,7 +93,7 @@ public class ThresholdUtils {
 	private EntityManager entityManager;
 
 	private final Log logger = LogFactory.getLog(this.getClass());
-	
+
 	@Value("${qcloud.instrument-status.max-offline-hours}")
 	private int maxOfflineHours;
 
@@ -243,6 +248,14 @@ public class ThresholdUtils {
 					labSystemHardLimitThreshold.setApiKey(UUID.randomUUID());
 					saveThresholdParams(labSystemHardLimitThreshold);
 					return labSystemHardLimitThreshold;
+				case COMM1:
+					entityManager.detach(t.get());
+					t.get().setId(null);
+					Threshold labSystemCommunityThreshold = saveCommunityThreshold((CommunityThreshold) t.get());
+					entityManager.detach(labSystemCommunityThreshold);
+					labSystemCommunityThreshold.setApiKey(UUID.randomUUID());
+					saveThresholdParams(labSystemCommunityThreshold);
+					return labSystemCommunityThreshold;
 				case SIGMA:
 					entityManager.detach(t.get());
 					t.get().setId(null);
@@ -273,6 +286,11 @@ public class ThresholdUtils {
 	private Threshold saveHardLimitThreshold(HardLimitThreshold threshold) {
 		threshold.setApiKey(UUID.randomUUID());
 		return hardLimitThresholdRepository.save(threshold);
+	}
+
+	private Threshold saveCommunityThreshold(CommunityThreshold threshold) {
+		threshold.setApiKey(UUID.randomUUID());
+		return communityThresholdRepository.save(threshold);
 	}
 
 	private static final float log2(float f) {
@@ -366,7 +384,7 @@ public class ThresholdUtils {
 
 		return ls;
 	}
-	
+
 	public LabSystemStatus createOfflineThresholdNonConformity(LabSystem labSystem) {
 		LabSystemStatus ls = new LabSystemStatus();
 		ls.setStatus(InstrumentStatus.OFFLINE);
@@ -388,7 +406,7 @@ public class ThresholdUtils {
 
 		return labSystemsStatus;
 	}
-	
+
 	public Date getOfflineDate() {
 		Date now = new Date();
 		Calendar cal = Calendar.getInstance();

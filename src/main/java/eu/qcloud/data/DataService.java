@@ -260,7 +260,6 @@ public class DataService {
 					SampleComposition concentration = sampleCompositionRepository
 							.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.getId(),
 									data.getContextSource().getId());
-
 					dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
 							concentration.getConcentration().toString(), data.getValue(),
 							data.getNonConformityStatus()));
@@ -458,7 +457,6 @@ public class DataService {
 							defaultThreshold.getCv().getId(), file.getLabSystem().getId()));
 		});
 		List<ThresholdParams> params = new ArrayList<>();
-
 		nodeThresholds.forEach(nodeThreshold -> {
 			nodeThreshold.getThresholdParams().forEach(tp -> {
 

@@ -15,7 +15,7 @@ public class ThresholdForPlotFactory {
 		
 		return new ThresholdForPlotImpl(threshold.getThresholdType(),
 				threshold.getDirection(),
-				threshold.getNonConformityDirection(), threshold.getSteps(), threshold.isMonitored(), params);
+				threshold.getNonConformityDirection(), threshold.getSteps(), threshold.isMonitored(), params, threshold.isCommFeat());
 	}
 
 }
