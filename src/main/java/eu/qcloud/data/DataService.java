@@ -1037,8 +1037,10 @@ public class DataService {
 		 * TODO Remove the harcoded 1l and use DB to determine if the error trace has to be shown
 		 * 
 		 * THis adds the trace error, this only appears if the plot to draw is about th param Peak Area (id 1 in the DB)
+		 * 
+		 * Do this 4 the sample type too
 		 */
-		if (chart.get().getParam().getId().equals(1l)) {
+		if (chart.get().getParam().getId().equals(1l) && sampleType.get().getId().equals(1l)) {
 			Float median = getMid(data);
 			List<File> files = fileRepository
 			.findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(
