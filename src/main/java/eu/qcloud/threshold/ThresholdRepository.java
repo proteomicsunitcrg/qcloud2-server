@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -83,6 +84,13 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	
 	@Query("select t from Threshold t where t.param.id = ?1 and t.sampleType.id = ?2 and t.labSystem.id = ?3 and t.isEnabled = 1")
 	public Threshold findThresholdByParamIdAndSampleTypeIdAndLabSystemId(Long paramId, Long sampleTypeId, Long labSystemId);
+
+	@Query("select t from Threshold t where t.instrument.id = ?1 and t.sampleType.id = ?2 and t.param.id = ?3 and t.isEnabled = 1")
+	public List<Threshold> findByParamIdAndCVIdAndSampletypeId(Long cvid, Long sampleTypeId, Long paramId);
+
+	@Query(value = "update threshold t set t.dtype = ?1 where t.id = ?2",nativeQuery = true)
+	@Modifying
+	public void updateDType(String dtype, Long thresholdId);
 	
 	/**
 	 * 

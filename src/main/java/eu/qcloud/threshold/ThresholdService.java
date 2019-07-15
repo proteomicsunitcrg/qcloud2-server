@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.Instrument.InstrumentRepository;
@@ -37,6 +38,7 @@ import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
 import eu.qcloud.threshold.communitythresholds.CommunityThreshold;
 import eu.qcloud.threshold.communitythresholds.CommunityThresholdsRepository;
+import eu.qcloud.threshold.constraint.ThresholdConstraint;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThresholdRepository;
 import eu.qcloud.threshold.labsystemstatus.LabSystemStatus;
@@ -44,6 +46,7 @@ import eu.qcloud.threshold.params.ThresholdParams;
 import eu.qcloud.threshold.params.ThresholdParamsId;
 import eu.qcloud.threshold.params.ThresholdParamsRepository;
 import eu.qcloud.threshold.params.ThresholdParamsRepository.paramsNoThreshold;
+import eu.qcloud.threshold.processor.SigmaProcessor;
 import eu.qcloud.threshold.sigma.SigmaThreshold;
 import eu.qcloud.threshold.sigma.SigmaThresholdRepository;
 import eu.qcloud.threshold.sigmalog2threshold.SigmaLog2Threshold;
@@ -207,7 +210,7 @@ public class ThresholdService {
 			st.setApiKey(UUID.randomUUID());
 			return saveSigmaThreshold(st);
 		case COMM1:
-		System.out.println("case comm");
+			System.out.println("case comm");
 			CommunityThreshold ct = new CommunityThreshold();
 			ct.setCv(instrument.get());
 			ct.setName(threshold.getName());
@@ -402,10 +405,10 @@ public class ThresholdService {
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
 				return labSystemStatus;
 			}
-			if(lastFile.getCreationDate().before(thresholdUtils.getOfflineDate())) {
+			if (lastFile.getCreationDate().before(thresholdUtils.getOfflineDate())) {
 				continue;
 			}
-			if(!isLastFileValid(lastFile) && lastFile.getCreationDate().after(thresholdUtils.getOfflineDate())) {
+			if (!isLastFileValid(lastFile) && lastFile.getCreationDate().after(thresholdUtils.getOfflineDate())) {
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
 				// labSystemStatus.add(thresholdUtils.createPipelineErrorThresholdNonConformity(lastFile));
 			}
@@ -418,7 +421,7 @@ public class ThresholdService {
 	}
 
 	public boolean isLastFileValid(File f) {
-		List <Data> data = datarepository.findByFileIdAndParamId(f.getId(), 2l);
+		List<Data> data = datarepository.findByFileIdAndParamId(f.getId(), 2l);
 		if (data.size() == 0) {
 			return false;
 		} else {
@@ -488,6 +491,63 @@ public class ThresholdService {
 		tp.setIsEnabled(!tp.getIsEnabled());
 		thresholdParamsRepository.save(tp);
 
+	}
+
+	/**
+	 * Updates a threshold
+	 * 
+	 * @param thresholdNew the new threshod values
+	 * @return thresholdNew in case everything ok
+	 */
+	@Transactional
+	public Threshold editThreshold(Threshold thresholdNew) {
+		Param thresholdParam = paramRepository.findByQccv(thresholdNew.getParam().getqCCV());
+		List <Threshold> allThres = thresholdRepository.findByParamIdAndCVIdAndSampletypeId(thresholdNew.getCv().getId(), thresholdNew.getSampleType().getId(), thresholdParam.getId());
+		System.out.println(allThres.size());
+		for (Threshold thres : allThres) {
+			System.out.println(thres.getThresholdType());
+			thres.setName(thresholdNew.getName());
+			thres.setThresholdType(thresholdNew.getThresholdType());
+			thres.setDirection(thresholdNew.getDirection());
+			thres.setNonConformityDirection(thresholdNew.getNonConformityDirection());
+			thres.setSteps(thresholdNew.getSteps());
+			System.out.println(thres.getThresholdType());
+			switch (thres.getThresholdType()) {
+				case SIGMA:
+					System.out.println("ama sigma");
+					thres.setDirection(Direction.UP);
+					thres.setProcessor(new SigmaProcessor());
+					thres.setAdminThresholdConstraint(new ThresholdConstraint(false,false,false,true,false,false));
+					thres.setManagerThresholdConstraint(new ThresholdConstraint(false,false,false,false,false,false));
+					thres.setThresholdType(ThresholdType.SIGMA);
+					thres.setCommFeat(false);
+					thresholdRepository.updateDType("sigma", thres.getId());
+					break;
+				case SIGMALOG2:
+					System.out.println("ama sigmaLog");
+					thres.setDirection(Direction.DOWN);
+					thres.setAdminThresholdConstraint(new ThresholdConstraint(false,false,false,true,false,false));
+					thres.setManagerThresholdConstraint(new ThresholdConstraint(false,false,false,false,false,false));
+					thres.setThresholdType(ThresholdType.SIGMALOG2);
+					thres.setCommFeat(false);
+					thresholdRepository.updateDType("sigmalog2", thres.getId());
+					break;
+				case HARDLIMIT:
+					System.out.println("ama hardlimito");
+					thres.setDirection(Direction.UPDOWN);
+					thres.setAdminThresholdConstraint(new ThresholdConstraint(false,false,false,true,true,true));
+					thres.setManagerThresholdConstraint(new ThresholdConstraint(false,false,false,false,true,true));
+					thres.setThresholdType(ThresholdType.HARDLIMIT);
+					thres.setCommFeat(false);
+					thresholdRepository.updateDType("hard_limit", thres.getId());
+					break;
+				default:
+					System.out.println("default");
+					break;
+			}
+			thresholdRepository.save(thres);
+		}
+		return thresholdNew;
 	}
 
 }

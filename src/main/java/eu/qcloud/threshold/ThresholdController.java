@@ -149,6 +149,12 @@ public class ThresholdController {
 		thresholdService.saveThresholdParams(thresholdParams);
 	}
 
+	@RequestMapping(value = "api/threshold/editThreshold", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public Threshold editThreshold(@RequestBody Threshold threshold) {
+		return thresholdService.editThreshold(threshold);
+	}
+
 	/**
 	 * Return the constraints for a given threshold type
 	 * 
