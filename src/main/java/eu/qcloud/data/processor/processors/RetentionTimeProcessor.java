@@ -28,12 +28,9 @@ public class RetentionTimeProcessor extends Processor {
 		for(Data d: guideSetData) {
 			if(guideSetValues.containsKey(d.getContextSource().getAbbreviated())) {
 				if(d.getValue()!=0f) {
-					System.out.println("VALUE: " + d.getValue());
 					guideSetValues.get(d.getContextSource().getAbbreviated()).add(d.getValue());
-					System.out.println(	guideSetValues.get(d.getContextSource().getAbbreviated()).add(d.getValue()));
 				}
 			}else {
-				System.out.println("ELSE");
 				guideSetValues.put(d.getContextSource().getAbbreviated(), new ArrayList<>());
 				guideSetValues.get(d.getContextSource().getAbbreviated()).add(d.getValue());
 			}
@@ -45,9 +42,7 @@ public class RetentionTimeProcessor extends Processor {
 		HashMap<String, Float> means = new HashMap<>();
 		
 		for(Map.Entry<String, ArrayList<Float>> entry: guideSetValues.entrySet()) {
-			System.out.println("Entry" + entry.getKey());
 			means.put(entry.getKey(), calculateMeanOfArrayList(entry.getValue()));
-			System.out.println("Entry val: " + calculateMeanOfArrayList(entry.getValue()));
 		}
 		
 		for(DataForPlot d: this.data) {
@@ -61,10 +56,7 @@ public class RetentionTimeProcessor extends Processor {
 				d.setValue(Float.NaN);
 				continue;
 			}
-			System.out.println("CS NAME" + d.getContextSourceName());
-			System.out.println("MEAN HASH: " + Arrays.asList(means));
 			Float nV = (value-means.get(d.getContextSourceName()))/60;
-			System.out.println("MEAAAAAAAAAAAAAAAAAAAAAAAAAAN: " + means.get(d.getContextSourceName()));
 			if(nV.isNaN()) {
 				//d.setValue(Float.NaN);
 				continue;

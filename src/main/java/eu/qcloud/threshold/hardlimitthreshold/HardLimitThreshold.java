@@ -18,7 +18,6 @@ public class HardLimitThreshold extends Threshold {
 		this.adminThresholdConstraint = new ThresholdConstraint(false,false,false,true,true,true);
 		this.managerThresholdConstraint = new ThresholdConstraint(false,false,false,false,true,true);
 		this.thresholdType = ThresholdType.HARDLIMIT;
-		this.setCommFeat(false);
 	}
 
 }

@@ -38,8 +38,6 @@ import eu.qcloud.threshold.InstrumentStatus;
 import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdRepo;
 import eu.qcloud.threshold.ThresholdType;
-import eu.qcloud.threshold.communitythresholds.CommunityThreshold;
-import eu.qcloud.threshold.communitythresholds.CommunityThresholdsRepository;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThresholdRepository;
 import eu.qcloud.threshold.labsystemstatus.LabSystemStatus;
@@ -78,9 +76,6 @@ public class ThresholdUtils {
 	private HardLimitThresholdRepository hardLimitThresholdRepository;
 
 	@Autowired
-	private CommunityThresholdsRepository communityThresholdRepository;
-
-	@Autowired
 	private ThresholdParamsRepository thresholdParamsRepository;
 
 	@Autowired
@@ -111,8 +106,6 @@ public class ThresholdUtils {
 		Optional<ManualGuideSet> mg = manualGuideSetRepository.findById(file.getGuideSet().getId());
 
 		if (mg.isPresent()) {
-			System.out.println("is present");
-			System.out.println("Guideset id: " + mg.get().getId());
 			return mg.get();
 		}
 
@@ -248,14 +241,6 @@ public class ThresholdUtils {
 					labSystemHardLimitThreshold.setApiKey(UUID.randomUUID());
 					saveThresholdParams(labSystemHardLimitThreshold);
 					return labSystemHardLimitThreshold;
-				case COMM1:
-					entityManager.detach(t.get());
-					t.get().setId(null);
-					Threshold labSystemCommunityThreshold = saveCommunityThreshold((CommunityThreshold) t.get());
-					entityManager.detach(labSystemCommunityThreshold);
-					labSystemCommunityThreshold.setApiKey(UUID.randomUUID());
-					saveThresholdParams(labSystemCommunityThreshold);
-					return labSystemCommunityThreshold;
 				case SIGMA:
 					entityManager.detach(t.get());
 					t.get().setId(null);
@@ -286,11 +271,6 @@ public class ThresholdUtils {
 	private Threshold saveHardLimitThreshold(HardLimitThreshold threshold) {
 		threshold.setApiKey(UUID.randomUUID());
 		return hardLimitThresholdRepository.save(threshold);
-	}
-
-	private Threshold saveCommunityThreshold(CommunityThreshold threshold) {
-		threshold.setApiKey(UUID.randomUUID());
-		return communityThresholdRepository.save(threshold);
 	}
 
 	private static final float log2(float f) {

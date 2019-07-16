@@ -8,7 +8,6 @@ import eu.qcloud.threshold.params.ThresholdParams;
 public class SigmaProcessor extends ThresholdProcessor {
 	@Override
 	public void process(ThresholdParams thresholdParam) {
-		System.out.println("using sigma processor");
 		// get the data
 		
 		DescriptiveStatistics ds = new DescriptiveStatistics();

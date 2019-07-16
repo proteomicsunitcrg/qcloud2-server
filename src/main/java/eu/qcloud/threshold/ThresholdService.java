@@ -36,8 +36,6 @@ import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 import eu.qcloud.threshold.ThresholdRepository.ThresholdForPlot;
 import eu.qcloud.threshold.ThresholdRepository.withParamsWithoutThreshold;
-import eu.qcloud.threshold.communitythresholds.CommunityThreshold;
-import eu.qcloud.threshold.communitythresholds.CommunityThresholdsRepository;
 import eu.qcloud.threshold.constraint.ThresholdConstraint;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThreshold;
 import eu.qcloud.threshold.hardlimitthreshold.HardLimitThresholdRepository;
@@ -71,9 +69,6 @@ public class ThresholdService {
 
 	@Autowired
 	private HardLimitThresholdRepository hardLimitThresholdRepository;
-
-	@Autowired
-	private CommunityThresholdsRepository communityThresholdsRepository;
 
 	@Autowired
 	private LabSystemRepository labSystemRepository;
@@ -130,10 +125,6 @@ public class ThresholdService {
 
 	public Threshold saveHardLimitThreshold(HardLimitThreshold threshold) {
 		return hardLimitThresholdRepository.save(threshold);
-	}
-
-	public Threshold saveCommunityThreshold(CommunityThreshold threshold) {
-		return communityThresholdsRepository.save(threshold);
 	}
 
 	/**
@@ -209,19 +200,6 @@ public class ThresholdService {
 			st.setNonConformityDirection(threshold.getNonConformityDirection());
 			st.setApiKey(UUID.randomUUID());
 			return saveSigmaThreshold(st);
-		case COMM1:
-			System.out.println("case comm");
-			CommunityThreshold ct = new CommunityThreshold();
-			ct.setCv(instrument.get());
-			ct.setName(threshold.getName());
-			ct.setSteps(threshold.getSteps());
-			ct.setParam(p);
-			ct.setSampleType(sampleType.get());
-			ct.setNonConformityDirection(threshold.getNonConformityDirection());
-			ct.setEnabled(true);
-			ct.setMonitored(true);
-			ct.setApiKey(UUID.randomUUID());
-			return saveCommunityThreshold(ct);
 		default:
 			return null;
 		}
@@ -503,46 +481,36 @@ public class ThresholdService {
 	public Threshold editThreshold(Threshold thresholdNew) {
 		Param thresholdParam = paramRepository.findByQccv(thresholdNew.getParam().getqCCV());
 		List <Threshold> allThres = thresholdRepository.findByParamIdAndCVIdAndSampletypeId(thresholdNew.getCv().getId(), thresholdNew.getSampleType().getId(), thresholdParam.getId());
-		System.out.println(allThres.size());
 		for (Threshold thres : allThres) {
-			System.out.println(thres.getThresholdType());
 			thres.setName(thresholdNew.getName());
 			thres.setThresholdType(thresholdNew.getThresholdType());
 			thres.setDirection(thresholdNew.getDirection());
 			thres.setNonConformityDirection(thresholdNew.getNonConformityDirection());
 			thres.setSteps(thresholdNew.getSteps());
-			System.out.println(thres.getThresholdType());
 			switch (thres.getThresholdType()) {
 				case SIGMA:
-					System.out.println("ama sigma");
 					thres.setDirection(Direction.UP);
 					thres.setProcessor(new SigmaProcessor());
 					thres.setAdminThresholdConstraint(new ThresholdConstraint(false,false,false,true,false,false));
 					thres.setManagerThresholdConstraint(new ThresholdConstraint(false,false,false,false,false,false));
 					thres.setThresholdType(ThresholdType.SIGMA);
-					thres.setCommFeat(false);
 					thresholdRepository.updateDType("sigma", thres.getId());
 					break;
 				case SIGMALOG2:
-					System.out.println("ama sigmaLog");
 					thres.setDirection(Direction.DOWN);
 					thres.setAdminThresholdConstraint(new ThresholdConstraint(false,false,false,true,false,false));
 					thres.setManagerThresholdConstraint(new ThresholdConstraint(false,false,false,false,false,false));
 					thres.setThresholdType(ThresholdType.SIGMALOG2);
-					thres.setCommFeat(false);
 					thresholdRepository.updateDType("sigmalog2", thres.getId());
 					break;
 				case HARDLIMIT:
-					System.out.println("ama hardlimito");
 					thres.setDirection(Direction.UPDOWN);
 					thres.setAdminThresholdConstraint(new ThresholdConstraint(false,false,false,true,true,true));
 					thres.setManagerThresholdConstraint(new ThresholdConstraint(false,false,false,false,true,true));
 					thres.setThresholdType(ThresholdType.HARDLIMIT);
-					thres.setCommFeat(false);
 					thresholdRepository.updateDType("hard_limit", thres.getId());
 					break;
 				default:
-					System.out.println("default");
 					break;
 			}
 			thresholdRepository.save(thres);

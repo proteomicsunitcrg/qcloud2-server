@@ -27,8 +27,6 @@ public class ThresholdForPlotImpl {
 	private boolean isMonitored;
 	
 	private List<ParamsNoThresholdImpl> thresholdParams;
-
-	private boolean isCommFeat;
 	
 	public ThresholdType getThresholdType() {
 		return thresholdType;
@@ -78,23 +76,14 @@ public class ThresholdForPlotImpl {
 		this.thresholdParams = thresholdParams;
 	}
 
-	public boolean isCommFeat() {
-		return isCommFeat;
-	}
-
-	public void setCommFeat(boolean isCommFeat) {
-		this.isCommFeat = isCommFeat;
-	}
-
 	public ThresholdForPlotImpl(ThresholdType thresholdType, Direction direction, Direction nonConformityDirection,
-			int steps, boolean isMonitored, List<ParamsNoThresholdImpl> thresholdParams, boolean isCommFeat) {
+			int steps, boolean isMonitored, List<ParamsNoThresholdImpl> thresholdParams) {
 		this.thresholdType = thresholdType;
 		this.direction = direction;
 		this.nonConformityDirection = nonConformityDirection;
 		this.steps = steps;
 		this.isMonitored = isMonitored;
 		this.thresholdParams = thresholdParams;
-		this.isCommFeat = isCommFeat;
 	}
 	
 	

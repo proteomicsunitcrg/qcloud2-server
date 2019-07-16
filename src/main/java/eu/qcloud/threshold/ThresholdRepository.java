@@ -114,7 +114,6 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 		List<paramsNoThreshold> getThresholdParams();
 		Direction getNonConformityDirection();
 		Boolean getIsMonitored();
-		boolean isCommFeat();
 		// Boolean getIsZeroNoData();
 	}
 	
