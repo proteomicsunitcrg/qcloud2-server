@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -25,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.contextSource.ContextSource;
+import eu.qcloud.node.Node;
 import eu.qcloud.param.Param;
 import eu.qcloud.sampleType.SampleType;
 
@@ -64,6 +66,9 @@ public class CommunityLine {
 
     @Column(name = "value")
     private float value;
+
+    @ManyToMany
+    private List<Node> nodes;
 
     public long getId() {
         return id;
@@ -158,6 +163,27 @@ public class CommunityLine {
         return "CommunityLine [apiKey=" + apiKey + ", contextSource=" + contextSource + ", id=" + id + ", instrument="
                 + instrument + ", name=" + name + ", param=" + param + ", sampleType=" + sampleType + ", value=" + value
                 + "]";
+    }
+
+    public List<Node> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(List<Node> nodes) {
+        this.nodes = nodes;
+    }
+
+    public CommunityLine(long id, UUID apiKey, String name, Instrument instrument, Param param, SampleType sampleType,
+            ContextSource contextSource, float value, List<Node> nodes) {
+        this.id = id;
+        this.apiKey = apiKey;
+        this.name = name;
+        this.instrument = instrument;
+        this.param = param;
+        this.sampleType = sampleType;
+        this.contextSource = contextSource;
+        this.value = value;
+        this.nodes = nodes;
     }
 
 }

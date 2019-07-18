@@ -69,6 +69,13 @@ public class NodeController {
 		return new BCryptPasswordEncoder();
 	}
 
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "/api/node/allNoFiles")
+	public List<Node> getAllNoFiles() {
+		return nodeService.getAllNodesNoFiles();
+	}
+
 	/**
 	 * Add a new node with a manager user to the database
 	 * 
@@ -305,6 +312,7 @@ public class NodeController {
 	public User getUserByUuid(@PathVariable UUID userUuidString) {
 		return userService.getUserByUuid(userUuidString);
 	}
+
 
 	/*
 	 * Helper classes

@@ -81,4 +81,8 @@ public class NodeService {
 		return list;
 	}
 
+	public List<Node> getAllNodesNoFiles() {
+		return this.nodeRepository.findAll();
+	}
+
 }

@@ -27,6 +27,8 @@ public interface NodeRepository extends CrudRepository<Node, Long> {
 	
 	@Query("SELECT n FROM Node n ")
 	public List<OnlyNodeName> getNodes();
+
+	public List<Node> findAll();
 	
 	public interface OnlyNodeName {
 		String getName();
