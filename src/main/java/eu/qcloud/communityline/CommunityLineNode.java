@@ -42,7 +42,7 @@ public class CommunityLineNode {
         this.communityLine = communityLine;
     }
     @ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "node_id", referencedColumnName = "id")  //TODO CHECK THIS IF NOT WORKS REMOVE referenced and put id in name
+	@JoinColumn(name = "id")  //TODO CHECK THIS IF NOT WORKS REMOVE referenced and put id in name
     public Node getNode() {
         return node;
     }

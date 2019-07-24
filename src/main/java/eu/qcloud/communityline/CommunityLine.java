@@ -27,6 +27,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import eu.qcloud.Instrument.Instrument;
@@ -168,7 +169,7 @@ public class CommunityLine {
                 + instrument + ", name=" + name + ", param=" + param + ", sampleType=" + sampleType + ", value=" + value
                 + "]";
     }
-
+    @JsonIgnore
     public Set<CommunityLineNode> getCommunityLineNode() {
         return communityLineNode;
     }

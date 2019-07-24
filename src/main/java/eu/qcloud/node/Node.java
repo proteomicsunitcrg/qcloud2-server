@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.communityline.CommunityLine;
 import eu.qcloud.communityline.CommunityLineNode;
@@ -104,6 +105,7 @@ public class Node {
 	public void setName(String name) {
 		this.name = name;
 	}
+	@JsonIgnore
 	public Set<CommunityLineNode> getCommunityLine() {
 		return communityLineNode;
 	}

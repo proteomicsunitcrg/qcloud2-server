@@ -1,5 +1,6 @@
 package eu.qcloud.userDefaultView;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -31,7 +32,7 @@ public class UserDefaultView {
 	@JoinColumn(name="view_id",insertable=true, updatable= true, nullable = true)
 	private View view;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="lab_system_id",insertable=true, updatable= true, nullable = true)
 	private LabSystem labSystem;
 
