@@ -4,7 +4,9 @@
  */
 package eu.qcloud.node;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -21,7 +23,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import eu.qcloud.communityline.CommunityLine;
-import eu.qcloud.communityline.CommunityLineNodeRelation;
+import eu.qcloud.communityline.CommunityLineNode;
 import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.security.model.User;
 
@@ -33,7 +35,6 @@ public class Node {
 	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "node_seq")
 	@SequenceGenerator(name = "node_seq", sequenceName = "node_seq", allocationSize = 1)
-	@JsonBackReference(value = "id")
 	private Long id;
 
 	@Column(name = "apiKey", updatable = false, nullable = false, unique = true, columnDefinition = "BINARY(16)")
@@ -72,10 +73,9 @@ public class Node {
 	public List<User> getUsers() {
 		return users;
 	}
-
-	@JsonBackReference(value = "communityLine")
-	@OneToMany(mappedBy = "communityLine", cascade = CascadeType.ALL)
-	private List<CommunityLineNodeRelation> communityLine;
+	
+	@OneToMany(mappedBy = "node")
+	private Set<CommunityLineNode> communityLineNode = new HashSet<CommunityLineNode>();
 
 	public void setUsers(List<User> users) {
 		this.users = users;
@@ -104,24 +104,23 @@ public class Node {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public List<CommunityLineNodeRelation> getCommunityLine() {
-		return communityLine;
+	public Set<CommunityLineNode> getCommunityLine() {
+		return communityLineNode;
 	}
 
-	public void setCommunityLine(List<CommunityLineNodeRelation> communityLines) {
-		this.communityLine = communityLines;
+	public void setCommunityLine(Set<CommunityLineNode> communityLines) {
+		this.communityLineNode = communityLines;
 	}
 
 	public Node(Long id, UUID apiKey, String country, @NotNull String name, List<DataSource> dataSource,
-			List<User> users, List<CommunityLineNodeRelation> communityLines) {
+			List<User> users, Set<CommunityLineNode> communityLines) {
 		this.id = id;
 		this.apiKey = apiKey;
 		this.country = country;
 		this.name = name;
 		this.dataSource = dataSource;
 		this.users = users;
-		this.communityLine = communityLines;
+		this.communityLineNode = communityLines;
 	}
 
 	public Node() {

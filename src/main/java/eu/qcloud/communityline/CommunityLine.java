@@ -2,9 +2,12 @@ package eu.qcloud.communityline;
 
 import javax.persistence.Id;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -34,13 +37,11 @@ import eu.qcloud.sampleType.SampleType;
 
 @Entity
 @Table(name = "community_line")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class CommunityLine {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "community_line_id")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "community_line_seq")
-    @JsonBackReference(value = "id")
     @SequenceGenerator(name = "community_line_seq", sequenceName = "community_line_seq", allocationSize = 1)
     private Long id;
 
@@ -69,10 +70,9 @@ public class CommunityLine {
 
     @Column(name = "value")
     private float value;
-
-    @JsonBackReference(value = "node")
-    @OneToMany(mappedBy = "node", fetch = FetchType.EAGER)
-    private List<CommunityLineNodeRelation> node;
+    
+    @OneToMany(mappedBy = "communityLine")
+    private Set<CommunityLineNode> communityLineNode = new HashSet<CommunityLineNode>();
 
     public Long getId() {
         return id;
@@ -166,19 +166,19 @@ public class CommunityLine {
     public String toString() {
         return "CommunityLine [apiKey=" + apiKey + ", contextSource=" + contextSource + ", id=" + id + ", instrument="
                 + instrument + ", name=" + name + ", param=" + param + ", sampleType=" + sampleType + ", value=" + value
-                + ", nodes=" + node.get(0).getNode().getName() + "]";
+                + "]";
     }
 
-    public List<CommunityLineNodeRelation> getNode() {
-        return node;
+    public Set<CommunityLineNode> getCommunityLineNode() {
+        return communityLineNode;
     }
 
-    public void setNode(List<CommunityLineNodeRelation> nodes) {
-        this.node = nodes;
+    public void setCommunityLineNode(Set<CommunityLineNode> communityLineNode) {
+        this.communityLineNode = communityLineNode;
     }
 
     public CommunityLine(Long id, UUID apiKey, String name, Instrument instrument, Param param, SampleType sampleType,
-            ContextSource contextSource, float value, List<CommunityLineNodeRelation> node) {
+            ContextSource contextSource, float value, Set<CommunityLineNode> communityLineNode) {
         this.id = id;
         this.apiKey = apiKey;
         this.name = name;
@@ -187,7 +187,7 @@ public class CommunityLine {
         this.sampleType = sampleType;
         this.contextSource = contextSource;
         this.value = value;
-        this.node = node;
+        this.communityLineNode = communityLineNode;
     }
 
 }
