@@ -20,12 +20,16 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.chart.Chart;
 import eu.qcloud.chart.ChartRepository;
 import eu.qcloud.chart.chartParams.ChartParams;
 import eu.qcloud.chart.chartParams.ChartParamsRepository;
+import eu.qcloud.communityline.CommunityLineNode;
+import eu.qcloud.communityline.CommunityLineNodeRepository;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.contextSource.ContextSourceRepository;
 import eu.qcloud.contextSource.instrumentSample.InstrumentSample;
@@ -52,6 +56,8 @@ import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSampl
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
+import eu.qcloud.security.model.User;
+import eu.qcloud.security.service.UserService;
 import eu.qcloud.threshold.Direction;
 import eu.qcloud.threshold.InstrumentStatus;
 import eu.qcloud.threshold.Threshold;
@@ -126,6 +132,12 @@ public class DataService {
 
 	@Autowired
 	private TraceColorRepository traceColorRepository;
+
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+	CommunityLineNodeRepository communityLineNodeRepository;
 
 	@Value("${qcloud.threshold.min-points-auto}")
 	private int minPointsAutoThreshold;
@@ -1055,11 +1067,41 @@ public class DataService {
 					}
 				});
 		}
+
+		List <CommunityLineNode> communityLinesNode = getCommunityLines();
+		System.out.println(communityLinesNode.size());
+		for (CommunityLineNode communityLineNode: communityLinesNode) {
+			System.out.println("looping");
+			if (chart.get().getParam().equals(communityLineNode.getCommunityLine().getParam()) && communityLineNode.isActive() && chart.get().getSampleType().equals(communityLineNode.getCommunityLine().getSampleType()) ) {
+				for (ChartParams chartParam: chartParams) {
+					if (chartParam.getContextSource().equals(communityLineNode.getCommunityLine().getContextSource())) {
+						System.out.println("IFING");
+						traces.put(communityLineNode.getCommunityLine().getName(), generateCommunityPlotTrace(communityLineNode));
+						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints().add(generatePlotTracePointComunity(startDate,communityLineNode.getCommunityLine().getValue(), communityLineNode.getCommunityLine().getName()));
+						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints().add(generatePlotTracePointComunity(endDate,communityLineNode.getCommunityLine().getValue(), communityLineNode.getCommunityLine().getName()));
+					}
+				}
+			}
+		}
+
 		List<PlotTrace> plotTraces = traces.toList();
 		Collections.sort(plotTraces);
 		checkTracesForTraceColor(plotTraces);
 		return plotTraces;
 	}
+
+
+	private List <CommunityLineNode> getCommunityLines() {
+		Node node = getManagerFromSecurityContext().getNode();
+		return communityLineNodeRepository.findAllByNodeId(node.getId());
+	}
+
+	private User getManagerFromSecurityContext() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User manager = userService.getUserByUsername(authentication.getName());
+		return manager;
+	}
+
 	private boolean isAllTraceNaN(List<Data> data) {
 		for (Data w : data) {
 			if (!Float.isNaN(w.getCalculatedValue())) {
@@ -1088,6 +1130,13 @@ public class DataService {
 		return new PlotTracePoint(f, value, InstrumentStatus.OFFLINE);
 	}
 
+	private PlotTracePoint generatePlotTracePointComunity(Date date, float value, String filename) {
+		File file = new File();
+		file.setCreationDate(date);
+		file.setFilename(filename);
+		return new PlotTracePoint(file, value, InstrumentStatus.OFFLINE);
+	}
+
 	private PlotTrace generateIsotopologuePlotTraceFromContextSource(ContextSource contextSource,
 			String concentration) {
 		PlotTrace plotTrace = new PlotTrace();
@@ -1114,6 +1163,15 @@ public class DataService {
 		plotTrace.setShade(cs.getShadeGrade());
 		plotTrace.setPlotTracePoints(new ArrayList<>());
 		plotTrace.setContextSourceId(cs.getId());
+		return plotTrace;
+	}
+
+	private PlotTrace generateCommunityPlotTrace(CommunityLineNode communityLineNode) {
+		PlotTrace plotTrace = new PlotTrace();
+		plotTrace.setAbbreviated(communityLineNode.getCommunityLine().getName());
+		plotTrace.setTraceColor(communityLineNode.getCommunityLine().getTraceColor());
+		plotTrace.setShade(0);
+		plotTrace.setPlotTracePoints(new ArrayList<>());
 		return plotTrace;
 	}
 

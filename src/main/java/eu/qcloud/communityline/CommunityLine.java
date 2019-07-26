@@ -35,6 +35,7 @@ import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.node.Node;
 import eu.qcloud.param.Param;
 import eu.qcloud.sampleType.SampleType;
+import eu.qcloud.traceColor.TraceColor;
 
 @Entity
 @Table(name = "community_line")
@@ -74,6 +75,10 @@ public class CommunityLine {
     
     @OneToMany(mappedBy = "communityLine")
     private Set<CommunityLineNode> communityLineNode = new HashSet<CommunityLineNode>();
+
+    @ManyToOne
+    @JoinColumn(name = "trace_color_id")
+    private TraceColor traceColor;
 
     public Long getId() {
         return id;
@@ -189,6 +194,14 @@ public class CommunityLine {
         this.contextSource = contextSource;
         this.value = value;
         this.communityLineNode = communityLineNode;
+    }
+
+    public TraceColor getTraceColor() {
+        return traceColor;
+    }
+
+    public void setTraceColor(TraceColor traceColor) {
+        this.traceColor = traceColor;
     }
 
 }

@@ -2,13 +2,17 @@
 package eu.qcloud.communityline;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import eu.qcloud.node.Node;
 
 /**
  * EmailController Main controller for email related operations
@@ -43,6 +47,18 @@ public class CommunityLineController {
 	@RequestMapping(value = "api/community/updateActive", method = RequestMethod.POST)
 	public CommunityLineNode updateActive (@RequestBody CommunityLineNode communityLineNodeRelation) {
 		return communityLineService.updateActive(communityLineNodeRelation);
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "api/community/getNodesInCommunityLineRelation/{id}", method = RequestMethod.GET)
+	public List<Node> updateActive (@PathVariable long id) {
+		return communityLineService.getNodesInCommunityLineRelation(id);
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "api/community/makeDeleteRelation/{nodeKey}/{lineKey}", method = RequestMethod.GET)
+	public boolean updateActive (@PathVariable UUID nodeKey,@PathVariable UUID lineKey) {
+		return communityLineService.makeDeleteRelation(nodeKey, lineKey);
 	}
 	
 
