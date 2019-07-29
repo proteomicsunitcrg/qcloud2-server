@@ -3,6 +3,7 @@ package eu.qcloud.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.qcloud.communitypartner.CommunityPartner;
 import eu.qcloud.traceColor.TraceColor;
 
 public class PlotTrace implements Comparable<PlotTrace>{
@@ -16,6 +17,8 @@ public class PlotTrace implements Comparable<PlotTrace>{
 	private List<PlotTracePoint> plotTracePoints;
 	
 	private Long contextSourceId;
+
+	private CommunityPartner communityPartner;
 
 	public PlotTrace() {
 		this.plotTracePoints = new ArrayList<>();
@@ -76,6 +79,14 @@ public class PlotTrace implements Comparable<PlotTrace>{
 
 	public void setContextSourceId(Long contextSourceId) {
 		this.contextSourceId = contextSourceId;
+	}
+
+	public CommunityPartner getCommunityPartner() {
+		return communityPartner;
+	}
+
+	public void setCommunityPartner(CommunityPartner communityPartner) {
+		this.communityPartner = communityPartner;
 	}
 
 }

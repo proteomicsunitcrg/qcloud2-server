@@ -31,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import eu.qcloud.Instrument.Instrument;
+import eu.qcloud.communitypartner.CommunityPartner;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.node.Node;
 import eu.qcloud.param.Param;
@@ -72,13 +73,17 @@ public class CommunityLine {
 
     @Column(name = "value")
     private float value;
-    
+
     @OneToMany(mappedBy = "communityLine")
     private Set<CommunityLineNode> communityLineNode = new HashSet<CommunityLineNode>();
 
     @ManyToOne
     @JoinColumn(name = "trace_color_id")
     private TraceColor traceColor;
+
+    @ManyToOne
+    @JoinColumn(name = "community_partner_id")
+    private CommunityPartner communityPartner;
 
     public Long getId() {
         return id;
@@ -174,6 +179,7 @@ public class CommunityLine {
                 + instrument + ", name=" + name + ", param=" + param + ", sampleType=" + sampleType + ", value=" + value
                 + "]";
     }
+
     @JsonIgnore
     public Set<CommunityLineNode> getCommunityLineNode() {
         return communityLineNode;
@@ -202,6 +208,30 @@ public class CommunityLine {
 
     public void setTraceColor(TraceColor traceColor) {
         this.traceColor = traceColor;
+    }
+
+    public CommunityPartner getCommunityPartner() {
+        return communityPartner;
+    }
+
+    public void setCommunityPartner(CommunityPartner communityPartner) {
+        this.communityPartner = communityPartner;
+    }
+
+    public CommunityLine(Long id, UUID apiKey, String name, Instrument instrument, Param param, SampleType sampleType,
+            ContextSource contextSource, float value, Set<CommunityLineNode> communityLineNode, TraceColor traceColor,
+            CommunityPartner communityPartner) {
+        this.id = id;
+        this.apiKey = apiKey;
+        this.name = name;
+        this.instrument = instrument;
+        this.param = param;
+        this.sampleType = sampleType;
+        this.contextSource = contextSource;
+        this.value = value;
+        this.communityLineNode = communityLineNode;
+        this.traceColor = traceColor;
+        this.communityPartner = communityPartner;
     }
 
 }

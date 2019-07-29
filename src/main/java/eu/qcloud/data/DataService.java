@@ -1071,14 +1071,14 @@ public class DataService {
 		List <CommunityLineNode> communityLinesNode = getCommunityLines();
 		System.out.println(communityLinesNode.size());
 		for (CommunityLineNode communityLineNode: communityLinesNode) {
-			System.out.println("looping");
 			if (chart.get().getParam().equals(communityLineNode.getCommunityLine().getParam()) && communityLineNode.isActive() && chart.get().getSampleType().equals(communityLineNode.getCommunityLine().getSampleType()) ) {
 				for (ChartParams chartParam: chartParams) {
 					if (chartParam.getContextSource().equals(communityLineNode.getCommunityLine().getContextSource())) {
-						System.out.println("IFING");
 						traces.put(communityLineNode.getCommunityLine().getName(), generateCommunityPlotTrace(communityLineNode));
-						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints().add(generatePlotTracePointComunity(startDate,communityLineNode.getCommunityLine().getValue(), communityLineNode.getCommunityLine().getName()));
-						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints().add(generatePlotTracePointComunity(endDate,communityLineNode.getCommunityLine().getValue(), communityLineNode.getCommunityLine().getName()));
+						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints().add(generatePlotTracePointCommunity(startDate,communityLineNode.getCommunityLine().getValue(), communityLineNode.getCommunityLine().getName()));
+						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints().add(generatePlotTracePointCommunity(endDate,communityLineNode.getCommunityLine().getValue(), communityLineNode.getCommunityLine().getName()));
+						traces.get(communityLineNode.getCommunityLine().getName()).setCommunityPartner(communityLineNode.getCommunityLine().getCommunityPartner());
+						traces.get(communityLineNode.getCommunityLine().getName()).setContextSourceId(10000l);
 					}
 				}
 			}
@@ -1130,7 +1130,7 @@ public class DataService {
 		return new PlotTracePoint(f, value, InstrumentStatus.OFFLINE);
 	}
 
-	private PlotTracePoint generatePlotTracePointComunity(Date date, float value, String filename) {
+	private PlotTracePoint generatePlotTracePointCommunity(Date date, float value, String filename) {
 		File file = new File();
 		file.setCreationDate(date);
 		file.setFilename(filename);
@@ -1169,7 +1169,7 @@ public class DataService {
 	private PlotTrace generateCommunityPlotTrace(CommunityLineNode communityLineNode) {
 		PlotTrace plotTrace = new PlotTrace();
 		plotTrace.setAbbreviated(communityLineNode.getCommunityLine().getName());
-		plotTrace.setTraceColor(communityLineNode.getCommunityLine().getTraceColor());
+		plotTrace.setTraceColor(communityLineNode.getCommunityLine().getContextSource().getTraceColor());
 		plotTrace.setShade(0);
 		plotTrace.setPlotTracePoints(new ArrayList<>());
 		return plotTrace;
