@@ -16,4 +16,6 @@ public interface CommunityLineRepository extends CrudRepository<CommunityLine, L
 
 	public CommunityLine findByApiKey(UUID apiKey);
 
+	public List<CommunityLine> findAllByCommunityPartnerId(Long id);
+
 }
