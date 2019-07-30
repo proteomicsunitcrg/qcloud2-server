@@ -128,5 +128,20 @@ public class CommunityLineService {
 		return false;
 	}
 
+	public boolean delete(Long id) {
+		List<CommunityLineNode> communityLineNodes = communityLineNodeRepository.findAllByCommunityLineId(id);
+		for(CommunityLineNode line : communityLineNodes) {
+			line.setNode(null); // before the delete we need to break the relation due to constraints
+			communityLineNodeRepository.save(line);
+			communityLineNodeRepository.delete(line);
+		}
+		try {
+			commLineRepository.deleteById(id);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 
 }

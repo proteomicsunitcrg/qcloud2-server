@@ -60,6 +60,12 @@ public class CommunityLineController {
 	public boolean updateActive (@PathVariable UUID nodeKey,@PathVariable UUID lineKey) {
 		return communityLineService.makeDeleteRelation(nodeKey, lineKey);
 	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "api/community/{id}", method = RequestMethod.DELETE)
+	public boolean delete (@PathVariable Long id) {
+		return communityLineService.delete(id);
+	}
 	
 
 }
