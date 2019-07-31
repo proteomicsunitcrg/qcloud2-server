@@ -10,12 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.node.Node;
 
 /**
- * EmailController Main controller for email related operations
+ * CommunityLine Main controller
  * 
  * @author Marc Serret <marc.serret@crg.eu>
  */
@@ -38,34 +39,40 @@ public class CommunityLineController {
 	}
 
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value = "api/community/getByNode", method = RequestMethod.GET) 
-	public List<CommunityLineNode> getByNode() {
-		return communityLineService.getByNodeId();
+	@RequestMapping(value = "api/community/getByNode", method = RequestMethod.GET)
+	public List<CommunityLineNode> getByNodeIdFromSecurityContext() {
+		return communityLineService.getByNodeIdFromSecurityContext();
 	}
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "api/community/updateActive", method = RequestMethod.POST)
-	public CommunityLineNode updateActive (@RequestBody CommunityLineNode communityLineNodeRelation) {
+	public CommunityLineNode updateActive(@RequestBody CommunityLineNode communityLineNodeRelation) {
 		return communityLineService.updateActive(communityLineNodeRelation);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "api/community/getNodesInCommunityLineRelation/{id}", method = RequestMethod.GET)
-	public List<Node> updateActive (@PathVariable long id) {
+	public List<Node> getNodesInCommunityLineRelation(@PathVariable long id) {
 		return communityLineService.getNodesInCommunityLineRelation(id);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = "api/community/makeDeleteRelation/{nodeKey}/{lineKey}", method = RequestMethod.GET)
-	public boolean updateActive (@PathVariable UUID nodeKey,@PathVariable UUID lineKey) {
-		return communityLineService.makeDeleteRelation(nodeKey, lineKey);
+	@RequestMapping(value = "api/community/makeDeleteRelation", method = RequestMethod.GET)
+	public boolean makeDeleteRelation(@RequestParam List<UUID> UUIDsNodes, @RequestParam UUID UUIDLine) {
+		return communityLineService.makeDeleteRelation(UUIDsNodes, UUIDLine);
+
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "api/community/deleteAllRelations/{id}", method = RequestMethod.GET)
+	public boolean deleteAllRelations(@PathVariable Long id) {
+		return communityLineService.deleteAllRelations(id);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "api/community/{id}", method = RequestMethod.DELETE)
-	public boolean delete (@PathVariable Long id) {
+	public boolean delete(@PathVariable Long id) {
 		return communityLineService.delete(id);
 	}
-	
 
 }

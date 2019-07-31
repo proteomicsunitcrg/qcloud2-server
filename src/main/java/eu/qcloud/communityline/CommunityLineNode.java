@@ -18,12 +18,12 @@ public class CommunityLineNode {
     private CommunityLine communityLine;
     private Node node;
 
-    //additional
+    // additional
     private boolean active;
-    
+
     @Id
-	@GeneratedValue
-	@Column(name = "community_line_node_id")	
+    @GeneratedValue
+    @Column(name = "community_line_node_id")
     public long getId() {
         return id;
     }
@@ -33,7 +33,7 @@ public class CommunityLineNode {
     }
 
     @ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "community_line_id")
+    @JoinColumn(name = "community_line_id")
     public CommunityLine getCommunityLine() {
         return communityLine;
     }
@@ -41,8 +41,9 @@ public class CommunityLineNode {
     public void setCommunityLine(CommunityLine communityLine) {
         this.communityLine = communityLine;
     }
+
     @ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "id")  //TODO CHECK THIS IF NOT WORKS REMOVE referenced and put id in name
+    @JoinColumn(name = "id") // TODO CHECK THIS IF NOT WORKS REMOVE referenced and put id in name
     public Node getNode() {
         return node;
     }
@@ -59,5 +60,13 @@ public class CommunityLineNode {
         this.active = active;
     }
 
-    
+    public CommunityLineNode(CommunityLine communityLine, Node node, boolean active) {
+        this.communityLine = communityLine;
+        this.node = node;
+        this.active = active;
+    }
+
+    public CommunityLineNode() {
+    }
+
 }
