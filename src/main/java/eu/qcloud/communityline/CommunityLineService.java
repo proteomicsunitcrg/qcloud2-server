@@ -59,7 +59,6 @@ public class CommunityLineService {
 	public List<CommunityLine> getAllCommunityLines() {
 		List<CommunityLine> allLines = new ArrayList<>();
 		commLineRepository.findAll().forEach(allLines::add);
-		System.out.println(allLines.get(0).toString());
 		return allLines;
 	}
 
@@ -75,15 +74,7 @@ public class CommunityLineService {
 		communityLine.setSampleType(sampleTypeRepository.findByQualityControlControlledVocabulary(
 				communityLine.getSampleType().getQualityControlControlledVocabulary()).get());
 		communityLine.setApiKey(UUID.randomUUID());
-		Optional<TraceColor> trace = traceColorRepository.findById(16l);
-		if (trace.isPresent()) {
-			communityLine.setTraceColor(trace.get());
-		} else { // TODO : Make a trace selector and remove this
-			TraceColor newTrace = new TraceColor();
-			newTrace.setApiKey(UUID.randomUUID());
-			newTrace.setMainColor("rgba(1, 1, 1, 1.0)");
-			communityLine.setTraceColor(traceColorRepository.save(newTrace));
-		}
+		communityLine.setTraceColor(traceColorRepository.findByApiKey(communityLine.getTraceColor().getApiKey()).get());
 		return commLineRepository.save(communityLine);
 	}
 
