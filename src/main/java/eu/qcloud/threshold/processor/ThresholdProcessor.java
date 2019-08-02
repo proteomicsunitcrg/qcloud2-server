@@ -10,14 +10,16 @@ import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.params.ThresholdParams;
 
 public class ThresholdProcessor implements Processor {
-	
+
 	protected Threshold threshold;
-	
+
 	protected GuideSet guideSet;
-	
+
 	protected List<Data> guideSetData;
-	
-	public ThresholdProcessor() {}
+
+	public ThresholdProcessor() {
+	}
+
 	@JsonIgnore
 	public List<Data> getGuideSetData() {
 		return guideSetData;
@@ -46,7 +48,7 @@ public class ThresholdProcessor implements Processor {
 	@Override
 	public void process(ThresholdParams thresholdParam) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -54,5 +56,5 @@ public class ThresholdProcessor implements Processor {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 }

@@ -23,7 +23,6 @@ public class UserRestController {
 
     @Autowired
     private UserDetailsService userDetailsService;
-    
 
     @RequestMapping(value = "user", method = RequestMethod.GET)
     public JwtUser getAuthenticatedUser(HttpServletRequest request) {
@@ -32,5 +31,5 @@ public class UserRestController {
         JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(username);
         return user;
     }
-    
+
 }

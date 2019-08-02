@@ -9,13 +9,15 @@ import eu.qcloud.view.ViewRepository.OnlyViewApiKey;
 
 @Repository
 public interface UserDefaultViewRepository extends CrudRepository<UserDefaultView, Long> {
-	
+
 	@Query("select u from UserDefaultView u where u.id = ?1")
 	SmallUserDefaultView findUserDefaultViewById(Long id);
 
 	interface SmallUserDefaultView {
 		ViewType getViewType();
+
 		LabSystem getLabSystem();
+
 		OnlyViewApiKey getView();
 	}
 }

@@ -69,7 +69,6 @@ public class NodeController {
 		return new BCryptPasswordEncoder();
 	}
 
-
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/api/node/allNoFiles")
 	public List<Node> getAllNoFiles() {
@@ -255,7 +254,6 @@ public class NodeController {
 	 * Development functions
 	 */
 
-
 	private void sendNewNodeHtmlEmail(User user) {
 		Mail mail = new Mail();
 		mail.setFrom("qcloud@crg.eu");
@@ -292,8 +290,6 @@ public class NodeController {
 		}
 	}
 
-	
-
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/node/info/{nodeUuidString}", method = RequestMethod.GET)
 	public Node getNodeByUuid(@PathVariable UUID nodeUuidString) {
@@ -312,7 +308,6 @@ public class NodeController {
 	public User getUserByUuid(@PathVariable UUID userUuidString) {
 		return userService.getUserByUuid(userUuidString);
 	}
-
 
 	/*
 	 * Helper classes

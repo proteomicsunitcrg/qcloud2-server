@@ -33,22 +33,22 @@ public class ViewService {
 
 	@Autowired
 	private ViewDisplayRepository viewDisplayRepository;
-	
+
 	@Autowired
 	private SampleTypeCategoryRepository sampleTypeCategoryRepository;
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private ChartRepository chartRepository;
-	
+
 	@Autowired
 	private LabSystemRepository labSystemRepository;
-	
+
 	@Autowired
 	private UserViewRepository userViewRepository;
-	
+
 	public List<View> getAllViews() {
 		List<View> views = new ArrayList<>();
 		viewRepository.findAll().forEach(views::add);
@@ -56,8 +56,9 @@ public class ViewService {
 	}
 
 	public View addView(View view) {
-		Optional<SampleTypeCategory> stc = sampleTypeCategoryRepository.findByApiKey(view.getSampleTypeCategory().getApiKey());
-		if(!stc.isPresent()) {
+		Optional<SampleTypeCategory> stc = sampleTypeCategoryRepository
+				.findByApiKey(view.getSampleTypeCategory().getApiKey());
+		if (!stc.isPresent()) {
 			throw new DataIntegrityViolationException("Sample type category not exists");
 		}
 		view.setSampleTypeCategory(stc.get());
@@ -70,35 +71,35 @@ public class ViewService {
 		for (ViewDisplay vd : layout) {
 			Optional<Chart> chart = chartRepository.findByApiKey(vd.getChart().getApiKey());
 			Optional<View> view = viewRepository.findOptionalByApiKey(vd.getView().getApiKey());
-			if(!chart.isPresent()) {
+			if (!chart.isPresent()) {
 				throw new DataIntegrityViolationException("Chart does not exists");
 			}
-			if(!view.isPresent()) {
+			if (!view.isPresent()) {
 				throw new DataIntegrityViolationException("View does not exists");
 			}
 			vd.setView(view.get());
 			vd.setChart(chart.get());
 			saved.add(viewDisplayRepository.save(vd));
 		}
-		if(saved.size() != layout.size()) {
+		if (saved.size() != layout.size()) {
 			return null;
 		}
 		return saved;
 	}
-	
+
 	public List<UserView> addUserViewDisplay(List<UserView> layout) {
 		List<UserView> saved = new ArrayList<>();
 		for (UserView vd : layout) {
 			Optional<Chart> chart = chartRepository.findByApiKey(vd.getChart().getApiKey());
 			Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(vd.getLabSystem().getApiKey());
 			Optional<View> view = viewRepository.findOptionalByApiKey(vd.getView().getApiKey());
-			if(!chart.isPresent()) {
+			if (!chart.isPresent()) {
 				throw new DataIntegrityViolationException("Chart does not exists");
 			}
-			if(!labSystem.isPresent()) {
+			if (!labSystem.isPresent()) {
 				throw new DataIntegrityViolationException("Lab system does not exists");
 			}
-			if(!view.isPresent()) {
+			if (!view.isPresent()) {
 				throw new DataIntegrityViolationException("View does not exists");
 			}
 			view.get().setName(vd.getView().getName());
@@ -107,15 +108,16 @@ public class ViewService {
 			vd.setView(view.get());
 			saved.add(userViewRepository.save(vd));
 		}
-		if(saved.size() != layout.size()) {
+		if (saved.size() != layout.size()) {
 			return null;
 		}
 		return saved;
 	}
-	
+
 	public List<View> getDefaultViewsByCV(String cvId) {
 		return viewRepository.findByCvCVId(cvId);
 	}
+
 	/**
 	 * @deprecated do not use ids
 	 * @param viewId
@@ -124,18 +126,20 @@ public class ViewService {
 	public List<WithOutViewDisplay> getDefaultViewDisplayByViewId(Long viewId) {
 		return viewDisplayRepository.findByViewId(viewId);
 	}
-	
+
 	public List<WithOutViewDisplay> getDefaultViewDisplayByViewApiKey(UUID viewApiKey) {
 		return viewDisplayRepository.findByViewApiKey(viewApiKey);
 	}
-	
+
 	public List<View> findAllDefaultViews() {
 		List<View> defaultViews = new ArrayList<>();
 		viewRepository.findByIsDefaultTrue().forEach(defaultViews::add);
 		return defaultViews;
 	}
+
 	/**
 	 * Delete the view_display rows by view id.
+	 * 
 	 * @deprecated now use apikye
 	 * @return
 	 */
@@ -144,23 +148,23 @@ public class ViewService {
 		int actual = viewDisplayRepository.countByViewId(viewId);
 		viewDisplayRepository.deleteByViewId(viewId);
 		int afterDelete = viewDisplayRepository.countByViewId(viewId);
-		
-		return actual!=afterDelete;
+
+		return actual != afterDelete;
 	}
-	
+
 	@Transactional
 	public boolean deleteLayoutByViewApiKey(UUID viewApiKey) {
 		int actual = viewDisplayRepository.countByViewApiKey(viewApiKey);
 		viewDisplayRepository.deleteByViewApiKey(viewApiKey);
 		int afterDelete = viewDisplayRepository.countByViewApiKey(viewApiKey);
-		
-		return actual!=afterDelete;
+
+		return actual != afterDelete;
 	}
 
 	public View getDefaultViewByCVIdAndSampleTypeCategoryId(Long cvId, Long sampleTypeCategoryId) {
 		return viewRepository.findByCvIdAndSampleTypeCategoryId(cvId, sampleTypeCategoryId);
 	}
-	
+
 	public View getDefaultViewByCVIdAndSampleTypeCategoryApiKey(Long cvId, UUID sampleTypeCategoryApiKey) {
 		return viewRepository.findByCvIdAndSampleTypeCategoryApiKey(cvId, sampleTypeCategoryApiKey);
 	}
@@ -170,22 +174,22 @@ public class ViewService {
 		view.setApiKey(UUID.randomUUID());
 		return viewRepository.save(view);
 	}
-	
+
 	public List<UserViewWithoutUser> findAllUserViews() {
 		List<UserViewWithoutUser> userViews = new ArrayList<>();
 		viewRepository.findByUserIdAndIsDefaultFalse(getUserFromSecurityContext().getId()).forEach(userViews::add);
 		return userViews;
-		
+
 	}
-	
+
 	public List<UserDisplayWithOutViewDisplay> getUserViewDisplayByViewApiKey(UUID viewApiKey) {
 		return userViewRepository.findByViewApiKey(viewApiKey);
 	}
-	
+
 	public UserViewWithoutUser findUserViewByApiKey(UUID viewApiKey) {
 		return viewRepository.getByApiKey(viewApiKey);
 	}
-	
+
 	/*
 	 * Helper classes
 	 */
@@ -202,7 +206,7 @@ public class ViewService {
 
 	public View updateView(View view) {
 		Optional<View> v = viewRepository.findOptionalByApiKey(view.getApiKey());
-		if(v.isPresent()) {
+		if (v.isPresent()) {
 			v.get().setName(view.getName());
 			return viewRepository.save(v.get());
 		} else {
@@ -215,11 +219,11 @@ public class ViewService {
 	public View deleteView(View view) {
 		Optional<View> v = viewRepository.findOptionalByApiKey(view.getApiKey());
 		if (v.isPresent()) {
-			if(deleteLayoutByViewApiKey(v.get().getApiKey())) {
+			if (deleteLayoutByViewApiKey(v.get().getApiKey())) {
 				getDefaultViewDisplayByViewId(v.get().getId());
 				viewRepository.delete(v.get());
 				return view;
-			} else{
+			} else {
 				return null;
 			}
 		} else {

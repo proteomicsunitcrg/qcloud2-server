@@ -1,5 +1,5 @@
 package eu.qcloud.threshold;
 
 public enum InstrumentStatus {
-	OK,WARNING, DANGER, OFFLINE, NO_DATA;
+	OK, WARNING, DANGER, OFFLINE, NO_DATA;
 }

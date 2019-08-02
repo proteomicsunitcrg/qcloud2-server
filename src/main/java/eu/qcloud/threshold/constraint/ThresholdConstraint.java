@@ -1,28 +1,31 @@
 package eu.qcloud.threshold.constraint;
+
 /**
- * This class is used to indicate the frontend
- * what fields should be editable.
+ * This class is used to indicate the frontend what fields should be editable.
+ * 
  * @author dmancera
  *
  */
 public class ThresholdConstraint {
-	
+
 	private boolean isInitialValueEditable;
-	
+
 	private boolean isStepValueEditable;
-	
+
 	private boolean isStepsEditable;
 
 	private boolean isSingleContextSource;
-	
+
 	private boolean isGlobalStepValue;
-	
+
 	private boolean isGlobalInitialValue;
-	
-	public ThresholdConstraint() {}
-	
+
+	public ThresholdConstraint() {
+	}
+
 	/**
 	 * Defines the threshold constraints
+	 * 
 	 * @param isSingleContextSource
 	 * @param isInitialValueEditable
 	 * @param isStepValueEditable
@@ -30,11 +33,8 @@ public class ThresholdConstraint {
 	 * @param isGlobalStepValue
 	 * @param isGlobalInitialValue
 	 */
-	public ThresholdConstraint(boolean isSingleContextSource, 
-			boolean isInitialValueEditable, 
-			boolean isStepValueEditable, 
-			boolean isStepsEditable,
-			boolean isGlobalStepValue,
+	public ThresholdConstraint(boolean isSingleContextSource, boolean isInitialValueEditable,
+			boolean isStepValueEditable, boolean isStepsEditable, boolean isGlobalStepValue,
 			boolean isGlobalInitialValue) {
 		this.isInitialValueEditable = isInitialValueEditable;
 		this.isStepValueEditable = isStepValueEditable;
@@ -42,8 +42,8 @@ public class ThresholdConstraint {
 		this.isSingleContextSource = isSingleContextSource;
 		this.isGlobalStepValue = isGlobalStepValue;
 		this.isGlobalInitialValue = isGlobalInitialValue;
-	}	
-	
+	}
+
 	public boolean isGlobalInitialValue() {
 		return isGlobalInitialValue;
 	}
@@ -91,6 +91,5 @@ public class ThresholdConstraint {
 	public void setStepsEditable(boolean isStepsEditable) {
 		this.isStepsEditable = isStepsEditable;
 	}
-	
-	
+
 }

@@ -1,6 +1,5 @@
 package eu.qcloud.mail;
 
-import java.util.List;
 import java.util.Map;
 
 public class Mail {
@@ -51,7 +50,7 @@ public class Mail {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
+
 	public Map<String, String> getModel() {
 		return model;
 	}

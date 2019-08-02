@@ -13,13 +13,10 @@ import org.springframework.stereotype.Service;
 import eu.qcloud.node.Node;
 import eu.qcloud.node.NodeRepository;
 import eu.qcloud.param.ParamRepository;
-import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
-import eu.qcloud.traceColor.TraceColor;
 import eu.qcloud.traceColor.TraceColorRepository;
-import eu.qcloud.websocket.WebSocketService;
 
 /**
  * Main service for community line
@@ -220,12 +217,13 @@ public class CommunityLineService {
 
 	/**
 	 * Deletes al relations of the given communiityLine id
+	 * 
 	 * @param id CommunityLineId that his relations are going to be deleted
 	 * @return true if all ok or false otherwise
 	 */
 	public boolean deleteAllRelations(Long id) {
 		try {
-			List <CommunityLineNode> communityLineNodes = communityLineNodeRepository.findAllByCommunityLineId(id);
+			List<CommunityLineNode> communityLineNodes = communityLineNodeRepository.findAllByCommunityLineId(id);
 			communityLineNodes.forEach(communityLineNode -> {
 				communityLineNode.setActive(false);
 				communityLineNode.setCommunityLine(null);
@@ -234,7 +232,7 @@ public class CommunityLineService {
 				communityLineNodeRepository.delete(communityLineNode);
 			});
 			return true;
-			
+
 		} catch (Exception e) {
 			return false;
 		}

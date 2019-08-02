@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+
 @Embeddable
 public class ChartParamsId implements Serializable {
 
@@ -11,13 +12,14 @@ public class ChartParamsId implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 14323L;
-	
+
 	@Column(nullable = false, updatable = false)
 	private Long chartId;
 	@Column(nullable = false, updatable = false)
 	private Long contextSourceId;
-	
-	public ChartParamsId() {}
+
+	public ChartParamsId() {
+	}
 
 	public Long getChartId() {
 		return chartId;

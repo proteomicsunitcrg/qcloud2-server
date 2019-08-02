@@ -27,102 +27,114 @@ import eu.qcloud.chart.chartParams.ChartParamsRepository.FullParams;
 import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeService;
+
 /**
- * Controller for charts.
- * It will handle also the chart params. 
+ * Controller for charts. It will handle also the chart params.
+ * 
  * @author dmancera
  *
  */
 @RestController
 public class ChartController {
-	
+
 	@Autowired
 	private ChartService chartService;
-	
+
 	@Autowired
 	private SampleTypeService sampleTypeService;
-	
+
 	/**
 	 * Add a new chart into the database
+	 * 
 	 * @param chart the chart to add
 	 * @return the saved chart
 	 */
-	@RequestMapping(value="/api/chart", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/chart", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public Chart addNewChart(@RequestBody Chart chart) {
 		return chartService.addNewChart(chart);
 	}
-	
+
 	/**
 	 * Update a chart
+	 * 
 	 * @param chart
 	 * @return the updated chart
 	 */
-	@RequestMapping(value="/api/chart", method = RequestMethod.PUT)
+	@RequestMapping(value = "/api/chart", method = RequestMethod.PUT)
 	@PreAuthorize("hasRole('ADMIN')")
 	public Chart updateChart(@RequestBody Chart chart) {
 		return chartService.updateChart(chart);
 	}
+
 	/**
 	 * Retrieves all the charts
+	 * 
 	 * @return a List with the charts found
 	 */
-	@RequestMapping(value="/api/chart", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/chart", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public List<NoView> allCharts() {
-		//List<Chart> charts =chartService.getAllCharts();
-		List<NoView> charts =chartService.getAllChartsWithoutView();
+		// List<Chart> charts =chartService.getAllCharts();
+		List<NoView> charts = chartService.getAllChartsWithoutView();
 		return charts;
 	}
+
 	/**
 	 * Return a list of charts by controlled vocabulary id
+	 * 
 	 * @param cvId the cv id
 	 * @return a list with the results
 	 */
-	@RequestMapping(value="/api/chart/cv/{cvId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/chart/cv/{cvId}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public List<NoView> getChartByCVId(@PathVariable String cvId) {
 		return chartService.getChartsByCVIdWithoutView(cvId);
 	}
-	
-	@RequestMapping(value="/api/chart/cv/{cvId}/{sampleTypeQCCV}", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/api/chart/cv/{cvId}/{sampleTypeQCCV}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
-	public List<NoView> getChartsByCVIdAndSampleTypeQCCV(@PathVariable String cvId,@PathVariable String sampleTypeQCCV) {
+	public List<NoView> getChartsByCVIdAndSampleTypeQCCV(@PathVariable String cvId,
+			@PathVariable String sampleTypeQCCV) {
 		return chartService.getChartsByCVIdAndSampleTypeQCCVWithoutView(cvId, sampleTypeQCCV);
 	}
-	
+
 	/**
 	 * Get a list of charts of the main sample type of a sample type category
+	 * 
 	 * @param cvId
 	 * @param sampleTypeCategoryId
 	 * @return
 	 */
-	@RequestMapping(value="/api/chart/cv/{cvId}/category/{sampleTypeCategoryApiKey}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/chart/cv/{cvId}/category/{sampleTypeCategoryApiKey}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
-	public List<NoView> getChartsByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,@PathVariable UUID sampleTypeCategoryApiKey) {
+	public List<NoView> getChartsByCVIdAndSampleTypeCategoryId(@PathVariable Long cvId,
+			@PathVariable UUID sampleTypeCategoryApiKey) {
 		// get the main sample type of the given category
 		SampleType sampleType = sampleTypeService.getMainSampleTypeBySampleTypeCategoryApiKey(sampleTypeCategoryApiKey);
 		return chartService.getChartsByCVIdAndSampleTypeCategoryId(cvId, sampleType.getId());
 	}
-	
+
 	/**
 	 * Update the chart params of a chart by chart id
+	 * 
 	 * @param chartParams a list with the params to add to the chart
-	 * @param chartId the id of the chart whose params would be updated
+	 * @param chartId     the id of the chart whose params would be updated
 	 * @return a list with the new chart params
 	 */
-	@RequestMapping(value="/api/chart/{chartApiKey}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/api/chart/{chartApiKey}", method = RequestMethod.PUT)
 	@PreAuthorize("hasRole('ADMIN')")
-	public List<ChartParams> updateChartParamsByChart(@RequestBody List<ChartParams> chartParams,@PathVariable UUID chartApiKey) {
+	public List<ChartParams> updateChartParamsByChart(@RequestBody List<ChartParams> chartParams,
+			@PathVariable UUID chartApiKey) {
 		// Delete previous chartparams
 		List<ChartParams> previous = chartService.getChartParamsByChartApiKey(chartApiKey);
 		chartService.deleteChartParams(previous);
 		// Add new ones
-		List<ChartParams> chartParamsList = new ArrayList<>();		
-		for(ChartParams chartParam: chartParams) {
+		List<ChartParams> chartParamsList = new ArrayList<>();
+		for (ChartParams chartParam : chartParams) {
 			chartParamsList.add(chartService.addParamToChart(chartParam));
 		}
-		if(chartParamsList.size()!=chartParams.size()) {
+		if (chartParamsList.size() != chartParams.size()) {
 			// delete previous
 			chartService.deleteChartParams(chartParamsList);
 			chartService.deleteChartByApiKey(chartApiKey);
@@ -130,29 +142,31 @@ public class ChartController {
 		}
 		return chartParams;
 	}
-	
+
 	/**
 	 * Add a list of chart params to a chart
+	 * 
 	 * @param chartParams the list of chart params to add
-	 * @param chartId the chart id to add the params
+	 * @param chartId     the chart id to add the params
 	 * @return a list with the chart params added
 	 */
-	@RequestMapping(value="/api/chart/{chartApiKey}", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/chart/{chartApiKey}", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
-	public List<ChartParams> addParamsToChart(@RequestBody List<ChartParams> chartParams,@PathVariable UUID chartApiKey) {
+	public List<ChartParams> addParamsToChart(@RequestBody List<ChartParams> chartParams,
+			@PathVariable UUID chartApiKey) {
 		// get the chart id
 		Optional<Chart> chart = chartService.getChartByApiKey(chartApiKey);
-		
-		if(chartParams.size() == 0) {
+
+		if (chartParams.size() == 0) {
 			throw new InvalidActionException("You need at least one param");
 		}
 		List<ChartParams> chartParamsList = new ArrayList<>();
-		for(ChartParams chartParam: chartParams) {
+		for (ChartParams chartParam : chartParams) {
 			chartParam.setChart(chart.get());
 			chartParamsList.add(chartService.addParamToChart(chartParam));
 		}
-		
-		if(chartParamsList.size()!=chartParams.size()) {
+
+		if (chartParamsList.size() != chartParams.size()) {
 			// delete previous
 			chartService.deleteChartParams(chartParamsList);
 			chartService.deleteChartByApiKey(chartApiKey);
@@ -160,33 +174,33 @@ public class ChartController {
 		}
 		return chartParams;
 	}
-	
-	
+
 	/**
 	 * Get a list of chart params by chart id
+	 * 
 	 * @param chartId
-	 * @return Return a list of fullParams, this is a spring jpa projection.
-	 * Check the manual for more information on that topic or go to the 
-	 * repository itself.
+	 * @return Return a list of fullParams, this is a spring jpa projection. Check
+	 *         the manual for more information on that topic or go to the repository
+	 *         itself.
 	 */
-	@RequestMapping(value="/api/chart/params/{chartApiKey}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/chart/params/{chartApiKey}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public List<FullParams> getChartParamsByChartId(@PathVariable UUID chartApiKey) {
 		return chartService.getFullChartParamsByChartApiKey(chartApiKey);
 	}
-	
+
 	/**
 	 * Get a chart by its Id
+	 * 
 	 * @param chartId
 	 * @return a chart
 	 */
-	@RequestMapping(value="/api/chart/{chartApiKey}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/chart/{chartApiKey}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public Optional<Chart> getChartByChartId(@PathVariable UUID chartApiKey) {
 		return chartService.getChartByApiKey(chartApiKey);
 	}
-	
-		
+
 	/*
 	 * Exception handlers
 	 */
@@ -199,13 +213,15 @@ public class ChartController {
 	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), e.getMessage());
 	}
+
 	@ExceptionHandler(InvalidActionException.class)
-	void handleBadAction(HttpServletResponse response, Exception e) throws IOException{
+	void handleBadAction(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
 	}
+
 	@ExceptionHandler(DataRetrievalFailureException.class)
 	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
-	
+
 }

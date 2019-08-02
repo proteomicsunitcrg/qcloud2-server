@@ -1,9 +1,9 @@
 package eu.qcloud.security.model;
 
 public class UserPasswordChange {
-	
+
 	private String currentPassword;
-	
+
 	private String newPassword;
 
 	public String getCurrentPassword() {
@@ -21,5 +21,5 @@ public class UserPasswordChange {
 	public void setNewPassword(String newPassword) {
 		this.newPassword = newPassword;
 	}
-	
+
 }

@@ -13,25 +13,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TraceColorController {
-	
+
 	@Autowired
 	private TraceColorService traceColorService;
-	
-	@RequestMapping(value="/api/color", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/api/color", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public List<TraceColor> getTraceColors() {
 		return traceColorService.getTraceColors();
 	}
-	
-	@RequestMapping(value="/api/color", method = RequestMethod.POST)
+
+	@RequestMapping(value = "/api/color", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public void addNewTraceColor(@RequestBody TraceColor traceColor) {
 		traceColorService.addNewTraceColor(traceColor);
 	}
-	
-	@RequestMapping(value="/api/color/{traceColorApiKey}", method = RequestMethod.PUT)
+
+	@RequestMapping(value = "/api/color/{traceColorApiKey}", method = RequestMethod.PUT)
 	@PreAuthorize("hasRole('ADMIN')")
-	public void updateTraceColor(@RequestBody TraceColor traceColor,@PathVariable UUID traceColorApiKey) {
+	public void updateTraceColor(@RequestBody TraceColor traceColor, @PathVariable UUID traceColorApiKey) {
 		traceColorService.updateTraceColor(traceColorApiKey, traceColor);
 	}
 

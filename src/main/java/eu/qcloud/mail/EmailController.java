@@ -12,34 +12,32 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * EmailController
- * Main controller for email related operations
- * @author Marc Serret <marc.serret@crg.eu> 
+ * EmailController Main controller for email related operations
+ * 
+ * @author Marc Serret <marc.serret@crg.eu>
  */
 @RestController
 public class EmailController {
 
 	@Autowired
 	EmailService emailService;
-	
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/api/email/send", method = RequestMethod.POST)
-	public boolean sendManualEmail(@RequestBody Mail email){
+	public boolean sendManualEmail(@RequestBody Mail email) {
 		return emailService.sendManualEmail(email);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/api/email/templates", method = RequestMethod.GET)
-	public List<String> getAllTemplates(){
-        return emailService.getAllTemplates();
+	public List<String> getAllTemplates() {
+		return emailService.getAllTemplates();
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/api/email/template/{template}", method = RequestMethod.GET)
-	public String getTemplate(@PathVariable String template){
-        return emailService.getTemplate(template);
+	public String getTemplate(@PathVariable String template) {
+		return emailService.getTemplate(template);
 	}
-	
 
 }

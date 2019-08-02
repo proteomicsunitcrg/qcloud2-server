@@ -5,5 +5,5 @@ public class NoProcessor extends Processor {
 	public boolean isGuideSetRequired() {
 		return false;
 	}
-	
+
 }

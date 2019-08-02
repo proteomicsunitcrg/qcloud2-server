@@ -12,10 +12,13 @@ public interface UserViewRepository extends CrudRepository<UserView, Long> {
 
 	interface UserDisplayWithOutViewDisplay {
 		NoView getChart();
+
 		int getCol();
+
 		int getRow();
+
 		LabSystem getLabSystem();
-		
+
 	}
 
 	List<UserDisplayWithOutViewDisplay> findByViewApiKey(UUID viewApiKey);

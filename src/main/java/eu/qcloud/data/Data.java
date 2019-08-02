@@ -17,31 +17,31 @@ import eu.qcloud.param.Param;
 import eu.qcloud.threshold.InstrumentStatus;
 
 @Entity
-@Table(name="data")
+@Table(name = "data")
 public class Data {
-	
+
 	@JsonIgnore
 	@EmbeddedId
 	private DataId dataId;
-	
+
 	@ManyToOne
-	@JoinColumn(name="paramId",insertable=false, updatable= false)
+	@JoinColumn(name = "paramId", insertable = false, updatable = false)
 	private Param param;
-		
+
 	@ManyToOne
-	@JoinColumn(name="contextSourceId",insertable=false, updatable= false)
+	@JoinColumn(name = "contextSourceId", insertable = false, updatable = false)
 	private ContextSource contextSource;
-	
+
 	@ManyToOne
-	@JoinColumn(name="fileId",insertable=false, updatable= false)
+	@JoinColumn(name = "fileId", insertable = false, updatable = false)
 	private File file;
-	
+
 	private Float value;
-	
+
 	private Float calculatedValue;
-	
+
 	@Enumerated(EnumType.STRING)
-	@Column(columnDefinition="varchar(255) default 'OK'")
+	@Column(columnDefinition = "varchar(255) default 'OK'")
 	private InstrumentStatus nonConformityStatus = InstrumentStatus.OK;
 
 	public Float getValue() {
@@ -51,7 +51,9 @@ public class Data {
 	public void setValue(Float value) {
 		this.value = value;
 	}
-	public Data() {}
+
+	public Data() {
+	}
 
 	public Data(Param param, ContextSource contextSource, File file) {
 		this.param = param;
@@ -92,7 +94,7 @@ public class Data {
 	}
 
 	public Float getCalculatedValue() {
-		if(calculatedValue == null) {
+		if (calculatedValue == null) {
 			return Float.NaN;
 		}
 		return calculatedValue;
@@ -116,6 +118,5 @@ public class Data {
 				+ ", file=" + file + ", nonConformityStatus=" + nonConformityStatus + ", param=" + param + ", value="
 				+ value + "]";
 	}
-	
 
 }

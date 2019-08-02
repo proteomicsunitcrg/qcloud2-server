@@ -16,29 +16,30 @@ import eu.qcloud.chart.Chart;
 
 @Entity
 @Table(name = "view_display")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class ViewDisplay {
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "view_display_seq")
-    @SequenceGenerator(name = "view_display_seq", sequenceName = "view_display_seq", allocationSize = 1)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "view_display_seq")
+	@SequenceGenerator(name = "view_display_seq", sequenceName = "view_display_seq", allocationSize = 1)
 	private Long id;
-	
+
 	@ManyToOne
-	@JoinColumn(name="chartId",insertable=true, updatable= true, nullable = true)
+	@JoinColumn(name = "chartId", insertable = true, updatable = true, nullable = true)
 	private Chart chart;
-	
+
 	@ManyToOne
-	@JoinColumn(name = "viewId", insertable = true, updatable = true, nullable=false)
+	@JoinColumn(name = "viewId", insertable = true, updatable = true, nullable = false)
 	private View view;
-	
+
 	private int col;
-	
+
 	@Column(name = "row1")
 	private int row;
-	
-	public ViewDisplay() {}
-	
+
+	public ViewDisplay() {
+	}
+
 	public ViewDisplay(Long id, Chart chart, View view, int col, int row) {
 		super();
 		this.id = id;
@@ -47,7 +48,7 @@ public class ViewDisplay {
 		this.col = col;
 		this.row = row;
 	}
-	
+
 	public Chart getChart() {
 		return chart;
 	}
@@ -79,6 +80,5 @@ public class ViewDisplay {
 	public void setRow(int row) {
 		this.row = row;
 	}
-	
-	
+
 }

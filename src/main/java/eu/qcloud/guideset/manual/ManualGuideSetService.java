@@ -16,10 +16,10 @@ public class ManualGuideSetService {
 
 	@Autowired
 	private ManualGuideSetRepository manualGuideSetRepository;
-	
+
 	@Autowired
 	private GuideSetRepository guideSetRepository;
-	
+
 	@Autowired
 	private FileRepository fileRepository;
 
@@ -39,12 +39,11 @@ public class ManualGuideSetService {
 		});
 
 	}
-	
-	
 
 	public ManualGuideSet addNewManualGuideSet(ManualGuideSet guideSet) {
 		guideSet.setIsActive(true);
-		// guideSet.setEndDate(new Date(guideSet.getEndDate().getTime() + (86399 * 1000)));
+		// guideSet.setEndDate(new Date(guideSet.getEndDate().getTime() + (86399 *
+		// 1000)));
 		guideSet.setApiKey(UUID.randomUUID());
 		return manualGuideSetRepository.save(guideSet);
 	}

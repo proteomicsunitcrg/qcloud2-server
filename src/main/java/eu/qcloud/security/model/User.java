@@ -31,33 +31,32 @@ import eu.qcloud.userDefaultView.UserDefaultView;
 @Entity
 @Table(name = "user")
 public class User {
-    
-	
+
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "user_seq")
     @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 1)
     private Long id;
-    
-    @Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")    
+
+    @Column(name = "apiKey", updatable = false, nullable = false, unique = true, columnDefinition = "BINARY(16)")
     private UUID apiKey;
-    
+
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name="user_default_view_id")
+    @JoinColumn(name = "user_default_view_id")
     private UserDefaultView userDefaultView;
-	
-	@Column(name = "USERNAME", length = 50, unique = true)
+
+    @Column(name = "USERNAME", length = 50, unique = true)
     @NotNull
     @Size(min = 4, max = 50)
     private String username;
-	
+
     @Column(name = "PASSWORD", length = 100)
     @NotNull
     @Size(min = 4, max = 100)
     private String password;
 
     @Column(name = "FIRSTNAME", length = 50)
-    @NotNull    
+    @NotNull
     private String firstname;
 
     @Column(name = "LASTNAME", length = 50)
@@ -78,26 +77,24 @@ public class User {
     @NotNull
     private Date lastPasswordResetDate;
 
-    
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "USER_AUTHORITY",
-            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
-            inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
+    @JoinTable(name = "USER_AUTHORITY", joinColumns = {
+            @JoinColumn(name = "USER_ID", referencedColumnName = "ID") }, inverseJoinColumns = {
+                    @JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID") })
     private List<Authority> authorities;
-    
+
     @ManyToOne
     @JoinColumn(name = "node_id")
     private Node node;
-    
+
     @JsonIgnore
     public Node getNode() {
-		return node;
-	}
+        return node;
+    }
 
-	public void setNode(Node node) {
-		this.node = node;
-	}
+    public void setNode(Node node) {
+        this.node = node;
+    }
 
     public Long getId() {
         return id;
@@ -114,7 +111,7 @@ public class User {
     public void setUsername(String username) {
         this.username = username;
     }
-    
+
     public String getPassword() {
         return password;
     }
@@ -154,11 +151,11 @@ public class User {
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
-    
+
     public List<Authority> getAuthorities() {
         return authorities;
     }
-    
+
     public void setAuthorities(List<Authority> authorities) {
         this.authorities = authorities;
     }
@@ -170,22 +167,21 @@ public class User {
     public void setLastPasswordResetDate(Date lastPasswordResetDate) {
         this.lastPasswordResetDate = lastPasswordResetDate;
     }
-    
+
     public UUID getApiKey() {
-		return apiKey;
-	}
+        return apiKey;
+    }
 
-	public void setApiKey(UUID apiKey) {
-		this.apiKey = apiKey;
-	}
+    public void setApiKey(UUID apiKey) {
+        this.apiKey = apiKey;
+    }
 
-	public UserDefaultView getUserDefaultView() {
-		return userDefaultView;
-	}
+    public UserDefaultView getUserDefaultView() {
+        return userDefaultView;
+    }
 
-	public void setUserDefaultView(UserDefaultView userDefaultView) {
-		this.userDefaultView = userDefaultView;
-	}
-	
-	
+    public void setUserDefaultView(UserDefaultView userDefaultView) {
+        this.userDefaultView = userDefaultView;
+    }
+
 }

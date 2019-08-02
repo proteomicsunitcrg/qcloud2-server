@@ -2,7 +2,7 @@ package eu.qcloud.threshold.processor;
 
 import eu.qcloud.threshold.params.ThresholdParams;
 
-public class NoProcessor extends ThresholdProcessor{
+public class NoProcessor extends ThresholdProcessor {
 
 	@Override
 	public void process(ThresholdParams thresholdParam) {

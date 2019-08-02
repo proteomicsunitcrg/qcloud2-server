@@ -31,7 +31,7 @@ public class Authority {
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthorityName name;
-    
+
     @JsonIgnore
     @ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)
     private List<User> users;

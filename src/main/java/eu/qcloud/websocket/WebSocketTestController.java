@@ -14,23 +14,21 @@ public class WebSocketTestController {
 
 	@Autowired
 	private SimpUserRegistry userRegistry;
-	
+
 	@Autowired
 	private UserRepository userRepository;
 
-	@RequestMapping(value="/api/websocket/users", method= RequestMethod.GET)
+	@RequestMapping(value = "/api/websocket/users", method = RequestMethod.GET)
 	public void getActiveConnections() {
-		
-		for(SimpUser s: userRegistry.getUsers()) {
+
+		for (SimpUser s : userRegistry.getUsers()) {
 			getUserFromUsername(s.getName());
 		}
 	}
-	
+
 	private void getUserFromUsername(String username) {
 		System.out.println(userRepository.findByUsername(username).getNode().getName());
-		
+
 	}
-	
-	
 
 }

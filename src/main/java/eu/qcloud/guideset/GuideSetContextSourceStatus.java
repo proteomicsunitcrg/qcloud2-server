@@ -4,16 +4,17 @@ import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.param.Param;
 
 public class GuideSetContextSourceStatus {
-	
+
 	private Param param;
-	
+
 	private ContextSource contextSource;
-	
+
 	private ContextSourceStatus status;
-	
+
 	private Long count;
-	
-	public GuideSetContextSourceStatus(Param param, ContextSource contextSource, ContextSourceStatus status, Long count) {
+
+	public GuideSetContextSourceStatus(Param param, ContextSource contextSource, ContextSourceStatus status,
+			Long count) {
 		this.param = param;
 		this.contextSource = contextSource;
 		this.status = status;
@@ -51,5 +52,5 @@ public class GuideSetContextSourceStatus {
 	public void setStatus(ContextSourceStatus status) {
 		this.status = status;
 	}
-	
+
 }

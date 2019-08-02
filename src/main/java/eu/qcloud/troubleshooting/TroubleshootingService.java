@@ -19,13 +19,13 @@ public class TroubleshootingService {
 
 	@Autowired
 	private ProblemRepository problemRepository;
-	
+
 	@Autowired
 	private ActionRepository actionRepository;
-	
+
 	@Autowired
 	private TestRepository testRepository;
-	
+
 	@Autowired
 	private CauseRepository reasonRepository;
 
@@ -37,31 +37,32 @@ public class TroubleshootingService {
 		problemRepository.findAll().forEach(problems::add);
 		return problems;
 	}
-	private List<Troubleshooting> getAllActions() { 
+
+	private List<Troubleshooting> getAllActions() {
 		List<Troubleshooting> actions = new ArrayList<>();
 		actionRepository.findAll().forEach(actions::add);
 		return actions;
 	}
-	
-	private List<Troubleshooting> getAllTests() { 
+
+	private List<Troubleshooting> getAllTests() {
 		List<Troubleshooting> tests = new ArrayList<>();
 		testRepository.findAll().forEach(tests::add);
 		return tests;
 	}
-	
-	private List<Troubleshooting> getAllCauses() { 
+
+	private List<Troubleshooting> getAllCauses() {
 		List<Troubleshooting> reasons = new ArrayList<>();
 		reasonRepository.findAll().forEach(reasons::add);
 		return reasons;
 	}
-	
+
 	public Troubleshooting addTroubleshootingItem(Troubleshooting troubleshooting,
 			TroubleshootingType troubleshootingType) {
 		Optional<Troubleshooting> ts = troubleshootingRepository.findByQccv(troubleshooting.getQccv());
-		if(ts.isPresent()) {
+		if (ts.isPresent()) {
 			throw new DataIntegrityViolationException("An item with that QCCV already exists");
 		}
-		
+
 		return troubleshootingRepository
 				.save(TroubleshootingUtils.createTroubleshootingByType(troubleshooting, troubleshootingType));
 	}

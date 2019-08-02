@@ -3,11 +3,11 @@ package eu.qcloud.labsystem;
 import java.util.UUID;
 
 public class QcrawlerSampleType {
-	
+
 	private String name;
-	
+
 	private String qccv;
-	
+
 	private QcrawlerSampleTypeCategory sampleTypeCategory;
 
 	public String getName() {
@@ -21,7 +21,7 @@ public class QcrawlerSampleType {
 	public QcrawlerSampleType(String name, UUID apiKey) {
 		this.name = name;
 	}
-	
+
 	public String getQccv() {
 		return qccv;
 	}
@@ -30,7 +30,8 @@ public class QcrawlerSampleType {
 		this.qccv = qccv;
 	}
 
-	public QcrawlerSampleType() {}
+	public QcrawlerSampleType() {
+	}
 
 	public QcrawlerSampleTypeCategory getSampleTypeCategory() {
 		return sampleTypeCategory;
@@ -50,6 +51,5 @@ public class QcrawlerSampleType {
 		this.qccv = qccv;
 		this.sampleTypeCategory = sampleTypeCategory;
 	}
-	
-	
+
 }

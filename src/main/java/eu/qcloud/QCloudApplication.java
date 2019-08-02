@@ -19,5 +19,3 @@ public class QCloudApplication {
 		SpringApplication.run(QCloudApplication.class, args);
 	}
 }
-
-

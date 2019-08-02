@@ -11,26 +11,26 @@ import eu.qcloud.file.FileRepository;
 
 @Service
 public class TicService {
-	
+
 	@Autowired
 	private TicRepository ticRepository;
-	
+
 	@Autowired
 	private FileRepository fileRepository;
-	
+
 	private final Log logger = LogFactory.getLog(this.getClass());
 
 	public void addFileToTic(String checksum, Tic tic) {
 		File file = fileRepository.findByChecksum(checksum);
-		
-		if(file == null) {
+
+		if (file == null) {
 			throw new DataRetrievalFailureException("TIC: File not found");
 		}
-		
+
 		tic.setFile(file);
 		ticRepository.save(tic);
 		logger.info("Saved TIC for file: " + checksum);
-		
+
 	}
 
 }

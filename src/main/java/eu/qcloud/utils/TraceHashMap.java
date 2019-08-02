@@ -11,10 +11,10 @@ public class TraceHashMap<K, V> extends HashMap<K, V> {
 	public List<V> toList() {
 		List<V> list = new ArrayList<>();
 		Iterator<?> it = this.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            list.add((V) pair.getValue());
-        }
+		while (it.hasNext()) {
+			Map.Entry<K, V> pair = (Map.Entry) it.next();
+			list.add((V) pair.getValue());
+		}
 		return list;
 	}
 }

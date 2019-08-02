@@ -29,63 +29,65 @@ import eu.qcloud.security.service.UserService;
 
 /**
  * Controller for system
+ * 
  * @author Daniel Mancera <daniel.mancera@crg.eu>
  *
  */
 @RestController
 public class LabSystemController {
-	
+
 	@Autowired
 	private LabSystemService labSystemService;
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private ManualGuideSetService manualGuideSetService;
-	
+
 	/**
 	 * Save the given system into the database
+	 * 
 	 * @param system
 	 */
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="/api/system",method= RequestMethod.POST)
+	@RequestMapping(value = "/api/system", method = RequestMethod.POST)
 	public LabSystem saveSystem(@RequestBody LabSystem system) {
 		UUID labSystemUuid = UUID.randomUUID();
 		system.setApiKey(labSystemUuid);
 		return labSystemService.saveSystem(system);
 	}
-	
+
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="/api/system/datasources/{apiKey}",method= RequestMethod.POST)
+	@RequestMapping(value = "/api/system/datasources/{apiKey}", method = RequestMethod.POST)
 	public void saveDataSourcesToSystem(@PathVariable UUID apiKey, @RequestBody List<DataSource> dataSources) {
 		// get the system
 		Optional<LabSystem> s = labSystemService.findSystemByApiKey(apiKey);
-		if(s.isPresent()) {
+		if (s.isPresent()) {
 			labSystemService.addDataSourcesToLabSystem(getManagerFromSecurityContext(), s.get(), dataSources);
-		}else {
+		} else {
 			throw new InvalidActionException("System not found");
 		}
 	}
-	
 
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="/api/system/{apiKey}",method= RequestMethod.PUT)
+	@RequestMapping(value = "/api/system/{apiKey}", method = RequestMethod.PUT)
 	public void updateLabSystem(@PathVariable UUID apiKey, @RequestBody LabSystem labSystem) {
 		Optional<LabSystem> s = labSystemService.findSystemByApiKey(apiKey);
-		if(s.isPresent()) {
+		if (s.isPresent()) {
 			LabSystem ss = s.get();
 			ss.setName(labSystem.getName());
 			labSystemService.saveSystem(s.get());
 		}
-		
+
 	}
+
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="/api/system/guideset/{apikey}",method= RequestMethod.POST)
-	public LabSystem addGuideSetToLabSystem(@PathVariable UUID apikey,@RequestBody ManualGuideSet guideSet) {
-		
+	@RequestMapping(value = "/api/system/guideset/{apikey}", method = RequestMethod.POST)
+	public LabSystem addGuideSetToLabSystem(@PathVariable UUID apikey, @RequestBody ManualGuideSet guideSet) {
+
 		Optional<LabSystem> labSystem = labSystemService.findSystemByApiKey(apikey);
-		if(labSystem.isPresent()) {
+		if (labSystem.isPresent()) {
 			LabSystem ls = labSystem.get();
 
 			// Check for others guideset and set it to false before add the new one
@@ -95,38 +97,36 @@ public class LabSystemController {
 		}
 		return null;
 	}
-	
+
 	@PreAuthorize("hasRole('USER')")
-	@RequestMapping(value="/api/system/qcrawler",method= RequestMethod.GET)
+	@RequestMapping(value = "/api/system/qcrawler", method = RequestMethod.GET)
 	public QcrawlerLabSystemList getNodeLabSystemsForQcrawler() {
 		User u = getManagerFromSecurityContext();
 		return labSystemService.findAllByNodeForQcrawler(u.getNode().getId());
 	}
-	
-	
-	
+
 	@PreAuthorize("hasRole('USER')")
-	@RequestMapping(value="/api/system/{apikey}",method= RequestMethod.GET)
+	@RequestMapping(value = "/api/system/{apikey}", method = RequestMethod.GET)
 	public LabSystem getSystemById(@PathVariable UUID apikey) {
 		Optional<LabSystem> system = labSystemService.findSystemByApiKey(apikey);
-		if(system.isPresent()) {
+		if (system.isPresent()) {
 			return system.get();
-		}else {
+		} else {
 			throw new InvalidActionException("System not found");
 		}
 	}
-	
+
 	/**
-	 * Returns all the systems in the database
-	 * of the current node
+	 * Returns all the systems in the database of the current node
+	 * 
 	 * @return a list of systems
 	 */
-	@RequestMapping(value="/api/system",method= RequestMethod.GET)
+	@RequestMapping(value = "/api/system", method = RequestMethod.GET)
 	public List<LabSystem> findAllNodeSystems() {
 		User u = getManagerFromSecurityContext();
 		return labSystemService.findAllByNode(u.getNode().getId());
 	}
-	
+
 	/**
 	 * Get the current user from the security context
 	 * 
@@ -137,18 +137,18 @@ public class LabSystemController {
 		User manager = userService.getUserByUsername(authentication.getName());
 		return manager;
 	}
+
 	/*
 	 * Error handlers
 	 */
 	@ExceptionHandler(InvalidActionException.class)
-	void handleBadAction(HttpServletResponse response, Exception e) throws IOException{
+	void handleBadAction(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
 	}
+
 	@ExceptionHandler(PersistenceException.class)
 	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), e.getMessage());
 	}
-	
-	
 
 }

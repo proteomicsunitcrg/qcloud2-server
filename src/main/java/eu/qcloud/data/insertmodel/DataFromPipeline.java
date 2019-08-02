@@ -5,9 +5,9 @@ import java.util.List;
 import eu.qcloud.file.File;
 
 public class DataFromPipeline {
-	
+
 	private File file;
-	
+
 	private List<ParameterData> data;
 
 	public File getFile() {
@@ -25,5 +25,5 @@ public class DataFromPipeline {
 	public void setData(List<ParameterData> data) {
 		this.data = data;
 	}
-	
+
 }

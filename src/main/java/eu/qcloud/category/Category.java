@@ -12,32 +12,30 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 
 @Entity
 @Table(name = "category")
 public class Category {
-    @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "category_seq")
-    @SequenceGenerator(name = "category_seq", sequenceName = "category_seq", allocationSize = 1)
-    private Long id;
-    
-    @Column(name = "NAME", length = 50, unique = true)
-    @NotNull
-    @Size(min = 4, max = 50)
-    private String name;
-    
-    @Column(name="MAIN", columnDefinition="bit default 0")
-    private boolean isMainDataSource;
-    
-    @Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
-	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
-    private UUID apiKey;
-    
-    public boolean isMainDataSource() {
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "category_seq")
+	@SequenceGenerator(name = "category_seq", sequenceName = "category_seq", allocationSize = 1)
+	private Long id;
+
+	@Column(name = "NAME", length = 50, unique = true)
+	@NotNull
+	@Size(min = 4, max = 50)
+	private String name;
+
+	@Column(name = "MAIN", columnDefinition = "bit default 0")
+	private boolean isMainDataSource;
+
+	@Column(name = "apiKey", updatable = false, nullable = false, unique = true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
+	private UUID apiKey;
+
+	public boolean isMainDataSource() {
 		return isMainDataSource;
 	}
 
@@ -45,18 +43,18 @@ public class Category {
 		this.isMainDataSource = isMainDataSource;
 	}
 
-	public Category() {}
-    
+	public Category() {
+	}
+
 	@JsonIgnore
 	public Long getId() {
 		return id;
 	}
 
-	public Category(Long id, String name) {		
+	public Category(Long id, String name) {
 		this.id = id;
 		this.name = name;
 	}
-
 
 	public void setId(Long id) {
 		this.id = id;
@@ -77,5 +75,5 @@ public class Category {
 	public void setApiKey(UUID apiKey) {
 		this.apiKey = apiKey;
 	}
-    
+
 }

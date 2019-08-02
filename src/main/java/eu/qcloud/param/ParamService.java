@@ -5,15 +5,16 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 @Service
 public class ParamService {
 
 	@Autowired
 	private ParamRepository paramRepository;
-	
+
 	public List<Param> getAllParams() {
 		List<Param> params = new ArrayList<>();
-		paramRepository.findAll().forEach(params::add);		
+		paramRepository.findAll().forEach(params::add);
 		return params;
 	}
 
@@ -26,7 +27,7 @@ public class ParamService {
 		p.setName(param.getName());
 		return paramRepository.save(p);
 	}
-	
+
 	public Param findByQCCV(String qCCV) {
 		return paramRepository.findByQccv(qCCV);
 	}

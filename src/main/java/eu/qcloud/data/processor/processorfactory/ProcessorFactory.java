@@ -13,7 +13,7 @@ public class ProcessorFactory {
 		case RETENTION_TIME:
 			return new RetentionTimeProcessor();
 		case LOG2:
-			return new Log2Processor();			
+			return new Log2Processor();
 		case MEDIANFWHM:
 			System.out.println("median");
 			break;

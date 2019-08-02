@@ -81,6 +81,4 @@ public class CommunityPartner {
         this.email = email;
     }
 
-    
-
 }

@@ -15,27 +15,27 @@ import org.hibernate.annotations.GenericGenerator;
 
 import eu.qcloud.traceColor.TraceColor;
 
-@Entity(name="context_source")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@Entity(name = "context_source")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class ContextSource {
 	@Id
-	@GeneratedValue(generator="increment")
-	@GenericGenerator(name="increment", strategy = "increment")
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	protected Long id;
-	
+
 	@Column(unique = true)
 	protected String name;
-	
+
 	protected String abbreviated;
-	
-	@Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
-	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
-    private UUID apiKey;
-	
+
+	@Column(name = "apiKey", updatable = true, nullable = false, unique = true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
+	private UUID apiKey;
+
 	@ManyToOne
-	@JoinColumn(name="trace_color_id")
+	@JoinColumn(name = "trace_color_id")
 	private TraceColor traceColor;
-	
+
 	private int shadeGrade;
 
 	public String getAbbreviated() {
@@ -45,7 +45,7 @@ public class ContextSource {
 	public void setAbbreviated(String abbreviated) {
 		this.abbreviated = abbreviated;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -85,5 +85,5 @@ public class ContextSource {
 	public void setShadeGrade(int shadeGrade) {
 		this.shadeGrade = shadeGrade;
 	}
-	
+
 }

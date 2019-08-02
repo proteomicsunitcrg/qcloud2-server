@@ -18,35 +18,35 @@ import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.node.Node;
 
 @Entity
-@Table(name="data_source")
+@Table(name = "data_source")
 public class DataSource {
-	
+
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "node_seq")
-    @SequenceGenerator(name = "node_seq", sequenceName = "node_seq", allocationSize = 1)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "node_seq")
+	@SequenceGenerator(name = "node_seq", sequenceName = "node_seq", allocationSize = 1)
 	private Long id;
-	
-	@Column(name = "NAME", length = 50, unique = false)	
+
+	@Column(name = "NAME", length = 50, unique = false)
 	private String name;
-	
-	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
-	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+
+	@Column(name = "apiKey", updatable = false, nullable = false, unique = true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
-	
-	@Column(name="enabled", columnDefinition="bit default 1")
+
+	@Column(name = "enabled", columnDefinition = "bit default 1")
 	private boolean enabled;
-	
+
 	@ManyToOne
-	@JoinColumn(name="cv_id")
+	@JoinColumn(name = "cv_id")
 	private Instrument cv;
-	
+
 	@ManyToOne
-	@JoinColumn(name="node_id")
+	@JoinColumn(name = "node_id")
 	private Node node;
-	
+
 	private String serialNumber;
-	
+
 	@JsonIgnore
 	public Node getNode() {
 		return node;
@@ -55,7 +55,7 @@ public class DataSource {
 	public void setNode(Node node) {
 		this.node = node;
 	}
-	
+
 	@JsonIgnore
 	public Long getId() {
 		return id;
@@ -80,11 +80,11 @@ public class DataSource {
 	public void setCv(Instrument cv) {
 		this.cv = cv;
 	}
-	
+
 	public UUID getApiKey() {
 		return apiKey;
 	}
-	
+
 	public void setApiKey(UUID apiKey) {
 		this.apiKey = apiKey;
 	}
@@ -96,7 +96,7 @@ public class DataSource {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
-	
+
 	public String getSerialNumber() {
 		return serialNumber;
 	}
@@ -109,6 +109,5 @@ public class DataSource {
 	public String toString() {
 		return "DataSource [id=" + id + ", name=" + name + ", cv=" + cv + ", node=" + node + "]";
 	}
-	
-	
+
 }

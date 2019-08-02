@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 public final class PasswordGenerator {
-	private static final String LOWER = "abcdefghijklmnopqrstuvwxyz";
+    private static final String LOWER = "abcdefghijklmnopqrstuvwxyz";
     private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String DIGITS = "0123456789";
     private static final String PUNCTUATION = "!@#$%&*()_+-=[]|,./?><";
@@ -40,11 +40,11 @@ public final class PasswordGenerator {
         }
 
         /**
-         * Set true in case you would like to include lower characters
-         * (abc...xyz). Default false.
+         * Set true in case you would like to include lower characters (abc...xyz).
+         * Default false.
          *
-         * @param useLower true in case you would like to include lower
-         * characters (abc...xyz). Default false.
+         * @param useLower true in case you would like to include lower characters
+         *                 (abc...xyz). Default false.
          * @return the builder for chaining.
          */
         public PasswordGeneratorBuilder useLower(boolean useLower) {
@@ -53,11 +53,11 @@ public final class PasswordGenerator {
         }
 
         /**
-         * Set true in case you would like to include upper characters
-         * (ABC...XYZ). Default false.
+         * Set true in case you would like to include upper characters (ABC...XYZ).
+         * Default false.
          *
-         * @param useUpper true in case you would like to include upper
-         * characters (ABC...XYZ). Default false.
+         * @param useUpper true in case you would like to include upper characters
+         *                 (ABC...XYZ). Default false.
          * @return the builder for chaining.
          */
         public PasswordGeneratorBuilder useUpper(boolean useUpper) {
@@ -66,11 +66,11 @@ public final class PasswordGenerator {
         }
 
         /**
-         * Set true in case you would like to include digit characters (123..).
-         * Default false.
+         * Set true in case you would like to include digit characters (123..). Default
+         * false.
          *
-         * @param useDigits true in case you would like to include digit
-         * characters (123..). Default false.
+         * @param useDigits true in case you would like to include digit characters
+         *                  (123..). Default false.
          * @return the builder for chaining.
          */
         public PasswordGeneratorBuilder useDigits(boolean useDigits) {
@@ -79,11 +79,11 @@ public final class PasswordGenerator {
         }
 
         /**
-         * Set true in case you would like to include punctuation characters
-         * (!@#..). Default false.
+         * Set true in case you would like to include punctuation characters (!@#..).
+         * Default false.
          *
-         * @param usePunctuation true in case you would like to include
-         * punctuation characters (!@#..). Default false.
+         * @param usePunctuation true in case you would like to include punctuation
+         *                       characters (!@#..). Default false.
          * @return the builder for chaining.
          */
         public PasswordGeneratorBuilder usePunctuation(boolean usePunctuation) {
@@ -94,8 +94,7 @@ public final class PasswordGenerator {
         /**
          * Get an object to use.
          *
-         * @return the {@link gr.idrymavmela.business.lib.PasswordGenerator}
-         * object.
+         * @return the {@link gr.idrymavmela.business.lib.PasswordGenerator} object.
          */
         public PasswordGenerator build() {
             return new PasswordGenerator(this);
@@ -104,12 +103,12 @@ public final class PasswordGenerator {
 
     /**
      * This method will generate a password depending the use* properties you
-     * define. It will use the categories with a probability. It is not sure
-     * that all of the defined categories will be used.
+     * define. It will use the categories with a probability. It is not sure that
+     * all of the defined categories will be used.
      *
      * @param length the length of the password you would like to generate.
-     * @return a password that uses the categories you define when constructing
-     * the object with a probability.
+     * @return a password that uses the categories you define when constructing the
+     *         object with a probability.
      */
     public String generate(int length) {
         // Argument Validation.

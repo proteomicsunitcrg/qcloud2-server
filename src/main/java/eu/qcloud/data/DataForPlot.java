@@ -7,27 +7,30 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import eu.qcloud.threshold.InstrumentStatus;
 
 /**
- * This is a helper class I had to do because the projection does not seems
- * to work properly when there are tuple queries to the database.
- * It was returning all null values when the non projected object was full of data.
+ * This is a helper class I had to do because the projection does not seems to
+ * work properly when there are tuple queries to the database. It was returning
+ * all null values when the non projected object was full of data.
+ * 
  * @author dmancera
  *
  */
-public class DataForPlot implements Comparable<DataForPlot>{
-	
+public class DataForPlot implements Comparable<DataForPlot> {
+
 	protected String fileFilename;
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	protected Date fileCreationDate;
-	
+
 	protected String contextSourceName;
-	
+
 	protected Float value;
-	
+
 	protected InstrumentStatus nonConformityStatus;
-	
-	public DataForPlot() {}
-	
-	public DataForPlot(String filename, Date fileCreationDate, String contextSourceName, Float value, InstrumentStatus nonConformityStatus) {
+
+	public DataForPlot() {
+	}
+
+	public DataForPlot(String filename, Date fileCreationDate, String contextSourceName, Float value,
+			InstrumentStatus nonConformityStatus) {
 		super();
 		this.fileFilename = filename;
 		this.fileCreationDate = fileCreationDate;
@@ -36,7 +39,6 @@ public class DataForPlot implements Comparable<DataForPlot>{
 		this.nonConformityStatus = nonConformityStatus;
 	}
 
-
 	public String getFileFilename() {
 		return fileFilename;
 	}
@@ -44,7 +46,7 @@ public class DataForPlot implements Comparable<DataForPlot>{
 	public void setFileFilename(String fileFilename) {
 		this.fileFilename = fileFilename;
 	}
-	
+
 	public Date getFileCreationDate() {
 		return fileCreationDate;
 	}
@@ -82,14 +84,14 @@ public class DataForPlot implements Comparable<DataForPlot>{
 		try {
 			Float me = Float.parseFloat(contextSourceName);
 			Float other = Float.parseFloat(o.getContextSourceName());
-			if(me>other) {
+			if (me > other) {
 				return -1;
-			}else {
+			} else {
 				return 1;
-			}	
-		}catch (NullPointerException npe) {
+			}
+		} catch (NullPointerException npe) {
 			return 0;
-		}catch (NumberFormatException nfe) {
+		} catch (NumberFormatException nfe) {
 			return 0;
 		}
 	}
@@ -100,6 +102,5 @@ public class DataForPlot implements Comparable<DataForPlot>{
 				+ ", fileFilename=" + fileFilename + ", nonConformityStatus=" + nonConformityStatus + ", value=" + value
 				+ "]";
 	}
-	
-	
+
 }

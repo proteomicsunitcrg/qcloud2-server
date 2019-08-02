@@ -17,23 +17,22 @@ import eu.qcloud.view.View;
 
 @Entity
 public class UserDefaultView {
-	
+
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "user_default_view_seq")
-    @SequenceGenerator(name = "user_default_view_seq", sequenceName = "user_default_view_seq", allocationSize = 1)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "user_default_view_seq")
+	@SequenceGenerator(name = "user_default_view_seq", sequenceName = "user_default_view_seq", allocationSize = 1)
 	private Long id;
-	
-	
+
 	@Enumerated(EnumType.STRING)
 	private ViewType viewType;
-	
+
 	@ManyToOne
-	@JoinColumn(name="view_id",insertable=true, updatable= true, nullable = true)
+	@JoinColumn(name = "view_id", insertable = true, updatable = true, nullable = true)
 	private View view;
-	
+
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="lab_system_id",insertable=true, updatable= true, nullable = true)
+	@JoinColumn(name = "lab_system_id", insertable = true, updatable = true, nullable = true)
 	private LabSystem labSystem;
 
 	public ViewType getViewType() {
@@ -67,5 +66,5 @@ public class UserDefaultView {
 	public void setLabSystem(LabSystem labSystem) {
 		this.labSystem = labSystem;
 	}
-	
+
 }

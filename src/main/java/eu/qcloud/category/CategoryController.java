@@ -1,4 +1,5 @@
 package eu.qcloud.category;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -9,40 +10,44 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
 /**
  * Category controller
+ * 
  * @author dmancera
  */
 @RestController
 @PreAuthorize("hasRole('MANAGER')")
 public class CategoryController {
-	
+
 	@Autowired
 	private CategoryService categoryService;
-	
-	@RequestMapping(value="/api/category", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/api/category", method = RequestMethod.GET)
 	public List<Category> getAllCategories() {
 		return categoryService.getAllCategories();
 	}
+
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value="/api/category", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/category", method = RequestMethod.POST)
 	public Category addCategory(@RequestBody Category category) {
 		return categoryService.addCategory(category);
 	}
-	@RequestMapping(value="/api/category/{categoryName}", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/api/category/{categoryName}", method = RequestMethod.GET)
 	public Category getCategoryByName(@PathVariable String categoryName) {
 		return categoryService.getCategoryByName(categoryName);
 	}
-		
+
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value="/api/category/makemain/{categoryApiKey}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/api/category/makemain/{categoryApiKey}", method = RequestMethod.PUT)
 	public void makeMainCategory(@PathVariable UUID categoryApiKey) {
 		categoryService.makeCategoryMain(categoryApiKey);
 	}
-	
-	@RequestMapping(value="/api/category/main", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/api/category/main", method = RequestMethod.GET)
 	public Category getMainCategory() {
-		return categoryService.getMainCategory();		
+		return categoryService.getMainCategory();
 	}
-		
+
 }

@@ -1,11 +1,11 @@
 package eu.qcloud.data.insertmodel;
 
 public class DataValues {
-	
+
 	private String contextSource;
-	
+
 	private Float value;
-	
+
 	private Float calculatedValue;
 
 	public String getContextSource() {
@@ -31,5 +31,5 @@ public class DataValues {
 	public void setCalculatedValue(Float calculatedValue) {
 		this.calculatedValue = calculatedValue;
 	}
-	
+
 }

@@ -18,7 +18,8 @@ public class LabSystemStatus {
 	public LabSystemStatus() {
 	}
 
-	public LabSystemStatus(Param param, ContextSource contextSource, InstrumentStatus status, UUID thresholdApiKey, String sampleTypeName) {
+	public LabSystemStatus(Param param, ContextSource contextSource, InstrumentStatus status, UUID thresholdApiKey,
+			String sampleTypeName) {
 		this.param = param;
 		this.contextSource = contextSource;
 		this.status = status;
@@ -57,7 +58,7 @@ public class LabSystemStatus {
 	public void setThresholdApiKey(UUID thresholdApiKey) {
 		this.thresholdApiKey = thresholdApiKey;
 	}
-	
+
 	public String getSampleTypeName() {
 		return sampleTypeName;
 	}

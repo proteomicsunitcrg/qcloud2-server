@@ -3,9 +3,9 @@ package eu.qcloud.threshold.processor;
 import eu.qcloud.threshold.ThresholdType;
 
 public class ThresholdProcessorFactory {
-	
+
 	public static ThresholdProcessor getProcessor(ThresholdType thresholdType) {
-		switch(thresholdType) {
+		switch (thresholdType) {
 		case SIGMALOG2:
 			return new SigmaLog2Processor();
 		case HARDLIMIT:
@@ -18,5 +18,5 @@ public class ThresholdProcessorFactory {
 		}
 		return null;
 	}
-	
+
 }

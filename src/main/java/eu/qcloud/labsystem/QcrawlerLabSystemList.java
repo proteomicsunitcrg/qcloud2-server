@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QcrawlerLabSystemList {
-	
+
 	private List<QcrawlerLabSystem> labSys = new ArrayList<>();
 
 	public List<QcrawlerLabSystem> getLabSys() {
@@ -18,5 +18,5 @@ public class QcrawlerLabSystemList {
 	public QcrawlerLabSystemList(List<QcrawlerLabSystem> labSys) {
 		this.labSys = labSys;
 	}
-	
+
 }

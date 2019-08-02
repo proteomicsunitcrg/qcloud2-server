@@ -20,41 +20,42 @@ import eu.qcloud.security.model.User;
 
 @RestController
 public class PasswordResetController {
-	
+
 	@Autowired
 	private PasswordResetService passwordResetService;
-	
-	@RequestMapping(value="/api/passwordreset",method= RequestMethod.POST)
+
+	@RequestMapping(value = "/api/passwordreset", method = RequestMethod.POST)
 	public void requestPasswordReset(@RequestBody User u) {
 		passwordResetService.resetPassword(u);
 	}
-	
-	@RequestMapping(value="/api/passwordreset/check/{token}",method= RequestMethod.GET)
+
+	@RequestMapping(value = "/api/passwordreset/check/{token}", method = RequestMethod.GET)
 	public void checkPasswordResetToken(@PathVariable UUID token) {
 		passwordResetService.checkToken(token);
 	}
-	
-	@RequestMapping(value="/api/passwordreset/reset/{token}",method= RequestMethod.PUT)
+
+	@RequestMapping(value = "/api/passwordreset/reset/{token}", method = RequestMethod.PUT)
 	public void saveNewPassword(@PathVariable UUID token, @RequestBody User u) {
 		passwordResetService.saveNewPassword(token, u);
 	}
-	
-	
+
 	/*
 	 * Helper classes
 	 */
-		
+
 	@ExceptionHandler(IllegalArgumentException.class)
 	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
-	    response.sendError(HttpStatus.FORBIDDEN.value(), e.getMessage());
+		response.sendError(HttpStatus.FORBIDDEN.value(), e.getMessage());
 	}
+
 	@ExceptionHandler(DataRetrievalFailureException.class)
 	void handleConflict(HttpServletResponse response, Exception e) throws IOException {
-	    response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
+
 	@ExceptionHandler(InvalidActionException.class)
 	void handleBadAction(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
 	}
-	
+
 }

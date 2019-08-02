@@ -5,7 +5,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 @Transactional
-public interface TroubleshootingRepo  extends TroubleshootingRepository<Troubleshooting>{
+public interface TroubleshootingRepo extends TroubleshootingRepository<Troubleshooting> {
 
 	Optional<Troubleshooting> findByQccv(String qccv);
 

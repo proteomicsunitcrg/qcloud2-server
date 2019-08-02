@@ -29,13 +29,13 @@ public class GuideSetController {
 
 	@Autowired
 	private GuideSetService guideSetService;
-	
+
 	@Autowired
 	private AutomaticGuideSetService automaticGuideSetService;
 
 	@Value("${qcloud.threshold.min-points-manual}")
 	private int minFilesForManualGuideSet;
-	
+
 	@Value("${qcloud.threshold.min-valid-context-source-points}")
 	private int minValidPointsManualThreshold;
 
@@ -44,46 +44,45 @@ public class GuideSetController {
 		response.addIntHeader("minpoints", minValidPointsManualThreshold);
 		return minFilesForManualGuideSet;
 	}
-	
+
 	@RequestMapping(value = "/api/guideset/checkguideset/{labSystemApiKey}/{sampleTypeQccv}/{contextSourceApiKey}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('MANAGER')")
 	public GuideSetContextSourceStatus checkCurrentGuideSet(@PathVariable UUID labSystemApiKey,
-			@PathVariable String sampleTypeQccv,
-			@PathVariable UUID contextSourceApiKey) {
+			@PathVariable String sampleTypeQccv, @PathVariable UUID contextSourceApiKey) {
 		return guideSetService.checkCurrentGuideSet(labSystemApiKey, sampleTypeQccv, contextSourceApiKey);
 	}
 
 	@RequestMapping(value = "/api/guideset/checkfiles/{labSystemApiKey}/{startDate}/{endDate}/{sampleTypeQccv}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('MANAGER')")
-	public List<GuideSetContextSourceStatus> getFilesInThreshold(@PathVariable UUID labSystemApiKey, @PathVariable String startDate,
-			@PathVariable String endDate, @PathVariable String sampleTypeQccv) {
+	public List<GuideSetContextSourceStatus> getFilesInThreshold(@PathVariable UUID labSystemApiKey,
+			@PathVariable String startDate, @PathVariable String endDate, @PathVariable String sampleTypeQccv) {
 		Date start = Date.valueOf(startDate);
 		Date end = Date.valueOf(endDate);
 		return guideSetService.evaluateGuideSet(labSystemApiKey, start, end, sampleTypeQccv);
 	}
-	
+
 	@RequestMapping(value = "/api/guideset/reset/{labSystemApiKey}", method = RequestMethod.PUT)
 	@PreAuthorize("hasRole('MANAGER')")
-	public void resetLabSystemGuideSet(@PathVariable UUID labSystemApiKey,@RequestBody Threshold threshold) {
+	public void resetLabSystemGuideSet(@PathVariable UUID labSystemApiKey, @RequestBody Threshold threshold) {
 		guideSetService.resetLabSystemGuideSetByThresholdSampleType(labSystemApiKey, threshold);
 	}
-	
+
 	@RequestMapping(value = "/api/guideset/reset/sampletype/{labSystemApiKey}", method = RequestMethod.PUT)
 	@PreAuthorize("hasRole('MANAGER')")
-	public void resetLabSystemGuideSetBySampleType(@PathVariable UUID labSystemApiKey, @RequestBody SampleType sampleType) {
+	public void resetLabSystemGuideSetBySampleType(@PathVariable UUID labSystemApiKey,
+			@RequestBody SampleType sampleType) {
 		guideSetService.resetLabSystemGuideSetBySampleType(labSystemApiKey, sampleType);
 	}
-	
-	@RequestMapping(value="/api/guideset/automatic", method=RequestMethod.POST)
+
+	@RequestMapping(value = "/api/guideset/automatic", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public AutomaticGuideSet save(@RequestBody AutomaticGuideSet automaticGuideSet) {
 		return automaticGuideSetService.saveAutomaticGuideSet(automaticGuideSet);
 	}
-	
+
 	@ExceptionHandler(DataRetrievalFailureException.class)
 	void handleConflict(HttpServletResponse response, Exception e) throws IOException {
-	    response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
-	
 
 }

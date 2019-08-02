@@ -45,14 +45,15 @@ public class AnnotationController {
 	@PreAuthorize("hasRole('USER')")
 	public List<AnnotationForPlot> getAnnotationsByDate(
 			@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) Date startDate,
-			@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) Date endDate,
-			@PathVariable UUID labSystemApiKey) {
-		return annotationService.getAnnotationsBetweenDates(labSystemApiKey, startDate, endDate, getUserFromSecurityContext());
+			@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) Date endDate, @PathVariable UUID labSystemApiKey) {
+		return annotationService.getAnnotationsBetweenDates(labSystemApiKey, startDate, endDate,
+				getUserFromSecurityContext());
 	}
-	
+
 	@RequestMapping(value = "/api/troubleshooting/annotation/labsystem/{labSystemApiKey}/{date}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
-	public AnnotationForPlot getAnnotationByLabSystemApiKeyAndDate(@PathVariable UUID labSystemApiKey, @PathVariable Date date) {
+	public AnnotationForPlot getAnnotationByLabSystemApiKeyAndDate(@PathVariable UUID labSystemApiKey,
+			@PathVariable Date date) {
 		return annotationService.getAnnotationByLabSystemApiKeyAndDate(labSystemApiKey, date);
 	}
 

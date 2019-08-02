@@ -13,32 +13,33 @@ import javax.persistence.SequenceGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Entity(name="troubleshooting")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@Entity(name = "troubleshooting")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Troubleshooting {
-	
+
 	@JsonIgnore
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "troubleshooting_seq")
-    @SequenceGenerator(name = "troubleshooting_seq", sequenceName = "troubleshooting_seq", allocationSize = 1)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "troubleshooting_seq")
+	@SequenceGenerator(name = "troubleshooting_seq", sequenceName = "troubleshooting_seq", allocationSize = 1)
 	private Long id;
-	
-	@Column(name= "name", nullable= false)
+
+	@Column(name = "name", nullable = false)
 	private String name;
-	
-	@Column(name= "description", nullable= true)
+
+	@Column(name = "description", nullable = true)
 	private String description;
-	
-	@Column(name= "qccv", nullable= false, unique= true)
+
+	@Column(name = "qccv", nullable = false, unique = true)
 	private String qccv;
-	
-	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
-	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+
+	@Column(name = "apiKey", updatable = false, nullable = false, unique = true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
-	
-	public Troubleshooting() {}
-	
+
+	public Troubleshooting() {
+	}
+
 	public Troubleshooting(String name, String description, String qccv, UUID apiKey) {
 		this.name = name;
 		this.description = description;

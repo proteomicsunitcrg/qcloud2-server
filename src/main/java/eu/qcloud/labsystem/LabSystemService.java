@@ -139,8 +139,9 @@ public class LabSystemService {
 			if (ls.getMainDataSource().getCv().getSampleTypes().size() == 0) {
 				ls.getMainDataSource().getCv().setSampleTypes(defaultSampleTypes);
 			} else {
-				for(SampleType defaultSampleType: defaultSampleTypes) {
-					if(!ls.getMainDataSource().getCv().getSampleTypes().stream().anyMatch(s -> s.getSampleTypeCategory().getId() == defaultSampleType.getSampleTypeCategory().getId())) {
+				for (SampleType defaultSampleType : defaultSampleTypes) {
+					if (!ls.getMainDataSource().getCv().getSampleTypes().stream().anyMatch(s -> s
+							.getSampleTypeCategory().getId() == defaultSampleType.getSampleTypeCategory().getId())) {
 						ls.getMainDataSource().getCv().getSampleTypes().add(defaultSampleType);
 					}
 				}

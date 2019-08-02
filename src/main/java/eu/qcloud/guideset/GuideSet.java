@@ -24,39 +24,38 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import eu.qcloud.sampleType.SampleType;
 
 @Entity
-@Table(name="guide_set")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@Table(name = "guide_set")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class GuideSet {
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "guide_set_seq")
-    @SequenceGenerator(name = "guide_set_seq", sequenceName = "guide_set_seq", allocationSize = 1)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "guide_set_seq")
+	@SequenceGenerator(name = "guide_set_seq", sequenceName = "guide_set_seq", allocationSize = 1)
 	private Long id;
-	
-	@JsonFormat(pattern="yyyy-MM-dd hh:mm")
-	@Column(name="start_date", columnDefinition="DATETIME")
+
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm")
+	@Column(name = "start_date", columnDefinition = "DATETIME")
 	@Temporal(TemporalType.TIMESTAMP)
 	protected Date startDate;
-	
-	@JsonFormat(pattern="yyyy-MM-dd hh:mm")
-	@Column(name="end_date", columnDefinition="DATETIME")
+
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm")
+	@Column(name = "end_date", columnDefinition = "DATETIME")
 	@Temporal(TemporalType.TIMESTAMP)
 	protected Date endDate;
-	
-	@Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
-	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
-    private UUID apiKey;
-	
+
+	@Column(name = "apiKey", updatable = true, nullable = false, unique = true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
+	private UUID apiKey;
+
 	@Transient
 	private long totalFiles;
-	
+
 	@Transient
 	private long labSystemTotalFiles;
-	
-	@Column(name="is_active", columnDefinition="bit default 0")
+
+	@Column(name = "is_active", columnDefinition = "bit default 0")
 	private Boolean isActive;
-	
-	
+
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -66,10 +65,11 @@ public class GuideSet {
 	}
 
 	@ManyToOne
-	@JoinColumn(name="sample_type_id")
+	@JoinColumn(name = "sample_type_id")
 	private SampleType sampleType;
-	
-	public GuideSet() {}
+
+	public GuideSet() {
+	}
 
 	public GuideSet(Date startDate, Date endDate) {
 		super();
@@ -109,7 +109,7 @@ public class GuideSet {
 	public void setSampleType(SampleType sampleType) {
 		this.sampleType = sampleType;
 	}
-	
+
 	public long getTotalFiles() {
 		return totalFiles;
 	}
@@ -117,7 +117,7 @@ public class GuideSet {
 	public void setTotalFiles(long totalFiles) {
 		this.totalFiles = totalFiles;
 	}
-	
+
 	public long getLabSystemTotalFiles() {
 		return labSystemTotalFiles;
 	}
@@ -125,7 +125,7 @@ public class GuideSet {
 	public void setLabSystemTotalFiles(long labSystemTotalFiles) {
 		this.labSystemTotalFiles = labSystemTotalFiles;
 	}
-	
+
 	public UUID getApiKey() {
 		return apiKey;
 	}
@@ -164,7 +164,5 @@ public class GuideSet {
 			return false;
 		return true;
 	}
-	
-	
-	
+
 }

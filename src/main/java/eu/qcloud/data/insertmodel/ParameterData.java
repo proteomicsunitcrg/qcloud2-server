@@ -5,9 +5,9 @@ import java.util.List;
 import eu.qcloud.param.Param;
 
 public class ParameterData {
-	
+
 	private Param parameter;
-	
+
 	private List<DataValues> values;
 
 	public Param getParameter() {
@@ -25,5 +25,5 @@ public class ParameterData {
 	public void setValues(List<DataValues> values) {
 		this.values = values;
 	}
-	
+
 }

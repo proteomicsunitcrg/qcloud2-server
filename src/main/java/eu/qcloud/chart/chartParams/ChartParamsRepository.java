@@ -8,26 +8,27 @@ import org.springframework.data.repository.CrudRepository;
 
 import eu.qcloud.contextSource.ContextSource;
 
-public interface ChartParamsRepository extends CrudRepository<ChartParams, ChartParamsId>{
-	
+public interface ChartParamsRepository extends CrudRepository<ChartParams, ChartParamsId> {
+
 	public List<FullParams> findByChartParamsIdChartId(Long chartId);
-	
+
 	public ChartParams findTopByChartId(Long chartId);
-	
+
 	public ChartParams findTopByChartApiKey(UUID chartApiKey);
-	
+
 	interface OnlyParams {
 		Long getChartId();
 	}
-	
+
 	public void deleteByChartId(Long chartId);
-	
+
 	@Query("select c from ChartParams c where c.chartParamsId.chartId=?1")
 	public List<ChartParams> getByChartParamsIdChartId(Long chartId);
-	
+
 	/**
-	 * This interface is used to avoid returning
-	 * circular and extra information to the user.
+	 * This interface is used to avoid returning circular and extra information to
+	 * the user.
+	 * 
 	 * @author dmancera
 	 *
 	 */
@@ -36,5 +37,5 @@ public interface ChartParamsRepository extends CrudRepository<ChartParams, Chart
 	}
 
 	public List<ChartParams> findByChartId(Long chartId);
-	
+
 }

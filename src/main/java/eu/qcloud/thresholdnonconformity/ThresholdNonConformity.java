@@ -21,31 +21,32 @@ import eu.qcloud.threshold.Threshold;
 
 /**
  * This class holds the non conformity.
+ * 
  * @author dmancera
  *
  */
 @Entity
-@Table(name="threshold_non_conformity")
+@Table(name = "threshold_non_conformity")
 public class ThresholdNonConformity {
-	
+
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "threshold_non_conformity_seq")
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "threshold_non_conformity_seq")
 	@SequenceGenerator(name = "threshold_non_conformity_seq", sequenceName = "threshold_non_conformity_seq", allocationSize = 1)
 	private Long id;
-	
-	@ManyToOne(optional= false)
+
+	@ManyToOne(optional = false)
 	private File file;
-	
-	@ManyToOne(optional= false)
+
+	@ManyToOne(optional = false)
 	private ContextSource contextSource;
-	
-	@ManyToOne(optional= false)
+
+	@ManyToOne(optional = false)
 	private Threshold threshold;
-	
-	@ManyToOne(optional= true)
+
+	@ManyToOne(optional = true)
 	private GuideSet guideSet;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
 	private InstrumentStatus status;
@@ -98,5 +99,5 @@ public class ThresholdNonConformity {
 	public void setStatus(InstrumentStatus status) {
 		this.status = status;
 	}
-	
+
 }

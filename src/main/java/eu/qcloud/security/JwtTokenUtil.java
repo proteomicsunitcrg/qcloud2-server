@@ -26,10 +26,13 @@ public class JwtTokenUtil implements Serializable {
     static final String CLAIM_KEY_CREATED = "created";
     static final String CLAIM_KEY_AUTHORITIES = "authorities";
 
-    // private static final String AUDIENCE_UNKNOWN = "unknown"; Commented to supress IDE warning
+    // private static final String AUDIENCE_UNKNOWN = "unknown"; Commented to
+    // supress IDE warning
     private static final String AUDIENCE_WEB = "web";
-    // private static final String AUDIENCE_MOBILE = "mobile";Commented to supress IDE warning
-    // private static final String AUDIENCE_TABLET = "tablet";Commented to supress IDE warning
+    // private static final String AUDIENCE_MOBILE = "mobile";Commented to supress
+    // IDE warning
+    // private static final String AUDIENCE_TABLET = "tablet";Commented to supress
+    // IDE warning
 
     @Value("${jwt.secret}")
     private String secret;
@@ -80,19 +83,18 @@ public class JwtTokenUtil implements Serializable {
         }
         return audience;
     }
+
     /**
      * here
+     * 
      * @param token
      * @return
      */
     private Claims getClaimsFromToken(String token) {
-    	SecretKey k = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret.getBytes()));
-    	Claims claims;
+        SecretKey k = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret.getBytes()));
+        Claims claims;
         try {
-            claims = Jwts.parser()
-                    .setSigningKey(k)
-                    .parseClaimsJws(token)
-                    .getBody();
+            claims = Jwts.parser().setSigningKey(k).parseClaimsJws(token).getBody();
         } catch (Exception e) {
             claims = null;
         }
@@ -111,102 +113,75 @@ public class JwtTokenUtil implements Serializable {
     private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
-/*
-    private String generateAudience(Device device) {
-        String audience = AUDIENCE_UNKNOWN;
-        if (device.isNormal()) {
-            audience = AUDIENCE_WEB;
-        } else if (device.isTablet()) {
-            audience = AUDIENCE_TABLET;
-        } else if (device.isMobile()) {
-            audience = AUDIENCE_MOBILE;
-        }
-        return audience;
-    }
-    */
+    /*
+     * private String generateAudience(Device device) { String audience =
+     * AUDIENCE_UNKNOWN; if (device.isNormal()) { audience = AUDIENCE_WEB; } else if
+     * (device.isTablet()) { audience = AUDIENCE_TABLET; } else if
+     * (device.isMobile()) { audience = AUDIENCE_MOBILE; } return audience; }
+     */
 
     // private Boolean ignoreTokenExpiration(String token) {
-    //     String audience = getAudienceFromToken(token);
-    //     return (AUDIENCE_TABLET.equals(audience) || AUDIENCE_MOBILE.equals(audience));
+    // String audience = getAudienceFromToken(token);
+    // return (AUDIENCE_TABLET.equals(audience) ||
+    // AUDIENCE_MOBILE.equals(audience));
     // }
     // Lo he comentado para probar las firmas del token
-/*
-    public String generateToken(UserDetails userDetails) {        
-    	Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
-        claims.put(CLAIM_KEY_AUTHORITIES, userDetails.getAuthorities());
-        claims.put(CLAIM_KEY_AUDIENCE, AUDIENCE_WEB);
-        claims.put(CLAIM_KEY_CREATED, new Date());
-        return generateToken(claims);
-    }
-
-    String generateToken(Map<String, Object> claims) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(generateExpirationDate())
-                .signWith(SignatureAlgorithm.HS512, secret)
-                .compact();
-    }
-    
-
-    public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
-        final Date created = getCreatedDateFromToken(token);
-        return !isCreatedBeforeLastPasswordReset(created, lastPasswordReset)
-                && (!isTokenExpired(token) || ignoreTokenExpiration(token));
-    }
-
-    public String refreshToken(String token) {
-        String refreshedToken;
-        try {
-            final Claims claims = getClaimsFromToken(token);
-            claims.put(CLAIM_KEY_CREATED, new Date());
-            refreshedToken = generateToken(claims);
-        } catch (Exception e) {
-            refreshedToken = null;
-        }
-        return refreshedToken;
-    }
-    */
+    /*
+     * public String generateToken(UserDetails userDetails) { Map<String, Object>
+     * claims = new HashMap<>(); claims.put(CLAIM_KEY_USERNAME,
+     * userDetails.getUsername()); claims.put(CLAIM_KEY_AUTHORITIES,
+     * userDetails.getAuthorities()); claims.put(CLAIM_KEY_AUDIENCE, AUDIENCE_WEB);
+     * claims.put(CLAIM_KEY_CREATED, new Date()); return generateToken(claims); }
+     * 
+     * String generateToken(Map<String, Object> claims) { return Jwts.builder()
+     * .setClaims(claims) .setExpiration(generateExpirationDate())
+     * .signWith(SignatureAlgorithm.HS512, secret) .compact(); }
+     * 
+     * 
+     * public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
+     * final Date created = getCreatedDateFromToken(token); return
+     * !isCreatedBeforeLastPasswordReset(created, lastPasswordReset) &&
+     * (!isTokenExpired(token) || ignoreTokenExpiration(token)); }
+     * 
+     * public String refreshToken(String token) { String refreshedToken; try { final
+     * Claims claims = getClaimsFromToken(token); claims.put(CLAIM_KEY_CREATED, new
+     * Date()); refreshedToken = generateToken(claims); } catch (Exception e) {
+     * refreshedToken = null; } return refreshedToken; }
+     */
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         JwtUser user = (JwtUser) userDetails;
         final String username = getUsernameFromToken(token);
         final Date created = getCreatedDateFromToken(token);
-        //final Date expiration = getExpirationDateFromToken(token);
-        return (
-                username.equals(user.getUsername())
-                        && !isTokenExpired(token)
-                        && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()));
+        // final Date expiration = getExpirationDateFromToken(token);
+        return (username.equals(user.getUsername()) && !isTokenExpired(token)
+                && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()));
     }
 
-	public String generateToken(UserDetails userDetails, Date generateExpirationDate) {
-		Map<String, Object> claims = new HashMap<>();
+    public String generateToken(UserDetails userDetails, Date generateExpirationDate) {
+        Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
         claims.put(CLAIM_KEY_AUTHORITIES, userDetails.getAuthorities());
         claims.put(CLAIM_KEY_AUDIENCE, AUDIENCE_WEB);
         claims.put(CLAIM_KEY_CREATED, new Date());
         return generateToken(claims, generateExpirationDate);
-		
-	}
-/*
-	private String generateToken(Map<String, Object> claims, Date generateExpirationDate) {
-		return Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(generateExpirationDate)
-                .signWith(SignatureAlgorithm.HS256, secret)
-                .compact();
-	}
-	*/
-	private String generateToken(Map<String, Object> claims, Date generateExpirationDate) {
-		
-		SecretKey k = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret.getBytes()));
-				
-		// SecretKey secretKey = new SecretKeySpec(Base64.getDecoder().decode(secret.getBytes()), "HS512");
-		// .signWith(SignatureAlgorithm.HS512, Base64.getDecoder().decode("L+0P1i+38a26pHiW10iHqPBYAyklvqPdySy98BV9PPCZyDogMggoSZkYxULqCF+WG6Nimlfxd53H6zjdIUJNJA==".getBytes()))
-		return Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(generateExpirationDate())
-                .signWith(k)
-                .compact();
-	}
+
+    }
+
+    /*
+     * private String generateToken(Map<String, Object> claims, Date
+     * generateExpirationDate) { return Jwts.builder() .setClaims(claims)
+     * .setExpiration(generateExpirationDate) .signWith(SignatureAlgorithm.HS256,
+     * secret) .compact(); }
+     */
+    private String generateToken(Map<String, Object> claims, Date generateExpirationDate) {
+
+        SecretKey k = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret.getBytes()));
+
+        // SecretKey secretKey = new
+        // SecretKeySpec(Base64.getDecoder().decode(secret.getBytes()), "HS512");
+        // .signWith(SignatureAlgorithm.HS512,
+        // Base64.getDecoder().decode("L+0P1i+38a26pHiW10iHqPBYAyklvqPdySy98BV9PPCZyDogMggoSZkYxULqCF+WG6Nimlfxd53H6zjdIUJNJA==".getBytes()))
+        return Jwts.builder().setClaims(claims).setExpiration(generateExpirationDate()).signWith(k).compact();
+    }
 }

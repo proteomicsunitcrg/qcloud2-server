@@ -36,10 +36,10 @@ public class PasswordResetService {
 
 	@Autowired
 	private PasswordResetRepository passwordResetRepository;
-	
+
 	@Autowired
 	private EmailService emailService;
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -55,14 +55,11 @@ public class PasswordResetService {
 
 		if (passwordReset.isPresent()) {
 			if (passwordReset.get().getNumberOfRequests() > 10) {
-				throw new InvalidActionException(
-						"Too many password reset requests. "
-						+ "If you have problems in order to reset your "
-						+ "password please check your spam inbox and "
-						+ "if you do not find a password reset email please contact "
-						+ "us at qcloud@crg.eu. Thanks.");
+				throw new InvalidActionException("Too many password reset requests. "
+						+ "If you have problems in order to reset your " + "password please check your spam inbox and "
+						+ "if you do not find a password reset email please contact " + "us at qcloud@crg.eu. Thanks.");
 			} else {
-				passwordReset.get().setNumberOfRequests(passwordReset.get().getNumberOfRequests()+1);
+				passwordReset.get().setNumberOfRequests(passwordReset.get().getNumberOfRequests() + 1);
 				passwordResetRepository.save(passwordReset.get());
 				// send email
 				sendPasswordResetHtmlEmail(passwordReset.get());
@@ -105,31 +102,31 @@ public class PasswordResetService {
 		}
 
 	}
-	
+
 	private void sendPasswordResetHtmlEmail(PasswordReset token) {
 		Mail mail = new Mail();
 		mail.setFrom("qcloud@crg.eu");
-		mail.setTo(new String[]{token.getUser().getEmail()});
+		mail.setTo(new String[] { token.getUser().getEmail() });
 		mail.setSubject("QCloud 2.0 - Password reset");
-		
+
 		Map<String, String> model = new HashMap<>();
-        model.put("name", token.getUser().getFirstname() + " " + token.getUser().getLastname());
-        model.put("token", token.getToken().toString());
-        
-        ObjectMapper objectMapper = new ObjectMapper();
-        String churro = null;
-        token.setUser(createUserToSend(token.getUser()));
+		model.put("name", token.getUser().getFirstname() + " " + token.getUser().getLastname());
+		model.put("token", token.getToken().toString());
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		String churro = null;
+		token.setUser(createUserToSend(token.getUser()));
 		try {
 			churro = Base64.getEncoder().encodeToString(objectMapper.writeValueAsBytes(token));
 		} catch (JsonProcessingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-        model.put("base", churro);
-        
-        mail.setModel(model);
-        
-        try {
+		model.put("base", churro);
+
+		mail.setModel(model);
+
+		try {
 			emailService.sendPasswordResetHtmlMessage(mail);
 		} catch (MessagingException | IOException | TemplateException e) {
 			// TODO Auto-generated catch block
@@ -140,7 +137,7 @@ public class PasswordResetService {
 	public void saveNewPassword(UUID token, User u) {
 		// perform checks
 		Optional<PasswordReset> passwordReset = passwordResetRepository.findOptionalByToken(token);
-		if(!passwordReset.isPresent()) {
+		if (!passwordReset.isPresent()) {
 			throw new DataRetrievalFailureException("Invalid token");
 		}
 		if (!checkTokenDate(passwordReset.get())) {
@@ -153,12 +150,11 @@ public class PasswordResetService {
 		userRepository.save(passwordReset.get().getUser());
 		passwordResetRepository.delete(passwordReset.get());
 	}
-	
+
 	private User createUserToSend(User user) {
 		User u = new User();
 		u.setApiKey(user.getApiKey());
 		return u;
 	}
-	
 
 }

@@ -8,24 +8,24 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AutomaticGuideSetService {
-	
+
 	@Autowired
 	private AutomaticGuideSetRepository automaticGuideSetRepository;
-	
+
 	public AutomaticGuideSet saveAutomaticGuideSet(AutomaticGuideSet automaticGuideSet) {
 		automaticGuideSet.setApiKey(UUID.randomUUID());
 		automaticGuideSet.setIsActive(true);
 		List<AutomaticGuideSet> activeGuideSet = automaticGuideSetRepository.findByIsActiveTrue();
-		if(activeGuideSet.size() == 0) {
+		if (activeGuideSet.size() == 0) {
 			return automaticGuideSetRepository.save(automaticGuideSet);
 		} else {
-			for(AutomaticGuideSet ag: activeGuideSet) {
+			for (AutomaticGuideSet ag : activeGuideSet) {
 				ag.setIsActive(false);
 				automaticGuideSetRepository.save(ag);
 			}
-			
+
 			return automaticGuideSetRepository.save(automaticGuideSet);
 		}
-		
+
 	}
 }

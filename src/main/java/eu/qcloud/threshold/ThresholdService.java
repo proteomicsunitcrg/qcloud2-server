@@ -480,7 +480,8 @@ public class ThresholdService {
 	@Transactional
 	public Threshold editThreshold(Threshold thresholdNew) {
 		Param thresholdParam = paramRepository.findByQccv(thresholdNew.getParam().getqCCV());
-		List <Threshold> allThres = thresholdRepository.findByParamIdAndCVIdAndSampletypeId(thresholdNew.getCv().getId(), thresholdNew.getSampleType().getId(), thresholdParam.getId());
+		List<Threshold> allThres = thresholdRepository.findByParamIdAndCVIdAndSampletypeId(thresholdNew.getCv().getId(),
+				thresholdNew.getSampleType().getId(), thresholdParam.getId());
 		for (Threshold thres : allThres) {
 			thres.setName(thresholdNew.getName());
 			thres.setThresholdType(thresholdNew.getThresholdType());
@@ -488,30 +489,30 @@ public class ThresholdService {
 			thres.setNonConformityDirection(thresholdNew.getNonConformityDirection());
 			thres.setSteps(thresholdNew.getSteps());
 			switch (thres.getThresholdType()) {
-				case SIGMA:
-					thres.setDirection(Direction.UP);
-					thres.setProcessor(new SigmaProcessor());
-					thres.setAdminThresholdConstraint(new ThresholdConstraint(false,false,false,true,false,false));
-					thres.setManagerThresholdConstraint(new ThresholdConstraint(false,false,false,false,false,false));
-					thres.setThresholdType(ThresholdType.SIGMA);
-					thresholdRepository.updateDType("sigma", thres.getId());
-					break;
-				case SIGMALOG2:
-					thres.setDirection(Direction.DOWN);
-					thres.setAdminThresholdConstraint(new ThresholdConstraint(false,false,false,true,false,false));
-					thres.setManagerThresholdConstraint(new ThresholdConstraint(false,false,false,false,false,false));
-					thres.setThresholdType(ThresholdType.SIGMALOG2);
-					thresholdRepository.updateDType("sigmalog2", thres.getId());
-					break;
-				case HARDLIMIT:
-					thres.setDirection(Direction.UPDOWN);
-					thres.setAdminThresholdConstraint(new ThresholdConstraint(false,false,false,true,true,true));
-					thres.setManagerThresholdConstraint(new ThresholdConstraint(false,false,false,false,true,true));
-					thres.setThresholdType(ThresholdType.HARDLIMIT);
-					thresholdRepository.updateDType("hard_limit", thres.getId());
-					break;
-				default:
-					break;
+			case SIGMA:
+				thres.setDirection(Direction.UP);
+				thres.setProcessor(new SigmaProcessor());
+				thres.setAdminThresholdConstraint(new ThresholdConstraint(false, false, false, true, false, false));
+				thres.setManagerThresholdConstraint(new ThresholdConstraint(false, false, false, false, false, false));
+				thres.setThresholdType(ThresholdType.SIGMA);
+				thresholdRepository.updateDType("sigma", thres.getId());
+				break;
+			case SIGMALOG2:
+				thres.setDirection(Direction.DOWN);
+				thres.setAdminThresholdConstraint(new ThresholdConstraint(false, false, false, true, false, false));
+				thres.setManagerThresholdConstraint(new ThresholdConstraint(false, false, false, false, false, false));
+				thres.setThresholdType(ThresholdType.SIGMALOG2);
+				thresholdRepository.updateDType("sigmalog2", thres.getId());
+				break;
+			case HARDLIMIT:
+				thres.setDirection(Direction.UPDOWN);
+				thres.setAdminThresholdConstraint(new ThresholdConstraint(false, false, false, true, true, true));
+				thres.setManagerThresholdConstraint(new ThresholdConstraint(false, false, false, false, true, true));
+				thres.setThresholdType(ThresholdType.HARDLIMIT);
+				thresholdRepository.updateDType("hard_limit", thres.getId());
+				break;
+			default:
+				break;
 			}
 			thresholdRepository.save(thres);
 		}

@@ -7,7 +7,7 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class SampleCompositionId implements Serializable {
-	
+
 	/**
 	 * 
 	 */
@@ -17,8 +17,9 @@ public class SampleCompositionId implements Serializable {
 	private Long sampleTypeId;
 	@Column(nullable = false, updatable = false)
 	private Long peptideId;
-	
-	public SampleCompositionId() {}
+
+	public SampleCompositionId() {
+	}
 
 	public Long getSampleTypeId() {
 		return sampleTypeId;
@@ -66,8 +67,5 @@ public class SampleCompositionId implements Serializable {
 			return false;
 		return true;
 	}
-	
-	
-	
-	
+
 }

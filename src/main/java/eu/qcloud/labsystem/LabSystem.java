@@ -22,13 +22,13 @@ import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.guideset.GuideSet;
 
 /**
- * This class represents a system of LC/MS at this moment
- * CAUTION:
- * It do not stores any data related to the node owner of the system.
- * It is recovered via system_data_sources for avoid redundancy.
- * A system will be saved only if it has some data source attached
- * The way for recover the node systems is doing a query of the 
- * system data sources, check the SystemRepository.findAllByNode() function.
+ * This class represents a system of LC/MS at this moment CAUTION: It do not
+ * stores any data related to the node owner of the system. It is recovered via
+ * system_data_sources for avoid redundancy. A system will be saved only if it
+ * has some data source attached The way for recover the node systems is doing a
+ * query of the system data sources, check the SystemRepository.findAllByNode()
+ * function.
+ * 
  * @author dmancera
  *
  */
@@ -36,76 +36,77 @@ import eu.qcloud.guideset.GuideSet;
 @Table(name = "labsystem")
 public class LabSystem {
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "labsystem_seq")
-    @SequenceGenerator(name = "labsystem_seq", sequenceName = "labsystem_seq", allocationSize = 1)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "labsystem_seq")
+	@SequenceGenerator(name = "labsystem_seq", sequenceName = "labsystem_seq", allocationSize = 1)
 	private Long id;
-	
+
 	@Column(name = "NAME", length = 50)
-    @NotNull    
+	@NotNull
 	private String name;
-	
+
 	@ManyToMany
 	private List<DataSource> dataSources;
-	
-	@OneToMany	
+
+	@OneToMany
 	private List<GuideSet> guideSets;
-	
-	@Column(name = "apiKey", updatable = false, nullable = false, unique=true, columnDefinition = "BINARY(16)")
-	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+
+	@Column(name = "apiKey", updatable = false, nullable = false, unique = true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
-	
+
 	@Transient
 	private List<GuideSet> enabledGuideSets;
-	
+
 	public List<GuideSet> getEnabledGuideSets() {
 		List<GuideSet> enabledGuideSets = new ArrayList<>();
-		if(guideSets == null) {
+		if (guideSets == null) {
 			return enabledGuideSets;
 		}
-		if(guideSets.size()> 0) {
-			for(GuideSet gs : guideSets) {
+		if (guideSets.size() > 0) {
+			for (GuideSet gs : guideSets) {
 				if (gs.getIsActive()) {
 					enabledGuideSets.add(gs);
 				}
 			}
 		}
-		
+
 		return enabledGuideSets;
 	}
-	
+
 	public GuideSet getGuideActiveSetBySampleType(Long sampleTypeId) {
 		GuideSet guideSet = null;
-		if(guideSets == null) {
+		if (guideSets == null) {
 			return null;
 		}
-		if(guideSets.size()> 0) {
-			for(GuideSet gs : guideSets) {
+		if (guideSets.size() > 0) {
+			for (GuideSet gs : guideSets) {
 				if (gs.getIsActive() && gs.getSampleType().getId() == sampleTypeId) {
-					guideSet= gs;
+					guideSet = gs;
 					break;
 				}
 			}
 		}
 		return guideSet;
 	}
-	
+
 	public GuideSet getActiveGuideSetBySampleTypeQccv(String sampleTypeQccv) {
 		GuideSet guideSet = null;
-		if(guideSets == null) {
+		if (guideSets == null) {
 			return null;
 		}
-		if(guideSets.size()> 0) {
-			for(GuideSet gs : guideSets) {
-				if (gs.getIsActive() && gs.getSampleType().getQualityControlControlledVocabulary().equals(sampleTypeQccv)) {
-					guideSet= gs;
+		if (guideSets.size() > 0) {
+			for (GuideSet gs : guideSets) {
+				if (gs.getIsActive()
+						&& gs.getSampleType().getQualityControlControlledVocabulary().equals(sampleTypeQccv)) {
+					guideSet = gs;
 					break;
 				}
 			}
 		}
-		return guideSet;	
+		return guideSet;
 	}
-	
+
 	public UUID getApiKey() {
 		return apiKey;
 	}
@@ -113,6 +114,7 @@ public class LabSystem {
 	public void setApiKey(UUID apiKey) {
 		this.apiKey = apiKey;
 	}
+
 	@JsonIgnore
 	public List<GuideSet> getGuideSets() {
 		return guideSets;
@@ -146,15 +148,15 @@ public class LabSystem {
 	public void setDataSources(List<DataSource> dataSources) {
 		this.dataSources = dataSources;
 	}
+
 	@JsonIgnore
 	public DataSource getMainDataSource() {
-		for(DataSource ds: this.dataSources) {
-			if(ds.getCv().getCategory().isMainDataSource()) {
+		for (DataSource ds : this.dataSources) {
+			if (ds.getCv().getCategory().isMainDataSource()) {
 				return ds;
 			}
 		}
 		return null;
 	}
-
 
 }

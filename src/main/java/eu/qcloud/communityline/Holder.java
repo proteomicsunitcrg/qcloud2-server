@@ -1,11 +1,10 @@
 package eu.qcloud.communityline;
 
 import java.util.List;
-import java.util.UUID;
 
 public class Holder {
-private List<Long> nodeKeyString;
-private CommunityLine lineKeyString;
+    private List<Long> nodeKeyString;
+    private CommunityLine lineKeyString;
 
     public Holder() {
     }
@@ -30,7 +29,5 @@ private CommunityLine lineKeyString;
     public void setLineKeyString(CommunityLine lineKeyString) {
         this.lineKeyString = lineKeyString;
     }
-
-
 
 }

@@ -12,31 +12,37 @@ import eu.qcloud.security.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsername(String username);
-    
+
     User findOneByApiKey(UUID apiKey);
-    
+
     User findOneByApiKeyAndNodeId(UUID apiKey, Long nodeId);
-    
+
     UserWithUuid findWithUuidById(Long id);
-    
+
     User findUserById(Long id);
-    
+
     List<UserWithUuid> findAllUsersByNodeId(Long nodeId);
-    
-    List<UserWithUuid> findAllByNodeIdAndEnabledTrue(Long nodeId);  
-    
+
+    List<UserWithUuid> findAllByNodeIdAndEnabledTrue(Long nodeId);
+
     interface UserWithUuid {
-    	String getUsername();
-    	String getFirstname();
-    	String getLastname();    	
-    	String getEmail();
-    	List<Authority> getAuthorities();
-    	UUID getApiKey();
+        String getUsername();
+
+        String getFirstname();
+
+        String getLastname();
+
+        String getEmail();
+
+        List<Authority> getAuthorities();
+
+        UUID getApiKey();
     }
-    
+
     interface UserForAnnotation {
-    	String getFirstname();
-    	String getLastname();
+        String getFirstname();
+
+        String getLastname();
     }
-    
+
 }

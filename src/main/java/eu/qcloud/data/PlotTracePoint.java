@@ -4,11 +4,11 @@ import eu.qcloud.file.File;
 import eu.qcloud.threshold.InstrumentStatus;
 
 public class PlotTracePoint {
-	
+
 	private File file;
-	
+
 	private Float value;
-	
+
 	private InstrumentStatus nonConformityStatus;
 
 	public File getFile() {
@@ -43,5 +43,5 @@ public class PlotTracePoint {
 	public void setNonConformityStatus(InstrumentStatus nonConformityStatus) {
 		this.nonConformityStatus = nonConformityStatus;
 	}
-	
+
 }

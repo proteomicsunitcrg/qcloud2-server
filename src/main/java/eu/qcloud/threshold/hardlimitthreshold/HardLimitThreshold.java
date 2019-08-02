@@ -7,16 +7,17 @@ import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdType;
 import eu.qcloud.threshold.constraint.ThresholdConstraint;
 import eu.qcloud.threshold.processor.NoProcessor;
-@Entity(name="hard_limit")
+
+@Entity(name = "hard_limit")
 public class HardLimitThreshold extends Threshold {
-	
+
 	public HardLimitThreshold() {
 		super();
 		this.direction = Direction.UPDOWN;
 		// this.nonConformityDirection = Direction.UPDOWN;
 		this.processor = new NoProcessor();
-		this.adminThresholdConstraint = new ThresholdConstraint(false,false,false,true,true,true);
-		this.managerThresholdConstraint = new ThresholdConstraint(false,false,false,false,true,true);
+		this.adminThresholdConstraint = new ThresholdConstraint(false, false, false, true, true, true);
+		this.managerThresholdConstraint = new ThresholdConstraint(false, false, false, false, true, true);
 		this.thresholdType = ThresholdType.HARDLIMIT;
 	}
 

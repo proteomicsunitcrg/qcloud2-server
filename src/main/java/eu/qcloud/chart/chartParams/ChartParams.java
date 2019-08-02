@@ -10,33 +10,36 @@ import eu.qcloud.chart.Chart;
 import eu.qcloud.contextSource.ContextSource;
 
 @Entity
-@Table(name="chart_params")
+@Table(name = "chart_params")
 public class ChartParams {
-	
+
 	@ManyToOne
-	@JoinColumn(name="chartId",insertable=false, updatable= false)
+	@JoinColumn(name = "chartId", insertable = false, updatable = false)
 	private Chart chart;
-	
+
 	@ManyToOne
-	@JoinColumn(name="contextSourceId",insertable=false, updatable= false)
+	@JoinColumn(name = "contextSourceId", insertable = false, updatable = false)
 	private ContextSource contextSource;
-	
+
 	@EmbeddedId
 	private ChartParamsId chartParamsId;
-		
-	public ChartParams(Chart chart, ContextSource contextSource) {		
+
+	public ChartParams(Chart chart, ContextSource contextSource) {
 		this.chart = chart;
 		this.contextSource = contextSource;
 	}
-	
-	public ChartParams() {}
-	
+
+	public ChartParams() {
+	}
+
 	public void setChartParamsId(ChartParamsId chartParamsId) {
 		this.chartParamsId = chartParamsId;
 	}
+
 	public Chart getChart() {
 		return chart;
 	}
+
 	public void setChart(Chart chart) {
 		this.chart = chart;
 	}
@@ -52,5 +55,5 @@ public class ChartParams {
 	public ChartParamsId getChartParamsId() {
 		return chartParamsId;
 	}
-	
+
 }

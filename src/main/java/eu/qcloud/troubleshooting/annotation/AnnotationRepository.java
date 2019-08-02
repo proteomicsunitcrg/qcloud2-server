@@ -34,16 +34,16 @@ public interface AnnotationRepository extends CrudRepository<Annotation, Long> {
 		UUID getApiKey();
 
 		String getDescription();
-		
+
 		UserForAnnotation getUser();
-		
+
 		Date getAnnotationDate();
 	}
 
 	AnnotationForPlot findByLabSystemApiKeyAndDate(UUID labSystemApiKey, Date date);
 
 	Optional<Annotation> findByApiKey(UUID annotationApiKey);
-	
+
 	@Query("select a from Annotation a where id = ?1")
 	AnnotationForPlot findAnnotationForPlotById(Long id);
 

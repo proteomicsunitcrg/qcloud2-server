@@ -15,8 +15,10 @@ import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
+
 /**
  * Service for sampleComposition
+ * 
  * @author dmancera
  *
  */
@@ -25,23 +27,25 @@ import eu.qcloud.sampleType.SampleTypeRepository;
 public class SampleCompositionService {
 	@Autowired
 	private SampleCompositionRepository sampleCompositionRepository;
-	
+
 	@Autowired
 	private PeptideRepository peptideRepository;
-	
+
 	@Autowired
 	private SampleTypeRepository sampleTypeRepository;
-	
+
 	/**
-	 * Before add the sample composition an id(composite) must be generated. 
+	 * Before add the sample composition an id(composite) must be generated.
+	 * 
 	 * @param sampleComposition
 	 * @return
 	 */
 	public SampleComposition addSampleComposition(SampleComposition sampleComposition) {
-		
+
 		Peptide p = peptideRepository.findBySequence(sampleComposition.getPeptide().getSequence());
-		Optional<SampleType> st = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleComposition.getSampleType().getQualityControlControlledVocabulary());
-		if(!st.isPresent() || p == null) {
+		Optional<SampleType> st = sampleTypeRepository.findByQualityControlControlledVocabulary(
+				sampleComposition.getSampleType().getQualityControlControlledVocabulary());
+		if (!st.isPresent() || p == null) {
 			throw new InvalidActionException("Peptide or sample type not found");
 		}
 		SampleCompositionId scId = new SampleCompositionId();
@@ -50,10 +54,10 @@ public class SampleCompositionService {
 		sampleComposition.setSampleType(st.get());
 		sampleComposition.setPeptide(p);
 		sampleComposition.setSampleCompositionId(scId);
-		
+
 		return sampleCompositionRepository.save(sampleComposition);
 	}
-	
+
 	public List<SampleComposition> getAllSampleComposition() {
 		List<SampleComposition> samples = new ArrayList<>();
 		sampleCompositionRepository.findAll().forEach(samples::add);
@@ -63,11 +67,11 @@ public class SampleCompositionService {
 	public List<SampleComposition> getAllSampleCompositionByPeptideId(Long peptideId) {
 		return sampleCompositionRepository.findByPeptideId(peptideId);
 	}
-	
+
 	public List<SampleComposition> getAllSampleCompositionByPeptideSequence(String peptideSequence) {
 		return sampleCompositionRepository.findByPeptideSequence(peptideSequence);
 	}
-	
+
 	public Optional<SampleComposition> getSampleCompositionById(SampleCompositionId scId) {
 		return sampleCompositionRepository.findById(scId);
 	}
@@ -80,7 +84,7 @@ public class SampleCompositionService {
 	public List<PeptidesFromSample> findAllPeptidesBySampleTypeName(String sampleTypeName) {
 		return sampleCompositionRepository.findBySampleTypeName(sampleTypeName);
 	}
-	
+
 	public List<SampleComposition> getAllSampleCompositionBySampleTypeQQCV(String qqcv) {
 		return sampleCompositionRepository.findBySampleTypeQualityControlControlledVocabulary(qqcv);
 	}
@@ -88,13 +92,11 @@ public class SampleCompositionService {
 	public void deleteFromSampleComposition(String peptideSequence, String sampleTypeQCCV) {
 		Peptide p = peptideRepository.findBySequence(peptideSequence);
 		Optional<SampleType> st = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQCCV);
-		if(!st.isPresent()) {
+		if (!st.isPresent()) {
 			throw new InvalidActionException("Sample type not found");
 		}
 		sampleCompositionRepository.deleteSampleCompositionByPeptideIdAndSampleTypeId(p.getId(), st.get().getId());
-		
+
 	}
-	
-	
 
 }

@@ -24,39 +24,39 @@ import eu.qcloud.security.JwtTokenUtil;
 @EnableWebSocketMessageBroker
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
 
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
-	
-	@Autowired
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
     private UserDetailsService userDetailsService;
-	
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic", "/queue" ,"/user");
+        config.enableSimpleBroker("/topic", "/queue", "/user");
         config.setApplicationDestinationPrefixes("/app");
         config.setUserDestinationPrefix("/user");
     }
 
-	@Override
-	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/api/gs-guide-websocket").setAllowedOrigins("*").withSockJS();
-	}
-	
-	@Override
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/api/gs-guide-websocket").setAllowedOrigins("*").withSockJS();
+    }
+
+    @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-    	registration.interceptors(new ChannelInterceptor() {
+        registration.interceptors(new ChannelInterceptor() {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor =
-                        MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                	String token = accessor.getNativeHeader("Authorization").get(0);
-                	String username = jwtTokenUtil.getUsernameFromToken(token);
-                	UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                	if (jwtTokenUtil.validateToken(token, userDetails)) {
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    String token = accessor.getNativeHeader("Authorization").get(0);
+                    String username = jwtTokenUtil.getUsernameFromToken(token);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    if (jwtTokenUtil.validateToken(token, userDetails)) {
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
                         authentication.setDetails(userDetails);
-                        
+
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                         accessor.setUser(authentication);
                     }
@@ -65,6 +65,5 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
             }
         });
     }
-    
 
 }

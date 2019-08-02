@@ -22,26 +22,26 @@ import eu.qcloud.sampleType.SampleType;
 @Table(name = "sample_type_category")
 public class SampleTypeCategory {
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "sample_category_seq")
-    @SequenceGenerator(name = "sample_category_seq", sequenceName = "sample_category_seq", allocationSize = 1)
-    private Long id;
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "sample_category_seq")
+	@SequenceGenerator(name = "sample_category_seq", sequenceName = "sample_category_seq", allocationSize = 1)
+	private Long id;
 
-    @Column(name = "NAME", length = 50, unique = true)
-    @NotNull    
-    @Size(min = 3, max = 50)
-    private String name;
-    
-    @Column(name= "COMPLEXITY")
-    private SampleTypeComplexity sampleTypeComplexity;
-    
-    @OneToMany(mappedBy="sampleTypeCategory")
-    private List<SampleType> sampleTypes;
-    
-    @Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
-	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
-    private UUID apiKey;
-    
+	@Column(name = "NAME", length = 50, unique = true)
+	@NotNull
+	@Size(min = 3, max = 50)
+	private String name;
+
+	@Column(name = "COMPLEXITY")
+	private SampleTypeComplexity sampleTypeComplexity;
+
+	@OneToMany(mappedBy = "sampleTypeCategory")
+	private List<SampleType> sampleTypes;
+
+	@Column(name = "apiKey", updatable = true, nullable = false, unique = true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
+	private UUID apiKey;
+
 	public UUID getApiKey() {
 		return apiKey;
 	}
@@ -49,7 +49,7 @@ public class SampleTypeCategory {
 	public void setApiKey(UUID apiKey) {
 		this.apiKey = apiKey;
 	}
-	
+
 	@JsonIgnore
 	public Long getId() {
 		return id;
@@ -74,7 +74,7 @@ public class SampleTypeCategory {
 	public void setSampleTypes(List<SampleType> sampleTypes) {
 		this.sampleTypes = sampleTypes;
 	}
-	
+
 	public SampleTypeComplexity getSampleTypeComplexity() {
 		return sampleTypeComplexity;
 	}
@@ -82,6 +82,5 @@ public class SampleTypeCategory {
 	public void setSampleTypeComplexity(SampleTypeComplexity sampleTypeComplexity) {
 		this.sampleTypeComplexity = sampleTypeComplexity;
 	}
-	
 
 }

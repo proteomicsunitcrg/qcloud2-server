@@ -4,9 +4,9 @@ import javax.persistence.Entity;
 
 import eu.qcloud.guideset.GuideSet;
 
-@Entity(name="manual")
+@Entity(name = "manual")
 public class ManualGuideSet extends GuideSet {
-	
+
 	public Boolean getIsUserDefined() {
 		return true;
 	}

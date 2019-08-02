@@ -23,30 +23,30 @@ import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
 @Entity
 @Table(name = "sample_type")
 public class SampleType {
-    @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "sample_seq")
-    @SequenceGenerator(name = "sample_seq", sequenceName = "sample_seq", allocationSize = 1)
-    private Long id;
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "sample_seq")
+	@SequenceGenerator(name = "sample_seq", sequenceName = "sample_seq", allocationSize = 1)
+	private Long id;
 
-    @Column(name = "NAME", length = 50, unique = true)
-    @NotNull
-    @Size(min = 3, max = 50)
-    private String name;
-    
-    @Column(name = "QCCV", length = 50, unique = true)
-    private String qualityControlControlledVocabulary;
-    
-    @OneToMany(mappedBy="sampleType")
-    private List<SampleComposition> sampleCompositions;
-    
-    @ManyToOne
-	@JoinColumn(name="sampleTypeCategory",insertable=true, updatable= true)
-    private SampleTypeCategory sampleTypeCategory;
-    
-    @Column(name="is_main_sample_type")
-    private boolean isMainSampleType;
-    
+	@Column(name = "NAME", length = 50, unique = true)
+	@NotNull
+	@Size(min = 3, max = 50)
+	private String name;
+
+	@Column(name = "QCCV", length = 50, unique = true)
+	private String qualityControlControlledVocabulary;
+
+	@OneToMany(mappedBy = "sampleType")
+	private List<SampleComposition> sampleCompositions;
+
+	@ManyToOne
+	@JoinColumn(name = "sampleTypeCategory", insertable = true, updatable = true)
+	private SampleTypeCategory sampleTypeCategory;
+
+	@Column(name = "is_main_sample_type")
+	private boolean isMainSampleType;
+
 	public String getQualityControlControlledVocabulary() {
 		return qualityControlControlledVocabulary;
 	}
@@ -64,10 +64,9 @@ public class SampleType {
 	}
 
 	/*
-	 * Comment this jsonignore for use
-	 * python migrator
+	 * Comment this jsonignore for use python migrator
 	 */
-	//@JsonIgnore
+	// @JsonIgnore
 	public Long getId() {
 		return id;
 	}
@@ -83,6 +82,7 @@ public class SampleType {
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	@JsonIgnore
 	public SampleTypeCategory getSampleTypeCategory() {
 		return sampleTypeCategory;
@@ -91,6 +91,5 @@ public class SampleType {
 	public void setSampleTypeCategory(SampleTypeCategory sampleTypeCategory) {
 		this.sampleTypeCategory = sampleTypeCategory;
 	}
-	
-	
+
 }

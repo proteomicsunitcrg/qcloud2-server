@@ -38,9 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder
-                .userDetailsService(this.userDetailsService)
-                .passwordEncoder(passwordEncoder());
+        authenticationManagerBuilder.userDetailsService(this.userDetailsService).passwordEncoder(passwordEncoder());
     }
 
     @Bean
@@ -52,69 +50,43 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
         return new JwtAuthenticationTokenFilter();
     }
-    
-    
+
     @Bean
     @Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		// TODO Auto-generated method stub
-		return super.authenticationManagerBean();
-	}
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
-	@Override
+    @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 // we don't need CSRF because our token is invulnerable
-                .csrf().disable()               
-                
+                .csrf().disable()
 
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 
                 // don't create session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
-                .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                
-                
+                .authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                 // allow anonymous resource requests
-                .antMatchers(
-                        HttpMethod.GET,
-                        "/",
-                        "/*.html",
-                        "/favicon.ico",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.jpg",
-                        "/**/*.png",
-                        "/**/*.js",
-                        "/api/email",
-                        "/assets/**",
-                        "/login",
-                        "/application/**",
-                        "/api/gs-guide-websocket/**",
-                        "/api/passwordreset/check/**"
-                ).permitAll()
-                .antMatchers(HttpMethod.POST,
-                		"/user",
-                		"/api/node",
-                		"/api/gs-guide-websocket/**",
-                		"/api/passwordreset"
-                		).permitAll()
-                .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/ws/**").permitAll()
-                .antMatchers(HttpMethod.PUT,
-                		"/api/passwordreset/reset/**").permitAll()
-                .anyRequest().authenticated();
+                .antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.jpg",
+                        "/**/*.png", "/**/*.js", "/api/email", "/assets/**", "/login", "/application/**",
+                        "/api/gs-guide-websocket/**", "/api/passwordreset/check/**")
+                .permitAll()
+                .antMatchers(HttpMethod.POST, "/user", "/api/node", "/api/gs-guide-websocket/**", "/api/passwordreset")
+                .permitAll().antMatchers("/api/auth/**").permitAll().antMatchers("/ws/**").permitAll()
+                .antMatchers(HttpMethod.PUT, "/api/passwordreset/reset/**").permitAll().anyRequest().authenticated();
 
         // Custom JWT based security filter
-        httpSecurity
-                .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 
         // disable page caching
         httpSecurity.headers().cacheControl();
         httpSecurity.cors();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();

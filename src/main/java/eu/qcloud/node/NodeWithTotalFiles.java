@@ -1,7 +1,7 @@
 package eu.qcloud.node;
 
 public class NodeWithTotalFiles {
-    
+
     private Node node;
     private Long totalFiles;
 
@@ -25,8 +25,5 @@ public class NodeWithTotalFiles {
         this.node = node;
         this.totalFiles = totalFiles;
     }
-
-    
-
 
 }

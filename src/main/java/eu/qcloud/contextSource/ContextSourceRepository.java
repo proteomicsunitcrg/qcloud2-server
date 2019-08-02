@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ContextSourceRepository extends CrudRepository<ContextSource, Long> {
-	
+
 	Optional<ContextSource> findByApiKey(UUID contextSourceApiKey);
 
 }

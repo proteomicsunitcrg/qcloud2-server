@@ -4,17 +4,18 @@ import eu.qcloud.contextSource.ContextSource;
 
 /**
  * Please check ThresholdForPlotImpl description
+ * 
  * @author dmancera
  *
  */
 public class ParamsNoThresholdImpl {
-	
+
 	private Float stepValue;
-	
+
 	private Float initialValue;
-	
+
 	private ContextSource contextSource;
-	
+
 	private Boolean isEnabled;
 
 	public Float getStepValue() {
@@ -55,7 +56,5 @@ public class ParamsNoThresholdImpl {
 		this.contextSource = contextSource;
 		this.isEnabled = isEnabled;
 	}
-	
-	
 
 }

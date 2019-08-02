@@ -1,25 +1,16 @@
 package eu.qcloud.mail;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -62,7 +53,7 @@ public class EmailService {
             helper.setText(html, true);
             helper.setFrom("qcloud@crg.eu", "QCloud 2.0");
             helper.setReplyTo("qcloud@crg.eu", "QCloud 2.0 ");
-            message.setContentLanguage(new String[] {"en"});
+            message.setContentLanguage(new String[] { "en" });
             message.setDescription("Informative email");
             emailSender.send(message);
             return true;

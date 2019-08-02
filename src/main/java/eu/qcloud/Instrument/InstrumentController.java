@@ -22,17 +22,19 @@ import eu.qcloud.sampleType.SampleType;
 
 /**
  * Controlled vocabulary controller
+ * 
  * @author dmancera
  *
  */
 @RestController
 public class InstrumentController {
-	
+
 	@Autowired
 	private InstrumentService instrumentService;
-	
+
 	/**
 	 * Add a CV to the database by category id
+	 * 
 	 * @param cv
 	 * @param categoryId
 	 * @return the inserted CV
@@ -42,49 +44,52 @@ public class InstrumentController {
 	public Instrument addCV(@RequestBody Instrument cv, @PathVariable Long categoryId) {
 		return instrumentService.addCV(cv, categoryId);
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/api/cv/category/apikey/{categoryApiKey}", method = RequestMethod.POST)
 	public Instrument addCV(@RequestBody Instrument cv, @PathVariable UUID categoryApiKey) {
 		return instrumentService.addCV(cv, categoryApiKey);
 	}
-	
+
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="/api/cv", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/cv", method = RequestMethod.GET)
 	public List<Instrument> getAllCV() {
 		return instrumentService.getAllCV();
-		
+
 	}
+
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="/api/cv/category/{categoryApiKey}", method = RequestMethod.GET)
-	public List<Instrument> getAllCVByCategory(@PathVariable UUID categoryApiKey) {		
+	@RequestMapping(value = "/api/cv/category/{categoryApiKey}", method = RequestMethod.GET)
+	public List<Instrument> getAllCVByCategory(@PathVariable UUID categoryApiKey) {
 		return instrumentService.getAllCVbyCategory(categoryApiKey);
 	}
+
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="/api/cv/category/{categoryApiKey}/enabled", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/cv/category/{categoryApiKey}/enabled", method = RequestMethod.GET)
 	public List<Instrument> getAllEnabledCV(@PathVariable UUID categoryApiKey) {
 		return instrumentService.getAllEnabledCVByCategory(categoryApiKey);
 	}
+
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value="/api/cv/{cvId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/cv/{cvId}", method = RequestMethod.GET)
 	public Instrument getCvByCvId(@PathVariable String cvId) {
 		return instrumentService.getCvByCVId(cvId);
 	}
-	
-	@RequestMapping(value="/api/cv/{cvId}", method = RequestMethod.PUT)
+
+	@RequestMapping(value = "/api/cv/{cvId}", method = RequestMethod.PUT)
 	public Instrument changeEnabled(@PathVariable String cvId) {
-		Instrument cv = instrumentService.getCvByCVId(cvId);		
+		Instrument cv = instrumentService.getCvByCVId(cvId);
 		return instrumentService.changeEnabled(cv);
 	}
-	
+
 	// CV default sample types end points
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value="/api/cv/sampletype/{cvId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/api/cv/sampletype/{cvId}", method = RequestMethod.PUT)
 	public void addRelatedSampleTypeToInstrument(@PathVariable String cvId, @RequestBody SampleType sampleType) {
 		instrumentService.addSampleTypeToInstrument(cvId, sampleType);
 	}
-	
+
 	/*
 	 * Exception handlers
 	 */
@@ -92,6 +97,7 @@ public class InstrumentController {
 	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
 	}
+
 	@ExceptionHandler(DataRetrievalFailureException.class)
 	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());

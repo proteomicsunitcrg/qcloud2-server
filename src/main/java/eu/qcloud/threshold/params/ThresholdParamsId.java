@@ -6,18 +6,19 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class ThresholdParamsId implements Serializable{
+public class ThresholdParamsId implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 13329L;
-	
+
 	@Column(nullable = false, updatable = false)
 	private Long thresholdId;
 	@Column(nullable = false, updatable = false)
 	private Long contextSourceId;
-	
-	public ThresholdParamsId() {}
+
+	public ThresholdParamsId() {
+	}
 
 	public Long getThresholdId() {
 		return thresholdId;
@@ -65,6 +66,5 @@ public class ThresholdParamsId implements Serializable{
 			return false;
 		return true;
 	}
-	
-	
+
 }

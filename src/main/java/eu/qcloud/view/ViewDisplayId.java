@@ -6,19 +6,20 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class ViewDisplayId implements Serializable{
+public class ViewDisplayId implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 342321L;
-	
+
 	@Column(nullable = false, updatable = false)
 	private Long chartId;
 	@Column(nullable = false, updatable = false)
 	private Long viewId;
-	
-	public ViewDisplayId() {}
+
+	public ViewDisplayId() {
+	}
 
 	public Long getChartId() {
 		return chartId;
@@ -66,9 +67,5 @@ public class ViewDisplayId implements Serializable{
 			return false;
 		return true;
 	}
-	
-	
-	
-	
-	
+
 }

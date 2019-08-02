@@ -9,21 +9,21 @@ import javax.persistence.OneToMany;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.sampleComposition.SampleComposition;
 
-@Entity(name="peptide")
-public class Peptide extends ContextSource{
-	
-	@Column(name="sequence", unique = true)
+@Entity(name = "peptide")
+public class Peptide extends ContextSource {
+
+	@Column(name = "sequence", unique = true)
 	private String sequence;
-	
+
 	// private String abbreviatedSequence;
-	
+
 	private Float mz;
-	
+
 	private Integer charge;
-	
+
 	@OneToMany(mappedBy = "peptide")
 	private List<SampleComposition> peptide;
-	
+
 	public String getSequence() {
 		return sequence;
 	}
@@ -47,7 +47,5 @@ public class Peptide extends ContextSource{
 	public void setCharge(Integer charge) {
 		this.charge = charge;
 	}
-	
-	
-	
+
 }

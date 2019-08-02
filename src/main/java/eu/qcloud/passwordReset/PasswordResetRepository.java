@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PasswordResetRepository extends CrudRepository<PasswordReset, Long> {
-	
+
 	Optional<PasswordReset> findOptionalByToken(UUID token);
-	
+
 	Optional<PasswordReset> findOptionalByUserId(Long userId);
 
 }

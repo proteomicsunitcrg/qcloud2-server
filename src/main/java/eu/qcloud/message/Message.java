@@ -27,7 +27,8 @@ public class Message {
     @Column(name = "Message")
     @NotBlank
     private String message;
-    // wrong column type encountered in column [show_msg] in table [message]; found [bit (Types#BIT)], but expecting [boolean (Types#BOOLEAN)]
+    // wrong column type encountered in column [show_msg] in table [message]; found
+    // [bit (Types#BIT)], but expecting [boolean (Types#BOOLEAN)]
     @NotNull
     @Column(name = "Show_msg", columnDefinition = "BIT")
     private boolean show;
@@ -39,36 +40,41 @@ public class Message {
     public void setId(Long id) {
         this.id = id;
     }
+
     public void setTitle(String title) {
         this.title = title;
     }
+
     public void setMessage(String message) {
         this.message = message;
     }
+
     public void setShow(boolean show) {
         this.show = show;
     }
-    public void setType(String message_type){
+
+    public void setType(String message_type) {
         this.message_type = message_type;
     }
-    
+
     public Long getId() {
         return this.id;
     }
+
     public String getTitle() {
         return this.title;
     }
+
     public String getMessage() {
         return this.message;
     }
+
     public boolean getShow() {
         return this.show;
     }
+
     public String getMessageType() {
         return this.message_type;
     }
-
-
-
 
 }

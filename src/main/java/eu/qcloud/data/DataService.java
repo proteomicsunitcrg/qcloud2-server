@@ -1046,38 +1046,54 @@ public class DataService {
 			}
 		}
 		/**
-		 * TODO Remove the harcoded 1l and use DB to determine if the error trace has to be shown
+		 * TODO Remove the harcoded 1l and use DB to determine if the error trace has to
+		 * be shown
 		 * 
-		 * THis adds the trace error, this only appears if the plot to draw is about th param Peak Area (id 1 in the DB)
+		 * THis adds the trace error, this only appears if the plot to draw is about th
+		 * param Peak Area (id 1 in the DB)
 		 * 
 		 * Do this 4 the sample type too
 		 */
 		if (chart.get().getParam().getId().equals(1l) && sampleType.get().getId().equals(1l)) {
 			Float median = getMid(data);
 			List<File> files = fileRepository
-			.findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(
-				labSystemApiKey, sampleTypeQCCV, startDate, endDate);
-				files.forEach(file -> {
-					List<Data> dataError = dataRepository.findByFileIdAndParamId(file.getId(), new Long(2));
-					if (dataError.size() == 0) {
-						if (!traces.containsKey("ERROR")) {
-							traces.put("ERROR", generatePlotTraceError(contextSourceRepository.findById(new Long(97)).get()));	// Id 97 is error CS
-						}
-						traces.get("ERROR").getPlotTracePoints().add(generatePlotTracePointError(file, median));
+					.findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(
+							labSystemApiKey, sampleTypeQCCV, startDate, endDate);
+			files.forEach(file -> {
+				List<Data> dataError = dataRepository.findByFileIdAndParamId(file.getId(), new Long(2));
+				if (dataError.size() == 0) {
+					if (!traces.containsKey("ERROR")) {
+						traces.put("ERROR",
+								generatePlotTraceError(contextSourceRepository.findById(new Long(97)).get())); // Id 97
+																												// is
+																												// error
+																												// CS
 					}
-				});
+					traces.get("ERROR").getPlotTracePoints().add(generatePlotTracePointError(file, median));
+				}
+			});
 		}
 
-		List <CommunityLineNode> communityLinesNode = getCommunityLines();
+		List<CommunityLineNode> communityLinesNode = getCommunityLines();
 		System.out.println(communityLinesNode.size());
-		for (CommunityLineNode communityLineNode: communityLinesNode) {
-			if (chart.get().getParam().equals(communityLineNode.getCommunityLine().getParam()) && communityLineNode.isActive() && chart.get().getSampleType().equals(communityLineNode.getCommunityLine().getSampleType()) ) {
-				for (ChartParams chartParam: chartParams) {
+		for (CommunityLineNode communityLineNode : communityLinesNode) {
+			if (chart.get().getParam().equals(communityLineNode.getCommunityLine().getParam())
+					&& communityLineNode.isActive()
+					&& chart.get().getSampleType().equals(communityLineNode.getCommunityLine().getSampleType())) {
+				for (ChartParams chartParam : chartParams) {
 					if (chartParam.getContextSource().equals(communityLineNode.getCommunityLine().getContextSource())) {
-						traces.put(communityLineNode.getCommunityLine().getName(), generateCommunityPlotTrace(communityLineNode));
-						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints().add(generatePlotTracePointCommunity(startDate,communityLineNode.getCommunityLine().getValue(), communityLineNode.getCommunityLine().getName()));
-						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints().add(generatePlotTracePointCommunity(endDate,communityLineNode.getCommunityLine().getValue(), communityLineNode.getCommunityLine().getName()));
-						traces.get(communityLineNode.getCommunityLine().getName()).setCommunityPartner(communityLineNode.getCommunityLine().getCommunityPartner());
+						traces.put(communityLineNode.getCommunityLine().getName(),
+								generateCommunityPlotTrace(communityLineNode));
+						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
+								.add(generatePlotTracePointCommunity(startDate,
+										communityLineNode.getCommunityLine().getValue(),
+										communityLineNode.getCommunityLine().getName()));
+						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
+								.add(generatePlotTracePointCommunity(endDate,
+										communityLineNode.getCommunityLine().getValue(),
+										communityLineNode.getCommunityLine().getName()));
+						traces.get(communityLineNode.getCommunityLine().getName())
+								.setCommunityPartner(communityLineNode.getCommunityLine().getCommunityPartner());
 						traces.get(communityLineNode.getCommunityLine().getName()).setContextSourceId(10000l);
 					}
 				}
@@ -1090,8 +1106,7 @@ public class DataService {
 		return plotTraces;
 	}
 
-
-	private List <CommunityLineNode> getCommunityLines() {
+	private List<CommunityLineNode> getCommunityLines() {
 		Node node = getManagerFromSecurityContext().getNode();
 		return communityLineNodeRepository.findAllByNodeId(node.getId());
 	}
@@ -1119,7 +1134,7 @@ public class DataService {
 			}
 			result += d.getCalculatedValue();
 		}
-		return result/data.size();
+		return result / data.size();
 	}
 
 	private PlotTracePoint generatePlotTracePointFromData(Data d) {

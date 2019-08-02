@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TraceColorService {
-	
+
 	@Autowired
 	private TraceColorRepository traceColorRepository;
 
@@ -28,7 +28,7 @@ public class TraceColorService {
 			t.setMainColor(traceColor.getMainColor());
 			traceColorRepository.save(t);
 		});
-		
+
 	}
 
 }

@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataRepository;
-import eu.qcloud.data.NonConformityStatus;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileRepository;
 import eu.qcloud.guideset.GuideSet;

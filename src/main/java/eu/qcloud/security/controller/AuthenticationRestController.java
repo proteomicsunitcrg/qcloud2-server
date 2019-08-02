@@ -2,7 +2,6 @@ package eu.qcloud.security.controller;
 
 import java.util.Date;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -32,7 +31,7 @@ public class AuthenticationRestController {
 
     @Value("${jwt.expiration}")
     private Long expiration;
-    
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -43,50 +42,46 @@ public class AuthenticationRestController {
     private UserDetailsService userDetailsService;
 
     @RequestMapping(value = "${jwt.route.authentication.path}", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
-    	
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest)
+            throws AuthenticationException {
+
         // Perform the security
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authenticationRequest.getUsername(),
-                        authenticationRequest.getPassword()
-                )
-        );        
+        final Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
+                        authenticationRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Reload password post-security so we can generate token
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         Date expirationDate = generateExpirationDate();
         final String token = jwtTokenUtil.generateToken(userDetails, expirationDate);
-        
+
         // Return the token
         HttpHeaders headers = new HttpHeaders();
-        headers.set("tokenexpiration",Long.toString((expirationDate.getTime())));
-        //headers.set("tokenExpiration",expirationDate.toString());
-        
-        //return ResponseEntity.ok(new JwtAuthenticationResponse(token));
-        
-        return (new ResponseEntity<>(new JwtAuthenticationResponse(token),headers,HttpStatus.OK));
+        headers.set("tokenexpiration", Long.toString((expirationDate.getTime())));
+        // headers.set("tokenExpiration",expirationDate.toString());
+
+        // return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+
+        return (new ResponseEntity<>(new JwtAuthenticationResponse(token), headers, HttpStatus.OK));
     }
-    
+
     private Date generateExpirationDate() {
         return new Date(System.currentTimeMillis() + expiration * 1000);
     }
     // I have commented it in order to test JWT
     /*
-    @RequestMapping(value = "${jwt.route.authentication.refresh}", method = RequestMethod.GET)
-    public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
-        String token = request.getHeader(tokenHeader);
-        String username = jwtTokenUtil.getUsernameFromToken(token);
-        JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(username);
-
-        if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate())) {
-            String refreshedToken = jwtTokenUtil.refreshToken(token);
-            return ResponseEntity.ok(new JwtAuthenticationResponse(refreshedToken));
-        } else {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-    */
+     * @RequestMapping(value = "${jwt.route.authentication.refresh}", method =
+     * RequestMethod.GET) public ResponseEntity<?>
+     * refreshAndGetAuthenticationToken(HttpServletRequest request) { String token =
+     * request.getHeader(tokenHeader); String username =
+     * jwtTokenUtil.getUsernameFromToken(token); JwtUser user = (JwtUser)
+     * userDetailsService.loadUserByUsername(username);
+     * 
+     * if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate()))
+     * { String refreshedToken = jwtTokenUtil.refreshToken(token); return
+     * ResponseEntity.ok(new JwtAuthenticationResponse(refreshedToken)); } else {
+     * return ResponseEntity.badRequest().body(null); } }
+     */
 
 }

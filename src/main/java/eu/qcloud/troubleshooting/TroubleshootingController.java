@@ -34,7 +34,8 @@ public class TroubleshootingController {
 
 	@RequestMapping(value = "/{troubleshootingType}", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
-	public Troubleshooting addTroubleshootingItem(@RequestBody Troubleshooting troubleshooting, @PathVariable TroubleshootingType troubleshootingType) {
+	public Troubleshooting addTroubleshootingItem(@RequestBody Troubleshooting troubleshooting,
+			@PathVariable TroubleshootingType troubleshootingType) {
 		return troubleshootingService.addTroubleshootingItem(troubleshooting, troubleshootingType);
 	}
 

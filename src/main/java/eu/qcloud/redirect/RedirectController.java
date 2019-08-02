@@ -9,13 +9,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class RedirectController {
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String loginRedirect(HttpServletRequest request) {        
-    	return "forward:/index.html";
+    public String loginRedirect(HttpServletRequest request) {
+        return "forward:/index.html";
     }
+
     @RequestMapping(value = "/application/**", method = RequestMethod.GET)
     public String applicationRedirect(HttpServletRequest request) {
-         
-    	return "forward:/index.html";
+
+        return "forward:/index.html";
     }
 
 }

@@ -13,8 +13,10 @@ import eu.qcloud.Instrument.Instrument;
 import eu.qcloud.Instrument.InstrumentRepository;
 import eu.qcloud.guideset.GuideSet;
 import eu.qcloud.guideset.GuideSetRepository;
+
 /**
  * Data source service
+ * 
  * @author dmancera
  *
  */
@@ -22,50 +24,51 @@ import eu.qcloud.guideset.GuideSetRepository;
 public class DataSourceService {
 	@Autowired
 	private DataSourceRepository dataSourceRepository;
-	
+
 	@Autowired
 	private GuideSetRepository guideSetRepository;
-	
+
 	@Autowired
 	private InstrumentRepository cvRepository;
-	
+
 	public List<DataSource> getAllDataSource() {
 		List<DataSource> dataSources = new ArrayList<>();
 		dataSourceRepository.findAll().forEach(dataSources::add);
 		return dataSources;
 	}
-	
+
 	public List<DataSource> getAllDataSourceByNodeId(Long nodeId) {
-		
+
 		List<DataSource> dataSources = new ArrayList<>();
 		dataSourceRepository.findByNodeId(nodeId).forEach(dataSources::add);
-		
+
 		return dataSources;
 	}
-	
+
 	public List<DataSource> addNewDataSource(DataSource dataSource) {
 		dataSourceRepository.save(dataSource);
 		return dataSourceRepository.findByNode(dataSource.getNode());
 	}
+
 	/**
-	 * Checks if the current user has the requested
-	 * data source
+	 * Checks if the current user has the requested data source
+	 * 
 	 * @return true or false
 	 */
-	public boolean checkIfNodeHasDataSource(Long dataSourceId,Long nodeId) {
-		DataSource check = dataSourceRepository.findByIdAndNodeId(dataSourceId,nodeId);
-		return check!=null;
-		
+	public boolean checkIfNodeHasDataSource(Long dataSourceId, Long nodeId) {
+		DataSource check = dataSourceRepository.findByIdAndNodeId(dataSourceId, nodeId);
+		return check != null;
+
 	}
 
 	public List<DataSource> getAllDataSourceByNodeIdAndCategoryId(Long nodeId, Long categoryId) {
 		return dataSourceRepository.findByNodeIdAndCvCategoryId(nodeId, categoryId);
 	}
-	
+
 	public List<DataSource> getAllDataSourceByNodeIdAndCategoryApiKey(Long nodeId, UUID categoryApiKey) {
 		return dataSourceRepository.findByNodeIdAndCvCategoryApiKey(nodeId, categoryApiKey);
 	}
-	
+
 	public Optional<DataSource> findById(Long id) {
 		return dataSourceRepository.findById(id);
 	}
@@ -83,18 +86,18 @@ public class DataSourceService {
 		return dataSourceRepository.save(ds);
 
 	}
-	
+
 	public GuideSet saveGuideSet(GuideSet gs) {
 		return guideSetRepository.save(gs);
 	}
 
 	public DataSource addNewDataSourceAuto(DataSource dataSource) {
 		Optional<Instrument> cv = cvRepository.getByCVId(dataSource.getCv().getCVId());
-		if(!cv.isPresent()) {
+		if (!cv.isPresent()) {
 			throw new DataRetrievalFailureException("CV not found");
 		}
 		dataSource.setCv(cv.get());
 		return dataSourceRepository.save(dataSource);
 	}
-			
+
 }

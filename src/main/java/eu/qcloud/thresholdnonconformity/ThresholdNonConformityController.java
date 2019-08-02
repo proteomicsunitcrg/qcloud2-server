@@ -19,7 +19,7 @@ public class ThresholdNonConformityController {
 
 	@Autowired
 	private ThresholdNonConformityService thresholdNonConformityService;
-	
+
 	@RequestMapping(value = "/api/thresholdnonconformity", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<ThreholdNonConformityWithoutThresholdParams> getAllThresholdNonConformity() {
@@ -29,15 +29,18 @@ public class ThresholdNonConformityController {
 	@RequestMapping(value = "/api/thresholdnonconformity/{labSystemApiKey}/{page}", method = RequestMethod.GET)
 	public List<ThreholdNonConformityWithoutThresholdParams> getLabSystemNonConformities(
 			@PathVariable UUID labSystemApiKey, @PathVariable int page, HttpServletResponse response) {
-		response.addIntHeader("total", (int)thresholdNonConformityService.getTotalByLabSystem(labSystemApiKey));
+		response.addIntHeader("total", (int) thresholdNonConformityService.getTotalByLabSystem(labSystemApiKey));
 		return thresholdNonConformityService.findLabSystemNonConformitiesByPage(labSystemApiKey, page);
 	}
-	
+
 	@RequestMapping(value = "/api/thresholdnonconformity/{labSystemApiKey}/{sampleTypeQQCV}/{page}", method = RequestMethod.GET)
 	public List<ThreholdNonConformityWithoutThresholdParams> getLabSystemNonConformitiesBySampleType(
-			@PathVariable UUID labSystemApiKey,@PathVariable String sampleTypeQQCV, @PathVariable int page, HttpServletResponse response) {
-		response.addIntHeader("total", (int)thresholdNonConformityService.getTotalByLabSystemAndSampleType(labSystemApiKey, sampleTypeQQCV));
-		return thresholdNonConformityService.findLabSystemNonConformitiesBySampleTypeAndByPage(labSystemApiKey,sampleTypeQQCV, page);
+			@PathVariable UUID labSystemApiKey, @PathVariable String sampleTypeQQCV, @PathVariable int page,
+			HttpServletResponse response) {
+		response.addIntHeader("total",
+				(int) thresholdNonConformityService.getTotalByLabSystemAndSampleType(labSystemApiKey, sampleTypeQQCV));
+		return thresholdNonConformityService.findLabSystemNonConformitiesBySampleTypeAndByPage(labSystemApiKey,
+				sampleTypeQQCV, page);
 	}
 
 }

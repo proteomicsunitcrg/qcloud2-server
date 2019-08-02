@@ -40,69 +40,70 @@ import eu.qcloud.threshold.params.ThresholdParams;
  *
  */
 import eu.qcloud.threshold.processor.ThresholdProcessor;
+
 @Entity
-@Table(name="threshold")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@Table(name = "threshold")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Threshold implements Cloneable {
-	
+
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "threshold_seq")
-    @SequenceGenerator(name = "threshold_seq", sequenceName = "threshold_seq", allocationSize = 1)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "threshold_seq")
+	@SequenceGenerator(name = "threshold_seq", sequenceName = "threshold_seq", allocationSize = 1)
 	protected Long id;
-	
-	@Column(name="name")
+
+	@Column(name = "name")
 	protected String name;
-	
-	@Column(name="is_monitored", columnDefinition="bit default 1")
-    private boolean isMonitored;
-	
-	@Column(name="is_enabled", columnDefinition="bit default 1")
-    private boolean isEnabled;
-	
-    @Column(name = "apiKey", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
-	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
-    private UUID apiKey;
-    
-    @Enumerated(EnumType.STRING)
-	@Column(name="non_conformity_direction", columnDefinition="varchar(255)")
-    private Direction nonConformityDirection;
-	
+
+	@Column(name = "is_monitored", columnDefinition = "bit default 1")
+	private boolean isMonitored;
+
+	@Column(name = "is_enabled", columnDefinition = "bit default 1")
+	private boolean isEnabled;
+
+	@Column(name = "apiKey", updatable = true, nullable = false, unique = true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
+	private UUID apiKey;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "non_conformity_direction", columnDefinition = "varchar(255)")
+	private Direction nonConformityDirection;
+
 	@Transient
 	protected ThresholdConstraint adminThresholdConstraint;
-	
+
 	@Transient
 	protected ThresholdConstraint managerThresholdConstraint;
-	
+
 	@Transient
 	protected Direction direction;
-	
+
 	@Transient
 	protected ThresholdType thresholdType;
-	
+
 	@Transient
-	protected ThresholdProcessor processor;	
-	
+	protected ThresholdProcessor processor;
+
 	@ManyToOne
-	@JoinColumn(name="sample_type_id", nullable= false)
+	@JoinColumn(name = "sample_type_id", nullable = false)
 	protected SampleType sampleType;
-	
+
 	@ManyToOne
-	@JoinColumn(name="param_id", nullable= false)
+	@JoinColumn(name = "param_id", nullable = false)
 	protected Param param;
-	
+
 	@ManyToOne
-	@JoinColumn(name="cv_id", nullable= false)
+	@JoinColumn(name = "cv_id", nullable = false)
 	protected Instrument instrument;
-	
-	@Column(name="steps")
+
+	@Column(name = "steps")
 	protected int steps;
-	
+
 	@OneToOne(optional = true)
-	@JoinColumn(name="lab_system_id")
+	@JoinColumn(name = "lab_system_id")
 	protected LabSystem labSystem;
-	
-	@OneToMany(mappedBy="threshold")
+
+	@OneToMany(mappedBy = "threshold")
 	protected List<ThresholdParams> thresholdParams;
 
 	public LabSystem getLabSystem() {
@@ -160,7 +161,7 @@ public class Threshold implements Cloneable {
 	public void setSampleType(SampleType sampleType) {
 		this.sampleType = sampleType;
 	}
-	
+
 	public ThresholdType getThresholdType() {
 		return thresholdType;
 	}
@@ -184,6 +185,7 @@ public class Threshold implements Cloneable {
 	public void setThresholdParams(List<ThresholdParams> thresholdParams) {
 		this.thresholdParams = thresholdParams;
 	}
+
 	@JsonIgnore
 	public ThresholdProcessor getProcessor() {
 		return processor;
@@ -225,13 +227,13 @@ public class Threshold implements Cloneable {
 		this.isEnabled = isEnabled;
 	}
 
-//	public boolean getIsZeroNoData() {
-//		return isZeroNoData;
-//	}
-//
-//	public void setIsZeroNoData(boolean isZeroNoData) {
-//		this.isZeroNoData = isZeroNoData;
-//	}
+	// public boolean getIsZeroNoData() {
+	// return isZeroNoData;
+	// }
+	//
+	// public void setIsZeroNoData(boolean isZeroNoData) {
+	// this.isZeroNoData = isZeroNoData;
+	// }
 
 	public Direction getNonConformityDirection() {
 		return nonConformityDirection;
@@ -240,7 +242,7 @@ public class Threshold implements Cloneable {
 	public void setNonConformityDirection(Direction nonConformityDirection) {
 		this.nonConformityDirection = nonConformityDirection;
 	}
-	
+
 	public UUID getApiKey() {
 		return apiKey;
 	}
@@ -248,10 +250,11 @@ public class Threshold implements Cloneable {
 	public void setApiKey(UUID apiKey) {
 		this.apiKey = apiKey;
 	}
+
 	@Override
 	public Threshold clone() {
 		try {
-			return (Threshold)super.clone();
+			return (Threshold) super.clone();
 		} catch (CloneNotSupportedException e) {
 			System.out.println("Could not clone");
 
@@ -262,13 +265,11 @@ public class Threshold implements Cloneable {
 	@Override
 	public String toString() {
 		return "Threshold [adminThresholdConstraint=" + adminThresholdConstraint + ", apiKey=" + apiKey + ", direction="
-				+ direction + ", id=" + id + ", instrument=" + instrument
-				+ ", isEnabled=" + isEnabled + ", isMonitored=" + isMonitored + ", labSystem=" + labSystem
-				+ ", managerThresholdConstraint=" + managerThresholdConstraint + ", name=" + name
-				+ ", nonConformityDirection=" + nonConformityDirection + ", param=" + param + ", processor=" + processor
-				+ ", sampleType=" + sampleType + ", steps=" + steps + ", thresholdParams=" + thresholdParams
-				+ ", thresholdType=" + thresholdType + "]";
+				+ direction + ", id=" + id + ", instrument=" + instrument + ", isEnabled=" + isEnabled
+				+ ", isMonitored=" + isMonitored + ", labSystem=" + labSystem + ", managerThresholdConstraint="
+				+ managerThresholdConstraint + ", name=" + name + ", nonConformityDirection=" + nonConformityDirection
+				+ ", param=" + param + ", processor=" + processor + ", sampleType=" + sampleType + ", steps=" + steps
+				+ ", thresholdParams=" + thresholdParams + ", thresholdType=" + thresholdType + "]";
 	}
 
-	
 }

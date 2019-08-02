@@ -48,7 +48,6 @@ public class FileService {
 	@Autowired
 	private SampleTypeRepository sampleTypeRepository;
 
-	
 	private final Log logger = LogFactory.getLog(this.getClass());
 
 	public File addNewFile(File file) {
@@ -128,7 +127,8 @@ public class FileService {
 		Optional<LabSystem> ls = labSystemService.findSystemByApiKey(labSystemApiKey);
 
 		if (!isLastFile(file, st, ls.get())) {
-			throw new DataIntegrityViolationException("Can not insert this file because it is not the last file! " + file.getChecksum());
+			throw new DataIntegrityViolationException(
+					"Can not insert this file because it is not the last file! " + file.getChecksum());
 		}
 		if (ls.isPresent()) {
 			file.setSampleType(st);
@@ -171,7 +171,7 @@ public class FileService {
 
 	public File getFileByChecksumWithUserCheck(String checksum, User userFromSecurityContext) {
 		File file = fileRepository.findByChecksum(checksum);
-		if(file == null ) {
+		if (file == null) {
 			throw new DataRetrievalFailureException("Not your");
 		}
 		if (file.getLabSystem().getMainDataSource().getNode().getId() != userFromSecurityContext.getNode().getId()) {
@@ -190,18 +190,18 @@ public class FileService {
 
 	public void updateFile(String checksum, File file) {
 		File f = fileRepository.findByChecksum(checksum);
-		if(f == null) {
+		if (f == null) {
 			throw new DataRetrievalFailureException("File not found");
 		}
 		f.setIsValidChecksum(file.getIsValidChecksum());
 		fileRepository.save(f);
-		
-		
+
 	}
 
 	public Long getCountDataBetweenDates(UUID labSystemApiKey, String sampleTypeName, Date startDate, Date endDate) {
 		SampleType sample = sampleNameToQQCV(sampleTypeName);
-		return fileRepository.countByLabSystemApiKeyAndSampleTypeIdAndCreationDateBetween(labSystemApiKey, sample.getId(), startDate, endDate);
+		return fileRepository.countByLabSystemApiKeyAndSampleTypeIdAndCreationDateBetween(labSystemApiKey,
+				sample.getId(), startDate, endDate);
 	}
 
 	private SampleType sampleNameToQQCV(String sampleTypeName) {

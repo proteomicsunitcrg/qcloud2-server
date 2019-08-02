@@ -23,43 +23,43 @@ import eu.qcloud.troubleshooting.cause.Cause;
 import eu.qcloud.troubleshooting.problem.Problem;
 
 @Entity
-@Table(name="annotation")
+@Table(name = "annotation")
 public class Annotation {
-	
+
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "annotation_seq")
-    @SequenceGenerator(name = "annotation_seq", sequenceName = "annotation_seq", allocationSize = 1)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "annotation_seq")
+	@SequenceGenerator(name = "annotation_seq", sequenceName = "annotation_seq", allocationSize = 1)
 	private Long id;
-	
-	@Column(name="date")
+
+	@Column(name = "date")
 	private Date date;
-	
-	@Column(name="annotation_date")
+
+	@Column(name = "annotation_date")
 	private Date annotationDate;
-	
-	@ManyToMany(cascade = {CascadeType.PERSIST})
+
+	@ManyToMany(cascade = { CascadeType.PERSIST })
 	private List<Problem> problems;
-	
-	@ManyToMany(cascade = {CascadeType.PERSIST})
+
+	@ManyToMany(cascade = { CascadeType.PERSIST })
 	private List<Action> actions;
-	
-	@ManyToMany(cascade = {CascadeType.PERSIST})
+
+	@ManyToMany(cascade = { CascadeType.PERSIST })
 	private List<Cause> causes;
-	
+
 	@ManyToOne
-	@JoinColumn(name="lab_system_id")
+	@JoinColumn(name = "lab_system_id")
 	private LabSystem labSystem;
-	
+
 	@ManyToOne
-	@JoinColumn(name="user_id")
+	@JoinColumn(name = "user_id")
 	private User user;
-	
-	@Column(name = "api_key", updatable = true, nullable = false, unique=true, columnDefinition = "BINARY(16)")
-	@org.hibernate.annotations.Type(type="org.hibernate.type.UUIDBinaryType")
+
+	@Column(name = "api_key", updatable = true, nullable = false, unique = true, columnDefinition = "BINARY(16)")
+	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
-	
-	@Column(name="description")
+
+	@Column(name = "description")
 	private String description;
 
 	public Long getId() {
@@ -149,5 +149,5 @@ public class Annotation {
 	public void setAnnotationDate(Date annotationDate) {
 		this.annotationDate = annotationDate;
 	}
-	
+
 }

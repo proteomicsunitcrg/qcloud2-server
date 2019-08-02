@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.UUID;
 
 public class QcrawlerLabSystem {
-	
+
 	private String name;
-	
+
 	private UUID apiKey;
-	
+
 	private List<QcrawlerSampleType> sampleTypes;
 
 	public String getName() {
@@ -46,8 +46,5 @@ public class QcrawlerLabSystem {
 		this.apiKey = apiKey;
 		this.sampleTypes = sampleTypes;
 	}
-	
-	
-	
-	
+
 }

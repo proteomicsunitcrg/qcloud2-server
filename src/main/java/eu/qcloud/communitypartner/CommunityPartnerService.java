@@ -21,26 +21,26 @@ public class CommunityPartnerService {
         return partnerRepository.findAll();
     }
 
-	public CommunityPartner createNew(CommunityPartner communityPartner) {
-		return partnerRepository.save(communityPartner);
+    public CommunityPartner createNew(CommunityPartner communityPartner) {
+        return partnerRepository.save(communityPartner);
     }
-    
+
     public CommunityPartner findById(Long id) {
         return partnerRepository.findById(id).get();
     }
 
-	public boolean delete(Long id) {
+    public boolean delete(Long id) {
         List<CommunityLine> communityLines = communityLineRepository.findAllByCommunityPartnerId(id);
-        for(CommunityLine line : communityLines) {
+        for (CommunityLine line : communityLines) {
             line.setCommunityPartner(null);
             communityLineRepository.save(line);
         }
         try {
             partnerRepository.deleteById(id);
             return true;
-            
+
         } catch (Exception e) {
             return false;
         }
-	}
+    }
 }

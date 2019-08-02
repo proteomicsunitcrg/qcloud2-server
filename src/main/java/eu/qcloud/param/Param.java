@@ -13,28 +13,28 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import eu.qcloud.data.ProcessorType;
 
 @Entity
-@Table(name="param")
+@Table(name = "param")
 public class Param {
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "param_seq")
-    @SequenceGenerator(name = "param_seq", sequenceName = "param_seq", allocationSize = 1)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "param_seq")
+	@SequenceGenerator(name = "param_seq", sequenceName = "param_seq", allocationSize = 1)
 	private Long id;
-	
-	@Column(name="name")
+
+	@Column(name = "name")
 	private String name;
-	
+
 	private String isFor;
-	
-	@Column(name="processor",nullable= true)	
+
+	@Column(name = "processor", nullable = true)
 	private ProcessorType processor;
-	
-	@Column(name="QCCV", unique=true)
+
+	@Column(name = "QCCV", unique = true)
 	private String qccv;
-	
-	@Column(name="is_zero_no_data", columnDefinition="bit default 0")
-    private boolean isZeroNoData;
-	
+
+	@Column(name = "is_zero_no_data", columnDefinition = "bit default 0")
+	private boolean isZeroNoData;
+
 	public String getqCCV() {
 		return qccv;
 	}
@@ -58,7 +58,7 @@ public class Param {
 	public void setIsFor(String isFor) {
 		this.isFor = isFor;
 	}
-	
+
 	@JsonIgnore
 	public Long getId() {
 		return id;
@@ -83,6 +83,5 @@ public class Param {
 	public void setIsZeroNoData(boolean isZeroNoData) {
 		this.isZeroNoData = isZeroNoData;
 	}
-	
-	
+
 }

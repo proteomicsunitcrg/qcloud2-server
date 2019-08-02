@@ -22,39 +22,39 @@ import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.sampleType.SampleType;
 
 @Entity
-@Table(name="file")
+@Table(name = "file")
 public class File {
-	
+
 	@Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "file_seq")
-    @SequenceGenerator(name = "file_seq", sequenceName = "file_seq", allocationSize = 1)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "file_seq")
+	@SequenceGenerator(name = "file_seq", sequenceName = "file_seq", allocationSize = 1)
 	private Long id;
-	
+
 	@ManyToOne
-	@JoinColumn(name="sample_type_id")
+	@JoinColumn(name = "sample_type_id")
 	private SampleType sampleType;
-		
+
 	@ManyToOne
-	@JoinColumn(name="labsystem_id")
+	@JoinColumn(name = "labsystem_id")
 	private LabSystem labSystem;
-	
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-	@Column(name="creation_date", columnDefinition="DATETIME")
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Column(name = "creation_date", columnDefinition = "DATETIME")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationDate;
-	
-	@Column(name="filename")
+
+	@Column(name = "filename")
 	private String filename;
-	
-	@Column(name="checksum",unique=true)
+
+	@Column(name = "checksum", unique = true)
 	private String checksum;
-	
+
 	@ManyToOne
-	@JoinColumn(name="guideSetId")
+	@JoinColumn(name = "guideSetId")
 	private GuideSet guideSet;
-	
-	@Column(name="is_valid_checksum", columnDefinition="bit default 1")
+
+	@Column(name = "is_valid_checksum", columnDefinition = "bit default 1")
 	private Boolean isValidChecksum;
 
 	public String getChecksum() {
@@ -64,7 +64,7 @@ public class File {
 	public void setChecksum(String checksum) {
 		this.checksum = checksum;
 	}
-	
+
 	@JsonIgnore
 	public Long getId() {
 		return id;
@@ -121,7 +121,5 @@ public class File {
 	public void setIsValidChecksum(Boolean isValidChecksum) {
 		this.isValidChecksum = isValidChecksum;
 	}
-	
-	
-	
+
 }

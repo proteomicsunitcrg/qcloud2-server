@@ -37,7 +37,6 @@ public class WebSocketService {
 	@Autowired
 	private ThresholdUtils thresholdUtils;
 
-
 	public void sendNonConformityToNodeUsers(Node node, List<ThresholdNonConformity> thresholdNonConformities,
 			LabSystem labSystem) {
 		// get connected users
@@ -58,37 +57,34 @@ public class WebSocketService {
 			User user = userRepository.findByUsername(s.getName());
 			if (user.getNode().getId() == node.getId()) {
 				// send message
-				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
-						new WebSocketNotification("annotation-" + annotation.getLabSystem().getApiKey(), null,
-								null, annotation));
+				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply", new WebSocketNotification(
+						"annotation-" + annotation.getLabSystem().getApiKey(), null, null, annotation));
 			}
 		}
 	}
-	
+
 	public void sendDeleteAnnotationToNodeUsers(Node node, UUID annotationApiKey) {
 		for (SimpUser s : userRegistry.getUsers()) {
 			User user = userRepository.findByUsername(s.getName());
 			if (user.getNode().getId() == node.getId()) {
 				// send message
 				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
-						new WebSocketNotification("deleteannotation-", null,
-								null, annotationApiKey));
+						new WebSocketNotification("deleteannotation-", null, null, annotationApiKey));
 			}
 		}
 	}
-	
+
 	public void sendUpdateAnnotationToNodeUsers(Node node, Annotation annotation) {
 		for (SimpUser s : userRegistry.getUsers()) {
 			User user = userRepository.findByUsername(s.getName());
 			if (user.getNode().getId() == node.getId()) {
 				// send message
-				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
-						new WebSocketNotification("updateannotation-" + annotation.getLabSystem().getApiKey(), null,
-								null, annotation));
+				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply", new WebSocketNotification(
+						"updateannotation-" + annotation.getLabSystem().getApiKey(), null, null, annotation));
 			}
 		}
 	}
-	
+
 	public void sendTracePointDataToNodeUsers(Node node, Param param, List<PlotTrace> dataForPlot, LabSystem labSystem,
 			SampleType sampleType) {
 		for (SimpUser s : userRegistry.getUsers()) {
@@ -130,7 +126,7 @@ public class WebSocketService {
 	public void sendMessageToAllUsers(Message message) {
 		for (SimpUser s : userRegistry.getUsers()) {
 			messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
-				new WebSocketNotification("message-", null, null, message));
+					new WebSocketNotification("message-", null, null, message));
 		}
 	}
 

@@ -15,23 +15,13 @@ public final class JwtUserFactory {
     }
 
     public static JwtUser create(User user) {
-        return new JwtUser(
-                user.getId(),
-                user.getApiKey(),
-                user.getUsername(),
-                user.getFirstname(),
-                user.getLastname(),
-                user.getEmail(),
-                user.getPassword(),
-                mapToGrantedAuthorities(user.getAuthorities()),
-                user.getEnabled(),
-                user.getLastPasswordResetDate()
-        );
+        return new JwtUser(user.getId(), user.getApiKey(), user.getUsername(), user.getFirstname(), user.getLastname(),
+                user.getEmail(), user.getPassword(), mapToGrantedAuthorities(user.getAuthorities()), user.getEnabled(),
+                user.getLastPasswordResetDate());
     }
 
     private static List<GrantedAuthority> mapToGrantedAuthorities(List<Authority> authorities) {
-        return authorities.stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getName().name()))
+        return authorities.stream().map(authority -> new SimpleGrantedAuthority(authority.getName().name()))
                 .collect(Collectors.toList());
     }
 }

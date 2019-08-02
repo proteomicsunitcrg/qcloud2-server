@@ -26,46 +26,44 @@ import eu.qcloud.sampleType.SampleType;
 @Entity
 @Table(name = "cv")
 public class Instrument {
-    @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "cv_seq")
-    @SequenceGenerator(name = "cv_seq", sequenceName = "cv_seq", allocationSize = 1)
-    private Long id;
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "cv_seq")
+	@SequenceGenerator(name = "cv_seq", sequenceName = "cv_seq", allocationSize = 1)
+	private Long id;
 
-    @Column(name = "NAME", length = 50, unique = true)
-    @NotNull    
-    private String name;
-    
-    @ManyToOne(cascade={CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH})    
-    @JoinColumn(name="category_id")    
-    private Category category;
-    
-    @Lob
-    @Column(name="definition")
-    private String definition;
-    
-    @Column(name="cv_id")
-    private String qccv;
-    
-    @Column(name="enabled", columnDefinition="bit default 0")
-    private boolean enabled;
+	@Column(name = "NAME", length = 50, unique = true)
+	@NotNull
+	private String name;
 
-    @JsonIgnore
-    @OneToMany(mappedBy="cv")
-    private List<DataSource> dataSource;
-    
-    @ManyToMany
-    private List<SampleType> sampleTypes;
-    
-    
-    public List<DataSource> getDataSource() {
+	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+	@JoinColumn(name = "category_id")
+	private Category category;
+
+	@Lob
+	@Column(name = "definition")
+	private String definition;
+
+	@Column(name = "cv_id")
+	private String qccv;
+
+	@Column(name = "enabled", columnDefinition = "bit default 0")
+	private boolean enabled;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "cv")
+	private List<DataSource> dataSource;
+
+	@ManyToMany
+	private List<SampleType> sampleTypes;
+
+	public List<DataSource> getDataSource() {
 		return dataSource;
 	}
 
 	public void setDataSource(List<DataSource> dataSource) {
 		this.dataSource = dataSource;
 	}
-
 
 	public boolean isEnabled() {
 		return enabled;
@@ -75,8 +73,9 @@ public class Instrument {
 		this.enabled = enabled;
 	}
 
-	public Instrument() {}
-    	
+	public Instrument() {
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -132,5 +131,5 @@ public class Instrument {
 	public void setSampleTypes(List<SampleType> sampleTypes) {
 		this.sampleTypes = sampleTypes;
 	}
-	
+
 }

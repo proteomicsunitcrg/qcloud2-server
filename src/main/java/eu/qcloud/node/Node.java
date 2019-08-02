@@ -20,10 +20,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import eu.qcloud.communityline.CommunityLine;
 import eu.qcloud.communityline.CommunityLineNode;
 import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.security.model.User;
@@ -74,7 +72,7 @@ public class Node {
 	public List<User> getUsers() {
 		return users;
 	}
-	
+
 	@OneToMany(mappedBy = "node")
 	private Set<CommunityLineNode> communityLineNode = new HashSet<CommunityLineNode>();
 
@@ -105,6 +103,7 @@ public class Node {
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	@JsonIgnore
 	public Set<CommunityLineNode> getCommunityLine() {
 		return communityLineNode;

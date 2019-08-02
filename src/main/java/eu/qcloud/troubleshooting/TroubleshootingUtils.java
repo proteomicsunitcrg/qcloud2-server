@@ -8,9 +8,9 @@ import eu.qcloud.troubleshooting.problem.Problem;
 import eu.qcloud.troubleshooting.test.Test;
 
 public class TroubleshootingUtils {
-	
+
 	public static Troubleshooting createTroubleshootingByType(Troubleshooting item, TroubleshootingType type) {
-		switch(type) {
+		switch (type) {
 		case PROBLEM:
 			return new Problem(item.getName(), item.getDescription(), item.getQccv(), UUID.randomUUID());
 		case ACTION:
@@ -22,6 +22,6 @@ public class TroubleshootingUtils {
 		default:
 			return null;
 		}
-		
+
 	}
 }

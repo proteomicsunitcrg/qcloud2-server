@@ -24,14 +24,16 @@ public interface ThresholdNonConformityRepository extends PagingAndSortingReposi
 	public List<ThreholdNonConformityWithoutThresholdParams> findAllNonConformities();
 
 	@Query("select t from ThresholdNonConformity t where t.file.labSystem.apiKey = ?1 and t.status='DANGER'")
-	public List<ThreholdNonConformityWithoutThresholdParams> findByFileLabSystemApiKey(UUID labSystemApiKey, Pageable page);
+	public List<ThreholdNonConformityWithoutThresholdParams> findByFileLabSystemApiKey(UUID labSystemApiKey,
+			Pageable page);
 
 	public List<ThresholdNonConformity> findByFileId(Long fileId);
-	
+
 	public Long countByFileLabSystemApiKey(UUID labSystemApiKey);
-	
-	public Long countByFileLabSystemApiKeyAndFileSampleTypeQualityControlControlledVocabulary(UUID labSystemApiKey, String sampleTypeQQCV);
-	
+
+	public Long countByFileLabSystemApiKeyAndFileSampleTypeQualityControlControlledVocabulary(UUID labSystemApiKey,
+			String sampleTypeQQCV);
+
 	interface ThreholdNonConformityWithoutThresholdParams {
 		GuideSet getGuideSet();
 
@@ -40,23 +42,22 @@ public interface ThresholdNonConformityRepository extends PagingAndSortingReposi
 		ContextSource getContextSource();
 
 		ThresholdApiAndParam getThreshold();
-		
+
 		InstrumentStatus getStatus();
 	}
-	
+
 	@Query("select t from ThresholdNonConformity t where t.file.labSystem.apiKey = ?1 and t.file.sampleType.qualityControlControlledVocabulary = ?2")
 	public List<ThreholdNonConformityWithoutThresholdParams> findByFileLabSystemApiKeyAndFileSampleTypeQualityControlControlledVocabulary(
 			UUID labSystemApiKey, String sampleTypeQQCV, Pageable page);
 
-	
 	@Transactional
 	@Modifying
-	@Query(value="delete from threshold_non_conformity where status = ?3 and file_id in (select id from file where labsystem_id = ?1 and sample_type_id = ?2)", nativeQuery = true)
+	@Query(value = "delete from threshold_non_conformity where status = ?3 and file_id in (select id from file where labsystem_id = ?1 and sample_type_id = ?2)", nativeQuery = true)
 	public void deletePreviousWarnings(Long labSystemId, Long sampleTypeId, String status);
-	
+
 	@Transactional
 	@Modifying
-	@Query(value="delete from threshold_non_conformity where status = ?3 and threshold_id = ?4 and file_id in (select id from file where labsystem_id = ?1 and sample_type_id = ?2)", nativeQuery = true)
+	@Query(value = "delete from threshold_non_conformity where status = ?3 and threshold_id = ?4 and file_id in (select id from file where labsystem_id = ?1 and sample_type_id = ?2)", nativeQuery = true)
 	public void deletePreviousParamWarnings(Long labSystemId, Long sampleTypeId, String status, Long thresholdId);
 
 }

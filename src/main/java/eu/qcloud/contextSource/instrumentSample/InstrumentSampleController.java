@@ -20,6 +20,7 @@ import eu.qcloud.exceptions.InvalidActionException;
 
 /**
  * Instrument sample controller
+ * 
  * @author dmancera
  *
  */
@@ -27,25 +28,25 @@ import eu.qcloud.exceptions.InvalidActionException;
 public class InstrumentSampleController {
 	@Autowired
 	private InstrumentSampleService instrumentSampleService;
-	
-	@RequestMapping(value="/api/contextsource/instrumentsample",method= RequestMethod.POST)
+
+	@RequestMapping(value = "/api/contextsource/instrumentsample", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public InstrumentSample addElement(@RequestBody InstrumentSample element) {
 		return instrumentSampleService.addElement(element);
 	}
-	
-	@RequestMapping(value="/api/contextsource/instrumentsample",method= RequestMethod.PUT)
+
+	@RequestMapping(value = "/api/contextsource/instrumentsample", method = RequestMethod.PUT)
 	@PreAuthorize("hasRole('ADMIN')")
 	public InstrumentSample updateInstrumentSample(@RequestBody InstrumentSample instrumentSample) {
 		return instrumentSampleService.updateInstrumentSample(instrumentSample);
 	}
-	
-	@RequestMapping(value="/api/contextsource/instrumentsample",method= RequestMethod.GET)
+
+	@RequestMapping(value = "/api/contextsource/instrumentsample", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public List<InstrumentSample> getAllInstrumentSamples() {
 		return instrumentSampleService.getAllInstrumentSample();
 	}
-	
+
 	/*
 	 * Exception handlers
 	 */

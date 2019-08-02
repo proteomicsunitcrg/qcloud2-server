@@ -7,24 +7,23 @@ import eu.qcloud.data.DataForPlot;
 import eu.qcloud.data.processor.DataProcessor;
 import eu.qcloud.guideset.GuideSet;
 
-public abstract class Processor implements DataProcessor{
+public abstract class Processor implements DataProcessor {
 	/**
 	 * The requested data for the plot
 	 */
 	protected List<DataForPlot> data;
-	
+
 	/**
-	 * The guide set, probable this will be out of the
-	 * class
+	 * The guide set, probable this will be out of the class
 	 */
 	protected GuideSet guideSet;
-	
+
 	/**
-	 * Requested data of the guide set. Used to process
-	 * some data... maybe to get mean on RT, etc...
+	 * Requested data of the guide set. Used to process some data... maybe to get
+	 * mean on RT, etc...
 	 */
 	protected List<Data> guideSetData;
-	
+
 	public List<Data> getGuideSetData() {
 		return guideSetData;
 	}
@@ -51,7 +50,7 @@ public abstract class Processor implements DataProcessor{
 
 	public Processor() {
 	}
-	
+
 	@Override
 	public List<DataForPlot> processData() {
 		return data;
@@ -62,6 +61,5 @@ public abstract class Processor implements DataProcessor{
 
 		return false;
 	}
-	
-	
+
 }

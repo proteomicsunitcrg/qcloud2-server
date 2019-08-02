@@ -2,7 +2,7 @@ package eu.qcloud.exceptions;
 
 import org.springframework.dao.DataRetrievalFailureException;
 
-public class NotFoundException extends DataRetrievalFailureException{
+public class NotFoundException extends DataRetrievalFailureException {
 
 	private static final long serialVersionUID = 3097960217821115508L;
 
@@ -11,6 +11,4 @@ public class NotFoundException extends DataRetrievalFailureException{
 		// TODO Auto-generated constructor stub
 	}
 
-
 }
-	

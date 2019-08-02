@@ -11,25 +11,25 @@ import eu.qcloud.contextSource.ContextSource;
 import eu.qcloud.threshold.Threshold;
 
 @Entity
-@Table(name="threshold_params")
+@Table(name = "threshold_params")
 public class ThresholdParams {
-	
+
 	@EmbeddedId
 	private ThresholdParamsId thresholdParamsId;
-	
-	@Column(name="step_value")
+
+	@Column(name = "step_value")
 	private Float stepValue;
-	
-	@Column(name="initial_value", nullable= true)
+
+	@Column(name = "initial_value", nullable = true)
 	private Float initialValue;
-	
+
 	@ManyToOne
-	@JoinColumn(name="contextSourceId",insertable=false, updatable= false)
+	@JoinColumn(name = "contextSourceId", insertable = false, updatable = false)
 	private ContextSource contextSource;
-	
-	@Column(name="is_enabled", columnDefinition="bit default 1")
-    private boolean isEnabled;
-	
+
+	@Column(name = "is_enabled", columnDefinition = "bit default 1")
+	private boolean isEnabled;
+
 	public boolean getIsEnabled() {
 		return isEnabled;
 	}
@@ -39,10 +39,11 @@ public class ThresholdParams {
 	}
 
 	@ManyToOne
-	@JoinColumn(name="thresholdId",insertable=false, updatable= false)
+	@JoinColumn(name = "thresholdId", insertable = false, updatable = false)
 	private Threshold threshold;
-	
-	public ThresholdParams() {}
+
+	public ThresholdParams() {
+	}
 
 	public ThresholdParams(float stepValue, Float initialValue, ContextSource contextSource, Threshold threshold) {
 		super();
@@ -67,7 +68,7 @@ public class ThresholdParams {
 	public void setInitialValue(Float initialValue) {
 		this.initialValue = initialValue;
 	}
-	
+
 	public ContextSource getContextSource() {
 		return contextSource;
 	}
@@ -75,7 +76,7 @@ public class ThresholdParams {
 	public void setContextSource(ContextSource contextSource) {
 		this.contextSource = contextSource;
 	}
-	
+
 	public Threshold getThreshold() {
 		return threshold;
 	}
@@ -91,5 +92,5 @@ public class ThresholdParams {
 	public void setStepValue(Float stepValue) {
 		this.stepValue = stepValue;
 	}
-	
+
 }

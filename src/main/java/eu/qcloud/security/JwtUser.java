@@ -22,10 +22,11 @@ public class JwtUser implements UserDetails {
 	private final String email;
 	private final Collection<? extends GrantedAuthority> authorities;
 	private final boolean enabled;
-	private final Date lastPasswordResetDate;	
+	private final Date lastPasswordResetDate;
 
-	public JwtUser(Long id, UUID uuid, String username, String firstname, String lastname, String email, String password,
-			Collection<? extends GrantedAuthority> authorities, boolean enabled, Date lastPasswordResetDate) {
+	public JwtUser(Long id, UUID uuid, String username, String firstname, String lastname, String email,
+			String password, Collection<? extends GrantedAuthority> authorities, boolean enabled,
+			Date lastPasswordResetDate) {
 		this.id = id;
 		this.uuid = uuid;
 		this.username = username;
@@ -102,5 +103,5 @@ public class JwtUser implements UserDetails {
 	public UUID getUuid() {
 		return uuid;
 	}
-	
+
 }

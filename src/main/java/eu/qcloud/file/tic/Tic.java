@@ -11,19 +11,20 @@ import eu.qcloud.file.File;
 
 @Entity
 public class Tic {
-	
+
 	@Id
 	private Long id;
-	
+
 	@OneToOne
 	@JoinColumn(name = "file_id")
 	@MapsId
 	private File file;
-	
-	@Column(name="tic", columnDefinition="mediumtext")
+
+	@Column(name = "tic", columnDefinition = "mediumtext")
 	private String tic;
-	
-	public Tic() {}
+
+	public Tic() {
+	}
 
 	public Tic(File file, String tic) {
 		this.file = file;
@@ -45,6 +46,5 @@ public class Tic {
 	public void setTic(String tic) {
 		this.tic = tic;
 	}
-	
-	
+
 }

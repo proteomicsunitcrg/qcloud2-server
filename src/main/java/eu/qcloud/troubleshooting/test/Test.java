@@ -6,11 +6,12 @@ import javax.persistence.Entity;
 
 import eu.qcloud.troubleshooting.Troubleshooting;
 
-@Entity(name="test")
+@Entity(name = "test")
 public class Test extends Troubleshooting {
-	
-	public Test() {}
-	
+
+	public Test() {
+	}
+
 	public Test(String name, String description, String qccv, UUID apiKey) {
 		super(name, description, qccv, apiKey);
 	}

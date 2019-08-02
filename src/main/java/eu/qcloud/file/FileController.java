@@ -28,118 +28,128 @@ import eu.qcloud.file.FileRepository.OnlySmalls;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
+
 /**
  * File controller
+ * 
  * @author dmancera
  *
  */
 @RestController
 public class FileController {
-	
+
 	@Autowired
 	private FileService fileService;
-	
+
 	@Autowired
 	private UserService userService;
-	
-	@RequestMapping(value="/api/file", method = RequestMethod.POST)
+
+	@RequestMapping(value = "/api/file", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public File addFile(@RequestBody File file) {
 		return fileService.addNewFile(file);
 	}
-	@RequestMapping(value="/api/file", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/api/file", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<File> getAllFiles() {
 		return fileService.getAllFiles();
 	}
-	@RequestMapping(value="/api/file/{fileId}", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/api/file/{fileId}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
 	public OnlySmalls getFileById(@PathVariable Long fileId) {
 		return fileService.getFileById(fileId);
 	}
-		
+
 	/**
 	 * Add a new file into the system
+	 * 
 	 * @param file
 	 * @param sampleTypeQCCV
 	 * @param labSystemApiKey
 	 * @return
 	 */
-	@RequestMapping(value="/api/file/{sampleTypeQCCV}/{labSystemApiKey}", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/file/{sampleTypeQCCV}/{labSystemApiKey}", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
-	public File addFileSpecial(@RequestBody File file,@PathVariable String sampleTypeQCCV,@PathVariable UUID labSystemApiKey) {
+	public File addFileSpecial(@RequestBody File file, @PathVariable String sampleTypeQCCV,
+			@PathVariable UUID labSystemApiKey) {
 		return fileService.addFromWorkflow(file, sampleTypeQCCV, labSystemApiKey, getUserFromSecurityContext());
 	}
 
 	/**
 	 * Get the last file of a given lab system and sample type
+	 * 
 	 * @param sampleTypeQCCV
 	 * @param labSystemApikey
 	 * @return
 	 */
-	@RequestMapping(value="/api/file/{sampleTypeQCCV}/{labSystemApikey}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/file/{sampleTypeQCCV}/{labSystemApikey}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
-	public File getLastFileBySampleTypeQCCVAndLabSystemApikey(@PathVariable String sampleTypeQCCV,@PathVariable UUID labSystemApikey) {
+	public File getLastFileBySampleTypeQCCVAndLabSystemApikey(@PathVariable String sampleTypeQCCV,
+			@PathVariable UUID labSystemApikey) {
 		return fileService.getLastFileBySampleTypeQCCVAndLabSystemApikey(sampleTypeQCCV, labSystemApikey);
 	}
-	
-	
+
 	/**
-	 * Add a file into the system. This API end point should be consumed
-	 * by the pipeline
+	 * Add a file into the system. This API end point should be consumed by the
+	 * pipeline
+	 * 
 	 * @param sampleTypeQCCV the QC CV of the file sample type
-	 * @param file the file parameters
+	 * @param file           the file parameters
 	 * @return the inserted file
 	 */
-	@RequestMapping(value="/api/file/add/{sampleTypeQCCV}", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/file/add/{sampleTypeQCCV}", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public File addNewFile(@PathVariable String sampleTypeQCCV, @RequestBody File file) {
 		return fileService.addFile(sampleTypeQCCV, file);
 	}
-	
+
 	/**
 	 * Delete a file from the system
+	 * 
 	 * @param checksum
 	 */
-	@RequestMapping(value="/api/file/{checksum}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/api/file/{checksum}", method = RequestMethod.DELETE)
 	@PreAuthorize("hasRole('ADMIN')")
 	public void deleteNewFile(@PathVariable String checksum) {
 		fileService.deleteFile(checksum);
 	}
-	
-	@RequestMapping(value="/api/file/name/{filename}", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/api/file/name/{filename}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public OnlyChecksum findByFilename(@PathVariable String filename) {
 		return fileService.getFileByFilename(filename);
 	}
-	
-	@RequestMapping(value="/api/file/checksum/{checksum}", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/api/file/checksum/{checksum}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public File findByChecksum(@PathVariable String checksum) {
 		return fileService.getFileByChecksumWithUserCheck(checksum, getUserFromSecurityContext());
 	}
-	
-	@RequestMapping(value="/api/file/checksum/qcrawler/{checksum}", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/api/file/checksum/qcrawler/{checksum}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
 	public void checkIfFileExistsByChecksum(@PathVariable String checksum) {
 		fileService.checkIfFileExistsByChecksum(checksum);
 	}
-	
-	@RequestMapping(value="/api/file/checksum/qcrawler/{checksum}", method = RequestMethod.PUT)
+
+	@RequestMapping(value = "/api/file/checksum/qcrawler/{checksum}", method = RequestMethod.PUT)
 	public void updateQCrawlerFile(@PathVariable String checksum, @RequestBody File file) {
 		fileService.updateFile(checksum, file);
 	}
-	
-	@RequestMapping(value="/api/file/sampletypes/{labSystemApiKey}", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/api/file/sampletypes/{labSystemApiKey}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
 	public List<SampleType> findSampleTypesUseByLabSystemByLabSystemApiKey(@PathVariable UUID labSystemApiKey) {
 		return fileService.findSampleTypesByLabSystemApiKey(labSystemApiKey);
 	}
-	
+
 	@ExceptionHandler(DataRetrievalFailureException.class)
 	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
+
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	void handleBadRequests(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
@@ -148,11 +158,11 @@ public class FileController {
 	@RequestMapping(value = "/api/data/between/{startDate}/{endDate}/{labSystemApiKey}/{sampleTypeName}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('MANAGER')")
 	public Long getDataBetweenDates(@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date startDate,
-	@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date endDate,
-	@PathVariable UUID labSystemApiKey, @PathVariable String sampleTypeName) {
-		return fileService.getCountDataBetweenDates( labSystemApiKey,  sampleTypeName,  startDate,  endDate);
+			@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date endDate,
+			@PathVariable UUID labSystemApiKey, @PathVariable String sampleTypeName) {
+		return fileService.getCountDataBetweenDates(labSystemApiKey, sampleTypeName, startDate, endDate);
 	}
-	
+
 	private User getUserFromSecurityContext() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User user = userService.getUserByUsername(authentication.getName());

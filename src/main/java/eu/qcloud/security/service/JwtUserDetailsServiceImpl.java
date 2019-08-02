@@ -10,7 +10,6 @@ import eu.qcloud.security.JwtUserFactory;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.repository.UserRepository;
 
-
 @Service
 public class JwtUserDetailsServiceImpl implements UserDetailsService {
 
@@ -27,8 +26,8 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService {
             return JwtUserFactory.create(user);
         }
     }
-    
+
     public void saveUser(User u) {
-    	userRepository.save(u);
+        userRepository.save(u);
     }
 }

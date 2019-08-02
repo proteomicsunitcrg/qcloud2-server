@@ -5,10 +5,10 @@ import javax.persistence.Entity;
 
 import eu.qcloud.contextSource.ContextSource;
 
-@Entity(name="instrument_sample")
-public class InstrumentSample extends ContextSource{
+@Entity(name = "instrument_sample")
+public class InstrumentSample extends ContextSource {
 
-	@Column(name="quality_control_controlled_vocabulary", unique = true)
+	@Column(name = "quality_control_controlled_vocabulary", unique = true)
 	private String qualityControlControlledVocabulary;
 
 	public String getqCCV() {
@@ -18,5 +18,5 @@ public class InstrumentSample extends ContextSource{
 	public void setqCCV(String qCCV) {
 		this.qualityControlControlledVocabulary = qCCV;
 	}
-	
+
 }
