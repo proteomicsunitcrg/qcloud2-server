@@ -1,5 +1,6 @@
 package eu.qcloud.traceColor;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +30,20 @@ public class TraceColorService {
 			traceColorRepository.save(t);
 		});
 
+	}
+
+	public boolean deleteTraceColor(UUID apiKey) {
+		Optional <TraceColor> traceColor = traceColorRepository.findByApiKey(apiKey);
+		if(traceColor.isPresent()) {
+			try {
+				traceColorRepository.delete(traceColor.get());
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 }

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 public class TraceColorController {
@@ -34,5 +36,11 @@ public class TraceColorController {
 	public void updateTraceColor(@RequestBody TraceColor traceColor, @PathVariable UUID traceColorApiKey) {
 		traceColorService.updateTraceColor(traceColorApiKey, traceColor);
 	}
+
+	@RequestMapping(value="api/color/{apiKey}", method=RequestMethod.DELETE)
+	public boolean deleteTrace(@PathVariable UUID apiKey) {
+		return traceColorService.deleteTraceColor(apiKey);
+	}
+	
 
 }
