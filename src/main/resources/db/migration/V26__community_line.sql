@@ -21,12 +21,12 @@
 DROP TABLE IF EXISTS `community_line`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-
 CREATE TABLE `community_line` (
   `community_line_id` bigint(20) NOT NULL,
   `api_key` binary(16) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `value` float DEFAULT NULL,
+  `community_partner_id` bigint(20) DEFAULT NULL,
   `context_source_id` bigint(20) DEFAULT NULL,
   `cv_id` bigint(20) DEFAULT NULL,
   `param_id` bigint(20) DEFAULT NULL,
@@ -34,11 +34,13 @@ CREATE TABLE `community_line` (
   `trace_color_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`community_line_id`),
   UNIQUE KEY `UK_cmrrjiph27689yiwf449lyvkd` (`api_key`),
+  KEY `FK3wo8egicyx4xc0v14e7pm56l2` (`community_partner_id`),
   KEY `FKc2komso8oypfio0vjm4cp1etf` (`context_source_id`),
   KEY `FK7o8easn36cogam5uojtr9qwam` (`cv_id`),
   KEY `FKsg5b7k0nfe7b6qv3tud50dlk2` (`param_id`),
   KEY `FKe24xj7pvprfvpen62oicmu9as` (`sample_type_id`),
   KEY `FKe76hywvcftd45kjhsosnc8e37` (`trace_color_id`),
+  CONSTRAINT `FK3wo8egicyx4xc0v14e7pm56l2` FOREIGN KEY (`community_partner_id`) REFERENCES `community_partner` (`community_partner_id`),
   CONSTRAINT `FK7o8easn36cogam5uojtr9qwam` FOREIGN KEY (`cv_id`) REFERENCES `cv` (`id`),
   CONSTRAINT `FKc2komso8oypfio0vjm4cp1etf` FOREIGN KEY (`context_source_id`) REFERENCES `context_source` (`id`),
   CONSTRAINT `FKe24xj7pvprfvpen62oicmu9as` FOREIGN KEY (`sample_type_id`) REFERENCES `sample_type` (`id`),
@@ -103,4 +105,36 @@ CREATE TABLE `hibernate_sequence` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `community_partner`
+--
 
+DROP TABLE IF EXISTS `community_partner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `community_partner` (
+  `community_partner_id` bigint(20) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `logo` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `web_page` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`community_partner_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `community_partner_seq`
+--
+
+DROP TABLE IF EXISTS `community_partner_seq`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `community_partner_seq` (
+  `next_val` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE labsystem ADD COLUMN is_active bit(1) NOT NULL DEFAULT 1;
+
+INSERT INTO hibernate_sequence VALUES (1);
+INSERT INTO community_partner_seq VALUES (1);
+INSERT INTO community_line_seq VALUES (1);

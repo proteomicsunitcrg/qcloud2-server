@@ -55,7 +55,7 @@ public class LabSystem {
 	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
 
-	@Column(name = "is_active", columnDefinition = "boolean default true")
+	@Column(name = "is_active", columnDefinition = "BIT default true")
 	private boolean active;
 
 	@Transient
