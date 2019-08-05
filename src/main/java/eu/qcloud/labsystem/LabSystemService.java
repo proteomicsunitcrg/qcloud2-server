@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.dataSource.DataSource;
@@ -17,6 +19,7 @@ import eu.qcloud.guideset.automatic.AutomaticGuideSet;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.security.model.User;
+import eu.qcloud.security.service.UserService;
 import eu.qcloud.utils.factory.QcrawlerLabSystemUtils;
 import eu.qcloud.websocket.WebSocketService;
 
@@ -43,6 +46,12 @@ public class LabSystemService {
 
 	@Autowired
 	private SampleTypeRepository sampleTypeRepository;
+
+	@Autowired
+	private WebSocketService websService;
+
+	@Autowired
+	private UserService userService;
 
 	public LabSystem saveSystem(LabSystem system) {
 
@@ -79,11 +88,18 @@ public class LabSystemService {
 
 		return labSystemsR;
 	}
-
+	
 	public Optional<LabSystem> findSystemBySystemId(Long systemId) {
 		return systemRepository.findById(systemId);
 	}
-
+	
+	public boolean enableDisable(LabSystem ls) {
+		ls = systemRepository.findByApiKey(ls.getApiKey()).get();
+		ls.setActive(!ls.isActive());
+		systemRepository.save(ls);
+		websocketService.sendEnableDisableLS(getManagerFromSecurityContext().getNode(), ls);
+		return true;
+	}
 	public Optional<LabSystem> findSystemByApiKey(UUID apikey) {
 		return systemRepository.findByApiKey(apikey);
 	}
@@ -149,4 +165,19 @@ public class LabSystemService {
 		}
 
 	}
+
+		/*
+	 * Helper classes
+	 */
+	/**
+	 * Get the current user from the security context
+	 * 
+	 * @return the logged user
+	 */
+	private User getManagerFromSecurityContext() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User manager = userService.getUserByUsername(authentication.getName());
+		return manager;
+	}
+
 }

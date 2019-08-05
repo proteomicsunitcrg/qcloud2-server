@@ -55,6 +55,9 @@ public class LabSystem {
 	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
 
+	@Column(name = "is_active", columnDefinition = "boolean default true")
+	private boolean active;
+
 	@Transient
 	private List<GuideSet> enabledGuideSets;
 
@@ -157,6 +160,32 @@ public class LabSystem {
 			}
 		}
 		return null;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public void setEnabledGuideSets(List<GuideSet> enabledGuideSets) {
+		this.enabledGuideSets = enabledGuideSets;
+	}
+
+	public LabSystem(Long id, @NotNull String name, List<DataSource> dataSources, List<GuideSet> guideSets, UUID apiKey,
+			boolean active, List<GuideSet> enabledGuideSets) {
+		this.id = id;
+		this.name = name;
+		this.dataSources = dataSources;
+		this.guideSets = guideSets;
+		this.apiKey = apiKey;
+		this.active = active;
+		this.enabledGuideSets = enabledGuideSets;
+	}
+
+	public LabSystem() {
 	}
 
 }
