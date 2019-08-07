@@ -75,7 +75,7 @@ public class WebSocketService {
 	}
 
 	public void sendEnableDisableLS(Node node, LabSystem ls) {
-		for(SimpUser s : userRegistry.getUsers()) {
+		for (SimpUser s : userRegistry.getUsers()) {
 			User user = userRepository.findByUsername(s.getName());
 			if (user.getNode().getId() == node.getId()) {
 				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",

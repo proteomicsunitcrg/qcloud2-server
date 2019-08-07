@@ -22,13 +22,13 @@ public class GeneralAnnotationService {
         return generalAnnotationRepository.save(annotation);
     }
 
-	public GeneralAnnotation toggleActive(UUID apiKey) {
+    public GeneralAnnotation toggleActive(UUID apiKey) {
         GeneralAnnotation generalAnnotation = generalAnnotationRepository.findByApiKey(apiKey);
         generalAnnotation.setActive(!generalAnnotation.isActive());
         return generalAnnotationRepository.save(generalAnnotation);
-	}
+    }
 
-	public List<GeneralAnnotation> getBetweenDates(Date dateStart, Date dateEnd) {
-		return generalAnnotationRepository.findByDateBetween(dateStart, dateEnd);
-	}
+    public List<GeneralAnnotation> getBetweenDates(Date dateStart, Date dateEnd) {
+        return generalAnnotationRepository.findByDateBetween(dateStart, dateEnd);
+    }
 }

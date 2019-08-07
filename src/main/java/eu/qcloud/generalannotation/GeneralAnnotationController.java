@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * GeneralAnnotationController Main controller for general annotations
@@ -49,7 +48,7 @@ public class GeneralAnnotationController {
     @RequestMapping(value = "/api/general-annotation/dates/{dateStart}/{dateEnd}", method = RequestMethod.GET)
     public List<GeneralAnnotation> requestMethodName(@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) Date dateStart,
             @PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) Date dateEnd) {
-                return generalAnnotationService.getBetweenDates(dateStart, dateEnd);
+        return generalAnnotationService.getBetweenDates(dateStart, dateEnd);
     }
 
 }

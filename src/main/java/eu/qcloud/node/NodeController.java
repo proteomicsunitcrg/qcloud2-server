@@ -65,7 +65,7 @@ public class NodeController {
 	private final Log logger = LogFactory.getLog(this.getClass());
 
 	@Bean
-	public PasswordEncoder passwordEncoder() {
+	public PasswordEncoder passwordEncoderNodeController() {
 		return new BCryptPasswordEncoder();
 	}
 
@@ -88,7 +88,7 @@ public class NodeController {
 
 		n.getUsers().get(0).setLastPasswordResetDate(new Date());
 		n.getUsers().get(0).setEnabled(true);
-		n.getUsers().get(0).setPassword(passwordEncoder().encode(n.getUsers().get(0).getPassword()));
+		n.getUsers().get(0).setPassword(passwordEncoderNodeController().encode(n.getUsers().get(0).getPassword()));
 
 		n.setApiKey(nodeUuid);
 		n.getUsers().get(0).setApiKey(userUuid);
@@ -132,7 +132,7 @@ public class NodeController {
 		UUID userUuid = UUID.randomUUID();
 		newUser.setNode(manager.getNode());
 		String passwordNormal = getEmailUsername(newUser.getEmail()) + "." + LocalDate.now().getYear();
-		newUser.setPassword(passwordEncoder().encode(passwordNormal));
+		newUser.setPassword(passwordEncoderNodeController().encode(passwordNormal));
 		System.out.println(newUser.getPassword());
 		Authority userRole = new Authority();
 		userRole.setId(1L);
@@ -170,7 +170,7 @@ public class NodeController {
 		UUID userUuid = UUID.randomUUID();
 		newUser.setNode(manager.getNode());
 
-		newUser.setPassword(passwordEncoder().encode(newUser.getPassword()));
+		newUser.setPassword(passwordEncoderNodeController().encode(newUser.getPassword()));
 
 		Authority userRole = new Authority();
 		userRole.setId(1L);
@@ -240,9 +240,9 @@ public class NodeController {
 	public void updateUserPassword(@RequestBody UserPasswordChange userPassword) {
 		// check current password
 		User user = getManagerFromSecurityContext();
-		if (passwordEncoder().matches(userPassword.getCurrentPassword(), user.getPassword())) {
+		if (passwordEncoderNodeController().matches(userPassword.getCurrentPassword(), user.getPassword())) {
 			// password correct, store
-			user.setPassword(passwordEncoder().encode(userPassword.getNewPassword()));
+			user.setPassword(passwordEncoderNodeController().encode(userPassword.getNewPassword()));
 			userService.saveUser(user);
 		} else {
 			// throw exception

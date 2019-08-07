@@ -48,9 +48,6 @@ public class LabSystemService {
 	private SampleTypeRepository sampleTypeRepository;
 
 	@Autowired
-	private WebSocketService websService;
-
-	@Autowired
 	private UserService userService;
 
 	public LabSystem saveSystem(LabSystem system) {
@@ -88,11 +85,11 @@ public class LabSystemService {
 
 		return labSystemsR;
 	}
-	
+
 	public Optional<LabSystem> findSystemBySystemId(Long systemId) {
 		return systemRepository.findById(systemId);
 	}
-	
+
 	public boolean enableDisable(LabSystem ls) {
 		ls = systemRepository.findByApiKey(ls.getApiKey()).get();
 		ls.setActive(!ls.isActive());
@@ -100,6 +97,7 @@ public class LabSystemService {
 		websocketService.sendEnableDisableLS(getManagerFromSecurityContext().getNode(), ls);
 		return true;
 	}
+
 	public Optional<LabSystem> findSystemByApiKey(UUID apikey) {
 		return systemRepository.findByApiKey(apikey);
 	}
@@ -166,7 +164,7 @@ public class LabSystemService {
 
 	}
 
-		/*
+	/*
 	 * Helper classes
 	 */
 	/**

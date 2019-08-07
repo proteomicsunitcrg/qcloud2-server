@@ -41,7 +41,7 @@ public class PasswordResetService {
 	private EmailService emailService;
 
 	@Bean
-	public PasswordEncoder passwordEncoder() {
+	public PasswordEncoder passwordEncoderReset() {
 		return new BCryptPasswordEncoder();
 	}
 
@@ -146,7 +146,7 @@ public class PasswordResetService {
 		if (!u.getApiKey().equals(passwordReset.get().getUser().getApiKey())) {
 			throw new InvalidActionException("This token is not valid for the current user!");
 		}
-		passwordReset.get().getUser().setPassword(passwordEncoder().encode(u.getPassword()));
+		passwordReset.get().getUser().setPassword(passwordEncoderReset().encode(u.getPassword()));
 		userRepository.save(passwordReset.get().getUser());
 		passwordResetRepository.delete(passwordReset.get());
 	}

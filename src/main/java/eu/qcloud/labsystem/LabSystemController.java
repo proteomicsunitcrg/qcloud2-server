@@ -115,13 +115,12 @@ public class LabSystemController {
 			throw new InvalidActionException("System not found");
 		}
 	}
-	
+
 	@PreAuthorize("hasRole('MANAGER')")
-	@RequestMapping(value="api/system/enableDisable", method=RequestMethod.POST)
+	@RequestMapping(value = "api/system/enableDisable", method = RequestMethod.POST)
 	public boolean requestMethodName(@RequestBody LabSystem ls) {
 		return labSystemService.enableDisable(ls);
 	}
-	
 
 	/**
 	 * Returns all the systems in the database of the current node

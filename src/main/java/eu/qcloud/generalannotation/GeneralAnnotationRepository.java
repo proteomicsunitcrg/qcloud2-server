@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 public interface GeneralAnnotationRepository extends CrudRepository<GeneralAnnotation, Long> {
 
     public List<GeneralAnnotation> findAll();
-    
+
     public GeneralAnnotation findByApiKey(UUID apiKey);
 
     public List<GeneralAnnotation> findByDateBetween(Date startDate, Date endate);

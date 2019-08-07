@@ -34,12 +34,11 @@ public class GeneralAnnotation {
     private Date date;
 
     @Column(name = "apiKey", updatable = true, nullable = false, unique = true, columnDefinition = "BINARY(16)")
-	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
+    @org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
     private UUID apiKey;
-    
-    @Column(name = "is_active", columnDefinition = "BIT")
-	private boolean active;
 
+    @Column(name = "is_active", columnDefinition = "BIT")
+    private boolean active;
 
     public GeneralAnnotation() {
     }
@@ -98,8 +97,5 @@ public class GeneralAnnotation {
         this.apiKey = apiKey;
         this.active = active;
     }
-
-
-    
 
 }
