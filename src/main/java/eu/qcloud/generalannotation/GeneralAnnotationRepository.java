@@ -18,6 +18,6 @@ public interface GeneralAnnotationRepository extends CrudRepository<GeneralAnnot
 
     public GeneralAnnotation findByApiKey(UUID apiKey);
 
-    public List<GeneralAnnotation> findByDateBetween(Date startDate, Date endate);
+    public List<GeneralAnnotation> findByActiveTrueAndDateBetween(Date startDate, Date endate);
 
 }
