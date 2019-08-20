@@ -7,8 +7,12 @@ import java.util.Map;
 
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataForPlot;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class RetentionTimeProcessor extends Processor {
+	
+	private final Log logger = LogFactory.getLog(this.getClass());
 
 	public RetentionTimeProcessor() {
 		super();
@@ -53,13 +57,20 @@ public class RetentionTimeProcessor extends Processor {
 				d.setValue(Float.NaN);
 				continue;
 			}
-			Float nV = (value - means.get(d.getContextSourceName())) / 60;
-			if (nV.isNaN()) {
-				// d.setValue(Float.NaN);
-				continue;
+			try {
+				Float nV = (value - means.get(d.getContextSourceName())) / 60;
+				if (nV.isNaN()) {
+					// d.setValue(Float.NaN);
+					continue;
+				}
+				Float rounded = nV;
+				d.setValue(rounded);
+				
+			} catch (NullPointerException e) {
+				logger.warn("RT data no processed, because not enough RT data in the VALID guideset, inserting null");
+				System.out.println("hi");
+				d.setValue(0f);
 			}
-			Float rounded = nV;
-			d.setValue(rounded);
 		}
 		return this.data;
 	}
