@@ -99,7 +99,6 @@ public class EmailService {
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
         helper.setReplyTo("qcloud@crg.eu", "QCloud 2.0 ");
-        helper.notify();
         // helper.setFrom(mail.getFrom());
         helper.setFrom(mail.getFrom(), "QCloud 2.0");
         emailSender.send(message);

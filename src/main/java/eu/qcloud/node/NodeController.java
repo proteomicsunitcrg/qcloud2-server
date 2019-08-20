@@ -133,7 +133,6 @@ public class NodeController {
 		newUser.setNode(manager.getNode());
 		String passwordNormal = getEmailUsername(newUser.getEmail()) + "." + LocalDate.now().getYear();
 		newUser.setPassword(passwordEncoderNodeController().encode(passwordNormal));
-		System.out.println(newUser.getPassword());
 		Authority userRole = new Authority();
 		userRole.setId(1L);
 		userRole.setName(AuthorityName.ROLE_USER);

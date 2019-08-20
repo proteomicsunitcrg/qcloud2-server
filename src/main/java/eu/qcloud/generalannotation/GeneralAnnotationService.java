@@ -29,6 +29,9 @@ public class GeneralAnnotationService {
     }
 
     public List<GeneralAnnotation> getBetweenDates(Date dateStart, Date dateEnd) {
+        System.out.println(dateStart);
+        System.out.println(dateEnd);
+        System.out.println(generalAnnotationRepository.findByDateBetween(dateStart, dateEnd).size());
         return generalAnnotationRepository.findByDateBetween(dateStart, dateEnd);
     }
 }

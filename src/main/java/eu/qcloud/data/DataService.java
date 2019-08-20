@@ -1075,7 +1075,6 @@ public class DataService {
 		}
 
 		List<CommunityLineNode> communityLinesNode = getCommunityLines();
-		System.out.println(communityLinesNode.size());
 		for (CommunityLineNode communityLineNode : communityLinesNode) {
 			if (chart.get().getParam().equals(communityLineNode.getCommunityLine().getParam())
 					&& communityLineNode.isActive()
