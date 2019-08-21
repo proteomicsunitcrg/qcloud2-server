@@ -1,16 +1,22 @@
 package eu.qcloud.mail;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -126,7 +132,13 @@ public class EmailService {
 
     public List<String> getAllTemplates() {
         try {
-            return fileUtils.listDirFiles("templates/htmlMails");
+            List <String> allNames = new ArrayList<String>();
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] resources = resolver.getResources("templates/htmlMails/*.html");
+            for (Resource resource : resources) {
+                allNames.add(resource.getFilename());
+            }
+            return allNames;
 
         } catch (IOException e) {
             return null;
@@ -135,7 +147,10 @@ public class EmailService {
 
     public String getTemplate(String template) {
         try {
-            return fileUtils.readFile("templates/htmlMails/" + template, StandardCharsets.UTF_8);
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource res = resolver.getResource("templates/htmlMails/" + template);
+            return new BufferedReader(new InputStreamReader(res.getInputStream()))
+            .lines().collect(Collectors.joining("\n")).toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

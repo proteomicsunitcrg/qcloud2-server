@@ -39,3 +39,6 @@ src/main/resources/application.yml
 
 ### CLIENT SIDE FILES ###
 src/main/resources/static
+
+
+.sts4-cache/classpath-data.json
