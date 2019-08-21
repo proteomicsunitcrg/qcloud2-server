@@ -29,7 +29,7 @@ public class GeneralAnnotationController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/api/general-annotation", method = RequestMethod.GET)
-    public List<GeneralAnnotation> sendManualEmail() {
+    public List<GeneralAnnotation> getAll() {
         return generalAnnotationService.getAll();
     }
 
@@ -46,7 +46,7 @@ public class GeneralAnnotationController {
     }
 
     @RequestMapping(value = "/api/general-annotation/dates/{dateStart}/{dateEnd}", method = RequestMethod.GET)
-    public List<GeneralAnnotation> requestMethodName(@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) Date dateStart,
+    public List<GeneralAnnotation> getBetweenDates(@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) Date dateStart,
             @PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) Date dateEnd) {
         return generalAnnotationService.getBetweenDates(dateStart, dateEnd);
     }
