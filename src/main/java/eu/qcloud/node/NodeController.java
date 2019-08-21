@@ -105,7 +105,7 @@ public class NodeController {
 		try {
 			insertedNode = nodeService.createNode(n);
 		} catch (DataIntegrityViolationException e) {
-			throw new DataIntegrityViolationException(e.getMostSpecificCause().getMessage());
+			return null;
 
 		} catch (PersistenceException ee) {
 
