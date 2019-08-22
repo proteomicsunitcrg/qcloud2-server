@@ -2,6 +2,7 @@ package eu.qcloud.generalannotation;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,15 @@ public class GeneralAnnotationService {
         System.out.println(dateEnd);
         System.out.println(generalAnnotationRepository.findByActiveTrueAndDateBetween(dateStart, dateEnd).size());
         return generalAnnotationRepository.findByActiveTrueAndDateBetween(dateStart, dateEnd);
+    }
+
+    public boolean delete(Long id) {
+        Optional <GeneralAnnotation> generalAnnotation = generalAnnotationRepository.findById(id);
+        if (generalAnnotation.isPresent()) {
+            generalAnnotationRepository.delete(generalAnnotation.get());
+            return true;
+        } else {
+            return false;
+        }
     }
 }

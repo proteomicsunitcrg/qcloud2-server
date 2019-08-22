@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  * @author Marc Serret <marc.serret@crg.eu>
  */
+@RequestMapping(value = "/api/general-annotation")
 @RestController
 public class GeneralAnnotationController {
 
@@ -28,27 +29,32 @@ public class GeneralAnnotationController {
     GeneralAnnotationService generalAnnotationService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping(value = "/api/general-annotation", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public List<GeneralAnnotation> getAll() {
         return generalAnnotationService.getAll();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping(value = "/api/general-annotation/save", method = RequestMethod.POST)
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
     public GeneralAnnotation saveGeneralAnnotation(@RequestBody GeneralAnnotation annotation) {
         return generalAnnotationService.save(annotation);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping(value = "/api/general-annotation/toggle/{apiKey}", method = RequestMethod.GET)
+    @RequestMapping(value = "/toggle/{apiKey}", method = RequestMethod.GET)
     public GeneralAnnotation toggleActive(@PathVariable UUID apiKey) {
         return generalAnnotationService.toggleActive(apiKey);
     }
 
-    @RequestMapping(value = "/api/general-annotation/dates/{dateStart}/{dateEnd}", method = RequestMethod.GET)
+    @RequestMapping(value = "/dates/{dateStart}/{dateEnd}", method = RequestMethod.GET)
     public List<GeneralAnnotation> getBetweenDates(@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) Date dateStart,
             @PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) Date dateEnd) {
         return generalAnnotationService.getBetweenDates(dateStart, dateEnd);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public boolean delete(@PathVariable Long id) {
+        return generalAnnotationService.delete(id);
     }
 
 }
