@@ -8,6 +8,8 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.exceptions.NotFoundException;
+
 @Service
 public class GeneralAnnotationService {
 
@@ -45,4 +47,13 @@ public class GeneralAnnotationService {
             return false;
         }
     }
+
+	public GeneralAnnotation getById(Long id) {
+        Optional <GeneralAnnotation> geOptional = generalAnnotationRepository.findById(id);
+        if (geOptional.isPresent()) {
+            return geOptional.get();
+        } else {
+            throw new NotFoundException("Annotation not found");
+        }
+	}
 }

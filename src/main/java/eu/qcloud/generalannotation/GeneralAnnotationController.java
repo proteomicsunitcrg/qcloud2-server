@@ -57,4 +57,9 @@ public class GeneralAnnotationController {
         return generalAnnotationService.delete(id);
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public GeneralAnnotation getById(@PathVariable Long id) {
+        return generalAnnotationService.getById(id);
+    }
+
 }
