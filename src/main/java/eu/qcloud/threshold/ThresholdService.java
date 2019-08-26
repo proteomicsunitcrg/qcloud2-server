@@ -376,16 +376,17 @@ public class ThresholdService {
 		}
 		for (SampleType sampleType : sampleTypes) {
 			File lastFile = fileRepository
-					.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.getId(), sampleType.getId());
+			.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.getId(), sampleType.getId());
 			if (lastFile.getCreationDate().before(thresholdUtils.getOfflineDate()) && lastFile.getSampleType()
-					.getSampleTypeCategory().getSampleTypeComplexity() == SampleTypeComplexity.LOW) {
+			.getSampleTypeCategory().getSampleTypeComplexity() == SampleTypeComplexity.LOW) {
 				labSystemStatus.clear();
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
+				System.out.println(labSystem.getName() +  "im offline outdateed");
 				return labSystemStatus;
 			}
-			if (lastFile.getCreationDate().before(thresholdUtils.getOfflineDate())) {
-				continue;
-			}
+			// if (lastFile.getCreationDate().before(thresholdUtils.getOfflineDate())) {
+			// 	continue;
+			// }
 			if (!isLastFileValid(lastFile) && lastFile.getCreationDate().after(thresholdUtils.getOfflineDate())) {
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
 				// labSystemStatus.add(thresholdUtils.createPipelineErrorThresholdNonConformity(lastFile));
@@ -395,6 +396,22 @@ public class ThresholdService {
 				labSystemStatus.add(thresholdUtils.createLabSystemStatusByThresholdNonConformity(tnc));
 			});
 		}
+		return labSystemStatus;
+	}
+
+	public List<LabSystemStatus> getLabSystemStatus2(LabSystem labSystem) {
+		List<LabSystemStatus> labSystemStatus = new ArrayList<>();
+		File file = fileRepository.findTop1ByLabSystemIdOrderByCreationDateDesc(labSystem.getId());
+		if(file.getCreationDate().before(thresholdUtils.getOfflineDate())) {
+			labSystemStatus.clear();
+				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
+				System.out.println(labSystem.getName() +  "im offline outdateed");
+				return labSystemStatus;
+		}
+		List<ThresholdNonConformity> tncs = thresholdNonConformityRepository.findByFileId(file.getId());
+		tncs.forEach(tnc -> {
+			labSystemStatus.add(thresholdUtils.createLabSystemStatusByThresholdNonConformity(tnc));
+		});
 		return labSystemStatus;
 	}
 

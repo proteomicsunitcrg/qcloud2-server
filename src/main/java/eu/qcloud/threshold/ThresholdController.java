@@ -219,7 +219,7 @@ public class ThresholdController {
 		Optional<LabSystem> ls = labSystemService.findSystemByApiKey(labSystemApiKey);
 		if (ls.isPresent()) {
 			LabSystem labSystem = ls.get();
-			return thresholdService.getLabSystemStatus(labSystem);
+			return thresholdService.getLabSystemStatus2(labSystem);
 		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");
 		}
