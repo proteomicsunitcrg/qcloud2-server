@@ -565,7 +565,7 @@ public class DataService {
 			for (DataValues dataValue : parameterData.getValues()) {
 				ContextSource cs = getContextSourceFromDatabase(dataValue.getContextSource(),
 						parameterData.getParameter().getIsFor());
-
+				System.out.println(cs.getName());
 				value = dataValue.getCalculatedValue();
 				if (parameterData.getParameter().getIsZeroNoData()) {
 					if (value == null) {
@@ -576,10 +576,13 @@ public class DataService {
 				Optional<ThresholdParams> cc = threshold.getThresholdParams().stream().filter(tp -> {
 					return tp.getContextSource().getId() == cs.getId();
 				}).findFirst();
-				if (!cc.get().getIsEnabled()) {
+				if (cc.isPresent()) {
+					if (!cc.get().getIsEnabled()) {
+						continue;
+					}
+				} else {
 					continue;
 				}
-
 				// Compare here
 				InstrumentStatus is = isNonConformity(value,
 						getInitialValueFromThresholdParamByContextSource(threshold.getThresholdParams(),
