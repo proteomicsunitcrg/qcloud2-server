@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -235,6 +236,15 @@ public class CommunityLineService {
 
 		} catch (Exception e) {
 			return false;
+		}
+	}
+
+	public CommunityLine getById(Long id) {
+		Optional <CommunityLine> cOptional = commLineRepository.findById(id);
+		if(cOptional.isPresent()) {
+			return cOptional.get();
+		} else {
+			throw new DataRetrievalFailureException("Community line not found");
 		}
 	}
 

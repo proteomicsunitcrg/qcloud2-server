@@ -75,4 +75,9 @@ public class CommunityLineController {
 		return communityLineService.delete(id);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "api/community/{id}", method = RequestMethod.GET)
+	public CommunityLine getById(@PathVariable Long id) {
+		return communityLineService.getById(id);
+	}
 }
