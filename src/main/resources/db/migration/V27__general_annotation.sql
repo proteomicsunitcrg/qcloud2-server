@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS `general_annotation`;
 CREATE TABLE `general_annotation` (
   `id` bigint(20) NOT NULL,
   `api_key` binary(16) NOT NULL,
-  `date` date NOT NULL,
+  `date` datetime NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   `is_active` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),

@@ -28,8 +28,8 @@ public class GeneralAnnotation {
     @Column(name = "description")
     private String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "date", columnDefinition = "DATE")
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm")
+    @Column(name = "date", columnDefinition = "DATETIME")
     @NotNull
     private Date date;
 
