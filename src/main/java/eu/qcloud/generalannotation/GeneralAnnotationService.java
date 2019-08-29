@@ -32,15 +32,11 @@ public class GeneralAnnotationService {
     }
 
     public List<GeneralAnnotation> getBetweenDates(Date dateStart, Date dateEnd) {
-        List <GeneralAnnotation> caca = generalAnnotationRepository.findByActiveTrueAndDateBetween(dateStart, dateEnd);
-        for (GeneralAnnotation caco: caca) {
-            System.out.println(caco.getDate());
-        }
         return generalAnnotationRepository.findByActiveTrueAndDateBetween(dateStart, dateEnd);
     }
 
     public boolean delete(Long id) {
-        Optional <GeneralAnnotation> generalAnnotation = generalAnnotationRepository.findById(id);
+        Optional<GeneralAnnotation> generalAnnotation = generalAnnotationRepository.findById(id);
         if (generalAnnotation.isPresent()) {
             generalAnnotationRepository.delete(generalAnnotation.get());
             return true;
@@ -49,12 +45,12 @@ public class GeneralAnnotationService {
         }
     }
 
-	public GeneralAnnotation getById(Long id) {
-        Optional <GeneralAnnotation> geOptional = generalAnnotationRepository.findById(id);
+    public GeneralAnnotation getById(Long id) {
+        Optional<GeneralAnnotation> geOptional = generalAnnotationRepository.findById(id);
         if (geOptional.isPresent()) {
             return geOptional.get();
         } else {
             throw new NotFoundException("Annotation not found");
         }
-	}
+    }
 }

@@ -240,8 +240,8 @@ public class CommunityLineService {
 	}
 
 	public CommunityLine getById(Long id) {
-		Optional <CommunityLine> cOptional = commLineRepository.findById(id);
-		if(cOptional.isPresent()) {
+		Optional<CommunityLine> cOptional = commLineRepository.findById(id);
+		if (cOptional.isPresent()) {
 			return cOptional.get();
 		} else {
 			throw new DataRetrievalFailureException("Community line not found");

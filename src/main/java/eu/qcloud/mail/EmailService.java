@@ -71,7 +71,6 @@ public class EmailService {
     }
 
     public void sendWelcomeHtmlMessage(Mail mail) throws MessagingException, IOException, TemplateException {
-        System.out.println("ewlcome msg");
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
@@ -132,7 +131,7 @@ public class EmailService {
 
     public List<String> getAllTemplates() {
         try {
-            List <String> allNames = new ArrayList<String>();
+            List<String> allNames = new ArrayList<String>();
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
             Resource[] resources = resolver.getResources("templates/htmlMails/*.html");
             for (Resource resource : resources) {
@@ -149,8 +148,8 @@ public class EmailService {
         try {
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
             Resource res = resolver.getResource("templates/htmlMails/" + template);
-            return new BufferedReader(new InputStreamReader(res.getInputStream()))
-            .lines().collect(Collectors.joining("\n")).toString();
+            return new BufferedReader(new InputStreamReader(res.getInputStream())).lines()
+                    .collect(Collectors.joining("\n")).toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

@@ -489,35 +489,21 @@ public class DataService {
 	private Float calculateValueFromGuideSet(Param param, ContextSource cs, File file, Data value) {
 		Processor processor = ProcessorFactory.getProcessor(param.getProcessor());
 		if (processor.isGuideSetRequired()) {
-			System.out.println("GUIDESET IS REQUIRED");
-			System.out.println("FILES: " + fileRepository.countByLabSystemIdAndSampleTypeIdAndParamIdAndContextSourceId(
-					file.getLabSystem().getId(), file.getSampleType().getId(), param.getId(), cs.getId()));
-			System.out.println("MIN POINTS" + minPointsAutoThreshold);
 			if (fileRepository.countByLabSystemIdAndSampleTypeIdAndParamIdAndContextSourceId(
 					file.getLabSystem().getId(), file.getSampleType().getId(), param.getId(),
 					cs.getId()) > minPointsAutoThreshold) {
 
 				GuideSet guideSet = thresholdUtils.generateGuideSetFromWithFile(file, param, cs);
 				if (guideSet == null) {
-					System.out.println("GUIDESET IS NULL");
 					return null;
 				}
-				System.out.println("Guideset id: " + guideSet.getId());
-				System.out.println("GUIDESET TOTAL FILES" + guideSet.getTotalFiles());
-
 				ArrayList<Data> guideSetData = (ArrayList<Data>) dataRepository.findParamData(cs.getId(), param.getId(),
 						guideSet.getStartDate(), guideSet.getEndDate(), file.getLabSystem().getId(),
 						file.getSampleType().getId());
-				for (Data dato : guideSetData) {
-					System.out.println("DATA DEL GUIDESET: " + dato.getValue());
-				}
 				processor.setData(prepareDataForPlot(Arrays.asList(value), file.getSampleType(), param));
-				System.out.println("CS NAME INDEX 0: " + processor.getData().get(0).getContextSourceName());
-				System.out.println("Processor data list: " + Arrays.asList(processor.getData()));
 				processor.setGuideSet(guideSet);
 				processor.setGuideSetData(guideSetData);
 				List<DataForPlot> processedValue = processor.processData();
-				System.out.println(param.getIsZeroNoData() + "    " + value.getValue());
 				if (processedValue.get(0).getValue() != null && !processedValue.get(0).getValue().isNaN()) {
 					if (param.getIsZeroNoData() && value.getValue() == 0f) {
 						return null;
@@ -565,7 +551,6 @@ public class DataService {
 			for (DataValues dataValue : parameterData.getValues()) {
 				ContextSource cs = getContextSourceFromDatabase(dataValue.getContextSource(),
 						parameterData.getParameter().getIsFor());
-				System.out.println(cs.getName());
 				value = dataValue.getCalculatedValue();
 				if (parameterData.getParameter().getIsZeroNoData()) {
 					if (value == null) {
@@ -1207,7 +1192,6 @@ public class DataService {
 		}
 
 		if (traces.size() == colored) {
-			System.out.println("es este caso");
 			return;
 		}
 

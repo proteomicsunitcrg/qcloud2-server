@@ -376,16 +376,15 @@ public class ThresholdService {
 		}
 		for (SampleType sampleType : sampleTypes) {
 			File lastFile = fileRepository
-			.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.getId(), sampleType.getId());
+					.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.getId(), sampleType.getId());
 			if (lastFile.getCreationDate().before(thresholdUtils.getOfflineDate()) && lastFile.getSampleType()
-			.getSampleTypeCategory().getSampleTypeComplexity() == SampleTypeComplexity.LOW) {
+					.getSampleTypeCategory().getSampleTypeComplexity() == SampleTypeComplexity.LOW) {
 				labSystemStatus.clear();
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
-				System.out.println(labSystem.getName() +  "im offline outdateed");
 				return labSystemStatus;
 			}
 			// if (lastFile.getCreationDate().before(thresholdUtils.getOfflineDate())) {
-			// 	continue;
+			// continue;
 			// }
 			if (!isLastFileValid(lastFile) && lastFile.getCreationDate().after(thresholdUtils.getOfflineDate())) {
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
@@ -401,12 +400,11 @@ public class ThresholdService {
 
 	public List<LabSystemStatus> getLabSystemStatus2(LabSystem labSystem) {
 		List<LabSystemStatus> labSystemStatus = new ArrayList<>();
-		Optional <File> file = fileRepository.findTop1ByLabSystemIdOrderByCreationDateDesc(labSystem.getId());
+		Optional<File> file = fileRepository.findTop1ByLabSystemIdOrderByCreationDateDesc(labSystem.getId());
 		if (file.isPresent()) {
-			if(file.get().getCreationDate().before(thresholdUtils.getOfflineDate())) {
+			if (file.get().getCreationDate().before(thresholdUtils.getOfflineDate())) {
 				labSystemStatus.clear();
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
-				System.out.println(labSystem.getName() +  "im offline outdateed");
 				return labSystemStatus;
 			}
 			List<ThresholdNonConformity> tncs = thresholdNonConformityRepository.findByFileId(file.get().getId());
@@ -415,9 +413,8 @@ public class ThresholdService {
 			});
 		} else {
 			labSystemStatus.clear();
-				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
-				System.out.println(labSystem.getName() +  "im offline outdateed");
-				return labSystemStatus;
+			labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
+			return labSystemStatus;
 		}
 		return labSystemStatus;
 	}

@@ -11,7 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class RetentionTimeProcessor extends Processor {
-	
+
 	private final Log logger = LogFactory.getLog(this.getClass());
 
 	public RetentionTimeProcessor() {
@@ -65,10 +65,9 @@ public class RetentionTimeProcessor extends Processor {
 				}
 				Float rounded = nV;
 				d.setValue(rounded);
-				
+
 			} catch (NullPointerException e) {
 				logger.warn("RT data no processed, because not enough RT data in the VALID guideset, inserting null");
-				System.out.println("hi");
 				d.setValue(0f);
 			}
 		}
