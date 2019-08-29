@@ -401,17 +401,24 @@ public class ThresholdService {
 
 	public List<LabSystemStatus> getLabSystemStatus2(LabSystem labSystem) {
 		List<LabSystemStatus> labSystemStatus = new ArrayList<>();
-		File file = fileRepository.findTop1ByLabSystemIdOrderByCreationDateDesc(labSystem.getId());
-		if(file.getCreationDate().before(thresholdUtils.getOfflineDate())) {
+		Optional <File> file = fileRepository.findTop1ByLabSystemIdOrderByCreationDateDesc(labSystem.getId());
+		if (file.isPresent()) {
+			if(file.get().getCreationDate().before(thresholdUtils.getOfflineDate())) {
+				labSystemStatus.clear();
+				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
+				System.out.println(labSystem.getName() +  "im offline outdateed");
+				return labSystemStatus;
+			}
+			List<ThresholdNonConformity> tncs = thresholdNonConformityRepository.findByFileId(file.get().getId());
+			tncs.forEach(tnc -> {
+				labSystemStatus.add(thresholdUtils.createLabSystemStatusByThresholdNonConformity(tnc));
+			});
+		} else {
 			labSystemStatus.clear();
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
 				System.out.println(labSystem.getName() +  "im offline outdateed");
 				return labSystemStatus;
 		}
-		List<ThresholdNonConformity> tncs = thresholdNonConformityRepository.findByFileId(file.getId());
-		tncs.forEach(tnc -> {
-			labSystemStatus.add(thresholdUtils.createLabSystemStatusByThresholdNonConformity(tnc));
-		});
 		return labSystemStatus;
 	}
 
