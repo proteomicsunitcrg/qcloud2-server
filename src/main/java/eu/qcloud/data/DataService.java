@@ -1076,27 +1076,29 @@ public class DataService {
 				}
 			});
 		}
-
 		List<CommunityLineNode> communityLinesNode = getCommunityLines();
-		for (CommunityLineNode communityLineNode : communityLinesNode) {
-			if (chart.get().getParam().equals(communityLineNode.getCommunityLine().getParam())
-					&& communityLineNode.isActive()
-					&& chart.get().getSampleType().equals(communityLineNode.getCommunityLine().getSampleType())) {
-				for (ChartParams chartParam : chartParams) {
-					if (chartParam.getContextSource().equals(communityLineNode.getCommunityLine().getContextSource())) {
-						traces.put(communityLineNode.getCommunityLine().getName(),
-								generateCommunityPlotTrace(communityLineNode));
-						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
-								.add(generatePlotTracePointCommunity(startDate,
-										communityLineNode.getCommunityLine().getValue(),
-										communityLineNode.getCommunityLine().getName()));
-						traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
-								.add(generatePlotTracePointCommunity(endDate,
-										communityLineNode.getCommunityLine().getValue(),
-										communityLineNode.getCommunityLine().getName()));
-						traces.get(communityLineNode.getCommunityLine().getName())
-								.setCommunityPartner(communityLineNode.getCommunityLine().getCommunityPartner());
-						traces.get(communityLineNode.getCommunityLine().getName()).setContextSourceId(10000l);
+		if (chartParams.size() == 1) {
+			for (CommunityLineNode communityLineNode : communityLinesNode) {
+				if (chart.get().getParam().equals(communityLineNode.getCommunityLine().getParam())
+						&& communityLineNode.isActive()
+						&& chart.get().getSampleType().equals(communityLineNode.getCommunityLine().getSampleType())) {
+					for (ChartParams chartParam : chartParams) {
+						if (chartParam.getContextSource()
+								.equals(communityLineNode.getCommunityLine().getContextSource())) {
+							traces.put(communityLineNode.getCommunityLine().getName(),
+									generateCommunityPlotTrace(communityLineNode));
+							traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
+									.add(generatePlotTracePointCommunity(startDate,
+											communityLineNode.getCommunityLine().getValue(),
+											communityLineNode.getCommunityLine().getName()));
+							traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
+									.add(generatePlotTracePointCommunity(endDate,
+											communityLineNode.getCommunityLine().getValue(),
+											communityLineNode.getCommunityLine().getName()));
+							traces.get(communityLineNode.getCommunityLine().getName())
+									.setCommunityPartner(communityLineNode.getCommunityLine().getCommunityPartner());
+							traces.get(communityLineNode.getCommunityLine().getName()).setContextSourceId(10000l);
+						}
 					}
 				}
 			}
@@ -1186,7 +1188,7 @@ public class DataService {
 	private PlotTrace generateCommunityPlotTrace(CommunityLineNode communityLineNode) {
 		PlotTrace plotTrace = new PlotTrace();
 		plotTrace.setAbbreviated(communityLineNode.getCommunityLine().getName());
-		plotTrace.setTraceColor(communityLineNode.getCommunityLine().getContextSource().getTraceColor());
+		plotTrace.setTraceColor(communityLineNode.getCommunityLine().getTraceColor());
 		plotTrace.setShade(0);
 		plotTrace.setPlotTracePoints(new ArrayList<>());
 		return plotTrace;
@@ -1205,6 +1207,7 @@ public class DataService {
 		}
 
 		if (traces.size() == colored) {
+			System.out.println("es este caso");
 			return;
 		}
 
@@ -1234,7 +1237,7 @@ public class DataService {
 			List<TraceColor> freeColors = traceColorRepository.findByIdNotIn(ids);
 			colors.addAll(freeColors);
 			int missingColors = traces.size() - colored;
-			logger.info("Insuficient trace colors, generating random trace colors");
+			logger.info("Insuficient trace colors, generating random trace colors not all mis");
 			for (int i = colors.size(); i < missingColors; i++) {
 				colors.add(createRandomColor());
 			}

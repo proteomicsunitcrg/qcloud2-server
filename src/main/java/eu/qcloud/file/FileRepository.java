@@ -23,7 +23,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	public File findByChecksum(String checksum);
 
-	public File findTop1ByLabSystemIdOrderByCreationDateDesc(Long labSystemId);
+	public Optional <File> findTop1ByLabSystemIdOrderByCreationDateDesc(Long labSystemId);
 
 	public File findTop1ByLabSystemIdOrderByCreationDateAsc(Long labSystemId);
 
