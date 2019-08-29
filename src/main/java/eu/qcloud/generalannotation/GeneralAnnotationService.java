@@ -32,6 +32,10 @@ public class GeneralAnnotationService {
     }
 
     public List<GeneralAnnotation> getBetweenDates(Date dateStart, Date dateEnd) {
+        List <GeneralAnnotation> caca = generalAnnotationRepository.findByActiveTrueAndDateBetween(dateStart, dateEnd);
+        for (GeneralAnnotation caco: caca) {
+            System.out.println(caco.getDate());
+        }
         return generalAnnotationRepository.findByActiveTrueAndDateBetween(dateStart, dateEnd);
     }
 
