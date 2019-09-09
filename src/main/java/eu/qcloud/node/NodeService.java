@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import eu.qcloud.file.FileRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
+import eu.qcloud.security.model.User;
 
 /**
  * Main service for node

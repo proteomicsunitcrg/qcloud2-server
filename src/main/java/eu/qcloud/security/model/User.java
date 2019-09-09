@@ -68,6 +68,12 @@ public class User {
     @Size(min = 4, max = 50)
     private String email;
 
+    @Column(name = "telegram_code", length = 255)
+    private String telegram_code;
+
+    @Column(name = "telegram_chat_id")
+    private Long telegramChatId;
+
     @Column(name = "ENABLED")
     @NotNull
     private Boolean enabled;
@@ -182,6 +188,22 @@ public class User {
 
     public void setUserDefaultView(UserDefaultView userDefaultView) {
         this.userDefaultView = userDefaultView;
+    }
+
+    public String getTelegram_code() {
+        return telegram_code;
+    }
+
+    public void setTelegram_code(String telegram_code) {
+        this.telegram_code = telegram_code;
+    }
+
+    public Long getTelegramChatId() {
+        return telegramChatId;
+    }
+
+    public void setTelegramChatId(Long telegramChatId) {
+        this.telegramChatId = telegramChatId;
     }
 
 }
