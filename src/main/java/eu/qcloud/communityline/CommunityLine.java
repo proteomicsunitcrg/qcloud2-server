@@ -71,6 +71,9 @@ public class CommunityLine {
     @JoinColumn(name = "community_partner_id")
     private CommunityPartner communityPartner;
 
+    @Column(name = "alias")
+    private String alias;
+
     public Long getId() {
         return id;
     }
@@ -218,6 +221,31 @@ public class CommunityLine {
         this.communityLineNode = communityLineNode;
         this.traceColor = traceColor;
         this.communityPartner = communityPartner;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public CommunityLine(Long id, UUID apiKey, String name, Instrument instrument, Param param, SampleType sampleType,
+            ContextSource contextSource, float value, Set<CommunityLineNode> communityLineNode, TraceColor traceColor,
+            CommunityPartner communityPartner, String alias) {
+        this.id = id;
+        this.apiKey = apiKey;
+        this.name = name;
+        this.instrument = instrument;
+        this.param = param;
+        this.sampleType = sampleType;
+        this.contextSource = contextSource;
+        this.value = value;
+        this.communityLineNode = communityLineNode;
+        this.traceColor = traceColor;
+        this.communityPartner = communityPartner;
+        this.alias = alias;
     }
 
 }

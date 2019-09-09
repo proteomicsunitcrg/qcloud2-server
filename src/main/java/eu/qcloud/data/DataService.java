@@ -1172,7 +1172,7 @@ public class DataService {
 
 	private PlotTrace generateCommunityPlotTrace(CommunityLineNode communityLineNode) {
 		PlotTrace plotTrace = new PlotTrace();
-		plotTrace.setAbbreviated(communityLineNode.getCommunityLine().getName());
+		plotTrace.setAbbreviated(communityLineNode.getCommunityLine().getAlias());
 		plotTrace.setTraceColor(communityLineNode.getCommunityLine().getTraceColor());
 		plotTrace.setShade(0);
 		plotTrace.setPlotTracePoints(new ArrayList<>());
