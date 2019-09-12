@@ -227,6 +227,13 @@ public class NodeController {
 		return userService.changeMemberRole(userUuid, manager.getNode().getId());
 	}
 
+	@RequestMapping(value = "/api/node/telegram", method = RequestMethod.GET)
+	public String getTelegramURL() {
+		User user = getManagerFromSecurityContext();
+		return user.getTelegram_code();
+	}
+
+
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/api/node/users", method = RequestMethod.GET)
 	public List<UserWithUuid> getUsers() {
