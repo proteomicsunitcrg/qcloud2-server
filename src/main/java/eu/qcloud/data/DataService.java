@@ -597,7 +597,7 @@ public class DataService {
 				}
 			}
 		}
-		if (!thresholdNonConformities.isEmpty()) {
+		if (!thresholdNonConformities.isEmpty() && file.getCreationDate().before(thresholdUtils.getOfflineDate())) {
 			webSocketService.sendNonConformityToNodeUsers(file.getLabSystem().getMainDataSource().getNode(),
 					thresholdNonConformities, file.getLabSystem());
 		}
