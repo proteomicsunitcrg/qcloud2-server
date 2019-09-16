@@ -1,5 +1,7 @@
 package eu.qcloud.message;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,8 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "message")
@@ -27,8 +33,7 @@ public class Message {
     @Column(name = "Message")
     @NotBlank
     private String message;
-    // wrong column type encountered in column [show_msg] in table [message]; found
-    // [bit (Types#BIT)], but expecting [boolean (Types#BOOLEAN)]
+
     @NotNull
     @Column(name = "Show_msg", columnDefinition = "BIT")
     private boolean show;
@@ -36,6 +41,11 @@ public class Message {
     @NotNull
     @Column(name = "Message_type")
     private String message_type;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Column(name = "creation_date", columnDefinition = "DATETIME")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date creationDate;
 
     public void setId(Long id) {
         this.id = id;
@@ -75,6 +85,20 @@ public class Message {
 
     public String getMessageType() {
         return this.message_type;
+    }
+
+    @Override
+    public String toString() {
+        return "Message [creationDate=" + creationDate + ", id=" + id + ", message=" + message + ", message_type="
+                + message_type + ", show=" + show + ", title=" + title + "]";
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
 }

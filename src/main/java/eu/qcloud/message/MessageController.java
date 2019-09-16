@@ -1,6 +1,7 @@
 
 package eu.qcloud.message;
 
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,7 +35,13 @@ public class MessageController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/api/message/save", method = RequestMethod.POST)
 	public Message saveMessage(@RequestBody Message msg) {
+		msg.setCreationDate(new Date());
 		return messageService.saveMessage(msg);
+	}
+
+	@RequestMapping(value = "/api/message/showNotification", method = RequestMethod.GET)
+	public boolean showNotification() {
+		return messageService.showNotification();
 	}
 
 }
