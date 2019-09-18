@@ -100,4 +100,10 @@ public class ThresholdNonConformity {
 		this.status = status;
 	}
 
+	@Override
+	public String toString() {
+		return "ThresholdNonConformity [contextSource=" + contextSource + ", file=" + file.getId() + ", guideSet=" + guideSet.getId()
+				+ ", id=" + id + ", status=" + status + ", threshold=" + threshold + "]";
+	}
+
 }
