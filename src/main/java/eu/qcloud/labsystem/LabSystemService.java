@@ -51,7 +51,7 @@ public class LabSystemService {
 	private UserService userService;
 
 	public LabSystem saveSystem(LabSystem system) {
-
+		system.setActive(true);
 		return systemRepository.save(system);
 	}
 
