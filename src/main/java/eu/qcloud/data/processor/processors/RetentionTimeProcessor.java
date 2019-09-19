@@ -68,7 +68,7 @@ public class RetentionTimeProcessor extends Processor {
 
 			} catch (NullPointerException e) {
 				logger.warn("RT data no processed, because not enough RT data in the VALID guideset, inserting null");
-				d.setValue(0f);
+				d.setValue(Float.NaN);
 			}
 		}
 		return this.data;
