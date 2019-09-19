@@ -1064,25 +1064,33 @@ public class DataService {
 		List<CommunityLineNode> communityLinesNode = getCommunityLines();
 		if (chartParams.size() == 1) {
 			for (CommunityLineNode communityLineNode : communityLinesNode) {
-				if (chart.get().getParam().equals(communityLineNode.getCommunityLine().getParam())
-						&& communityLineNode.isActive()
-						&& chart.get().getSampleType().equals(communityLineNode.getCommunityLine().getSampleType())) {
-					for (ChartParams chartParam : chartParams) {
-						if (chartParam.getContextSource()
-								.equals(communityLineNode.getCommunityLine().getContextSource())) {
-							traces.put(communityLineNode.getCommunityLine().getName(),
-									generateCommunityPlotTrace(communityLineNode));
-							traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
-									.add(generatePlotTracePointCommunity(startDate,
-											communityLineNode.getCommunityLine().getValue(),
-											communityLineNode.getCommunityLine().getName()));
-							traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
-									.add(generatePlotTracePointCommunity(endDate,
-											communityLineNode.getCommunityLine().getValue(),
-											communityLineNode.getCommunityLine().getName()));
-							traces.get(communityLineNode.getCommunityLine().getName())
-									.setCommunityPartner(communityLineNode.getCommunityLine().getCommunityPartner());
-							traces.get(communityLineNode.getCommunityLine().getName()).setContextSourceId(10000l);
+				if (labSystem.get().getMainDataSource().getCv().getId()
+						.equals(communityLineNode.getCommunityLine().getInstrument().getId())) {
+					if (chart.get().getParam().equals(communityLineNode.getCommunityLine().getParam())
+							&& communityLineNode.isActive() && chart.get().getSampleType()
+									.equals(communityLineNode.getCommunityLine().getSampleType())) {
+						for (ChartParams chartParam : chartParams) {
+							if (chartParam.getContextSource()
+									.equals(communityLineNode.getCommunityLine().getContextSource())) {
+								System.out.println("Line DataSource"
+										+ communityLineNode.getCommunityLine().getInstrument().getId());
+								// System.out.println(labSystem.get().getMainDataSource().getName());
+								System.out
+										.println("LS DataSource" + labSystem.get().getMainDataSource().getCv().getId());
+								traces.put(communityLineNode.getCommunityLine().getName(),
+										generateCommunityPlotTrace(communityLineNode));
+								traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
+										.add(generatePlotTracePointCommunity(startDate,
+												communityLineNode.getCommunityLine().getValue(),
+												communityLineNode.getCommunityLine().getName()));
+								traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
+										.add(generatePlotTracePointCommunity(endDate,
+												communityLineNode.getCommunityLine().getValue(),
+												communityLineNode.getCommunityLine().getName()));
+								traces.get(communityLineNode.getCommunityLine().getName()).setCommunityPartner(
+										communityLineNode.getCommunityLine().getCommunityPartner());
+								traces.get(communityLineNode.getCommunityLine().getName()).setContextSourceId(10000l);
+							}
 						}
 					}
 				}
