@@ -370,6 +370,13 @@ public class ThresholdUtils {
 		return ls;
 	}
 
+	public LabSystemStatus createNoThresholdNonConformity(LabSystem labSystem) {
+		LabSystemStatus ls = new LabSystemStatus();
+		System.out.println(labSystem.getName());
+		ls.setStatus(InstrumentStatus.NO_THRESHOLD);
+		return ls;
+	}
+
 	public List<LabSystemStatus> createLabSystemStatusByThresholdNonConformity(List<ThresholdNonConformity> tncs) {
 		List<LabSystemStatus> labSystemsStatus = new ArrayList<>();
 		tncs.forEach(tnc -> {

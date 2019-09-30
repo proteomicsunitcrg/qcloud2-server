@@ -399,12 +399,18 @@ public class ThresholdService {
 	}
 
 	public List<LabSystemStatus> getLabSystemStatus2(LabSystem labSystem) {
+		List <withParamsWithoutThreshold> lsThresholds = thresholdRepository.findLabSystemThresholds(labSystem.getId());
 		List<LabSystemStatus> labSystemStatus = new ArrayList<>();
 		Optional<File> file = fileRepository.findTop1ByLabSystemIdOrderByCreationDateDesc(labSystem.getId());
 		if (file.isPresent()) {
 			if (file.get().getCreationDate().before(thresholdUtils.getOfflineDate())) {
 				labSystemStatus.clear();
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
+				return labSystemStatus;
+			}
+			if(lsThresholds.size() == 0 ) {
+				labSystemStatus.clear();
+				labSystemStatus.add(thresholdUtils.createNoThresholdNonConformity(labSystem));
 				return labSystemStatus;
 			}
 			List<ThresholdNonConformity> tncs = thresholdNonConformityRepository.findByFileId(file.get().getId());
