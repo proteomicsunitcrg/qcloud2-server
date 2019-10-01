@@ -151,7 +151,7 @@ public class CommunityLineService {
 					.findAllByCommunityLineId(communityLine.getId());
 			for (Node node : nodesRelationIncoming) {
 				if (!isThisNodeInTheRelation(communityLineNodes, node)) {
-					communityLineNodeRepository.save(new CommunityLineNode(communityLine, node, false));
+					communityLineNodeRepository.save(new CommunityLineNode(communityLine, node, true));
 				}
 			}
 			List<Node> nodesInRelations = new ArrayList<Node>();
