@@ -233,6 +233,12 @@ public class NodeController {
 		return user.getTelegram_code();
 	}
 
+	@RequestMapping(value = "api/node/telegram", method = RequestMethod.PUT)
+	public String resetTelegramCode() {
+		User user = getManagerFromSecurityContext();
+		return userService.resetTelegramCode(user);
+	}
+
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/api/node/users", method = RequestMethod.GET)

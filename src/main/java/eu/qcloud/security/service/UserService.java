@@ -3,6 +3,7 @@ package eu.qcloud.security.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,6 +15,7 @@ import eu.qcloud.security.model.AuthorityName;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.repository.UserRepository;
 import eu.qcloud.security.repository.UserRepository.UserWithUuid;
+import eu.qcloud.utils.RandomString;
 
 @Service
 public class UserService {
@@ -104,6 +106,14 @@ public class UserService {
 		userRepository.save(u);
 
 		return userRepository.findWithUuidById(u.getId());
+	}
+
+	public String resetTelegramCode(User user) {
+		RandomString gen = new RandomString(8, ThreadLocalRandom.current());
+		user.setTelegramChatId(null);
+		user.setTelegram_code(gen.nextString());
+		userRepository.save(user);
+		return user.getTelegram_code();
 	}
 
 }
