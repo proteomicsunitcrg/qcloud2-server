@@ -530,7 +530,7 @@ public class DataService {
 	}
 
 	private void evaluateDataForNonConformities(File file, DataFromPipeline data) {
-
+		System.out.println("evaluating data for NC");
 		List<ThresholdNonConformity> thresholdNonConformities = new ArrayList<>();
 
 		for (ParameterData parameterData : data.getData()) {
@@ -579,7 +579,7 @@ public class DataService {
 				if (threshold.isMonitored()) {
 					if (is != InstrumentStatus.OK) {
 						logger.info("NC -> " + file.getFilename() + " param: " + parameterData.getParameter().getName()
-								+ " cs:" + dataValue.getContextSource());
+								+ " cs: " + dataValue.getContextSource());
 					}
 					ThresholdNonConformity tnc = new ThresholdNonConformity();
 					tnc.setStatus(is);
@@ -597,7 +597,7 @@ public class DataService {
 				}
 			}
 		}
-		if (!thresholdNonConformities.isEmpty() && file.getCreationDate().before(thresholdUtils.getOfflineDate())) {
+		if (!thresholdNonConformities.isEmpty() && !file.getCreationDate().before(thresholdUtils.getOfflineDate())) {
 			webSocketService.sendNonConformityToNodeUsers(file.getLabSystem().getMainDataSource().getNode(),
 					thresholdNonConformities, file.getLabSystem());
 		}
