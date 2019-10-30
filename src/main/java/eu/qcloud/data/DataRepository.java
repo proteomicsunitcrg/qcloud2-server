@@ -15,6 +15,8 @@ public interface DataRepository extends PagingAndSortingRepository<Data, DataId>
 
 	MiniData findByDataIdFileId(Long fileId);
 
+	List<Data> findByFileId(Long fileId);
+
 	@Query("SELECT d as d from Data d where d.param.id=?1 and d.file.id = ?2 and d.contextSource.id = ?3")
 	List<Data> findParamDataByFileAndContextSource(Long paramId, Long fileId, Long contextSourceId);
 
@@ -39,6 +41,7 @@ public interface DataRepository extends PagingAndSortingRepository<Data, DataId>
 
 	Long countByContextSourceIdAndParamIdAndFileLabSystemApiKeyAndFileCreationDateBetweenAndCalculatedValueIsNotNull(
 			Long contextSourceId, Long paramId, UUID labSystemApiKey, Date startDate, Date endDate);
+	List<Data> findByFileChecksumOrderByParamIdAsc(String checksum);
 
 	public interface MiniData {
 

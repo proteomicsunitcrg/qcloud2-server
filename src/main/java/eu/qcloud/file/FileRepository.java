@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +21,8 @@ import eu.qcloud.sampleType.SampleType;
 public interface FileRepository extends JpaRepository<File, Long> {
 
 	public OnlySmalls findFileById(Long idFile);
+
+	public List<File> findAllByOrderByIdDesc();
 
 	public File findByChecksum(String checksum);
 
@@ -171,6 +174,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 		String getFilename();
 	}
+	
 
 	@Query("select f from File f where filename = ?1")
 	public OnlyChecksum getFileByFilename(String filename);
@@ -190,4 +194,9 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	public Long countByLabSystemApiKeyAndSampleTypeIdAndCreationDateBetween(UUID labSystemApiKey, Long sampleTypeId,
 			Date startDate, Date endDate);
+
+	public Page <File> findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByIdDesc(String filename, String cheksum, String labsystemName, String sampleTypeId, String nodeName, Long categoryId, Pageable page);
+	
+	public Page <File> findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(String filename, String cheksum, String labsystemName, String sampleTypeId, Pageable page);
+
 }
