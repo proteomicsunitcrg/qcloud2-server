@@ -70,9 +70,9 @@ public class IntranetService {
         }
         System.out.println(email);
         if (exact) {
-            return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(name, checksum, labsystemName, sampleTypeId, page);
+            return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByCreationDateDesc(name, checksum, labsystemName, sampleTypeId, page);
         } else {
-            return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByIdDesc(name, checksum, labsystemName, sampleTypeId, nodeToFind, Long.valueOf(1), page);
+            return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByCreationDateDesc(name, checksum, labsystemName, sampleTypeId, nodeToFind, Long.valueOf(1), page);
         }
     }
 
