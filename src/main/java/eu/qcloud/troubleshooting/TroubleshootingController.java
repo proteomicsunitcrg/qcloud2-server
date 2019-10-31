@@ -2,6 +2,7 @@ package eu.qcloud.troubleshooting;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,6 +38,12 @@ public class TroubleshootingController {
 	public Troubleshooting addTroubleshootingItem(@RequestBody Troubleshooting troubleshooting,
 			@PathVariable TroubleshootingType troubleshootingType) {
 		return troubleshootingService.addTroubleshootingItem(troubleshooting, troubleshootingType);
+	}
+
+	@RequestMapping(value = "/enableDisable/{apiKey}", method = RequestMethod.PATCH)
+	@PreAuthorize("hasRole('ADMIN')")
+	public Troubleshooting enableDisable(@PathVariable UUID apiKey) {
+		return troubleshootingService.enableDisable(apiKey);
 	}
 
 	/*

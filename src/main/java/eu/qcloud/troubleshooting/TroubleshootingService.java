@@ -3,6 +3,7 @@ package eu.qcloud.troubleshooting;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -80,6 +81,15 @@ public class TroubleshootingService {
 		default:
 			throw new InvalidActionException("Invalid troubleshooting type");
 		}
+	}
+
+	public Troubleshooting enableDisable(UUID apiKey) {
+		Optional <Troubleshooting> trouble = troubleshootingRepository.findByApiKey(apiKey);
+		if(!trouble.isPresent()) {
+			throw new DataIntegrityViolationException("Item not found");
+		}
+		trouble.get().setActive(!trouble.get().isActive());
+		return troubleshootingRepository.save(trouble.get());
 	}
 
 }

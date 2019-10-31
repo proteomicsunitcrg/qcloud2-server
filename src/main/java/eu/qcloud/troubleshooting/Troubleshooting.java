@@ -37,6 +37,9 @@ public class Troubleshooting {
 	@org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
 	private UUID apiKey;
 
+	@Column(name = "is_active", columnDefinition = "BIT default true")
+	private boolean active;
+
 	public Troubleshooting() {
 	}
 
@@ -85,5 +88,22 @@ public class Troubleshooting {
 
 	public void setApiKey(UUID apiKey) {
 		this.apiKey = apiKey;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public Troubleshooting(Long id, String name, String description, String qccv, UUID apiKey, boolean active) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.qccv = qccv;
+		this.apiKey = apiKey;
+		this.active = active;
 	}
 }
