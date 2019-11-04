@@ -1,0 +1,101 @@
+# java -jar -Dspring.profiles.active=production target/QCloud2-1.0.15DEV.jar --spring.config.location=/home/mserret/configOutside.yml
+
+# config context path to "/" by setting an empty string
+server:
+  contextPathContextPath:
+  port: 8181
+
+# mail properties
+  
+application:
+  version: ZA WARUDO
+  
+management.endpoint.health.show-details: always
+
+
+# JACKSON
+spring:
+  jackson:
+    time-zone:
+      Europe/Madrid
+    serialization:
+      INDENT_OUTPUT: true
+  h2:
+    console:
+      enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: MySQL57InnoDB
+    show-sql: false
+  flyway:
+    enabled: true
+  
+  mail:
+    default-encoding: UTF-8
+    host: 
+    username: 
+    password: 
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    protocol: smtp
+    test-connection: false
+  profiles:
+    active:
+    - production
+
+
+jwt:
+  header: Authorization
+  secret: L+0P1i+38a26pHiW10iHqPBYAyklvqPdySy98BV9PPCZyDogMggoSZkYxULqCF+WG6Nimlfxd53H6zjdIUJNJA==
+  expiration: 604800  
+  route:
+    authentication:
+      path: api/auth
+      refresh: refresh
+
+qcloud:
+  threshold:
+    min-points-auto: 10
+    min-points-manual: 20
+    min-valid-context-source-points: 2
+    # this is for the WARNING/DANGER plot
+    files-auto-plot: 10
+  threshold-nonconformity:
+    page-size: 10
+  instrument-status:
+    max-offline-hours: 12
+
+logging:
+  level:
+    org.springframework:
+      security: ERROR
+---
+spring:
+  profiles: production
+  datasource:
+    url: 
+    username: 
+    password: 
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: MySQL57InnoDB
+    show-sql: false
+  flyway:
+    enabled: true
+logging:
+  file: qcloud2.log
+spring.main.allow-bean-definition-overriding: true
+
+ 
