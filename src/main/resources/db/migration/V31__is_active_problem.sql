@@ -1,0 +1,1 @@
+ALTER TABLE troubleshooting ADD COLUMN is_active bit(1) NOT NULL DEFAULT 1;
