@@ -110,4 +110,35 @@ public class IntranetService {
 		return userRepo.findByUsernameContaining(email);
 	}
 
+	public List<File> getJSON(String name, String checksum, String labsystemName, String sampleTypeId, String node,
+			String email, boolean exact) {
+                if (name.equals("null")) {
+                    name = "";
+                }
+                if (checksum.equals("null")) {
+                    checksum = "";
+                }
+                if (labsystemName.equals("null")) {
+                    labsystemName = "";
+                }
+                if (sampleTypeId.equals("null")) {
+                    sampleTypeId = "";
+                }
+                if (node.equals("null")) {
+                    node = "";
+                }
+                if (!email.equals("null")) {
+                    User user = userRepo.findByUsername(email);
+                    if (user!=null) {
+                        node = user.getNode().getName();
+                    }
+                }
+                System.out.println(email);
+                if (exact) {
+                    return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByCreationDateDesc(name, checksum, labsystemName, sampleTypeId);
+                } else {
+                    return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByCreationDateDesc(name, checksum, labsystemName, sampleTypeId, node, Long.valueOf(1));
+                }
+	}
+
 }

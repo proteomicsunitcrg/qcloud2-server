@@ -174,7 +174,6 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 		String getFilename();
 	}
-	
 
 	@Query("select f from File f where filename = ?1")
 	public OnlyChecksum getFileByFilename(String filename);
@@ -195,8 +194,18 @@ public interface FileRepository extends JpaRepository<File, Long> {
 	public Long countByLabSystemApiKeyAndSampleTypeIdAndCreationDateBetween(UUID labSystemApiKey, Long sampleTypeId,
 			Date startDate, Date endDate);
 
-	public Page <File> findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByCreationDateDesc(String filename, String cheksum, String labsystemName, String sampleTypeId, String nodeName, Long categoryId, Pageable page);
-	
-	public Page <File> findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByCreationDateDesc(String filename, String cheksum, String labsystemName, String sampleTypeId, Pageable page);
+	public Page<File> findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByCreationDateDesc(
+			String filename, String cheksum, String labsystemName, String sampleTypeId, String nodeName,
+			Long categoryId, Pageable page);
+
+	public Page<File> findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByCreationDateDesc(
+			String filename, String cheksum, String labsystemName, String sampleTypeId, Pageable page);
+
+	public List<File> findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByCreationDateDesc(
+			String filename, String cheksum, String labsystemName, String sampleTypeId, String nodeName,
+			Long categoryId);
+
+	public List <File> findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByCreationDateDesc(
+			String filename, String cheksum, String labsystemName, String sampleTypeId);
 
 }

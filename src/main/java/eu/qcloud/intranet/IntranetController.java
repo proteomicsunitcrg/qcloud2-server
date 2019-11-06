@@ -67,4 +67,10 @@ public class IntranetController {
         return intranetService.getUsers(email);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "api/intranet/file/fullData", method = RequestMethod.GET)
+    public List<File> getJSON(@RequestParam String name, @RequestParam String checksum,@RequestParam String labsystemName, @RequestParam String sampleTypeId, @RequestParam String node, @RequestParam String email, @RequestParam boolean exact) {
+        return intranetService.getJSON(name, checksum, labsystemName, sampleTypeId, node, email, exact);
+    }
+
 }
