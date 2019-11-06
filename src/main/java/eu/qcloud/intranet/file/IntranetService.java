@@ -1,4 +1,4 @@
-package eu.qcloud.intranet;
+package eu.qcloud.intranet.file;
 
 import java.util.ArrayList;
 import java.util.List;

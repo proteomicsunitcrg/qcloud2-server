@@ -1,4 +1,4 @@
-package eu.qcloud.intranet;
+package eu.qcloud.intranet.file;
 
 import java.util.List;
 import java.util.UUID;
