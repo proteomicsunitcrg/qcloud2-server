@@ -37,6 +37,8 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	public long countByLabSystemApiKey(UUID labSystemApiKey);
 
+	public Long countByLabSystemApiKeyAndCreationDateAfter(UUID apiKey, Date date);
+
 	public long countByLabSystemIdAndSampleTypeId(Long labSystemId, Long sampleTypeId);
 
 	@Query("select count(f) from File f where f.labSystem.id = ?1 and f.sampleType.id=?2 and f.id in (select d.file.id from Data d where d.param.id = ?3 and d.contextSource.id = ?4 and d.file.labSystem.id = ?1)")
@@ -193,6 +195,8 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	public Long countByLabSystemApiKeyAndSampleTypeIdAndCreationDateBetween(UUID labSystemApiKey, Long sampleTypeId,
 			Date startDate, Date endDate);
+
+	// public Long countByLabSystemApiKey(UUID lsApiKey);
 
 	public Page<File> findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByCreationDateDesc(
 			String filename, String cheksum, String labsystemName, String sampleTypeId, String nodeName,

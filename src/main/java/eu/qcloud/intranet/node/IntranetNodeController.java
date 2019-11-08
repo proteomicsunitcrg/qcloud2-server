@@ -44,9 +44,13 @@ public class IntranetNodeController {
         return intrNodeService.getLsByNodeApiKey(apiKey);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "stats", method = RequestMethod.GET)
+    public LSStats getStats(@RequestParam UUID apiKey) {
+        return intrNodeService.getLSStats(apiKey);
+    }
     @ExceptionHandler(NotFoundException.class)
 	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
-	}
+    }
 }
