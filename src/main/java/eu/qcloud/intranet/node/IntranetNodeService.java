@@ -57,4 +57,31 @@ public class IntranetNodeService {
         stats.setTotalFiles(fileRepo.countByLabSystemApiKey(apiKey));
         return stats;
 	}
+
+    // TODO: Improve the date handling and the Longs to store the results!
+	public NodeStats getNodeStats(UUID apiKey) {
+        Calendar today = Calendar.getInstance();
+        today.add(Calendar.MONTH, -1);
+        Date month1Ago = today.getTime();
+        today = Calendar.getInstance();
+        today.add(Calendar.MONTH, -6);
+        Date month6Ago =  today.getTime();
+        today = Calendar.getInstance();
+        today.add(Calendar.WEEK_OF_MONTH, -1);
+        Date week1Ago = today.getTime();
+        List<LabSystem> nodeLabSystems= getLsByNodeApiKey(apiKey);
+        NodeStats nodeStats = new NodeStats();
+        // I have to this because if i use nodeStats.setTotatFiles(nodeStats.getTotalFiles() += SOMETHING); fails
+        Long nodeStatsTotalFiles = 0l;
+        Long nodeStatsTotalFiles6M = 0l;
+        Long nodeStatsTotalFiles1M = 0l;
+        Long nodeStatsTotalFiles1W = 0l;
+        for (LabSystem ls: nodeLabSystems) {
+            nodeStats.setTotalFiles(nodeStatsTotalFiles += fileRepo.countByLabSystemApiKey(ls.getApiKey()));
+            nodeStats.setFiles1Month(nodeStatsTotalFiles1M += fileRepo.countByLabSystemApiKeyAndCreationDateAfter(ls.getApiKey(), month1Ago));
+            nodeStats.setFiles6Month(nodeStatsTotalFiles6M += fileRepo.countByLabSystemApiKeyAndCreationDateAfter(ls.getApiKey(), month6Ago));
+            nodeStats.setFiles1Week(nodeStatsTotalFiles1W += fileRepo.countByLabSystemApiKeyAndCreationDateAfter(ls.getApiKey(), week1Ago));
+        }
+        return nodeStats;
+	}
 }
