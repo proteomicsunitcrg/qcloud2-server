@@ -116,4 +116,8 @@ public class UserService {
 		return user.getTelegram_code();
 	}
 
+	public List<User> findUsersByNodeApiKey(UUID nodeApiKey) {
+		return userRepository.findAllByNodeApiKey(nodeApiKey);
+	}
+
 }

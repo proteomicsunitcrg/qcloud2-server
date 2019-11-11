@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository.LabSystemNameAndApiKey;
 import eu.qcloud.sampleType.SampleType;
 
@@ -20,6 +22,8 @@ import eu.qcloud.sampleType.SampleType;
 public interface FileRepository extends JpaRepository<File, Long> {
 
 	public OnlySmalls findFileById(Long idFile);
+
+	public List<File> findAllByOrderByIdDesc();
 
 	public File findByChecksum(String checksum);
 
@@ -33,6 +37,10 @@ public interface FileRepository extends JpaRepository<File, Long> {
 			UUID labSystemApiKey, String sampleTypeQccv, Date startDate, Date endDate);
 
 	public long countByLabSystemApiKey(UUID labSystemApiKey);
+
+	public Long countByLabSystemApiKeyAndCreationDateAfter(UUID apiKey, Date date);
+
+	public Long countByCreationDateAfter(Date date);
 
 	public long countByLabSystemIdAndSampleTypeId(Long labSystemId, Long sampleTypeId);
 
@@ -190,4 +198,24 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	public Long countByLabSystemApiKeyAndSampleTypeIdAndCreationDateBetween(UUID labSystemApiKey, Long sampleTypeId,
 			Date startDate, Date endDate);
+
+	// public Long countByLabSystemApiKey(UUID lsApiKey);
+
+	public Page<File> findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByCreationDateDesc(
+			String filename, String cheksum, String labsystemName, String sampleTypeId, String nodeName,
+			Long categoryId, Pageable page);
+
+	public Page<File> findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByCreationDateDesc(
+			String filename, String cheksum, String labsystemName, String sampleTypeId, Pageable page);
+
+	public List<File> findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByCreationDateDesc(
+			String filename, String cheksum, String labsystemName, String sampleTypeId, String nodeName,
+			Long categoryId);
+
+	public List <File> findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByCreationDateDesc(
+			String filename, String cheksum, String labsystemName, String sampleTypeId);
+
+	
+	public List <File> findByCreationDateAfter(Date date);
+
 }
