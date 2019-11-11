@@ -25,6 +25,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<UserWithUuid> findAllByNodeIdAndEnabledTrue(Long nodeId);
 
+    List<User> findAllByNodeApiKey(UUID apiKey);
+
     List<User> findByUsernameContaining(String username);
 
     interface UserWithUuid {

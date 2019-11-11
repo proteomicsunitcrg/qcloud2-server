@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository.LabSystemNameAndApiKey;
 import eu.qcloud.sampleType.SampleType;
 
@@ -38,6 +39,8 @@ public interface FileRepository extends JpaRepository<File, Long> {
 	public long countByLabSystemApiKey(UUID labSystemApiKey);
 
 	public Long countByLabSystemApiKeyAndCreationDateAfter(UUID apiKey, Date date);
+
+	public Long countByCreationDateAfter(Date date);
 
 	public long countByLabSystemIdAndSampleTypeId(Long labSystemId, Long sampleTypeId);
 
@@ -211,5 +214,8 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	public List <File> findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByCreationDateDesc(
 			String filename, String cheksum, String labsystemName, String sampleTypeId);
+
+	
+	public List <File> findByCreationDateAfter(Date date);
 
 }

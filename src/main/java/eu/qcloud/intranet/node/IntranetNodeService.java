@@ -1,5 +1,6 @@
 package eu.qcloud.intranet.node;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -10,11 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.exceptions.NotFoundException;
+import eu.qcloud.file.File;
 import eu.qcloud.file.FileRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.node.Node;
 import eu.qcloud.node.NodeRepository;
+import eu.qcloud.security.model.User;
 
 @Service
 public class IntranetNodeService {
@@ -31,6 +34,28 @@ public class IntranetNodeService {
 
     public List<Node> getAll() {
         return nodeRepo.findAll();
+    }
+
+    public List <NodeAndStats> getAllStats() {
+        List <Node> nodes= nodeRepo.findAll();
+        List <NodeAndStats> nodeAndStats = new ArrayList<>();
+        for(Node node: nodes) {
+            getNodeStatsLastWeek(node);
+            nodeAndStats.add(new NodeAndStats(node, getNodeStatsLastWeek(node)));
+        }
+        return nodeAndStats;
+    }
+
+    private Long getNodeStatsLastWeek(Node node) {
+        Calendar today = Calendar.getInstance();
+        today.add(Calendar.WEEK_OF_MONTH, -1);
+        Date week1Ago = today.getTime();
+        List <LabSystem> labsystems = getLsByNodeApiKey(node.getApiKey());
+        Long filesLastWeek = 0l;
+        for (LabSystem ls: labsystems) {
+            filesLastWeek += fileRepo.countByLabSystemApiKeyAndCreationDateAfter(ls.getApiKey(), week1Ago);
+        }
+        return filesLastWeek;
     }
 
     public Node getByApiKey(UUID apiKey) {
@@ -83,5 +108,43 @@ public class IntranetNodeService {
             nodeStats.setFiles1Week(nodeStatsTotalFiles1W += fileRepo.countByLabSystemApiKeyAndCreationDateAfter(ls.getApiKey(), week1Ago));
         }
         return nodeStats;
+	}
+
+	public GeneralStats getGeneralStats() {
+        Long labSystemsWithGuidesets = 0l;
+        List <Node> nodes = new ArrayList<>();
+        List <User> users = new ArrayList<>();
+        List <String> countries = new ArrayList<>();
+        List <LabSystem> labsystems = new ArrayList<>();
+        Calendar today = Calendar.getInstance();
+        today.add(Calendar.MONTH, -6);
+        Date month6Ago = today.getTime();
+        System.out.println(month6Ago);
+        GeneralStats stats = new GeneralStats();
+        stats.setTotalFiles(fileRepo.count());
+        stats.setFilesLast6Months(fileRepo.countByCreationDateAfter(month6Ago));
+        List <File> files6MonthsAgo = fileRepo.findByCreationDateAfter(month6Ago);
+        for (File file: files6MonthsAgo) {
+            if (!nodes.contains(file.getLabSystem().getMainDataSource().getNode())) {
+                if(!countries.contains(file.getLabSystem().getMainDataSource().getNode().getCountry())) {
+                    countries.add(file.getLabSystem().getMainDataSource().getNode().getCountry());
+                }
+                if (file.getLabSystem().getGuideSets().size() != 0) {
+                    System.out.println(file.getLabSystem().getGuideSets().get(0).getId());
+                    labSystemsWithGuidesets =+ Long.valueOf(file.getLabSystem().getGuideSets().size());
+                }
+                nodes.add(file.getLabSystem().getMainDataSource().getNode());
+                users.addAll(file.getLabSystem().getMainDataSource().getNode().getUsers());
+            }
+            if(!labsystems.contains(file.getLabSystem())) {
+                labsystems.add(file.getLabSystem());
+            }
+        }
+        stats.setNodesWithFiles6Months(new Long(nodes.size()));
+        stats.setUsersWithFiles6Months(new Long(users.size()));
+        stats.setCountriesWithFilesLast6Months(new Long(countries.size()));
+        stats.setNodesWithGuidesets(labSystemsWithGuidesets);
+        stats.setLabSystemsWithFiles(new Long(labsystems.size()));
+        return stats;
 	}
 }

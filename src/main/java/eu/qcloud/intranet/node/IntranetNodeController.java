@@ -28,8 +28,8 @@ public class IntranetNodeController {
     
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "getAll", method = RequestMethod.GET)
-    public List<Node> getAllNodes() {
-        return intrNodeService.getAll();
+    public List<NodeAndStats> getAllNodes() {
+        return intrNodeService.getAllStats();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -54,6 +54,12 @@ public class IntranetNodeController {
     @RequestMapping(value = "statsNode", method = RequestMethod.GET)
     public NodeStats getStatsNode(@RequestParam UUID apiKey) {
         return intrNodeService.getNodeStats(apiKey);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "generalStats", method = RequestMethod.GET)
+    public GeneralStats getGeneralStats() {
+        return intrNodeService.getGeneralStats();
     }
     @ExceptionHandler(NotFoundException.class)
 	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
