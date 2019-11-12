@@ -8,6 +8,7 @@ public class GeneralStats {
     private Long nodesWithGuidesets;
     private Long labSystemsWithFiles;
     private Long countriesWithFilesLast6Months;
+    private Long labSystemsWithFiles6Months;
 
     public Long getTotalFiles() {
         return totalFiles;
@@ -66,6 +67,14 @@ public class GeneralStats {
     }
 
     public GeneralStats() {
+    }
+
+    public Long getLabSystemsWithFiles6Months() {
+        return labSystemsWithFiles6Months;
+    }
+
+    public void setLabSystemsWithFiles6Months(Long labSystemsWithFiles6Months) {
+        this.labSystemsWithFiles6Months = labSystemsWithFiles6Months;
     }
 
     

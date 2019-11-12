@@ -56,6 +56,13 @@ public class UserService {
 		}
 	}
 
+	public List<User> findUsersByNodeApiKey(UUID nodeApiKey) {
+		System.out.println(nodeApiKey);
+		List <User> cc = userRepository.findAllByNodeApiKey(nodeApiKey);
+		System.out.println(cc);
+		return cc;
+	}
+
 	public List<User> findAllUsers() {
 		List<User> users = new ArrayList<>();
 		userRepository.findAll().forEach(users::add);
@@ -116,8 +123,6 @@ public class UserService {
 		return user.getTelegram_code();
 	}
 
-	public List<User> findUsersByNodeApiKey(UUID nodeApiKey) {
-		return userRepository.findAllByNodeApiKey(nodeApiKey);
-	}
+	
 
 }

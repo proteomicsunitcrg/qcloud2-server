@@ -240,6 +240,15 @@ public class NodeController {
 		return userService.resetTelegramCode(user);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "api/node/usersByNodeApiKey", method = RequestMethod.GET)
+	public List <User> getUsersByNodeApiKey(@RequestParam UUID apiKey) {
+		System.out.println(apiKey);
+		List <User> pedete = userService.findUsersByNodeApiKey(apiKey);
+		System.out.println(pedete);
+		return pedete;
+	}
+
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/api/node/users", method = RequestMethod.GET)
@@ -340,9 +349,6 @@ public class NodeController {
 		return someEmail.substring(0, someEmail.indexOf("@"));
 	}
 
-	private List<User> getUsersByNodeApiKey(@RequestParam UUID nodeApiKey) {
-		return userService.findUsersByNodeApiKey(nodeApiKey);
-	}
 
 	/*
 	 * Exception handlers
