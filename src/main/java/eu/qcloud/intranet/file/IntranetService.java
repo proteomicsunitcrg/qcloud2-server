@@ -70,9 +70,9 @@ public class IntranetService {
         }
         System.out.println(email);
         if (exact) {
-            return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByCreationDateDesc(name, checksum, labsystemName, sampleTypeId, page);
+            return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(name, checksum, labsystemName, sampleTypeId, page);
         } else {
-            return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByCreationDateDesc(name, checksum, labsystemName, sampleTypeId, nodeToFind, Long.valueOf(1), page);
+            return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByIdDesc(name, checksum, labsystemName, sampleTypeId, nodeToFind, Long.valueOf(1), page);
         }
     }
 
@@ -135,9 +135,9 @@ public class IntranetService {
                 }
                 System.out.println(email);
                 if (exact) {
-                    return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByCreationDateDesc(name, checksum, labsystemName, sampleTypeId);
+                    return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(name, checksum, labsystemName, sampleTypeId);
                 } else {
-                    return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByCreationDateDesc(name, checksum, labsystemName, sampleTypeId, node, Long.valueOf(1));
+                    return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByIdDesc(name, checksum, labsystemName, sampleTypeId, node, Long.valueOf(1));
                 }
 	}
 

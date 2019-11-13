@@ -331,6 +331,20 @@ public class NodeController {
 		return userService.getUserByUuid(userUuidString);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "/api/node/enableDisableUser", method = RequestMethod.PATCH)
+	public User enableDisable(@RequestParam UUID apiKey) {
+		return userService.enableDisableUser(apiKey);
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "/api/node/hardResetPassword", method = RequestMethod.PATCH)
+	public String hardResetPassword(@RequestParam UUID apiKey) {
+		// String passwordNormal = getEmailUsername(newUser.getEmail()) + "." + LocalDate.now().getYear();
+		// newUser.setPassword(passwordEncoderNodeController().encode(passwordNormal));
+		return userService.hardResetPassword(apiKey);
+	}
+
 	/*
 	 * Helper classes
 	 */

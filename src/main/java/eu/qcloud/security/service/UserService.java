@@ -2,12 +2,16 @@ package eu.qcloud.security.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.security.model.Authority;
@@ -21,6 +25,11 @@ import eu.qcloud.utils.RandomString;
 public class UserService {
 	@Autowired
 	private UserRepository userRepository;
+
+	@Bean
+	public PasswordEncoder passwordEncoderNodeController() {
+		return new BCryptPasswordEncoder();
+	}
 
 	private final Log logger = LogFactory.getLog(this.getClass());
 
@@ -58,7 +67,7 @@ public class UserService {
 
 	public List<User> findUsersByNodeApiKey(UUID nodeApiKey) {
 		System.out.println(nodeApiKey);
-		List <User> cc = userRepository.findAllByNodeApiKey(nodeApiKey);
+		List<User> cc = userRepository.findAllByNodeApiKey(nodeApiKey);
 		System.out.println(cc);
 		return cc;
 	}
@@ -123,6 +132,31 @@ public class UserService {
 		return user.getTelegram_code();
 	}
 
-	
+	public User enableDisableUser(UUID apiKey) {
+		User u = userRepository.findOneByApiKey(apiKey);
+		u.setEnabled(!u.getEnabled());
+		userRepository.save(u);
+		return u;
+	}
+
+	public String hardResetPassword(UUID apiKey) {
+		User u = userRepository.findOneByApiKey(apiKey);
+		String newPassword = generateRandomString(15);
+		u.setPassword(passwordEncoderNodeController().encode(newPassword));
+		userRepository.save(u);
+		System.out.println(newPassword);
+		System.out.println(passwordEncoderNodeController().encode(newPassword));
+		return newPassword;
+	}
+
+	private String generateRandomString(int n) {
+		String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz";
+		StringBuilder sb = new StringBuilder(n);
+		for (int i = 0; i < n; i++) {
+			int index = (int) (AlphaNumericString.length() * Math.random());
+			sb.append(AlphaNumericString.charAt(index));
+		}
+		return sb.toString();
+	}
 
 }
