@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.exceptions.InvalidActionException;
 import eu.qcloud.security.model.Authority;
 import eu.qcloud.security.model.AuthorityName;
 import eu.qcloud.security.model.User;
@@ -157,6 +158,45 @@ public class UserService {
 			sb.append(AlphaNumericString.charAt(index));
 		}
 		return sb.toString();
+	}
+
+	public User giveRemoveAdmin(UUID apiKey, User userLogged) {
+		boolean isAdmin = false;
+		List<Authority> newAuthorities = new ArrayList<>();
+		User u = userRepository.findOneByApiKey(apiKey);
+		if (!u.getApiKey().equals(userLogged.getApiKey())) {
+			for (Authority authority : u.getAuthorities()) {
+				if (authority.getName().equals(AuthorityName.ROLE_ADMIN)) {
+					isAdmin = true;
+				}
+			}
+			if (isAdmin) { // if is ADMIN we have to downgrade his level to a simple mortal
+				Authority userRole = new Authority();
+				userRole.setId(1L);
+				userRole.setName(AuthorityName.ROLE_USER);
+				newAuthorities.add(userRole);
+			} else { // I've created a GOD
+				Authority userRole = new Authority();
+				userRole.setId(1L);
+				userRole.setName(AuthorityName.ROLE_USER);
+				newAuthorities.add(userRole);
+				Authority managerRole = new Authority();
+				managerRole.setId(2L);
+				managerRole.setName(AuthorityName.ROLE_MANAGER);
+				newAuthorities.add(managerRole);
+				Authority adminRole = new Authority();
+				adminRole.setId(3L);
+				adminRole.setName(AuthorityName.ROLE_ADMIN);
+				newAuthorities.add(adminRole);
+			}
+			u.setAuthorities(newAuthorities);
+			userRepository.save(u);
+			return u;
+		} else {
+			throw new InvalidActionException(
+					"You can't modify yourself");
+		}
+
 	}
 
 }

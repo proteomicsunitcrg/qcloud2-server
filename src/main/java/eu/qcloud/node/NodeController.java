@@ -345,6 +345,13 @@ public class NodeController {
 		return userService.hardResetPassword(apiKey);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "api/node/user/giveRemoveAdmin", method = RequestMethod.PATCH)
+	public User giveRemoveAdmin(@RequestParam UUID apiKey) {
+		// return getManagerFromSecurityContext();
+		return userService.giveRemoveAdmin(apiKey, getManagerFromSecurityContext());
+	}
+
 	/*
 	 * Helper classes
 	 */
