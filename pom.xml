@@ -139,10 +139,10 @@
 				<artifactId>flyway-maven-plugin</artifactId>
 				<configuration>
 					<url>jdbc:mysql://localhost:3306</url>
-					<user>root</user>
-					<password>qCloud1*2</password>
+					<user>admin</user>
+					<password>CRG4dm1n!</password>
 					<schemas>
-						<schema>qcloud2</schema>
+						<schema>qcloud2test</schema>
 					</schemas>
 				</configuration>
 			</plugin>
