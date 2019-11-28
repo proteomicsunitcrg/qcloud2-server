@@ -56,6 +56,11 @@ public class File {
 
 	@Column(name = "is_valid_checksum", columnDefinition = "bit default 1")
 	private Boolean isValidChecksum;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Column(name = "insert_date", columnDefinition = "DATETIME")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date insertDate;
 
 	public String getChecksum() {
 		return checksum;
@@ -120,6 +125,14 @@ public class File {
 
 	public void setIsValidChecksum(Boolean isValidChecksum) {
 		this.isValidChecksum = isValidChecksum;
+	}
+
+	public Date getInsertDate() {
+		return insertDate;
+	}
+
+	public void setInsertDate(Date insertDate) {
+		this.insertDate = insertDate;
 	}
 
 }

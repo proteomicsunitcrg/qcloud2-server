@@ -139,6 +139,7 @@ public class FileService {
 			}
 			logger.info("File inserted with checksum: " + file.getChecksum() + " for labsystem: "
 					+ file.getLabSystem().getName());
+			file.setInsertDate(new Date());
 			return fileRepository.save(file);
 		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");
