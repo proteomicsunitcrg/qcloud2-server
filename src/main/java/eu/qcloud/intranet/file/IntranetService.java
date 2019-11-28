@@ -68,7 +68,6 @@ public class IntranetService {
                 nodeToFind = user.getNode().getName();
             }
         }
-        System.out.println(email);
         if (exact) {
             return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(name, checksum, labsystemName, sampleTypeId, page);
         } else {
@@ -97,6 +96,24 @@ public class IntranetService {
             return false;
         }
 	}
+
+    public NodeAndFileStatus getNodeAndFileStatus(UUID dataSourceApiKey, String fileChecksum) {
+        int nanCounter = 0;
+        NodeAndFileStatus response = new NodeAndFileStatus();
+        response.setNode(getNodeByDataSourceApiKey(dataSourceApiKey));
+        List <Data> data = dataRepo.findByFileChecksumAndParamId(fileChecksum, 1l);
+        for (Data d : data) {
+            if(Float.isNaN(d.getCalculatedValue())) {
+                nanCounter ++;
+            }
+        }
+        if ((nanCounter * 100)/data.size() < 60) {
+            response.setDataOk(true);
+        } else {
+            response.setDataOk(false);
+        }
+        return response;
+    }
 
 	public Node getNodeByDataSourceApiKey(UUID apiKey) {
         return dataSourceRepo.findByApiKey(apiKey).getNode();
@@ -133,7 +150,6 @@ public class IntranetService {
                         node = user.getNode().getName();
                     }
                 }
-                System.out.println(email);
                 if (exact) {
                     return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(name, checksum, labsystemName, sampleTypeId);
                 } else {

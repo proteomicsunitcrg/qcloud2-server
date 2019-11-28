@@ -56,6 +56,12 @@ public class IntranetController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "api/intranet/file/getNodeAndFileInfo", method = RequestMethod.GET)
+    public NodeAndFileStatus getNodeByDataSourceApiKey(@RequestParam UUID dataSourceApiKey, @RequestParam String fileChecksum) {
+        return intranetService.getNodeAndFileStatus(dataSourceApiKey, fileChecksum);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "api/intranet/file/data", method = RequestMethod.GET)
     public List <Data> getData(@RequestParam String checksum) {
         return intranetService.getDataBychecksum(checksum);

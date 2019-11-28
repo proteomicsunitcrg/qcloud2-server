@@ -245,7 +245,6 @@ public class NodeController {
 	public List <User> getUsersByNodeApiKey(@RequestParam UUID apiKey) {
 		System.out.println(apiKey);
 		List <User> pedete = userService.findUsersByNodeApiKey(apiKey);
-		System.out.println(pedete);
 		return pedete;
 	}
 

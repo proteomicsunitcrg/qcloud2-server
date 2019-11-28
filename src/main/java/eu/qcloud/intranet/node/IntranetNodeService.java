@@ -119,7 +119,6 @@ public class IntranetNodeService {
         Calendar today = Calendar.getInstance();
         today.add(Calendar.MONTH, -6);
         Date month6Ago = today.getTime();
-        System.out.println(month6Ago);
         GeneralStats stats = new GeneralStats();
         stats.setTotalFiles(fileRepo.count());
         stats.setFilesLast6Months(fileRepo.countByCreationDateAfter(month6Ago));
@@ -130,7 +129,6 @@ public class IntranetNodeService {
                     countries.add(file.getLabSystem().getMainDataSource().getNode().getCountry());
                 }
                 if (file.getLabSystem().getGuideSets().size() != 0) {
-                    System.out.println(file.getLabSystem().getGuideSets().get(0).getId());
                     labSystemsWithGuidesets =+ Long.valueOf(file.getLabSystem().getGuideSets().size());
                 }
                 nodes.add(file.getLabSystem().getMainDataSource().getNode());
