@@ -41,7 +41,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `category` WRITE;
 /*!40000 ALTER TABLE `category` DISABLE KEYS */;
-INSERT INTO `category` VALUES (1,_binary '!Y≥HZ\‚Df∫\œ\‘GÃ¨',1,'Mass spectrometer'),(2,_binary '@%ç_\Ã(H∫¨}}Xw!',0,'Liquid chromatographer');
+INSERT INTO `category` VALUES (1,_binary '!YÔøΩHZ\ÔøΩDfÔøΩ\ÔøΩ\ÔøΩGÃ¨',1,'Mass spectrometer'),(2,_binary '@%ÔøΩ_\ÔøΩ(HÔøΩÔøΩ}}Xw!',0,'Liquid chromatographer');
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -89,7 +89,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `context_source` WRITE;
 /*!40000 ALTER TABLE `context_source` DISABLE KEYS */;
-INSERT INTO `context_source` VALUES ('peptide',1,'LVN',_binary '\Á:‹é	/Jjû\€\‘L\‡Zr','LVNELTEFAK',NULL,2,582.319,'LVNELTEFAK'),('peptide',2,'HLV',_binary 'é–∞Ø*êE∏àä\‰_\‹J\√Ú','HLVDEPQNLIK',NULL,2,653.362,'HLVDEPQNLIK'),('peptide',3,'VPQ',_binary '•∏]3πàLö^|\ﬁrd¨ˆ','VPQVSTPTLVEVSR',NULL,2,756.425,'VPQVSTPTLVEVSR'),('peptide',4,'EAC',_binary '\Á2Ç`\“N\Ïö•4ê3','EAC(Carbamidomethyl)FAVEGPK',NULL,2,554.261,'EAC(Carbamidomethyl)FAVEGPK'),('peptide',5,'EYE',_binary 'Ò¢K´®0FŸô\Ì\·êuñ','EYEATLEEC(Carbamidomethyl)C(Carbamidomethyl)AK',NULL,2,751.811,'EYEATLEEC(Carbamidomethyl)C(Carbamidomethyl)AK'),('peptide',6,'ECC',_binary '…π4v\«HMÜäÜ\‘W–™k\À','EC(Carbamidomethyl)C(Carbamidomethyl)HGDLLEC(Carbamidomethyl)ADDR',NULL,3,583.892,'EC(Carbamidomethyl)C(Carbamidomethyl)HGDLLEC(Carbamidomethyl)ADDR'),('peptide',7,'SLH',_binary '\'¸≠∑\ -J¥ã§\'X:v˘ü','SLHTLFGDELC(Carbamidomethyl)K',NULL,2,710.35,'SLHTLFGDELC(Carbamidomethyl)K'),('peptide',8,'TCV',_binary 'y+≥Æ±%@a©í\ÏÆa˛\Ï,','TC(Carbamidomethyl)VADESHAGC(Carbamidomethyl)EK',NULL,3,488.534,'TC(Carbamidomethyl)VADESHAGC(Carbamidomethyl)EK'),('peptide',9,'YIC',_binary 'û`\—!\ÕMñ>íQ=3ìU','YIC(Carbamidomethyl)DNQDTISSK',NULL,2,722.325,'YIC(Carbamidomethyl)DNQDTISSK'),('peptide',10,'NEC',_binary 'ï¨üµH2ñ_˜^Ñ)\\?','NEC(Carbamidomethyl)FLSHK',NULL,2,517.74,'NEC(Carbamidomethyl)FLSHK'),('instrument_sample',11,'miit ms1',_binary '˛\¬\«Ò\≈DÉÅh\◊\¬rQÅ','Median IT MS1','QC:1000927',NULL,NULL,NULL),('instrument_sample',12,'Median IT MS2',_binary '¨\'#	\Â@\0õ¢ˇwY\”\Õ','Median IT MS2','QC:1000928',NULL,NULL,NULL),('instrument_sample',13,'# proteins',_binary 'ò[6Q£F6°j\Â/\‡O5','Total number of identified proteins','QC:0000032',NULL,NULL,NULL),('instrument_sample',14,'# peptides',_binary '	x\ƒ/[\ÕC3°ª\’;\ﬂV','Total number of uniquely identified peptides','QC:0000031',NULL,NULL,NULL),('instrument_sample',15,'MS2 spectral count',_binary 'x8\Ã\Ï°Fv≠nelòÑﬁå','MS2 Spectral count','QC:0000007',NULL,NULL,NULL),('instrument_sample',16,'# psm',_binary 'äß\Ã&#GÃÇ#B óå≈Ä','Total number of PSM','QC:0000029',NULL,NULL,NULL);
+INSERT INTO `context_source` VALUES ('peptide',1,'LVN',_binary '\ÔøΩ:‹é	/JjÔøΩ\ÔøΩ\ÔøΩL\ÔøΩZr','LVNELTEFAK',NULL,2,582.319,'LVNELTEFAK'),('peptide',2,'HLV',_binary 'ÔøΩ–∞ÔøΩ*ÔøΩEÔøΩÔøΩÔøΩ\ÔøΩ_\ÔøΩJ\ÔøΩÔøΩ','HLVDEPQNLIK',NULL,2,653.362,'HLVDEPQNLIK'),('peptide',3,'VPQ',_binary 'ÔøΩÔøΩ]3ÔøΩÔøΩLÔøΩ^|\ÔøΩrdÔøΩÔøΩ','VPQVSTPTLVEVSR',NULL,2,756.425,'VPQVSTPTLVEVSR'),('peptide',4,'EAC',_binary '\ÔøΩ2ÔøΩ`\ÔøΩN\ÔøΩÔøΩ4ÔøΩ3','EAC(Carbamidomethyl)FAVEGPK',NULL,2,554.261,'EAC(Carbamidomethyl)FAVEGPK'),('peptide',5,'EYE',_binary 'ÔøΩKÔøΩÔøΩ0FŸô\ÔøΩ\ÔøΩÔøΩuÔøΩ','EYEATLEEC(Carbamidomethyl)C(Carbamidomethyl)AK',NULL,2,751.811,'EYEATLEEC(Carbamidomethyl)C(Carbamidomethyl)AK'),('peptide',6,'ECC',_binary '…π4v\ÔøΩHMÔøΩÔøΩÔøΩ\ÔøΩW–™k\ÔøΩ','EC(Carbamidomethyl)C(Carbamidomethyl)HGDLLEC(Carbamidomethyl)ADDR',NULL,3,583.892,'EC(Carbamidomethyl)C(Carbamidomethyl)HGDLLEC(Carbamidomethyl)ADDR'),('peptide',7,'SLH',_binary '\'ÔøΩÔøΩÔøΩ\ÔøΩ-JÔøΩÔøΩÔøΩ\'X:vÔøΩÔøΩ','SLHTLFGDELC(Carbamidomethyl)K',NULL,2,710.35,'SLHTLFGDELC(Carbamidomethyl)K'),('peptide',8,'TCV',_binary 'y+ÔøΩÔøΩÔøΩ%@aÔøΩÔøΩ\ÔøΩaÔøΩ\ÔøΩ,','TC(Carbamidomethyl)VADESHAGC(Carbamidomethyl)EK',NULL,3,488.534,'TC(Carbamidomethyl)VADESHAGC(Carbamidomethyl)EK'),('peptide',9,'YIC',_binary 'ÔøΩ`\ÔøΩ!\ÔøΩMÔøΩ>ÔøΩQ=3ÔøΩU','YIC(Carbamidomethyl)DNQDTISSK',NULL,2,722.325,'YIC(Carbamidomethyl)DNQDTISSK'),('peptide',10,'NEC',_binary 'ÔøΩÔøΩÔøΩÔøΩH2ÔøΩ_ÔøΩ^ÔøΩ)\\?','NEC(Carbamidomethyl)FLSHK',NULL,2,517.74,'NEC(Carbamidomethyl)FLSHK'),('instrument_sample',11,'miit ms1',_binary 'ÔøΩ\ÔøΩ\ÔøΩÔøΩ\ÔøΩDÔøΩÔøΩh\ÔøΩ\ÔøΩrQÔøΩ','Median IT MS1','QC:1000927',NULL,NULL,NULL),('instrument_sample',12,'Median IT MS2',_binary 'ÔøΩ\'#	\ÔøΩ@\0ÔøΩÔøΩÔøΩwÔøΩY\ÔøΩ\ÔøΩ','Median IT MS2','QC:1000928',NULL,NULL,NULL),('instrument_sample',13,'# proteins',_binary 'ÔøΩ[6QÔøΩF6ÔøΩj\ÔøΩ/\ÔøΩO5','Total number of identified proteins','QC:0000032',NULL,NULL,NULL),('instrument_sample',14,'# peptides',_binary '	x\ÔøΩ/[\ÔøΩC3ÔøΩÔøΩ\ÔøΩ;ÔøΩ\ÔøΩV','Total number of uniquely identified peptides','QC:0000031',NULL,NULL,NULL),('instrument_sample',15,'MS2 spectral count',_binary 'x8\ÔøΩ\ÔøΩFvÔøΩnelÔøΩÔøΩﬁå','MS2 Spectral count','QC:0000007',NULL,NULL,NULL),('instrument_sample',16,'# psm',_binary 'ÔøΩÔøΩ\ÔøΩ&#GÃÇ#B ÔøΩÔøΩ≈Ä','Total number of PSM','QC:0000029',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `context_source` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -128,7 +128,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `data_source` WRITE;
 /*!40000 ALTER TABLE `data_source` DISABLE KEYS */;
-INSERT INTO `data_source` VALUES (2,_binary 'oãk∞≠\—Mï\·xI%Re',1,'Lumos',75,1),(3,_binary '\È\Ë8Bo E}£º[;\ﬂ\’',1,'Proxeon 3',93,1);
+INSERT INTO `data_source` VALUES (2,_binary 'oÔøΩkÔøΩÔøΩ\ÔøΩMÔøΩ\ÔøΩxI%Re',1,'Lumos',75,1),(3,_binary '\ÔøΩ\ÔøΩ8Bo E}ÔøΩÔøΩ[;\ÔøΩ\ÔøΩ',1,'Proxeon 3',93,1);
 /*!40000 ALTER TABLE `data_source` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -157,7 +157,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `guide_set` WRITE;
 /*!40000 ALTER TABLE `guide_set` DISABLE KEYS */;
-INSERT INTO `guide_set` VALUES ('automatic',1,_binary '•˝û[\‚BÜ§©S{|]z',NULL,1,NULL,10,NULL);
+INSERT INTO `guide_set` VALUES ('automatic',1,_binary 'ÔøΩÔøΩÔøΩ[\ÔøΩBÔøΩÔøΩÔøΩS{|]z',NULL,1,NULL,10,NULL);
 /*!40000 ALTER TABLE `guide_set` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -175,22 +175,6 @@ UNLOCK TABLES;
 -- Dumping data for table `labsystem`
 --
 
-LOCK TABLES `labsystem` WRITE;
-/*!40000 ALTER TABLE `labsystem` DISABLE KEYS */;
-INSERT INTO `labsystem` VALUES (1,_binary 'º\—\È˜ÙO\Zê\'\‚/v5˙','Lumos');
-/*!40000 ALTER TABLE `labsystem` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `labsystem_data_sources`
---
-
-LOCK TABLES `labsystem_data_sources` WRITE;
-/*!40000 ALTER TABLE `labsystem_data_sources` DISABLE KEYS */;
-INSERT INTO `labsystem_data_sources` VALUES (1,2),(1,3);
-/*!40000 ALTER TABLE `labsystem_data_sources` ENABLE KEYS */;
-UNLOCK TABLES;
-
 --
 -- Dumping data for table `labsystem_guide_sets`
 --
@@ -206,7 +190,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `labsystem_seq` WRITE;
 /*!40000 ALTER TABLE `labsystem_seq` DISABLE KEYS */;
-INSERT INTO `labsystem_seq` VALUES (2);
+INSERT INTO `labsystem_seq` VALUES (1);
 /*!40000 ALTER TABLE `labsystem_seq` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -216,7 +200,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `node` WRITE;
 /*!40000 ALTER TABLE `node` DISABLE KEYS */;
-INSERT INTO `node` VALUES (1,_binary '$òïjs\„KŸ£:Ïáé9XÙ','CRG');
+INSERT INTO `node` VALUES (1,_binary '$ÔøΩÔøΩjs\ÔøΩKŸ£:Ïáé9XÔøΩ','OlympusLab');
 /*!40000 ALTER TABLE `node` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -236,7 +220,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `param` WRITE;
 /*!40000 ALTER TABLE `param` DISABLE KEYS */;
-INSERT INTO `param` VALUES (1,'Peptide',1,'Peak area',1,'QC:1001844'),(2,'Peptide',0,'Mass accuracy',3,'QC:1000014'),(3,'InstrumentSample',0,'Median IT',3,'QC:9000002'),(4,'InstrumentSample',0,'Total numbers',3,'QC:9000001');
+INSERT INTO `param` VALUES (1,'Peptide',1,'Peak area',1,'QC:1001844'),(2,'Peptide',0,'Mass accuracy',3,'QC:1000014'),(3,'InstrumentSample',0,'Median IT',3,'QC:9000002'),(4,'InstrumentSample',0,'Total numbers',3,'QC:9000001'), (6, 'Peptide', 0, 'Retention Time', 0, 'QC:1000894'), (7, 'InstrumentSample', 1, 'Total Ion Current', 3, 'QC:9000005');
 /*!40000 ALTER TABLE `param` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -246,7 +230,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `param_seq` WRITE;
 /*!40000 ALTER TABLE `param_seq` DISABLE KEYS */;
-INSERT INTO `param_seq` VALUES (5);
+INSERT INTO `param_seq` VALUES (10);
 /*!40000 ALTER TABLE `param_seq` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -296,7 +280,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `sample_type_category` WRITE;
 /*!40000 ALTER TABLE `sample_type_category` DISABLE KEYS */;
-INSERT INTO `sample_type_category` VALUES (1,_binary '®Å\«+\≈\rK9ê\'∞Ó£π','QC1',0),(2,_binary 'U≤\ŒTMMÑ\–]\’	#æ£','QC2',1),(3,_binary '≠V;W«°JÈ™ö2˛/ßH®','QC3',2);
+INSERT INTO `sample_type_category` VALUES (1,_binary 'ÔøΩÔøΩ\ÔøΩ+\ÔøΩ\rK9ÔøΩ\'ÔøΩÓ£πÔøΩ','QC1',0),(2,_binary 'UÔøΩ\ÔøΩTMMÔøΩ\ÔøΩ]\ÔøΩ	#ÔøΩÔøΩ','QC2',1),(3,_binary 'ÔøΩV;W«°JÈ™ö2ÔøΩ/ÔøΩHÔøΩ','QC3',2);
 /*!40000 ALTER TABLE `sample_type_category` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -304,11 +288,6 @@ UNLOCK TABLES;
 -- Dumping data for table `threshold`
 --
 
-LOCK TABLES `threshold` WRITE;
-/*!40000 ALTER TABLE `threshold` DISABLE KEYS */;
-INSERT INTO `threshold` VALUES ('hard_limit',1,_binary '=\È\÷\√˜\◊G ∞8aaΩú',1,1,NULL,1,75,NULL,2,1),('sigmalog2',2,_binary 'Tâ\0eõvH€à4˚jÚ\ZØ',1,1,NULL,3,75,NULL,1,1),('sigma',3,_binary 'uCV¯6M%Åi\·\«—íK',1,1,NULL,3,75,NULL,3,1);
-/*!40000 ALTER TABLE `threshold` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `threshold_non_conformity`
@@ -355,7 +334,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,_binary 'L\ÂóG˚ÙE»≥ÜΩ£§$\Ÿ','daniel.mancera@crg.eu',1,'Daniel','2018-09-27 10:14:00.366000','Mancera','$2a$10$f4.VFIdQR7fjjU2/YnIEO.667F1gmF2cwM2Un03b/asXP.pSErA.a','daniel.mancera@crg.eu',1,NULL);
+INSERT INTO `user` VALUES (1,_binary 'L\ÔøΩGÔøΩÔøΩE»≥ÔøΩÔøΩÔøΩÔøΩ$\ÔøΩ','zeus@admin.eu',1,'Zeus','2018-09-27 10:14:00.366000','Jupiter','$2a$10$f4.VFIdQR7fjjU2/YnIEO.667F1gmF2cwM2Un03b/asXP.pSErA.a','zeus@admin.eu',1,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 

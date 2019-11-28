@@ -21,13 +21,13 @@
 
 LOCK TABLES `labsystem` WRITE;
 /*!40000 ALTER TABLE `labsystem` DISABLE KEYS */;
-INSERT INTO `labsystem` VALUES (2,_binary '÷C\ê:GŽŽ*%er\Ã','XL'),(3,_binary '%?º( ?Feý\éÉ','Velos');
+
 /*!40000 ALTER TABLE `labsystem` ENABLE KEYS */;
 UNLOCK TABLES;
 
 LOCK TABLES `labsystem_data_sources` WRITE;
 /*!40000 ALTER TABLE `labsystem_data_sources` DISABLE KEYS */;
-INSERT INTO `labsystem_data_sources` VALUES (2,4),(2,7),(3,5),(3,6);
+
 /*!40000 ALTER TABLE `labsystem_data_sources` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
