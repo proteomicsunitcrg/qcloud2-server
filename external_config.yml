@@ -1,14 +1,10 @@
-# java -jar -Dspring.profiles.active=production target/QCloud2-1.0.15DEV.jar --spring.config.location=/home/mserret/configOutside.yml
-
 # config context path to "/" by setting an empty string
 server:
-  contextPathContextPath:
-  port: 8181
-
+  port: 8089 #Dont change port in local version pls
 # mail properties
   
 application:
-  version: ZA WARUDO
+  version: LOCAL
   
 management.endpoint.health.show-details: always
 
@@ -20,6 +16,13 @@ spring:
       Europe/Madrid
     serialization:
       INDENT_OUTPUT: true
+  datasource:    
+    ## MYSQL
+    url: jdbc:mysql://localhost:3306/qcloud2
+    username: ""
+    password: ""
+    driver-class-name: com.mysql.jdbc.Driver
+    
   h2:
     console:
       enabled: false
@@ -55,6 +58,8 @@ spring:
 jwt:
   header: Authorization
   secret: L+0P1i+38a26pHiW10iHqPBYAyklvqPdySy98BV9PPCZyDogMggoSZkYxULqCF+WG6Nimlfxd53H6zjdIUJNJA==
+
+
   expiration: 604800  
   route:
     authentication:
@@ -72,30 +77,20 @@ qcloud:
     page-size: 10
   instrument-status:
     max-offline-hours: 12
+  email:
+    address: your@mail.cat
 
 logging:
   level:
     org.springframework:
       security: ERROR
+    
+    org.hibernate:      
+      # SQL: DEBUG
+      # type: TRACE
+  
 ---
-spring:
-  profiles: production
-  datasource:
-    url: 
-    username: 
-    password: 
-    driver-class-name: com.mysql.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        dialect: MySQL57InnoDB
-    show-sql: false
-  flyway:
-    enabled: true
-logging:
-  file: qcloud2.log
+
 spring.main.allow-bean-definition-overriding: true
 
  

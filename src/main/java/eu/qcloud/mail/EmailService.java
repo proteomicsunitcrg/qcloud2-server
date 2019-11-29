@@ -14,6 +14,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -41,6 +42,9 @@ public class EmailService {
     @Autowired
     private Configuration freemarkerConfig;
 
+    @Value("${qcloud.email.address}")
+    private String emailAddress;
+
     public boolean sendManualEmail(Mail mail) {
         try {
             Map<String, String> model = new HashMap<>();
@@ -57,8 +61,8 @@ public class EmailService {
             helper.setBcc(mail.getTo());
             helper.setSubject(mail.getSubject());
             helper.setText(html, true);
-            helper.setFrom("qcloud@crg.eu", "QCloud 2.0");
-            helper.setReplyTo("qcloud@crg.eu", "QCloud 2.0 ");
+            helper.setFrom(emailAddress, "QCloud 2.0");
+            helper.setReplyTo(emailAddress, "QCloud 2.0 ");
             message.setContentLanguage(new String[] { "en" });
             message.setDescription("Informative email");
             emailSender.send(message);
@@ -85,7 +89,7 @@ public class EmailService {
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
         // helper.setFrom(mail.getFrom());
-        helper.setFrom(mail.getFrom(), "QCloud 2.0");
+        helper.setFrom(emailAddress, "QCloud 2.0");
         emailSender.send(message);
     }
 
@@ -105,7 +109,7 @@ public class EmailService {
         helper.setSubject(mail.getSubject());
         helper.setReplyTo("qcloud@crg.eu", "QCloud 2.0 ");
         // helper.setFrom(mail.getFrom());
-        helper.setFrom(mail.getFrom(), "QCloud 2.0");
+        helper.setFrom(emailAddress, "QCloud 2.0");
         emailSender.send(message);
     }
 
@@ -124,7 +128,7 @@ public class EmailService {
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
         // helper.setFrom(mail.getFrom());
-        helper.setFrom(mail.getFrom(), "QCloud 2.0");
+        helper.setFrom(emailAddress, "QCloud 2.0");
 
         emailSender.send(message);
     }
