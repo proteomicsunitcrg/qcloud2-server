@@ -79,4 +79,10 @@ public class IntranetController {
         return intranetService.getJSON(name, checksum, labsystemName, sampleTypeId, node, email, exact);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "api/intranet/file/pipelineStatus", method = RequestMethod.GET)
+    public boolean getPipelineStatus() {
+        return this.intranetService.getPipelineStatus();
+    }
+
 }

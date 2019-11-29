@@ -65,6 +65,8 @@ public interface FileRepository extends JpaRepository<File, Long> {
 	public long countByLabSystemIdAndSampleTypeIdAndCreationDateGreaterThan(Long labSystemId, Long sampleTypeId,
 			Date creationDate);
 
+	public File findFirstByOrderByIdDesc();
+
 	public List<OnlySmalls> findTop10ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(Long labSystemId,
 			Long sampleTypeId);
 

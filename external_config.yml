@@ -79,6 +79,8 @@ qcloud:
     max-offline-hours: 12
   email:
     address: your@mail.cat
+  intranet:
+    pipeline-valid-hours: 3
 
 logging:
   level:

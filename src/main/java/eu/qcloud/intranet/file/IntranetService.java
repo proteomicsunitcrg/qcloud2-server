@@ -1,21 +1,18 @@
 package eu.qcloud.intranet.file;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataRepository;
-import eu.qcloud.dataSource.DataSource;
 import eu.qcloud.dataSource.DataSourceRepository;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileRepository;
@@ -37,16 +34,21 @@ public class IntranetService {
     @Autowired
     DataSourceRepository dataSourceRepo;
 
-    @Autowired 
+    @Autowired
     UserRepository userRepo;
 
     @Autowired
     ThresholdNonConformityRepository nonConformityRepository;
+    
+    @Value("${qcloud.intranet.pipeline-valid-hours}")
+    private int pipelineHours;
+
     public Long countAllFiles() {
         return fileRepo.count();
     }
 
-	public Page<File> getAllFiles(String name, String checksum, String labsystemName, String sampleTypeId, Pageable page, String nodeToFind, String email, boolean exact) {
+    public Page<File> getAllFiles(String name, String checksum, String labsystemName, String sampleTypeId,
+            Pageable page, String nodeToFind, String email, boolean exact) {
         if (name.equals("null")) {
             name = "";
         }
@@ -64,14 +66,18 @@ public class IntranetService {
         }
         if (!email.equals("null")) {
             User user = userRepo.findByUsername(email);
-            if (user!=null) {
+            if (user != null) {
                 nodeToFind = user.getNode().getName();
             }
         }
         if (exact) {
-            return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(name, checksum, labsystemName, sampleTypeId, page);
+            return fileRepo
+                    .findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(
+                            name, checksum, labsystemName, sampleTypeId, page);
         } else {
-            return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByIdDesc(name, checksum, labsystemName, sampleTypeId, nodeToFind, Long.valueOf(1), page);
+            return fileRepo
+                    .findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByIdDesc(
+                            name, checksum, labsystemName, sampleTypeId, nodeToFind, Long.valueOf(1), page);
         }
     }
 
@@ -79,7 +85,7 @@ public class IntranetService {
         return fileRepo.findAll(page);
     }
 
-	public boolean deleteFile(String checksum) {
+    public boolean deleteFile(String checksum) {
         try {
             File file = fileRepo.findByChecksum(checksum);
             List<Data> data = dataRepo.findByFileId(file.getId());
@@ -87,7 +93,7 @@ public class IntranetService {
                 dataRepo.deleteAll(data);
             }
             List<ThresholdNonConformity> nonConf = nonConformityRepository.findByFileId(file.getId());
-            if (nonConf.size()!= 0) {
+            if (nonConf.size() != 0) {
                 nonConformityRepository.deleteAll(nonConf);
             }
             fileRepo.delete(file);
@@ -95,19 +101,19 @@ public class IntranetService {
         } catch (Exception e) {
             return false;
         }
-	}
+    }
 
     public NodeAndFileStatus getNodeAndFileStatus(UUID dataSourceApiKey, String fileChecksum) {
         int nanCounter = 0;
         NodeAndFileStatus response = new NodeAndFileStatus();
         response.setNode(getNodeByDataSourceApiKey(dataSourceApiKey));
-        List <Data> data = dataRepo.findByFileChecksumAndParamId(fileChecksum, 1l);
+        List<Data> data = dataRepo.findByFileChecksumAndParamId(fileChecksum, 1l);
         for (Data d : data) {
-            if(Float.isNaN(d.getCalculatedValue())) {
-                nanCounter ++;
+            if (Float.isNaN(d.getCalculatedValue())) {
+                nanCounter++;
             }
         }
-        if ((nanCounter * 100)/data.size() < 60) {
+        if ((nanCounter * 100) / data.size() < 60) {
             response.setDataOk(true);
         } else {
             response.setDataOk(false);
@@ -115,46 +121,59 @@ public class IntranetService {
         return response;
     }
 
-	public Node getNodeByDataSourceApiKey(UUID apiKey) {
+    public Node getNodeByDataSourceApiKey(UUID apiKey) {
         return dataSourceRepo.findByApiKey(apiKey).getNode();
-	}
+    }
 
-	public List<Data> getDataBychecksum(String checksum) {
-		return dataRepo.findByFileChecksumOrderByParamIdAsc(checksum);
-	}
+    public List<Data> getDataBychecksum(String checksum) {
+        return dataRepo.findByFileChecksumOrderByParamIdAsc(checksum);
+    }
 
-	public List<User> getUsers(String email) {
-		return userRepo.findByUsernameContaining(email);
-	}
+    public List<User> getUsers(String email) {
+        return userRepo.findByUsernameContaining(email);
+    }
 
-	public List<File> getJSON(String name, String checksum, String labsystemName, String sampleTypeId, String node,
-			String email, boolean exact) {
-                if (name.equals("null")) {
-                    name = "";
-                }
-                if (checksum.equals("null")) {
-                    checksum = "";
-                }
-                if (labsystemName.equals("null")) {
-                    labsystemName = "";
-                }
-                if (sampleTypeId.equals("null")) {
-                    sampleTypeId = "";
-                }
-                if (node.equals("null")) {
-                    node = "";
-                }
-                if (!email.equals("null")) {
-                    User user = userRepo.findByUsername(email);
-                    if (user!=null) {
-                        node = user.getNode().getName();
-                    }
-                }
-                if (exact) {
-                    return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(name, checksum, labsystemName, sampleTypeId);
-                } else {
-                    return fileRepo.findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByIdDesc(name, checksum, labsystemName, sampleTypeId, node, Long.valueOf(1));
-                }
-	}
+    public List<File> getJSON(String name, String checksum, String labsystemName, String sampleTypeId, String node,
+            String email, boolean exact) {
+        if (name.equals("null")) {
+            name = "";
+        }
+        if (checksum.equals("null")) {
+            checksum = "";
+        }
+        if (labsystemName.equals("null")) {
+            labsystemName = "";
+        }
+        if (sampleTypeId.equals("null")) {
+            sampleTypeId = "";
+        }
+        if (node.equals("null")) {
+            node = "";
+        }
+        if (!email.equals("null")) {
+            User user = userRepo.findByUsername(email);
+            if (user != null) {
+                node = user.getNode().getName();
+            }
+        }
+        if (exact) {
+            return fileRepo
+                    .findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(
+                            name, checksum, labsystemName, sampleTypeId);
+        } else {
+            return fileRepo
+                    .findByFilenameContainingAndChecksumContainingAndLabSystemNameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemDataSourcesNodeNameContainingAndLabSystemDataSourcesCvCategoryIdOrderByIdDesc(
+                            name, checksum, labsystemName, sampleTypeId, node, Long.valueOf(1));
+        }
+    }
+
+    public boolean getPipelineStatus() {
+        File file = fileRepo.findFirstByOrderByIdDesc();
+        if (TimeUnit.MILLISECONDS.toHours(new Date().getTime() - file.getInsertDate().getTime()) >= pipelineHours) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 }
