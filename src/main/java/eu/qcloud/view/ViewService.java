@@ -1,6 +1,7 @@
 package eu.qcloud.view;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,10 +16,12 @@ import org.springframework.stereotype.Service;
 
 import eu.qcloud.chart.Chart;
 import eu.qcloud.chart.ChartRepository;
+import eu.qcloud.file.FileRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
 import eu.qcloud.sampleTypeCategory.SampleTypeCategoryRepository;
+import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
 import eu.qcloud.view.UserViewRepository.UserDisplayWithOutViewDisplay;
@@ -48,6 +51,9 @@ public class ViewService {
 
 	@Autowired
 	private UserViewRepository userViewRepository;
+
+	@Autowired
+	private FileRepository fileRepo;
 
 	public List<View> getAllViews() {
 		List<View> views = new ArrayList<>();
@@ -116,6 +122,20 @@ public class ViewService {
 
 	public List<View> getDefaultViewsByCV(String cvId) {
 		return viewRepository.findByCvCVId(cvId);
+	}
+
+	//Returns the tabs but not the qc3 tab if the ls doesnt has any qc3 file
+	public List<View> getDefaultViewsByCVAndLsApiKey(String cvId, UUID lsApiKey) {
+		List<View> allViews = viewRepository.findByCvCVId(cvId);
+		for(Iterator<View> i = allViews.iterator(); i.hasNext();) {
+			View view = i.next();
+			if (view.getSampleTypeCategory().getSampleTypeComplexity().equals(SampleTypeComplexity.HIGHWITHISOTOPOLOGUES)) {
+				if (fileRepo.countByLabSystemApiKeyAndSampleTypeId(lsApiKey, 5l) == 0) {
+					i.remove();
+				}
+			}
+		}
+		return allViews;
 	}
 
 	/**
