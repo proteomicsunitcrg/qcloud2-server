@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import eu.qcloud.node.Node;
 
 @Entity
-@Table(name = "community_line_node")
+@Table(name = "c_l_n")
 public class CommunityLineNode {
 
     private long id;
@@ -24,7 +24,7 @@ public class CommunityLineNode {
 
     @Id
     @GeneratedValue
-    @Column(name = "community_line_node_id")
+    @Column(name = "c_l_n_i")
     public long getId() {
         return id;
     }
@@ -34,7 +34,7 @@ public class CommunityLineNode {
     }
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "community_line_id")
+    @JoinColumn(name = "c_l_i")
     public CommunityLine getCommunityLine() {
         return communityLine;
     }
@@ -44,7 +44,7 @@ public class CommunityLineNode {
     }
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id") // TODO CHECK THIS IF NOT WORKS REMOVE referenced and put id in name
+    @JoinColumn(name = "i") // TODO CHECK THIS IF NOT WORKS REMOVE referenced and put id in name
     public Node getNode() {
         return node;
     }
@@ -53,6 +53,7 @@ public class CommunityLineNode {
         this.node = node;
     }
 
+    @Column(name = "a")
     public boolean isActive() {
         return active;
     }

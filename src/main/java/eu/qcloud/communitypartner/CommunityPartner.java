@@ -9,25 +9,25 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "community_partner")
+@Table(name = "c_p")
 public class CommunityPartner {
 
     @Id
-    @Column(name = "community_partner_id")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "community_partner_seq")
-    @SequenceGenerator(name = "community_partner_seq", sequenceName = "community_partner_seq", allocationSize = 1)
+    @Column(name = "c_p_i")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "c_p_s")
+    @SequenceGenerator(name = "c_p_s", sequenceName = "c_p_s", allocationSize = 1)
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "n")
     private String name;
 
-    @Column(name = "logo")
+    @Column(name = "l")
     private String logo;
 
-    @Column(name = "web_page")
+    @Column(name = "w_p")
     private String webPage;
 
-    @Column(name = "email")
+    @Column(name = "e")
     private String email;
 
     public Long getId() {

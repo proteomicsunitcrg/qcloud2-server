@@ -25,53 +25,53 @@ import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.traceColor.TraceColor;
 
 @Entity
-@Table(name = "community_line")
+@Table(name = "c_l")
 public class CommunityLine {
 
     @Id
-    @Column(name = "community_line_id")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "community_line_seq")
-    @SequenceGenerator(name = "community_line_seq", sequenceName = "community_line_seq", allocationSize = 1)
+    @Column(name = "c_l_i")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "c_l_s")
+    @SequenceGenerator(name = "c_l_s", sequenceName = "c_l_s", allocationSize = 1)
     private Long id;
 
-    @Column(name = "apiKey", updatable = true, nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    @Column(name = "a_k", updatable = true, nullable = false, unique = true, columnDefinition = "BINARY(16)")
     @org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
     private UUID apiKey;
 
-    @Column(name = "name")
+    @Column(name = "n")
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "cv_id")
+    @JoinColumn(name = "c_i")
     private Instrument instrument;
 
     @ManyToOne
-    @JoinColumn(name = "param_id")
+    @JoinColumn(name = "p_i")
     private Param param;
 
     @ManyToOne
-    @JoinColumn(name = "sample_type_id")
+    @JoinColumn(name = "s_t_i")
     private SampleType sampleType;
 
     @ManyToOne
-    @JoinColumn(name = "context_source_id")
+    @JoinColumn(name = "c_s_i")
     private ContextSource contextSource;
 
-    @Column(name = "value")
+    @Column(name = "v")
     private float value;
 
     @OneToMany(mappedBy = "communityLine")
     private Set<CommunityLineNode> communityLineNode = new HashSet<CommunityLineNode>();
 
     @ManyToOne
-    @JoinColumn(name = "trace_color_id")
+    @JoinColumn(name = "t_c_i")
     private TraceColor traceColor;
 
     @ManyToOne
-    @JoinColumn(name = "community_partner_id")
+    @JoinColumn(name = "c_p_i")
     private CommunityPartner communityPartner;
 
-    @Column(name = "alias")
+    @Column(name = "a")
     private String alias;
 
     public Long getId() {
