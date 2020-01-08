@@ -21,8 +21,8 @@ alter table community_line_node change active a bit(1);
 alter table community_line_node change community_line_id c_l_i bigint(20);
 alter table community_line_node change id i bigint(20);
 
-rename table community_line to c_l
-rename table community_partner to c_p
-rename table community_line_node to c_l_n
-rename table community_line_seq to c_l_s
-rename table community_partner_seq to c_p_s
+rename table community_line to c_l;
+rename table community_partner to c_p;
+rename table community_line_node to c_l_n;
+rename table community_line_seq to c_l_s;
+rename table community_partner_seq to c_p_s;
