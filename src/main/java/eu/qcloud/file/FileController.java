@@ -64,7 +64,7 @@ public class FileController {
 
 	/**
 	 * Add a new file into the system
-	 * 
+	 * THIS IS THE USED IN THE PIPELINE
 	 * @param file
 	 * @param sampleTypeQCCV
 	 * @param labSystemApiKey

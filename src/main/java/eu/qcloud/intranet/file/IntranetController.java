@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 
 import eu.qcloud.data.Data;
 import eu.qcloud.file.File;
+import eu.qcloud.file.FileService;
 import eu.qcloud.node.Node;
 import eu.qcloud.security.model.User;
 
@@ -23,6 +24,8 @@ public class IntranetController {
 
     @Autowired
     IntranetService intranetService;
+
+    @Autowired FileService fileService;
     
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "api/intranet/file/countAll", method = RequestMethod.GET)
@@ -84,5 +87,11 @@ public class IntranetController {
     public boolean getPipelineStatus() {
         return this.intranetService.getPipelineStatus();
     }
+
+    // @RequestMapping(value = "api/intranet/file/socketTry", method = RequestMethod.GET)
+    // public boolean socketTry() {
+    //     fileService.testIntranetSocket();
+    //     return true;
+    // }
 
 }

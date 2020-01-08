@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.data.PlotTrace;
+import eu.qcloud.file.File;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.message.Message;
 import eu.qcloud.node.Node;
@@ -137,6 +138,13 @@ public class WebSocketService {
 		for (SimpUser s : userRegistry.getUsers()) {
 			messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
 					new WebSocketNotification("message-", null, null, message));
+		}
+	}
+
+	public void sendUpdateIntranet(File file) {
+		for (SimpUser s : userRegistry.getUsers()) {
+			messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply", 
+				new WebSocketNotification("fileIntranet-", null, null, file));
 		}
 	}
 
