@@ -90,6 +90,7 @@ public class NodeController {
 		n.getUsers().get(0).setLastPasswordResetDate(new Date());
 		n.getUsers().get(0).setEnabled(true);
 		n.getUsers().get(0).setPassword(passwordEncoderNodeController().encode(n.getUsers().get(0).getPassword()));
+		n.getUsers().get(0).setTelegram_code(userService.generateString(8));
 
 		n.setApiKey(nodeUuid);
 		n.getUsers().get(0).setApiKey(userUuid);
@@ -141,6 +142,7 @@ public class NodeController {
 		newUser.setLastPasswordResetDate(new Date());
 		newUser.setEnabled(true);
 		newUser.setApiKey(userUuid);
+		newUser.setTelegram_code(userService.generateString(8));
 		try {
 			userService.saveUser(newUser);
 			// send email to new user

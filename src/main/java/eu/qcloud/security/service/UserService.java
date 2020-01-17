@@ -133,6 +133,11 @@ public class UserService {
 		return user.getTelegram_code();
 	}
 
+	public String generateString(int size) {
+		RandomString gen = new RandomString(size, ThreadLocalRandom.current());
+		return gen.nextString();
+	}
+
 	public User enableDisableUser(UUID apiKey) {
 		User u = userRepository.findOneByApiKey(apiKey);
 		u.setEnabled(!u.getEnabled());

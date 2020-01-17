@@ -239,7 +239,6 @@ public class ViewService {
 	public View deleteView(View view) {
 		Optional<View> v = viewRepository.findOptionalByApiKey(view.getApiKey());
 		if (v.isPresent()) {
-			System.out.println(v.get().getName());
 				getDefaultViewDisplayByViewId(v.get().getId());
 				viewRepository.delete(v.get());
 				return view;
