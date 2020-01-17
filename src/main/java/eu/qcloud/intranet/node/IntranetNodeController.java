@@ -61,6 +61,12 @@ public class IntranetNodeController {
     public GeneralStats getGeneralStats() {
         return intrNodeService.getGeneralStats();
     }
+
+    @RequestMapping(value = "get3ByFile", method = RequestMethod.GET)
+    public List<NodeAndStats> getTop3NodesByFile() {
+        return intrNodeService.getTop3NodesByFile();
+    }
+
     @ExceptionHandler(NotFoundException.class)
 	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());

@@ -2,6 +2,8 @@ package eu.qcloud.intranet.node;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +56,15 @@ public class IntranetNodeService {
         Long filesLastWeek = 0l;
         for (LabSystem ls: labsystems) {
             filesLastWeek += fileRepo.countByLabSystemApiKeyAndCreationDateAfter(ls.getApiKey(), week1Ago);
+        }
+        return filesLastWeek;
+    }
+
+    private Long getNodeTotalFiles(Node node) {
+        List <LabSystem> labsystems = getLsByNodeApiKey(node.getApiKey());
+        Long filesLastWeek = 0l;
+        for (LabSystem ls: labsystems) {
+            filesLastWeek += fileRepo.countByLabSystemApiKey(ls.getApiKey());
         }
         return filesLastWeek;
     }
@@ -144,5 +155,21 @@ public class IntranetNodeService {
         stats.setNodesWithGuidesets(labSystemsWithGuidesets);
         stats.setLabSystemsWithFiles(new Long(labsystems.size()));
         return stats;
+	}
+
+	public List<NodeAndStats> getTop3NodesByFile() {
+        List <Node> nodes= nodeRepo.findAll();
+        List <NodeAndStats> nodeAndStats = new ArrayList<>();
+        for(Node node: nodes) {
+            getNodeStatsLastWeek(node);
+            NodeAndStats nas = new NodeAndStats();
+            nas.setNode(node);
+            nas.setTotalFiles(getNodeTotalFiles(node));
+            nodeAndStats.add(nas);
+        }
+        nodeAndStats.sort(Comparator.comparing(NodeAndStats::getTotalFiles).reversed());
+        nodeAndStats.subList(3, nodeAndStats.size()).clear();
+        return nodeAndStats;
+        
 	}
 }
