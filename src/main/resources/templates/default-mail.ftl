@@ -58,7 +58,7 @@
         </tr>
         <tr>
             <td style="padding: 10px 30px 40px 30px; background-color: #c6e3d8; text-align: center">
-                <p>If you don't want to receive this type of emails <a href="mailto:qcloud@crg.eu" style = "color: #5c8d89; text-decoration: none">email us</a>.</p>
+                <p>If you don't want to receive this type of emails <a href="mailto:qcloud@crg.eu" style = "color: #5c8d89; text-decoration: none">email us or change your preferences in the QCloud2 profile</a>.</p>
             </td>
         </tr>
         </tr>
