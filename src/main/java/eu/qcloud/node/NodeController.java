@@ -273,6 +273,20 @@ public class NodeController {
 		}
 	}
 
+	@PreAuthorize("hasRole('USER')")
+	@RequestMapping(value = "/api/node/user/subscribed", method = RequestMethod.GET)
+	public boolean isUserSubscribed() {
+		User user = getManagerFromSecurityContext();
+		return user.isSpam();
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@RequestMapping(value = "/api/node/user/updateSubscribed", method = RequestMethod.PATCH)
+	public User updateSubscribed() {
+		User user = getManagerFromSecurityContext();
+		return nodeService.updateSubscribed(user);
+	}
+
 	/*
 	 * Development functions
 	 */

@@ -11,6 +11,7 @@ import eu.qcloud.file.FileRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.security.model.User;
+import eu.qcloud.security.repository.UserRepository;
 
 /**
  * Main service for node
@@ -29,6 +30,9 @@ public class NodeService {
 
 	@Autowired
 	FileRepository fileRepository;
+
+	@Autowired
+	UserRepository userRepo;
 
 	/**
 	 * Try to insert a new node in the database
@@ -84,6 +88,11 @@ public class NodeService {
 
 	public List<Node> getAllNodesNoFiles() {
 		return this.nodeRepository.findAll();
+	}
+
+	public User updateSubscribed(User user) {
+		user.setSpam(!user.isSpam());
+		return userRepo.save(user);
 	}
 
 }
