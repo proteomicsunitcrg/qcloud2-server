@@ -52,11 +52,15 @@
         </tr>
         <tr>
         <tr>
-            <td style="padding: 30px 30px 40px 30px; background-color: #c6e3d8; text-align: center">
+            <td style="padding: 30px 30px 0px 30px; background-color: #c6e3d8; text-align: center">
                 <p>If you have any questions <a href="mailto:qcloud@crg.eu" style = "color: #5c8d89; text-decoration: none">email us</a>.</p>
             </td>
         </tr>
-            
+        <tr>
+            <td style="padding: 10px 30px 40px 30px; background-color: #c6e3d8; text-align: center">
+                <p>If you don't want to receive this type of emails <a href="mailto:qcloud@crg.eu" style = "color: #5c8d89; text-decoration: none">email us</a>.</p>
+            </td>
+        </tr>
         </tr>
     </table>
 
