@@ -23,6 +23,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
+import eu.qcloud.security.model.User;
+import eu.qcloud.security.repository.UserRepository;
 import eu.qcloud.utils.FileUtils;
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
@@ -41,6 +43,9 @@ public class EmailService {
 
     @Autowired
     private Configuration freemarkerConfig;
+
+    @Autowired
+    private UserRepository userRepo;
 
     @Value("${qcloud.email.address}")
     private String emailAddress;
@@ -74,11 +79,26 @@ public class EmailService {
         }
     }
 
+    public boolean sendSpamAll(Mail mail) {
+        List <String> mailList = new ArrayList<>();
+        userRepo.findAllByEnabledTrueAndSpamTrue().forEach(user -> mailList.add(user.getEmail()));
+        String[] strings = mailList.stream().toArray(String[]::new);
+        mail.setTo(strings);
+        return sendManualEmail(mail);
+    }
+
+    public boolean sendSpamAllManagers(Mail mail) {
+        List <String> mailList = new ArrayList<>();
+        userRepo.findAllByEnabledTrueAndSpamTrue().stream().filter(user -> user.getAuthorities().size() >= 2).forEach(user -> mailList.add(user.getEmail()));
+        String[] strings = mailList.stream().toArray(String[]::new);
+        mail.setTo(strings);
+        return sendManualEmail(mail);
+    }
+
     public void sendWelcomeHtmlMessage(Mail mail) throws MessagingException, IOException, TemplateException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
-
         helper.addAttachment("logo.png", new ClassPathResource("images/logo-qcloud.png"));
         helper.addAttachment("logoCrg.png", new ClassPathResource("images/crgLogo.png"));
         helper.addAttachment("logoUpf.png", new ClassPathResource("images/upfLogo.png"));

@@ -29,6 +29,18 @@ public class EmailController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "/api/email/spamAll", method = RequestMethod.POST)
+	public boolean sendSpamAll(@RequestBody Mail email) {
+		return emailService.sendSpamAll(email);
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "/api/email/spamAllManagers", method = RequestMethod.POST)
+	public boolean sendSpamAllManagers(@RequestBody Mail email) {
+		return emailService.sendSpamAllManagers(email);
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/api/email/templates", method = RequestMethod.GET)
 	public List<String> getAllTemplates() {
 		return emailService.getAllTemplates();

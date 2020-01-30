@@ -1,0 +1,1 @@
+ALTER TABLE `user` ADD COLUMN spam bit(1) NOT NULL DEFAULT 1;

@@ -74,6 +74,9 @@ public class User {
     @Column(name = "telegram_chat_id")
     private Long telegramChatId;
 
+    @Column(name = "spam", columnDefinition = "BIT default true", nullable = false)
+	private boolean spam;
+
     @Column(name = "ENABLED")
     @NotNull
     private Boolean enabled;
@@ -204,6 +207,14 @@ public class User {
 
     public void setTelegramChatId(Long telegramChatId) {
         this.telegramChatId = telegramChatId;
+    }
+
+    public boolean isSpam() {
+        return spam;
+    }
+
+    public void setSpam(boolean spam) {
+        this.spam = spam;
     }
 
 }

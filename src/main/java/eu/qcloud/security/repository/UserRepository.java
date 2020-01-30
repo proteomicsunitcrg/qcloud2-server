@@ -29,6 +29,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByUsernameContaining(String username);
 
+    List<User> findAllByEnabledTrueAndSpamTrue();
+
     interface UserWithUuid {
         String getUsername();
 
