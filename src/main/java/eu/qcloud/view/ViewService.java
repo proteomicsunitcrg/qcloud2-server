@@ -240,6 +240,7 @@ public class ViewService {
 		Optional<View> v = viewRepository.findOptionalByApiKey(view.getApiKey());
 		if (v.isPresent()) {
 				getDefaultViewDisplayByViewId(v.get().getId());
+				viewDisplayRepository.deleteByViewApiKey(v.get().getApiKey());
 				viewRepository.delete(v.get());
 				return view;
 		} else {

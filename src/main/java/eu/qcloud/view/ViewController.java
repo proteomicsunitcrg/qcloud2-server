@@ -148,7 +148,6 @@ public class ViewController {
 	 */
 	@RequestMapping(value = "/api/views/default/check/{cvId}/{lsApiKey}", method = RequestMethod.GET)
 	public List<View> getViewByCVIdAndLsApiKey(@PathVariable String cvId, @PathVariable UUID lsApiKey) {
-		System.out.println("garuto V2");
 		return viewService.getDefaultViewsByCVAndLsApiKey(cvId, lsApiKey);
 	}
 
