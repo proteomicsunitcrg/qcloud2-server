@@ -144,7 +144,7 @@ public class FileService {
 			file.setInsertDate(new Date());
 			fileRepository.save(file);
 			logger.info("File inserted with checksum: " + file.getChecksum() + " for labsystem: " + file.getLabSystem().getName());
-			webSocket.sendUpdateIntranet(file);
+			// webSocket.sendUpdateIntranet(file); // perform this in the data insert to avoid errors
 			return file;
 		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");

@@ -419,6 +419,8 @@ public class DataService {
 						file.getSampleType(), dataFromPipeline.getData().get(0).getParameter()),
 				file.getLabSystem(), file.getSampleType());
 
+		webSocketService.sendUpdateIntranet(file);
+
 	}
 
 	private List<PlotTrace> generatePlotTraceList(List<Data> dataFromDb, SampleType sampleType, Param param) {

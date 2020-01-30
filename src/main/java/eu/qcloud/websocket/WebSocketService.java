@@ -143,8 +143,11 @@ public class WebSocketService {
 
 	public void sendUpdateIntranet(File file) {
 		for (SimpUser s : userRegistry.getUsers()) {
-			messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply", 
-				new WebSocketNotification("fileIntranet-", null, null, file));
+			User user = userRepository.findByUsername(s.getName());
+			if (user.getAuthorities().size() == 3) {
+				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply", 
+					new WebSocketNotification("fileIntranet-", null, null, file));
+			}
 		}
 	}
 
