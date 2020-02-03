@@ -36,7 +36,7 @@
             </td>
         </tr>
         <tr>
-            <td style="padding: 30px 30px 30px 30px; font-weight: bold; background-color: #fdfdfd;">
+            <td style="padding: 30px 30px 0px 30px; font-weight: bold; background-color: #fdfdfd;">
                 <p style="text-align: justify:">The QCloud team</p>
             </td>
         </tr>
@@ -52,13 +52,8 @@
         </tr>
         <tr>
         <tr>
-            <td style="padding: 30px 30px 0px 30px; background-color: #c6e3d8; text-align: center">
-                <p>If you have any questions <a href="mailto:qcloud@crg.eu" style = "color: #5c8d89; text-decoration: none">email us</a>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 10px 30px 40px 30px; background-color: #c6e3d8; text-align: center">
-                <p>If you don't want to receive this type of emails <a href="mailto:qcloud@crg.eu" style = "color: #5c8d89; text-decoration: none">email us or change your preferences in the QCloud2 profile</a>.</p>
+            <td style="padding: 30px 30px 30px 30px; background-color: #c6e3d8; text-align: center">
+                <p>If you have any questions or you want to unsubscribe from this list <br>please <a href="mailto:qcloud@crg.eu" style = "color: #5c8d89; text-decoration: none">email us</a> or visit QCloud2 profile management section.</p>
             </td>
         </tr>
         </tr>
