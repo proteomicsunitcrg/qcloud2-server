@@ -66,8 +66,8 @@ public class EmailService {
             helper.setBcc(mail.getTo());
             helper.setSubject(mail.getSubject());
             helper.setText(html, true);
-            helper.setFrom(emailAddress, "QCloud 2.0");
-            helper.setReplyTo(emailAddress, "QCloud 2.0 ");
+            helper.setFrom(emailAddress, "QCloud");
+            helper.setReplyTo(emailAddress, "QCloud");
             message.setContentLanguage(new String[] { "en" });
             message.setDescription("Informative email");
             emailSender.send(message);
@@ -109,7 +109,7 @@ public class EmailService {
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
         // helper.setFrom(mail.getFrom());
-        helper.setFrom(emailAddress, "QCloud 2.0");
+        helper.setFrom(emailAddress, "QCloud");
         emailSender.send(message);
     }
 
@@ -127,9 +127,9 @@ public class EmailService {
         helper.setBcc("roger.olivella@crg.eu");
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
-        helper.setReplyTo("qcloud@crg.eu", "QCloud 2.0 ");
+        helper.setReplyTo("qcloud@crg.eu", "QCloud");
         // helper.setFrom(mail.getFrom());
-        helper.setFrom(emailAddress, "QCloud 2.0");
+        helper.setFrom(emailAddress, "QCloud");
         emailSender.send(message);
     }
 
@@ -148,7 +148,7 @@ public class EmailService {
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
         // helper.setFrom(mail.getFrom());
-        helper.setFrom(emailAddress, "QCloud 2.0");
+        helper.setFrom(emailAddress, "QCloud");
 
         emailSender.send(message);
     }
