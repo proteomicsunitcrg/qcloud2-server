@@ -1,4 +1,4 @@
-package eu.qcloud.troubleshooting;
+package eu.qcloud.troubleshooting.problem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import eu.qcloud.troubleshooting.problem.ProblemRepository;
 import eu.qcloud.troubleshooting.test.TestRepository;
 
 @Service
-public class TroubleshootingService {
+public class ProblemService {
 
 	@Autowired
 	private ProblemRepository problemRepository;
@@ -33,9 +33,9 @@ public class TroubleshootingService {
 	private CauseRepository reasonRepository;
 
 	@Autowired
-	private TroubleshootingRepo troubleshootingRepository;
+	private ProblemRepository problemRepo;
 
-	private List<Problem> getAllProblems() {
+	public List<Problem> getAllProblems() {
 		List<Problem> problems = new ArrayList<>();
 		problemRepository.findAll().forEach(problems::add);
 		return problems;
@@ -45,18 +45,6 @@ public class TroubleshootingService {
 		List<Action> actions = new ArrayList<>();
 		actionRepository.findAll().forEach(actions::add);
 		return actions;
-	}
-
-	private List<Troubleshooting> getAllTests() {
-		List<Troubleshooting> tests = new ArrayList<>();
-		testRepository.findAll().forEach(tests::add);
-		return tests;
-	}
-
-	private List<Troubleshooting> getAllCauses() {
-		List<Troubleshooting> reasons = new ArrayList<>();
-		reasonRepository.findAll().forEach(reasons::add);
-		return reasons;
 	}
 
 	// public Troubleshooting addTroubleshootingItem(Troubleshooting troubleshooting,
@@ -85,13 +73,13 @@ public class TroubleshootingService {
 	// 	}
 	// }
 
-	public Troubleshooting enableDisable(UUID apiKey) {
-		Optional <Troubleshooting> trouble = troubleshootingRepository.findByApiKey(apiKey);
-		if(!trouble.isPresent()) {
-			throw new DataIntegrityViolationException("Item not found");
-		}
-		trouble.get().setActive(!trouble.get().isActive());
-		return troubleshootingRepository.save(trouble.get());
-	}
+	// public Troubleshooting enableDisable(UUID apiKey) {
+	// 	Optional <Troubleshooting> trouble = troubleshootingRepository.findByApiKey(apiKey);
+	// 	if(!trouble.isPresent()) {
+	// 		throw new DataIntegrityViolationException("Item not found");
+	// 	}
+	// 	trouble.get().setActive(!trouble.get().isActive());
+	// 	return troubleshootingRepository.save(trouble.get());
+	// }
 
 }

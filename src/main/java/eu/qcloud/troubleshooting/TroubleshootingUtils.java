@@ -11,10 +11,10 @@ public class TroubleshootingUtils {
 
 	public static Troubleshooting createTroubleshootingByType(Troubleshooting item, TroubleshootingType type) {
 		switch (type) {
-		case PROBLEM:
-			return new Problem(item.getName(), item.getDescription(), item.getQccv(), UUID.randomUUID());
-		case ACTION:
-			return new Action(item.getName(), item.getDescription(), item.getQccv(), UUID.randomUUID());
+		// case PROBLEM:
+		// 	return new Problem(item.getName(), item.getDescription(), item.getQccv(), UUID.randomUUID());
+		// case ACTION:
+		// 	return new Action(item.getName(), item.getDescription(), item.getQccv(), UUID.randomUUID());
 		case CAUSE:
 			return new Cause(item.getName(), item.getDescription(), item.getQccv(), UUID.randomUUID());
 		case TEST:

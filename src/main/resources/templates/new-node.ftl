@@ -39,7 +39,7 @@
                 able to see all the monitored peptides. The QCloud is only able to monitorize a set of peptides from BSA and HeLa. If you are using 
                 another kind of samples for the QC, we suggest you to inject 
                 only 1 BSA per day and 1 HeLa per week. In this way you can still use your own QC samples and compare them with the QCloud.</p>
-                <p>You can find detailed instructions on how to prepare your QC samples inside the Help section of the website: <a href="http://qcloud2.crg.eu/application/help">Help page</a></p>
+                <p>You can find detailed instructions on how to prepare your QC samples inside the Help section of the website: <a href="https://qcloud2.crg.eu/application/help">Help page</a></p>
                 <p>Best,</p>
             </td>
         </tr>

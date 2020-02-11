@@ -1,4 +1,4 @@
-package eu.qcloud.troubleshooting.problem;
+package eu.qcloud.troubleshooting.troubleshootingParent;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,16 +12,17 @@ import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import eu.qcloud.troubleshooting.troubleshootingParent.TroubleshootingParent;
+import eu.qcloud.troubleshooting.action.Action;
+import eu.qcloud.troubleshooting.problem.Problem;
 
 @Entity
-@Table(name = "problem")
-public class Problem {
+@Table(name = "troubleshooting_parent")
+public class TroubleshootingParent {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "problem_seq")
-    @SequenceGenerator(name = "problem_seq", sequenceName = "problem_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "action_seq")
+    @SequenceGenerator(name = "action_seq", sequenceName = "action_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -36,14 +37,16 @@ public class Problem {
     @Column(name = "apiKey", updatable = false, nullable = false, unique = true, columnDefinition = "BINARY(16)")
     @org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
     private UUID apiKey;
+    
+    // @Column(name = "actions", nullable = true)
+    @ManyToMany
+    List<Action> action;
 
-    @Column(name = "is_active", columnDefinition = "BIT default true")
-	private boolean active;
-	
-	// @ManyToMany
-	// private List<TroubleshootingParent> parent;
+    @ManyToMany
+    List<Problem> problem;
 
-    public Problem() {
+
+    public TroubleshootingParent() {
     }
 
     public Long getId() {
@@ -86,42 +89,35 @@ public class Problem {
         this.apiKey = apiKey;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public Problem(Long id, String name, String description, String qccv, UUID apiKey, boolean active) {
+    public TroubleshootingParent(Long id, String name, String description, String qccv, UUID apiKey) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.qccv = qccv;
         this.apiKey = apiKey;
-        this.active = active;
     }
 
-	public Problem(String name, String description, String qccv, UUID apiKey) {
+    public TroubleshootingParent(String name, String description, String qccv, UUID apiKey) {
 		this.name = name;
 		this.description = description;
 		this.qccv = qccv;
 		this.apiKey = apiKey;
 	}
 
-    @Override
-    public String toString() {
-        return "Problem [active=" + active + ", apiKey=" + apiKey + ", description=" + description + ", id=" + id
-                + ", name=" + name + ", qccv=" + qccv + "]";
+    public List<Action> getAction() {
+        return action;
     }
 
-	// public List<TroubleshootingParent> getParent() {
-	// 	return parent;
-	// }
+    public void setAction(List<Action> action) {
+        this.action = action;
+    }
 
-	// public void setParent(List<TroubleshootingParent> parent) {
-	// 	this.parent = parent;
-	// }
+    public List<Problem> getProblem() {
+        return problem;
+    }
+
+    public void setProblem(List<Problem> problem) {
+        this.problem = problem;
+    }
 
 }

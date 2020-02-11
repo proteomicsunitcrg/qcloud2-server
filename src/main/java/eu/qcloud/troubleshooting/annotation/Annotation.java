@@ -150,4 +150,21 @@ public class Annotation {
 		this.annotationDate = annotationDate;
 	}
 
+	public Annotation(Long id, Date date, Date annotationDate, List<Problem> problems, List<Action> actions,
+			List<Cause> causes, LabSystem labSystem, User user, UUID apiKey, String description) {
+		this.id = id;
+		this.date = date;
+		this.annotationDate = annotationDate;
+		this.problems = problems;
+		this.actions = actions;
+		this.causes = causes;
+		this.labSystem = labSystem;
+		this.user = user;
+		this.apiKey = apiKey;
+		this.description = description;
+	}
+
+	public Annotation() {
+	}
+
 }

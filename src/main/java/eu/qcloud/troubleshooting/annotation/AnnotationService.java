@@ -17,6 +17,7 @@ import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.security.model.User;
 import eu.qcloud.troubleshooting.action.Action;
 import eu.qcloud.troubleshooting.action.ActionRepository;
+// import eu.qcloud.troubleshooting.action.ActionRepository;
 import eu.qcloud.troubleshooting.annotation.AnnotationRepository.AnnotationForPlot;
 import eu.qcloud.troubleshooting.problem.Problem;
 import eu.qcloud.troubleshooting.problem.ProblemRepository;
@@ -142,7 +143,7 @@ public class AnnotationService {
 		}
 		checkIfAnnotationBelongsToUser(annotationFromDb.get(), user);
 
-		annotationFromDb.get().setActions(getActionsFromDb(annotation.getActions()));
+		// annotationFromDb.get().setActions(getActionsFromDb(annotation.getActions()));
 		// annotationFromDb.get().setCauses(annotation.getCauses());
 		annotationFromDb.get().setProblems(getProblemsFromDb(annotation.getProblems()));
 		// annotationFromDb.get().setReasons(annotation.getReasons());
@@ -158,19 +159,19 @@ public class AnnotationService {
 		return annotationRepository.findAnnotationForPlotById(savedAnnotation.getId());
 	}
 
-	private List<Action> getActionsFromDb(List<Action> actions) {
-		List<Action> actionsFromDb = new ArrayList<>();
-		actions.forEach(a -> {
-			actionsFromDb.add(actionRepository.findByQccv(a.getQccv()).get());
-		});
-		return actionsFromDb;
-	}
+	// private List<Action> getActionsFromDb(List<Action> actions) {
+	// 	List<Action> actionsFromDb = new ArrayList<>();
+	// 	actions.forEach(a -> {
+	// 		actionsFromDb.add(actionRepository.findByQccv(a.getQccv()).get());
+	// 	});
+	// 	return actionsFromDb;
+	// }
 
 	private List<Problem> getProblemsFromDb(List<Problem> problems) {
 		List<Problem> problemsFromDb = new ArrayList<>();
-		problems.forEach(a -> {
-			problemsFromDb.add(problemRepository.findByQccv(a.getQccv()).get());
-		});
+		// problems.forEach(a -> {
+		// 	problemsFromDb.add(problemRepository.findByQccv(a.getQccv()).get());
+		// });
 		return problemsFromDb;
 	}
 

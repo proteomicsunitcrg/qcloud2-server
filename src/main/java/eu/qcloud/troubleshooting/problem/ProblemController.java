@@ -1,4 +1,4 @@
-package eu.qcloud.troubleshooting;
+package eu.qcloud.troubleshooting.problem;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,30 +21,18 @@ import org.springframework.web.bind.annotation.RestController;
 import eu.qcloud.exceptions.InvalidActionException;
 
 @RestController
-@RequestMapping(value = "/api/troubleshooting")
-public class TroubleshootingController {
+@RequestMapping(value = "/api/troubleshooting/problem")
+public class ProblemController {
 
 	@Autowired
-	private TroubleshootingService troubleshootingService;
+	private ProblemService problemService;
 
-	// @RequestMapping(value = "/{troubleshootingType}", method = RequestMethod.GET)
-	// @PreAuthorize("hasRole('USER')")
-	// public List<Troubleshooting> getAllTroubleshootingsByType(@PathVariable TroubleshootingType troubleshootingType) {
-	// 	return troubleshootingService.getAllTroubleshotingByType(troubleshootingType);
-	// }
-
-	// @RequestMapping(value = "/{troubleshootingType}", method = RequestMethod.POST)
-	// @PreAuthorize("hasRole('ADMIN')")
-	// public Troubleshooting addTroubleshootingItem(@RequestBody Troubleshooting troubleshooting,
-	// 		@PathVariable TroubleshootingType troubleshootingType) {
-	// 	return troubleshootingService.addTroubleshootingItem(troubleshooting, troubleshootingType);
-	// }
-
-	@RequestMapping(value = "/enableDisable/{apiKey}", method = RequestMethod.PATCH)
-	@PreAuthorize("hasRole('ADMIN')")
-	public Troubleshooting enableDisable(@PathVariable UUID apiKey) {
-		return troubleshootingService.enableDisable(apiKey);
+	@RequestMapping(value = "", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
+	public List<Problem> getAllProblems() {
+		return problemService.getAllProblems();
 	}
+
 
 	/*
 	 * Exception handlers
