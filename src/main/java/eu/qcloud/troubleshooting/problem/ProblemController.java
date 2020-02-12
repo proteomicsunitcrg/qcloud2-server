@@ -32,7 +32,24 @@ public class ProblemController {
 	public List<Problem> getAllProblems() {
 		return problemService.getAllProblems();
 	}
+	
+	@RequestMapping(value = "/{apiKey}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
+	public Problem getByApiKey(@PathVariable UUID apiKey) {
+		return problemService.getByApiKey(apiKey);
+	}
 
+	@RequestMapping(value = "", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public Problem saveAction(@RequestBody Problem action) {
+		return problemService.saveProblem(action);
+	}
+
+	@RequestMapping(value = "/{actionApiKey}", method = RequestMethod.PATCH)
+	@PreAuthorize("hasRole('ADMIN')")
+	public Problem updateAction(@RequestBody Problem actionNew, @PathVariable UUID actionApiKey) {
+		return problemService.updateProblem(actionNew, actionApiKey);
+	}
 
 	/*
 	 * Exception handlers

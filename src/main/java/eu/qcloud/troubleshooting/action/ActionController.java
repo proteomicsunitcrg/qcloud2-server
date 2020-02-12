@@ -33,6 +33,24 @@ public class ActionController {
 		return actionService.getAllActions();
 	}
 
+	@RequestMapping(value = "/{apiKey}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
+	public Action getByApiKey(@PathVariable UUID apiKey) {
+		return actionService.getByApiKey(apiKey);
+	}
+
+	@RequestMapping(value = "", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public Action saveAction(@RequestBody Action action) {
+		return actionService.saveAction(action);
+	}
+
+	@RequestMapping(value = "/{actionApiKey}", method = RequestMethod.PATCH)
+	@PreAuthorize("hasRole('ADMIN')")
+	public Action updateAction(@RequestBody Action actionNew, @PathVariable UUID actionApiKey) {
+		return actionService.updateAction(actionNew, actionApiKey);
+	}
+
 
 	/*
 	 * Exception handlers

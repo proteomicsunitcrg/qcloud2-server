@@ -47,6 +47,23 @@ public class ProblemService {
 		return actions;
 	}
 
+	public Problem getByApiKey(UUID apiKey) {
+		return problemRepository.findOneByApiKey(apiKey);
+	}
+
+	public Problem saveProblem(Problem problem) {
+		problem.setApiKey(UUID.randomUUID());
+		return problemRepository.save(problem);
+	}
+
+	public Problem updateProblem(Problem problemNew, UUID problemApiKey) {
+		Problem problemFromDB = getByApiKey(problemApiKey);
+		problemFromDB.setName(problemNew.getName());
+		problemFromDB.setDescription(problemNew.getDescription());
+		problemFromDB.setQccv(problemNew.getQccv());
+		return problemRepo.save(problemFromDB);
+	}
+
 	// public Troubleshooting addTroubleshootingItem(Troubleshooting troubleshooting,
 	// 		TroubleshootingType troubleshootingType) {
 	// 	Optional<Troubleshooting> ts = troubleshootingRepository.findByQccv(troubleshooting.getQccv());

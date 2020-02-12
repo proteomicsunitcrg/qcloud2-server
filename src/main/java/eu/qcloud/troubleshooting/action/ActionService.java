@@ -21,24 +21,29 @@ import eu.qcloud.troubleshooting.test.TestRepository;
 public class ActionService {
 
 	@Autowired
-	private ProblemRepository problemRepository;
-
-	@Autowired
 	private ActionRepository actionRepository;
-
-	@Autowired
-	private TestRepository testRepository;
-
-	@Autowired
-	private CauseRepository reasonRepository;
-
-	@Autowired
-	private ProblemRepository problemRepo;
 
 	public List<Action> getAllActions() {
 		List<Action> actions = new ArrayList<>();
 		actionRepository.findAll().forEach(actions::add);
 		return actions;
+	}
+
+	public Action saveAction(Action action) {
+		action.setApiKey(UUID.randomUUID());
+		return actionRepository.save(action);
+	}
+
+	public Action getByApiKey(UUID apiKey) {
+		return actionRepository.findOneByApiKey(apiKey);
+	}
+
+	public Action updateAction(Action actionNew, UUID actionApiKey) {
+		Action actionFromDB = getByApiKey(actionApiKey);
+		actionFromDB.setName(actionNew.getName());
+		actionFromDB.setDescription(actionNew.getDescription());
+		actionFromDB.setQccv(actionNew.getQccv());
+		return actionRepository.save(actionFromDB);
 	}
 
 
