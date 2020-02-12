@@ -89,6 +89,29 @@ public class TroubleShootingParentService {
 		return parentRepository.save(parent);
 	}
 
+	public TroubleshootingParent save(TroubleshootingParent parent) {
+		parent.setApiKey(UUID.randomUUID());
+		return parentRepository.save(parent);
+	}
+
+	public boolean delete(UUID parentApiKey) {
+		TroubleshootingParent parent = getByApiKey(parentApiKey);
+		if(parent.getAction().size() == 0 && parent.getProblem().size() == 0) {
+			parentRepository.delete(parent);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public TroubleshootingParent update(TroubleshootingParent parent, UUID toUpdateApiKey) {
+		TroubleshootingParent parentFromDB = getByApiKey(toUpdateApiKey);
+		parentFromDB.setName(parent.getName());
+		parentFromDB.setDescription(parent.getDescription());
+		parentFromDB.setQccv(parent.getQccv());
+		return parentRepository.save(parentFromDB);
+	}
+
 
 
 	// public Troubleshooting addTroubleshootingItem(Troubleshooting troubleshooting,

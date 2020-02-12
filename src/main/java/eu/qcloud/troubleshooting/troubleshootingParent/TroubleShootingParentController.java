@@ -28,6 +28,25 @@ public class TroubleShootingParentController {
     @Autowired
     private TroubleShootingParentService troubleshootingParentService;
 
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('ADMIN')")
+    public TroubleshootingParent save(@RequestBody TroubleshootingParent parent) {
+        return troubleshootingParentService.save(parent);
+    }
+
+    @RequestMapping(value = "/{parentApiKey}", method = RequestMethod.PATCH)
+    @PreAuthorize("hasRole('ADMIN')")
+    public TroubleshootingParent update(@RequestBody TroubleshootingParent parent, @PathVariable UUID parentApiKey) {
+        return troubleshootingParentService.update(parent, parentApiKey);
+    }
+
+    @RequestMapping(value = "/{parentApiKey}", method = RequestMethod.DELETE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public boolean delete(@PathVariable UUID parentApiKey) {
+        System.out.println(parentApiKey);
+        return troubleshootingParentService.delete(parentApiKey);
+    }
+
     @RequestMapping(value = "", method = RequestMethod.GET)
     @PreAuthorize("hasRole('USER')")
     public List<TroubleshootingParent> getAllParents() {

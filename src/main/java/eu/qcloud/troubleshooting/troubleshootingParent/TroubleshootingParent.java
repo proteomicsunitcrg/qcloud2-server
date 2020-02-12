@@ -21,8 +21,8 @@ public class TroubleshootingParent {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "action_seq")
-    @SequenceGenerator(name = "action_seq", sequenceName = "action_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "troubleshooting_parent_seq")
+    @SequenceGenerator(name = "troubleshooting_parent_seq", sequenceName = "troubleshooting_parent_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "name", nullable = false)
