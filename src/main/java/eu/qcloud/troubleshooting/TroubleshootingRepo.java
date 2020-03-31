@@ -1,5 +1,6 @@
 package eu.qcloud.troubleshooting;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,5 +12,11 @@ public interface TroubleshootingRepo extends TroubleshootingRepository<Troublesh
 	Optional<Troubleshooting> findByQccv(String qccv);
 
 	Optional<Troubleshooting> findByApiKey(UUID apiKey);
+
+	List<Troubleshooting> findAllByParentIsNull();
+
+	List<Troubleshooting> findAllByParentIsNullAndType(TroubleshootingType type);
+
+	List<Troubleshooting> findAllByParentIsNullAndChildsIsNullAndType(TroubleshootingType type);
 
 }

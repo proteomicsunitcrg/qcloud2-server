@@ -15,12 +15,8 @@ import org.springframework.stereotype.Service;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.security.model.User;
-import eu.qcloud.troubleshooting.action.Action;
-import eu.qcloud.troubleshooting.action.ActionRepository;
 // import eu.qcloud.troubleshooting.action.ActionRepository;
 import eu.qcloud.troubleshooting.annotation.AnnotationRepository.AnnotationForPlot;
-import eu.qcloud.troubleshooting.problem.Problem;
-import eu.qcloud.troubleshooting.problem.ProblemRepository;
 import eu.qcloud.websocket.WebSocketService;
 
 @Service
@@ -28,12 +24,6 @@ public class AnnotationService {
 
 	@Autowired
 	private AnnotationRepository annotationRepository;
-
-	@Autowired
-	private ProblemRepository problemRepository;
-
-	@Autowired
-	private ActionRepository actionRepository;
 
 	@Autowired
 	private LabSystemRepository labSystemRepository;
@@ -47,15 +37,9 @@ public class AnnotationService {
 		attachLabSystemFromDb(annotation);
 		annotation.setUser(user);
 		annotation.setAnnotationDate(new Date());
-
-		attachAnnotationProblemsFromDb(annotation);
-		attachAnnotationActionsFromDb(annotation);
 		annotation.setApiKey(UUID.randomUUID());
-
 		annotationRepository.save(annotation);
-
 		webSocketService.sendAnnotationToNodeUsers(user.getNode(), annotation);
-
 	}
 
 	private void attachLabSystemFromDb(Annotation annotation) {
@@ -64,28 +48,6 @@ public class AnnotationService {
 			throw new DataRetrievalFailureException("Lab system not found");
 		}
 		annotation.setLabSystem(ls.get());
-	}
-
-	private void attachAnnotationProblemsFromDb(Annotation annotation) {
-		List<Problem> problems = new ArrayList<>();
-		annotation.getProblems().stream().forEach(p -> {
-			Optional<Problem> problem = problemRepository.findByQccv(p.getQccv());
-			if (problem.isPresent()) {
-				problems.add(problem.get());
-			}
-		});
-		annotation.setProblems(problems);
-	}
-
-	private void attachAnnotationActionsFromDb(Annotation annotation) {
-		List<Action> actions = new ArrayList<>();
-		annotation.getActions().stream().forEach(a -> {
-			Optional<Action> action = actionRepository.findByQccv(a.getQccv());
-			if (action.isPresent()) {
-				actions.add(action.get());
-			}
-		});
-		annotation.setActions(actions);
 	}
 
 	public List<AnnotationForPlot> getAnnotationsBetweenDates(UUID labSystemApiKey, Date startDate, Date endDate,
@@ -143,14 +105,10 @@ public class AnnotationService {
 		}
 		checkIfAnnotationBelongsToUser(annotationFromDb.get(), user);
 
-		// annotationFromDb.get().setActions(getActionsFromDb(annotation.getActions()));
-		// annotationFromDb.get().setCauses(annotation.getCauses());
-		annotationFromDb.get().setProblems(getProblemsFromDb(annotation.getProblems()));
-		// annotationFromDb.get().setReasons(annotation.getReasons());
-
 		annotationFromDb.get().setUser(user);
 		annotationFromDb.get().setAnnotationDate(new Date());
 		annotationFromDb.get().setDescription(annotation.getDescription());
+		annotationFromDb.get().setTroubleshootings(annotation.getTroubleshootings());
 
 		Annotation savedAnnotation = annotationRepository.save(annotationFromDb.get());
 
@@ -166,13 +124,5 @@ public class AnnotationService {
 	// 	});
 	// 	return actionsFromDb;
 	// }
-
-	private List<Problem> getProblemsFromDb(List<Problem> problems) {
-		List<Problem> problemsFromDb = new ArrayList<>();
-		// problems.forEach(a -> {
-		// 	problemsFromDb.add(problemRepository.findByQccv(a.getQccv()).get());
-		// });
-		return problemsFromDb;
-	}
 
 }

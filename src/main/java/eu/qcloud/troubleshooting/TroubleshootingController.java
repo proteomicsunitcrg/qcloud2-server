@@ -27,23 +27,58 @@ public class TroubleshootingController {
 	@Autowired
 	private TroubleshootingService troubleshootingService;
 
-	// @RequestMapping(value = "/{troubleshootingType}", method = RequestMethod.GET)
-	// @PreAuthorize("hasRole('USER')")
-	// public List<Troubleshooting> getAllTroubleshootingsByType(@PathVariable TroubleshootingType troubleshootingType) {
-	// 	return troubleshootingService.getAllTroubleshotingByType(troubleshootingType);
-	// }
-
-	// @RequestMapping(value = "/{troubleshootingType}", method = RequestMethod.POST)
-	// @PreAuthorize("hasRole('ADMIN')")
-	// public Troubleshooting addTroubleshootingItem(@RequestBody Troubleshooting troubleshooting,
-	// 		@PathVariable TroubleshootingType troubleshootingType) {
-	// 	return troubleshootingService.addTroubleshootingItem(troubleshooting, troubleshootingType);
-	// }
-
-	@RequestMapping(value = "/enableDisable/{apiKey}", method = RequestMethod.PATCH)
+	@RequestMapping(value = "", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
-	public Troubleshooting enableDisable(@PathVariable UUID apiKey) {
-		return troubleshootingService.enableDisable(apiKey);
+	public Troubleshooting addTroubleshootingItem(@RequestBody Troubleshooting troubleshooting) {
+		return troubleshootingService.addTroubleshootingItem(troubleshooting);
+	}
+
+	@RequestMapping(value = "/{apiKey}", method = RequestMethod.PATCH)
+	@PreAuthorize("hasRole('ADMIN')")
+	public Troubleshooting updateTroubleshooting(@PathVariable UUID apiKey, @RequestBody Troubleshooting troubleshooting) {
+		return troubleshootingService.updateTroubleshooting(troubleshooting);
+	}
+
+	// @RequestMapping(value = "/enableDisable/{apiKey}", method = RequestMethod.PATCH)
+	// @PreAuthorize("hasRole('ADMIN')")
+	// public Troubleshooting enableDisable(@PathVariable UUID apiKey) {
+	// 	return troubleshootingService.enableDisable(apiKey);
+	// }
+
+	@RequestMapping(value = "/unlink/{apiKey}", method = RequestMethod.PATCH)
+	@PreAuthorize("hasRole('ADMIN')")
+	public Troubleshooting unLink(@PathVariable UUID apiKey) {
+		return troubleshootingService.unLink(apiKey);
+	}
+
+	@RequestMapping(value = "/topParents", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public List <Troubleshooting> getAllTopParents() {
+		return troubleshootingService.getAllTopParents();
+	}
+
+	@RequestMapping(value = "/parentNullChildsNull/{type}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public List <Troubleshooting> getByParentNullChildsNullAndType(@PathVariable TroubleshootingType type) {
+		return troubleshootingService.getByParentNullChildsNullAndType(type);
+	}
+
+	@RequestMapping(value = "/{apiKey}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public Troubleshooting getTroubleshootingByApiKey(@PathVariable UUID apiKey) {
+		return troubleshootingService.getByApiKey(apiKey);
+	}
+
+	@RequestMapping(value = "/parentsByType/{type}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public List <Troubleshooting> getTroubleshootingParentByType(@PathVariable TroubleshootingType type) {
+		return troubleshootingService.getTroubleshootingParentByType(type);
+	}
+
+	@RequestMapping(value = "/linkChild/{parentApiKey}", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public Troubleshooting linkChild(@PathVariable UUID parentApiKey, @RequestBody Troubleshooting child) {
+		return troubleshootingService.linkChild(parentApiKey, child);
 	}
 
 	/*

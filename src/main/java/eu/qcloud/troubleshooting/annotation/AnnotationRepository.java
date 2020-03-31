@@ -11,8 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import eu.qcloud.labsystem.LabSystemRepository.LabSystemNameAndApiKey;
 import eu.qcloud.security.repository.UserRepository.UserForAnnotation;
-import eu.qcloud.troubleshooting.action.Action;
-import eu.qcloud.troubleshooting.problem.Problem;
+import eu.qcloud.troubleshooting.Troubleshooting;
 
 @Repository
 public interface AnnotationRepository extends CrudRepository<Annotation, Long> {
@@ -25,9 +24,7 @@ public interface AnnotationRepository extends CrudRepository<Annotation, Long> {
 	interface AnnotationForPlot {
 		Date getDate();
 
-		List<Problem> getProblems();
-
-		List<Action> getActions();
+		List<Troubleshooting> getTroubleshootings();
 
 		LabSystemNameAndApiKey getLabSystem();
 

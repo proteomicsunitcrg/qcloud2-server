@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,9 +17,7 @@ import javax.persistence.Table;
 
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.security.model.User;
-import eu.qcloud.troubleshooting.action.Action;
-import eu.qcloud.troubleshooting.cause.Cause;
-import eu.qcloud.troubleshooting.problem.Problem;
+import eu.qcloud.troubleshooting.Troubleshooting;
 
 @Entity
 @Table(name = "annotation")
@@ -38,15 +35,6 @@ public class Annotation {
 	@Column(name = "annotation_date")
 	private Date annotationDate;
 
-	@ManyToMany(cascade = { CascadeType.PERSIST })
-	private List<Problem> problems;
-
-	@ManyToMany(cascade = { CascadeType.PERSIST })
-	private List<Action> actions;
-
-	@ManyToMany(cascade = { CascadeType.PERSIST })
-	private List<Cause> causes;
-
 	@ManyToOne
 	@JoinColumn(name = "lab_system_id")
 	private LabSystem labSystem;
@@ -61,6 +49,9 @@ public class Annotation {
 
 	@Column(name = "description")
 	private String description;
+
+	@ManyToMany
+	private List<Troubleshooting> troubleshootings;
 
 	public Long getId() {
 		return id;
@@ -78,30 +69,6 @@ public class Annotation {
 		this.date = date;
 	}
 
-	public List<Problem> getProblems() {
-		return problems;
-	}
-
-	public void setProblems(List<Problem> problems) {
-		this.problems = problems;
-	}
-
-	public List<Action> getActions() {
-		return actions;
-	}
-
-	public void setActions(List<Action> actions) {
-		this.actions = actions;
-	}
-
-	public List<Cause> getReasons() {
-		return causes;
-	}
-
-	public void setReasons(List<Cause> reasons) {
-		this.causes = reasons;
-	}
-
 	public UUID getApiKey() {
 		return apiKey;
 	}
@@ -116,14 +83,6 @@ public class Annotation {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public List<Cause> getCauses() {
-		return causes;
-	}
-
-	public void setCauses(List<Cause> causes) {
-		this.causes = causes;
 	}
 
 	public LabSystem getLabSystem() {
@@ -150,21 +109,27 @@ public class Annotation {
 		this.annotationDate = annotationDate;
 	}
 
-	public Annotation(Long id, Date date, Date annotationDate, List<Problem> problems, List<Action> actions,
-			List<Cause> causes, LabSystem labSystem, User user, UUID apiKey, String description) {
+	public Annotation() {
+	}
+
+	public List<Troubleshooting> getTroubleshootings() {
+		return troubleshootings;
+	}
+
+	public void setTroubleshootings(List<Troubleshooting> troubleshootings) {
+		this.troubleshootings = troubleshootings;
+	}
+
+	public Annotation(Long id, Date date, Date annotationDate, LabSystem labSystem, User user, UUID apiKey,
+			String description, List<Troubleshooting> troubleshootings) {
 		this.id = id;
 		this.date = date;
 		this.annotationDate = annotationDate;
-		this.problems = problems;
-		this.actions = actions;
-		this.causes = causes;
 		this.labSystem = labSystem;
 		this.user = user;
 		this.apiKey = apiKey;
 		this.description = description;
-	}
-
-	public Annotation() {
+		this.troubleshootings = troubleshootings;
 	}
 
 }
