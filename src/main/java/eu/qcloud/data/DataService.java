@@ -532,9 +532,7 @@ public class DataService {
 	}
 
 	private void evaluateDataForNonConformities(File file, DataFromPipeline data) {
-		System.out.println("evaluating data for NC");
 		List<ThresholdNonConformity> thresholdNonConformities = new ArrayList<>();
-
 		for (ParameterData parameterData : data.getData()) {
 			// Get the threshold for this parameter, sample type and instrument
 			Threshold threshold = thresholdUtils
@@ -1074,9 +1072,6 @@ public class DataService {
 						for (ChartParams chartParam : chartParams) {
 							if (chartParam.getContextSource()
 									.equals(communityLineNode.getCommunityLine().getContextSource())) {
-								System.out.println("Line DataSource"
-										+ communityLineNode.getCommunityLine().getInstrument().getId());
-								// System.out.println(labSystem.get().getMainDataSource().getName());
 								System.out
 										.println("LS DataSource" + labSystem.get().getMainDataSource().getCv().getId());
 								traces.put(communityLineNode.getCommunityLine().getName(),

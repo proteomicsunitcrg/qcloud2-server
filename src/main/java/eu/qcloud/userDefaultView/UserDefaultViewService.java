@@ -66,7 +66,7 @@ public class UserDefaultViewService {
 			userRepository.save(user);
 			break;
 		default:
-			System.out.println("unknown option");
+			break;
 		}
 		return null;
 	}

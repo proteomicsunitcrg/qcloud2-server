@@ -67,9 +67,7 @@ public class UserService {
 	}
 
 	public List<User> findUsersByNodeApiKey(UUID nodeApiKey) {
-		System.out.println(nodeApiKey);
 		List<User> cc = userRepository.findAllByNodeApiKey(nodeApiKey);
-		System.out.println(cc);
 		return cc;
 	}
 
@@ -150,8 +148,6 @@ public class UserService {
 		String newPassword = generateRandomString(15);
 		u.setPassword(passwordEncoderNodeController().encode(newPassword));
 		userRepository.save(u);
-		System.out.println(newPassword);
-		System.out.println(passwordEncoderNodeController().encode(newPassword));
 		return newPassword;
 	}
 

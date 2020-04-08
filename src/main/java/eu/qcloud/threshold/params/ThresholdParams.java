@@ -1,5 +1,6 @@
 package eu.qcloud.threshold.params;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -38,7 +39,7 @@ public class ThresholdParams {
 		this.isEnabled = isEnabled;
 	}
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "thresholdId", insertable = false, updatable = false)
 	private Threshold threshold;
 
@@ -91,6 +92,13 @@ public class ThresholdParams {
 
 	public void setStepValue(Float stepValue) {
 		this.stepValue = stepValue;
+	}
+
+	@Override
+	public String toString() {
+		return "ThresholdParams [contextSourceNAME=" + contextSource.getName() + ", initialValue=" + initialValue + ", isEnabled="
+				+ isEnabled + ", stepValue=" + stepValue + ", thresholdID=" + threshold.getId() + ", thresholdParamsId="
+				+ thresholdParamsId + "]";
 	}
 
 }

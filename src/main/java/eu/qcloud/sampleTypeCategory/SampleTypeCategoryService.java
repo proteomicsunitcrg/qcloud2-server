@@ -109,8 +109,6 @@ public class SampleTypeCategoryService {
 		sampleTypeCategoryRepository.findAll().forEach(sampleTypeCategories::add);
 		for (SampleTypeCategory sc : sampleTypeCategories) {
 			sc.setApiKey(UUID.randomUUID());
-			System.out.println(sampleTypeCategoryRepository.save(sc).getApiKey());
-
 		}
 	}
 }

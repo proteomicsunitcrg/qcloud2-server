@@ -372,7 +372,6 @@ public class ThresholdUtils {
 
 	public LabSystemStatus createNoThresholdNonConformity(LabSystem labSystem) {
 		LabSystemStatus ls = new LabSystemStatus();
-		System.out.println(labSystem.getName());
 		ls.setStatus(InstrumentStatus.NO_THRESHOLD);
 		return ls;
 	}

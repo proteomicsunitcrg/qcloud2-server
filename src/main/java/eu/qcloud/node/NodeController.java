@@ -245,7 +245,6 @@ public class NodeController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "api/node/usersByNodeApiKey", method = RequestMethod.GET)
 	public List <User> getUsersByNodeApiKey(@RequestParam UUID apiKey) {
-		System.out.println(apiKey);
 		List <User> pedete = userService.findUsersByNodeApiKey(apiKey);
 		return pedete;
 	}

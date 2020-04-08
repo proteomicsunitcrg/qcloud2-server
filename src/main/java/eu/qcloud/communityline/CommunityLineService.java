@@ -68,12 +68,10 @@ public class CommunityLineService {
 	 * @return CommunityLine saved
 	 */
 	public CommunityLine saveCommunityLine(CommunityLine communityLine) {
-		System.out.println("eiiiii");
 		communityLine.setParam(paramRepository.findByQccv(communityLine.getParam().getqCCV()));
 		communityLine.setSampleType(sampleTypeRepository.findByQualityControlControlledVocabulary(
 				communityLine.getSampleType().getQualityControlControlledVocabulary()).get());
 		communityLine.setApiKey(UUID.randomUUID());
-		System.out.println(communityLine.getApiKey());
 		communityLine.setTraceColor(traceColorRepository.findByApiKey(communityLine.getTraceColor().getApiKey()).get());
 		return commLineRepository.save(communityLine);
 	}
@@ -112,7 +110,6 @@ public class CommunityLineService {
 	 * @return the updated relation
 	 */
 	public CommunityLineNode updateActive(CommunityLineNode communityLineNode) {
-		System.out.println("update");
 		// Because client dont have the full entity
 		CommunityLineNode toUpdate = communityLineNodeRepository.findById(communityLineNode.getId());
 		toUpdate.setActive(!toUpdate.isActive());

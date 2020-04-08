@@ -3,6 +3,7 @@ package eu.qcloud.threshold;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -103,7 +104,7 @@ public class Threshold implements Cloneable {
 	@JoinColumn(name = "lab_system_id")
 	protected LabSystem labSystem;
 
-	@OneToMany(mappedBy = "threshold")
+	@OneToMany(mappedBy = "threshold", cascade = CascadeType.ALL)
 	protected List<ThresholdParams> thresholdParams;
 
 	public LabSystem getLabSystem() {

@@ -143,10 +143,10 @@ public class ThresholdController {
 		return null;
 	}
 
-	@RequestMapping(value = "/api/threshold/params", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/threshold/params/{thresholdApiKey}", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('MANAGER')")
-	public void saveThresholdParams(@RequestBody List<ThresholdParams> thresholdParams) {
-		thresholdService.saveThresholdParams(thresholdParams);
+	public void saveThresholdParams(@RequestBody List<ThresholdParams> thresholdParams, @PathVariable UUID thresholdApiKey) {
+		thresholdService.saveThresholdParams(thresholdParams, thresholdApiKey);
 	}
 
 	@RequestMapping(value = "api/threshold/editThreshold", method = RequestMethod.POST)
