@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataRepository;
@@ -113,9 +115,13 @@ public class IntranetService {
                 nanCounter++;
             }
         }
-        if ((nanCounter * 100) / data.size() < 60) {
-            response.setDataOk(true);
-        } else {
+        try {
+            if ((nanCounter * 100) / data.size() < 60) {
+                response.setDataOk(true);
+            } else {
+                response.setDataOk(false);
+            }
+        } catch (ArithmeticException e) {
             response.setDataOk(false);
         }
         return response;
