@@ -58,19 +58,19 @@ public class TroubleshootingController {
 	}
 
 	@RequestMapping(value = "/parentNullChildsNull/{type}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER')")
 	public List <Troubleshooting> getByParentNullChildsNullAndType(@PathVariable TroubleshootingType type) {
 		return troubleshootingService.getByParentNullChildsNullAndType(type);
 	}
 
 	@RequestMapping(value = "/{apiKey}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER')")
 	public Troubleshooting getTroubleshootingByApiKey(@PathVariable UUID apiKey) {
 		return troubleshootingService.getByApiKey(apiKey);
 	}
 
 	@RequestMapping(value = "/parentsByType/{type}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER')")
 	public List <Troubleshooting> getTroubleshootingParentByType(@PathVariable TroubleshootingType type) {
 		return troubleshootingService.getTroubleshootingParentByType(type);
 	}

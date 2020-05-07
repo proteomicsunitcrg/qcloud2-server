@@ -65,6 +65,9 @@ jwt:
     authentication:
       path: api/auth
       refresh: refresh
+    authentication-pipeline:
+      path: api/4uth
+      refresh: refresh
 
 qcloud:
   threshold:

@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,6 +65,23 @@ public class AuthenticationRestController {
         // return ResponseEntity.ok(new JwtAuthenticationResponse(token));
 
         return (new ResponseEntity<>(new JwtAuthenticationResponse(token), headers, HttpStatus.OK));
+    }
+
+    /**
+     * 
+     * @param RequestHeader String username
+     * @param RequestHeader String password
+     * @return A response with the login token
+     * @throws AuthenticationException
+     * @desc Just calls the other auth method 
+     * This endpoint is used by the pipeline and QCrawler and uses the headers instead the body, but at the end is the same because just calls the same method
+     * If some header is missing just throws a bad request error
+     * If the credentials are wrong just returns a 401 error
+     */
+    @RequestMapping(value = "/api/4uth", method = RequestMethod.POST)
+    public ResponseEntity<?> createAuthenticationTokenPipeline(@RequestHeader(name = "username") String username, @RequestHeader(name = "password") String password)
+            throws AuthenticationException {
+        return createAuthenticationToken(new JwtAuthenticationRequest(username, password));
     }
 
     private Date generateExpirationDate() {

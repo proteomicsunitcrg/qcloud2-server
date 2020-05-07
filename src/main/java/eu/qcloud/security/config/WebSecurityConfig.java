@@ -76,9 +76,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/gs-guide-websocket/**", "/api/passwordreset/check/**")
                 .permitAll()
                 .antMatchers(HttpMethod.POST, "/user", "/api/node", "/api/gs-guide-websocket/**", "/api/passwordreset")
-                .permitAll().antMatchers("/api/auth/**").permitAll().antMatchers("/ws/**").permitAll()
+                .permitAll().antMatchers("/api/auth/**", "/api/4uth/**").permitAll().antMatchers("/ws/**").permitAll()
                 .antMatchers(HttpMethod.PUT, "/api/passwordreset/reset/**").permitAll().anyRequest().authenticated();
-
         // Custom JWT based security filter
         httpSecurity.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 
