@@ -40,7 +40,7 @@ public class UserDefaultViewController {
 
 	/**
 	 * Get the current user from the security context
-	 * 
+	 *
 	 * @return the logged user
 	 */
 	private User getUserFromSecurityContext() {

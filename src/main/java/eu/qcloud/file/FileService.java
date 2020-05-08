@@ -27,7 +27,7 @@ import eu.qcloud.websocket.WebSocketService;
 
 /**
  * File service
- * 
+ *
  * @author dmancera
  *
  */
@@ -143,8 +143,10 @@ public class FileService {
 			}
 			file.setInsertDate(new Date());
 			fileRepository.save(file);
-			logger.info("File inserted with checksum: " + file.getChecksum() + " for labsystem: " + file.getLabSystem().getName());
-			// webSocket.sendUpdateIntranet(file); // perform this in the data insert to avoid errors
+			logger.info("File inserted with checksum: " + file.getChecksum() + " for labsystem: "
+					+ file.getLabSystem().getName());
+			// webSocket.sendUpdateIntranet(file); // perform this in the data insert to
+			// avoid errors
 			return file;
 		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");
@@ -216,16 +218,16 @@ public class FileService {
 	}
 
 	// public void testIntranetSocket() {
-	// 	File file = new File();
-	// 	int random = (int)(Math.random() * 10000 + 1);
-	// 	file.setChecksum("cacacacaca" + random);
-	// 	file.setCreationDate(new Date());
-	// 	file.setFilename("puccagaru" +  random);
-	// 	file.setId(42300l);
-	// 	file.setLabSystem(labSystemService.findSystemBySystemId(25l).get());
-	// 	file.setInsertDate(new Date());
-	// 	file.setSampleType(sampleTypeRepository.findById(1l).get());
-	// 	webSocket.sendUpdateIntranet(file);
+	// File file = new File();
+	// int random = (int)(Math.random() * 10000 + 1);
+	// file.setChecksum("cacacacaca" + random);
+	// file.setCreationDate(new Date());
+	// file.setFilename("puccagaru" + random);
+	// file.setId(42300l);
+	// file.setLabSystem(labSystemService.findSystemBySystemId(25l).get());
+	// file.setInsertDate(new Date());
+	// file.setSampleType(sampleTypeRepository.findById(1l).get());
+	// webSocket.sendUpdateIntranet(file);
 	// }
 
 }

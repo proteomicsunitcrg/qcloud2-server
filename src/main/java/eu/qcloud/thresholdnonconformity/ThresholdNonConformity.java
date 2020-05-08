@@ -21,7 +21,7 @@ import eu.qcloud.threshold.Threshold;
 
 /**
  * This class holds the non conformity.
- * 
+ *
  * @author dmancera
  *
  */
@@ -102,8 +102,8 @@ public class ThresholdNonConformity {
 
 	@Override
 	public String toString() {
-		return "ThresholdNonConformity [contextSource=" + contextSource + ", file=" + file.getId() + ", guideSet=" + guideSet.getId()
-				+ ", id=" + id + ", status=" + status + ", threshold=" + threshold + "]";
+		return "ThresholdNonConformity [contextSource=" + contextSource + ", file=" + file.getId() + ", guideSet="
+				+ guideSet.getId() + ", id=" + id + ", status=" + status + ", threshold=" + threshold + "]";
 	}
 
 }

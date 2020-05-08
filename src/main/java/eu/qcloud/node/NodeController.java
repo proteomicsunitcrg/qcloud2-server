@@ -48,7 +48,7 @@ import freemarker.template.TemplateException;
 
 /**
  * NodeController Main controller for node related operations
- * 
+ *
  * @author Daniel Mancera <daniel.mancera@crg.eu>
  */
 @RestController
@@ -78,7 +78,7 @@ public class NodeController {
 
 	/**
 	 * Add a new node with a manager user to the database
-	 * 
+	 *
 	 * @param n a JSON formed node with a user in the users array
 	 * @return <Node> the inserted node
 	 */
@@ -122,7 +122,7 @@ public class NodeController {
 
 	/**
 	 * Add a new user to the current node
-	 * 
+	 *
 	 * @param newUser the user to add
 	 * @return A list of the current node users
 	 */
@@ -160,7 +160,7 @@ public class NodeController {
 
 	/**
 	 * Add a new manager to the current node
-	 * 
+	 *
 	 * @param newUser the user to add
 	 * @return A list of the current node users
 	 */
@@ -197,7 +197,7 @@ public class NodeController {
 
 	/**
 	 * Delete a node member from the database
-	 * 
+	 *
 	 * @param userUuid the user apikey
 	 * @return the list of node members
 	 */
@@ -244,11 +244,10 @@ public class NodeController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "api/node/usersByNodeApiKey", method = RequestMethod.GET)
-	public List <User> getUsersByNodeApiKey(@RequestParam UUID apiKey) {
-		List <User> pedete = userService.findUsersByNodeApiKey(apiKey);
+	public List<User> getUsersByNodeApiKey(@RequestParam UUID apiKey) {
+		List<User> pedete = userService.findUsersByNodeApiKey(apiKey);
 		return pedete;
 	}
-
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/api/node/users", method = RequestMethod.GET)
@@ -354,7 +353,8 @@ public class NodeController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/api/node/hardResetPassword", method = RequestMethod.PATCH)
 	public String hardResetPassword(@RequestParam UUID apiKey) {
-		// String passwordNormal = getEmailUsername(newUser.getEmail()) + "." + LocalDate.now().getYear();
+		// String passwordNormal = getEmailUsername(newUser.getEmail()) + "." +
+		// LocalDate.now().getYear();
 		// newUser.setPassword(passwordEncoderNodeController().encode(passwordNormal));
 		return userService.hardResetPassword(apiKey);
 	}
@@ -371,7 +371,7 @@ public class NodeController {
 	 */
 	/**
 	 * Get the current user from the security context
-	 * 
+	 *
 	 * @return the logged user
 	 */
 	private User getManagerFromSecurityContext() {
@@ -383,7 +383,6 @@ public class NodeController {
 	private String getEmailUsername(String someEmail) {
 		return someEmail.substring(0, someEmail.indexOf("@"));
 	}
-
 
 	/*
 	 * Exception handlers

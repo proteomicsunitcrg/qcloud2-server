@@ -19,10 +19,10 @@ public class FileUtils {
     }
 
     /**
-     * 
+     *
      * @return a list with all filenames
      * @throws IOException
-     * 
+     *
      */
     public List<String> listDirFiles(String path) throws IOException {
         List<String> filenames = new ArrayList<>();

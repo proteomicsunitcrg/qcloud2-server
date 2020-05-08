@@ -10,7 +10,7 @@ import eu.qcloud.threshold.InstrumentStatus;
  * This is a helper class I had to do because the projection does not seems to
  * work properly when there are tuple queries to the database. It was returning
  * all null values when the non projected object was full of data.
- * 
+ *
  * @author dmancera
  *
  */

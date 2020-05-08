@@ -23,7 +23,7 @@ import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 
 /**
  * Peptide controller. A peptide is an extension of contextSource.
- * 
+ *
  * @author dmancera
  *
  */
@@ -36,7 +36,7 @@ public class PeptideController {
 	/**
 	 * Add a new peptide into the database. If there is already a peptide with the
 	 * same name it will throw an exception. It should be catched in the client.
-	 * 
+	 *
 	 * @param peptide the peptide to add
 	 * @return the added peptide
 	 */
@@ -53,7 +53,7 @@ public class PeptideController {
 	/**
 	 * Add a new peptide into the database. THis function will be used only with the
 	 * db migrator
-	 * 
+	 *
 	 * @param peptide the peptide to add
 	 * @return the added peptide
 	 */
@@ -69,7 +69,7 @@ public class PeptideController {
 
 	/**
 	 * Find a peptide by its sequence
-	 * 
+	 *
 	 * @param peptideSequence the sequence to look for
 	 * @return a peptide
 	 */
@@ -81,7 +81,7 @@ public class PeptideController {
 
 	/**
 	 * Find all peptides that are not isotopologues
-	 * 
+	 *
 	 * @return a list of peptids
 	 */
 	@RequestMapping(value = "/api/contextsource/peptide", method = RequestMethod.GET)
@@ -92,7 +92,7 @@ public class PeptideController {
 
 	/**
 	 * Get all peptides except the given sample type complexity
-	 * 
+	 *
 	 * @param complexity the complexity to exclude peptides from
 	 * @return a list of peptides
 	 */
@@ -107,7 +107,7 @@ public class PeptideController {
 	/**
 	 * Update a peptide in the database. If the updated peptide shares the name with
 	 * another peptide it will throw an error.
-	 * 
+	 *
 	 * @param peptide
 	 * @param peptideId
 	 * @return
@@ -120,7 +120,7 @@ public class PeptideController {
 
 	/**
 	 * Find a peptide by its sequence
-	 * 
+	 *
 	 * @param sequence
 	 * @return
 	 */

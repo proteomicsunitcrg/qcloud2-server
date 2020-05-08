@@ -4,7 +4,7 @@ import eu.qcloud.contextSource.ContextSource;
 
 /**
  * Please check ThresholdForPlotImpl description
- * 
+ *
  * @author dmancera
  *
  */

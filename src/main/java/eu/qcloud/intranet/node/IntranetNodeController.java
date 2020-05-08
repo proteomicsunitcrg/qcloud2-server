@@ -25,7 +25,7 @@ public class IntranetNodeController {
 
     @Autowired
     IntranetNodeService intrNodeService;
-    
+
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "getAll", method = RequestMethod.GET)
     public List<NodeAndStats> getAllNodes() {
@@ -68,7 +68,7 @@ public class IntranetNodeController {
     }
 
     @ExceptionHandler(NotFoundException.class)
-	void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
-		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+    void handleNotFound(HttpServletResponse response, Exception e) throws IOException {
+        response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
 }

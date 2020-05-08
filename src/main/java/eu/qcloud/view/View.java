@@ -24,7 +24,7 @@ import eu.qcloud.security.model.User;
 
 /**
  * This is the view class representing both default views and user views.
- * 
+ *
  * @author dmancera
  *
  */

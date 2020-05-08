@@ -25,7 +25,7 @@ import eu.qcloud.websocket.WebSocketService;
 
 /**
  * Service for system
- * 
+ *
  * @author dmancera
  *
  */
@@ -110,7 +110,7 @@ public class LabSystemService {
 	 * This method will check if the datasources belongs to the node, and will
 	 * return an array with the proper data source entities from the database. If
 	 * not it will throw an exception
-	 * 
+	 *
 	 * @param dataSources
 	 */
 	private List<DataSource> checkDataSources(User manager, List<DataSource> dataSources) {
@@ -169,7 +169,7 @@ public class LabSystemService {
 	 */
 	/**
 	 * Get the current user from the security context
-	 * 
+	 *
 	 * @return the logged user
 	 */
 	private User getManagerFromSecurityContext() {

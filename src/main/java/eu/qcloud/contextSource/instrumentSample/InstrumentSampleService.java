@@ -14,7 +14,7 @@ import eu.qcloud.traceColor.TraceColorRepository;
 
 /**
  * Instrument sample service
- * 
+ *
  * @author dmancera
  *
  */

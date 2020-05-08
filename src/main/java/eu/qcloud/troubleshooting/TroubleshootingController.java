@@ -35,14 +35,16 @@ public class TroubleshootingController {
 
 	@RequestMapping(value = "/{apiKey}", method = RequestMethod.PATCH)
 	@PreAuthorize("hasRole('ADMIN')")
-	public Troubleshooting updateTroubleshooting(@PathVariable UUID apiKey, @RequestBody Troubleshooting troubleshooting) {
+	public Troubleshooting updateTroubleshooting(@PathVariable UUID apiKey,
+			@RequestBody Troubleshooting troubleshooting) {
 		return troubleshootingService.updateTroubleshooting(troubleshooting);
 	}
 
-	// @RequestMapping(value = "/enableDisable/{apiKey}", method = RequestMethod.PATCH)
+	// @RequestMapping(value = "/enableDisable/{apiKey}", method =
+	// RequestMethod.PATCH)
 	// @PreAuthorize("hasRole('ADMIN')")
 	// public Troubleshooting enableDisable(@PathVariable UUID apiKey) {
-	// 	return troubleshootingService.enableDisable(apiKey);
+	// return troubleshootingService.enableDisable(apiKey);
 	// }
 
 	@RequestMapping(value = "/unlink/{apiKey}", method = RequestMethod.PATCH)
@@ -53,13 +55,13 @@ public class TroubleshootingController {
 
 	@RequestMapping(value = "/topParents", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
-	public List <Troubleshooting> getAllTopParents() {
+	public List<Troubleshooting> getAllTopParents() {
 		return troubleshootingService.getAllTopParents();
 	}
 
 	@RequestMapping(value = "/parentNullChildsNull/{type}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
-	public List <Troubleshooting> getByParentNullChildsNullAndType(@PathVariable TroubleshootingType type) {
+	public List<Troubleshooting> getByParentNullChildsNullAndType(@PathVariable TroubleshootingType type) {
 		return troubleshootingService.getByParentNullChildsNullAndType(type);
 	}
 
@@ -71,7 +73,7 @@ public class TroubleshootingController {
 
 	@RequestMapping(value = "/parentsByType/{type}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
-	public List <Troubleshooting> getTroubleshootingParentByType(@PathVariable TroubleshootingType type) {
+	public List<Troubleshooting> getTroubleshootingParentByType(@PathVariable TroubleshootingType type) {
 		return troubleshootingService.getTroubleshootingParentByType(type);
 	}
 

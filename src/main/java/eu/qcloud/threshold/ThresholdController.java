@@ -39,7 +39,7 @@ import eu.qcloud.utils.factory.ThresholdForPlotImpl;
  * Threshold.class extended classes. A threshold must have a threshold processor
  * implementing the Processor interface. Also, a threshold must have a direction
  * and some constraints. Please check this classes to know how it work.
- * 
+ *
  * @author dmancera
  *
  */
@@ -56,7 +56,7 @@ public class ThresholdController {
 
 	/**
 	 * Get all thresholds
-	 * 
+	 *
 	 * @return all the trhresholds
 	 */
 	@RequestMapping(value = "/api/threshold", method = RequestMethod.GET)
@@ -73,7 +73,7 @@ public class ThresholdController {
 
 	/**
 	 * Get all threshold types Threshold types are an enumeration
-	 * 
+	 *
 	 * @return a string array with the values
 	 */
 	@RequestMapping(value = "/api/threshold/types", method = RequestMethod.GET)
@@ -88,7 +88,7 @@ public class ThresholdController {
 
 	/**
 	 * Get all threshold directions Threshold directions are an enumeration
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/api/threshold/directions", method = RequestMethod.GET)
@@ -103,7 +103,7 @@ public class ThresholdController {
 
 	/**
 	 * Save a new threshold in the database.
-	 * 
+	 *
 	 * @param threshold the threshold to be saved
 	 */
 	@RequestMapping(value = "/api/threshold/{type}", method = RequestMethod.POST)
@@ -145,7 +145,8 @@ public class ThresholdController {
 
 	@RequestMapping(value = "/api/threshold/params/{thresholdApiKey}", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('MANAGER')")
-	public void saveThresholdParams(@RequestBody List<ThresholdParams> thresholdParams, @PathVariable UUID thresholdApiKey) {
+	public void saveThresholdParams(@RequestBody List<ThresholdParams> thresholdParams,
+			@PathVariable UUID thresholdApiKey) {
 		thresholdService.saveThresholdParams(thresholdParams, thresholdApiKey);
 	}
 
@@ -157,7 +158,7 @@ public class ThresholdController {
 
 	/**
 	 * Return the constraints for a given threshold type
-	 * 
+	 *
 	 * @param thresholdType
 	 * @return
 	 */
@@ -169,7 +170,7 @@ public class ThresholdController {
 
 	/**
 	 * Return all the thresholds by labsystem apikey
-	 * 
+	 *
 	 * @param labSystemApiKey
 	 * @return an array with the thresholds of a given labsystem
 	 */
@@ -194,7 +195,7 @@ public class ThresholdController {
 
 	/**
 	 * Update a threshold with new threshold parameters
-	 * 
+	 *
 	 * @param thresholdId     the threshold id
 	 * @param thresholdParams the new threshold parameters
 	 */
@@ -209,7 +210,7 @@ public class ThresholdController {
 	/**
 	 * Return the lab system status. It will check the monitored values of the last
 	 * file of the system.
-	 * 
+	 *
 	 * @param UUID labSystemApiKey
 	 * @return the labsystem status
 	 */

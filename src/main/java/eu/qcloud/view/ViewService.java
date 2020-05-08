@@ -124,12 +124,13 @@ public class ViewService {
 		return viewRepository.findByCvCVId(cvId);
 	}
 
-	//Returns the tabs but not the qc3 tab if the ls doesnt has any qc3 file
+	// Returns the tabs but not the qc3 tab if the ls doesnt has any qc3 file
 	public List<View> getDefaultViewsByCVAndLsApiKey(String cvId, UUID lsApiKey) {
 		List<View> allViews = viewRepository.findByCvCVId(cvId);
-		for(Iterator<View> i = allViews.iterator(); i.hasNext();) {
+		for (Iterator<View> i = allViews.iterator(); i.hasNext();) {
 			View view = i.next();
-			if (view.getSampleTypeCategory().getSampleTypeComplexity().equals(SampleTypeComplexity.HIGHWITHISOTOPOLOGUES)) {
+			if (view.getSampleTypeCategory().getSampleTypeComplexity()
+					.equals(SampleTypeComplexity.HIGHWITHISOTOPOLOGUES)) {
 				if (fileRepo.countByLabSystemApiKeyAndSampleTypeId(lsApiKey, 5l) == 0) {
 					i.remove();
 				}
@@ -159,7 +160,7 @@ public class ViewService {
 
 	/**
 	 * Delete the view_display rows by view id.
-	 * 
+	 *
 	 * @deprecated now use apikye
 	 * @return
 	 */
@@ -215,7 +216,7 @@ public class ViewService {
 	 */
 	/**
 	 * Get the current user from the security context
-	 * 
+	 *
 	 * @return the logged user
 	 */
 	private User getUserFromSecurityContext() {
@@ -239,10 +240,10 @@ public class ViewService {
 	public View deleteView(View view) {
 		Optional<View> v = viewRepository.findOptionalByApiKey(view.getApiKey());
 		if (v.isPresent()) {
-				getDefaultViewDisplayByViewId(v.get().getId());
-				viewDisplayRepository.deleteByViewApiKey(v.get().getApiKey());
-				viewRepository.delete(v.get());
-				return view;
+			getDefaultViewDisplayByViewId(v.get().getId());
+			viewDisplayRepository.deleteByViewApiKey(v.get().getApiKey());
+			viewRepository.delete(v.get());
+			return view;
 		} else {
 			throw new DataIntegrityViolationException("View not found.");
 		}

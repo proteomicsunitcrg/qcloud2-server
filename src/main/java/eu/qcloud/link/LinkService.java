@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class LinkService {
 
-    @Autowired
+	@Autowired
 	LinkRepository linkRepository;
 
 	public List<Link> getAll() {
-        List<Link> links = new ArrayList<>();
-        linkRepository.findAll().forEach(links::add);
-        return links;
+		List<Link> links = new ArrayList<>();
+		linkRepository.findAll().forEach(links::add);
+		return links;
 	}
 
 	public Link updateLink(Link link) {
@@ -29,5 +29,5 @@ public class LinkService {
 	public Link getByApiKey(@NotNull @NotEmpty UUID apiKey) {
 		return linkRepository.findOneByApiKey(apiKey);
 	}
-    
+
 }

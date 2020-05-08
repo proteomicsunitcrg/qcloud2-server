@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * GeneralAnnotationController Main controller for general annotations
  * operations
- * 
+ *
  * @author Marc Serret <marc.serret@crg.eu>
  */
 @RequestMapping(value = "/api/general-annotation")

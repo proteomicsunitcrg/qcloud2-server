@@ -31,7 +31,7 @@ import eu.qcloud.security.service.UserService;
 
 /**
  * File controller
- * 
+ *
  * @author dmancera
  *
  */
@@ -63,8 +63,8 @@ public class FileController {
 	}
 
 	/**
-	 * Add a new file into the system
-	 * THIS IS THE USED IN THE PIPELINE
+	 * Add a new file into the system THIS IS THE USED IN THE PIPELINE
+	 *
 	 * @param file
 	 * @param sampleTypeQCCV
 	 * @param labSystemApiKey
@@ -79,7 +79,7 @@ public class FileController {
 
 	/**
 	 * Get the last file of a given lab system and sample type
-	 * 
+	 *
 	 * @param sampleTypeQCCV
 	 * @param labSystemApikey
 	 * @return
@@ -94,7 +94,7 @@ public class FileController {
 	/**
 	 * Add a file into the system. This API end point should be consumed by the
 	 * pipeline
-	 * 
+	 *
 	 * @param sampleTypeQCCV the QC CV of the file sample type
 	 * @param file           the file parameters
 	 * @return the inserted file
@@ -107,7 +107,7 @@ public class FileController {
 
 	/**
 	 * Delete a file from the system
-	 * 
+	 *
 	 * @param checksum
 	 */
 	@RequestMapping(value = "/api/file/{checksum}", method = RequestMethod.DELETE)

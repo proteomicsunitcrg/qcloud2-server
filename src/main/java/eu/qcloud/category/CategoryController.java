@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Category controller
- * 
+ *
  * @author dmancera
  */
 @RestController

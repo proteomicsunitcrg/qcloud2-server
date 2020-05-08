@@ -41,7 +41,7 @@ public class IntranetService {
 
     @Autowired
     ThresholdNonConformityRepository nonConformityRepository;
-    
+
     @Value("${qcloud.intranet.pipeline-valid-hours}")
     private int pipelineHours;
 

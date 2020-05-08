@@ -49,5 +49,4 @@ public class NodeStats {
         this.files1Week = files1Week;
     }
 
-    
 }

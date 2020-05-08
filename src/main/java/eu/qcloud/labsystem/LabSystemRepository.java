@@ -18,7 +18,7 @@ public interface LabSystemRepository extends CrudRepository<LabSystem, Long> {
 
 	@Query(value = "select * from labsystem where id in (select lab_system_id from labsystem_data_sources where data_sources_id in (select id from data_source where cv_id = (select id from cv where id = ?1)))", nativeQuery = true)
 	List<LabSystem> getLabSystemsWithCV(Long cvId);
-	
+
 	interface LabSystemNameAndApiKey {
 		UUID getApiKey();
 

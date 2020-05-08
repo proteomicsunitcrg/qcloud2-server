@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
 public class SampleCompositionId implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1554686L;
 

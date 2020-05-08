@@ -12,7 +12,7 @@ import eu.qcloud.websocket.WebSocketService;
 
 /**
  * Main service for node
- * 
+ *
  * @author Daniel Mancera <daniel.mancera@crg.eu>
  */
 

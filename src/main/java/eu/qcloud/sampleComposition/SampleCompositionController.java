@@ -22,7 +22,7 @@ import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSampl
 
 /**
  * Sample composition controller.
- * 
+ *
  * @author dmancera
  *
  */
@@ -35,7 +35,7 @@ public class SampleCompositionController {
 
 	/**
 	 * Add a new peptide to a sample type
-	 * 
+	 *
 	 * @param sampleComposition a sample composition
 	 * @return the inserted peptide within a sample composition
 	 */
@@ -46,7 +46,7 @@ public class SampleCompositionController {
 
 	/**
 	 * Get all sample compositions
-	 * 
+	 *
 	 * @return a list with all sample compositions
 	 */
 	@RequestMapping(value = "/api/samplecomposition", method = RequestMethod.GET)
@@ -56,7 +56,7 @@ public class SampleCompositionController {
 
 	/**
 	 * Return a list of all sample composition that have a certain peptide
-	 * 
+	 *
 	 * @param peptideSequence the sequence of the peptide
 	 * @return a list of sample composition matching the required criteria
 	 */
@@ -67,7 +67,7 @@ public class SampleCompositionController {
 
 	/**
 	 * Delete a peptide from a sample
-	 * 
+	 *
 	 * @param peptideSequence the peptide sequence to delete
 	 * @param sampleTypeQCCV  the sample type qccv to delete from
 	 * @return true if ok, false if something wrong
@@ -82,7 +82,7 @@ public class SampleCompositionController {
 
 	/**
 	 * Find all peptides from a given sample type
-	 * 
+	 *
 	 * @param sampleTypeName a list of peptides from a sample type
 	 * @return
 	 */
@@ -93,7 +93,7 @@ public class SampleCompositionController {
 
 	/**
 	 * Find all peptides by its qqcv
-	 * 
+	 *
 	 * @param qqcv
 	 * @return
 	 */

@@ -7,7 +7,7 @@ import eu.qcloud.threshold.params.ThresholdParams;
 
 /**
  * Threshold processor for peak area
- * 
+ *
  * @author dmancera
  *
  */

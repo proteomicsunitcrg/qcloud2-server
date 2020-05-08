@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Main service for help
- * 
+ *
  * @author Daniel Mancera <marc.serret@crg.eu>
  */
 

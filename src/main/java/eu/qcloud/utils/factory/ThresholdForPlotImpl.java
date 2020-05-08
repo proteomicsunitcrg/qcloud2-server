@@ -10,7 +10,7 @@ import eu.qcloud.threshold.ThresholdType;
  * because there are some situations when you can not use the repository to get
  * this class and return to the client. It is a trick, and not really an
  * implementation of the interface (projection) at the repository.
- * 
+ *
  * @author dmancera
  *
  */

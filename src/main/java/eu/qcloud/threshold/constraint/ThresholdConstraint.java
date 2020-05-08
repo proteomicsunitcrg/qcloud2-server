@@ -2,7 +2,7 @@ package eu.qcloud.threshold.constraint;
 
 /**
  * This class is used to indicate the frontend what fields should be editable.
- * 
+ *
  * @author dmancera
  *
  */
@@ -25,7 +25,7 @@ public class ThresholdConstraint {
 
 	/**
 	 * Defines the threshold constraints
-	 * 
+	 *
 	 * @param isSingleContextSource
 	 * @param isInitialValueEditable
 	 * @param isStepValueEditable

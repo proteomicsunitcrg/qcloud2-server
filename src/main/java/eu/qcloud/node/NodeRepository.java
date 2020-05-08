@@ -18,9 +18,9 @@ public interface NodeRepository extends CrudRepository<Node, Long> {
 	Node findByApiKey(UUID apiKey);
 
 	Node findOneByApiKey(UUID apikey);
-	
+
 	@Query("SELECT n from Node n where apiKey=?1")
-	Optional <Node> findByApiKeyOptional(UUID apikey);
+	Optional<Node> findByApiKeyOptional(UUID apikey);
 
 	@Query("SELECT n from Node n where apiKey=?1")
 	Node buscar(UUID apiKey);

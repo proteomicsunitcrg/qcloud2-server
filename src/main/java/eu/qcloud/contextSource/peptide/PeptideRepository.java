@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 
 /**
  * Interface for peptide
- * 
+ *
  * @author dmancera
  *
  */

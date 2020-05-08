@@ -29,7 +29,7 @@ import eu.qcloud.security.service.UserService;
 
 /**
  * Controller for system
- * 
+ *
  * @author Daniel Mancera <daniel.mancera@crg.eu>
  *
  */
@@ -47,7 +47,7 @@ public class LabSystemController {
 
 	/**
 	 * Save the given system into the database
-	 * 
+	 *
 	 * @param system
 	 */
 	@PreAuthorize("hasRole('MANAGER')")
@@ -124,7 +124,7 @@ public class LabSystemController {
 
 	/**
 	 * Returns all the systems in the database of the current node
-	 * 
+	 *
 	 * @return a list of systems
 	 */
 	@RequestMapping(value = "/api/system", method = RequestMethod.GET)
@@ -135,7 +135,7 @@ public class LabSystemController {
 
 	/**
 	 * Get the current user from the security context
-	 * 
+	 *
 	 * @return the logged user
 	 */
 	private User getManagerFromSecurityContext() {

@@ -25,7 +25,7 @@ import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 
 /**
  * Sample type service
- * 
+ *
  * @author dmancera
  *
  */
@@ -37,7 +37,7 @@ public class SampleTypeController {
 
 	/**
 	 * Add a new sample type to the database
-	 * 
+	 *
 	 * @param sampleType               the sample type to insert
 	 * @param sampleTypeCategoryApiKey the apikey of the category
 	 * @return the inserted sample type
@@ -50,7 +50,7 @@ public class SampleTypeController {
 
 	/**
 	 * Return all sample types
-	 * 
+	 *
 	 * @return a list with all sample types
 	 */
 	@PreAuthorize("hasRole('USER')")
@@ -62,7 +62,7 @@ public class SampleTypeController {
 	/**
 	 * Return a list of all sample type that are not in a HIGHWITHISOTOPOLOGUE
 	 * complexity
-	 * 
+	 *
 	 * @return a list of sample types
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
@@ -73,7 +73,7 @@ public class SampleTypeController {
 
 	/**
 	 * Return a list of all sample type that are HIGHWITHISOTOPOLOGUE complexity
-	 * 
+	 *
 	 * @return a list of sample types
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
@@ -84,7 +84,7 @@ public class SampleTypeController {
 
 	/**
 	 * Get a list of all sample types with a list of the sample type peptides
-	 * 
+	 *
 	 * @return a list of the sample types with a list its peptides
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
@@ -95,7 +95,7 @@ public class SampleTypeController {
 
 	/**
 	 * Get a sample type with its QC CV
-	 * 
+	 *
 	 * @param qCCv the qccv to look for
 	 * @return a peptide or null
 	 */
@@ -107,7 +107,7 @@ public class SampleTypeController {
 	/**
 	 * Make the given sample as main in its category Only a sample type per category
 	 * can be main
-	 * 
+	 *
 	 * @param sampleType
 	 */
 	@RequestMapping(value = "/api/sample/makemain/{sampleTypeCategoryApiKey}/{sampleTypeQCCV}", method = RequestMethod.PUT)
@@ -118,7 +118,7 @@ public class SampleTypeController {
 
 	/**
 	 * Get all sample types by its complexity
-	 * 
+	 *
 	 * @param complexity the complexity to look into
 	 * @return a list with the requested sample types
 	 */
@@ -131,7 +131,7 @@ public class SampleTypeController {
 
 	/**
 	 * Get the default sample type by sample type category
-	 * 
+	 *
 	 * @param sampleTypeCategoryId
 	 * @return
 	 */

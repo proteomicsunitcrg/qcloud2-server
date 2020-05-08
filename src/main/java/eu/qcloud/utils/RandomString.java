@@ -1,4 +1,5 @@
 package eu.qcloud.utils;
+
 import java.security.SecureRandom;
 import java.util.Locale;
 import java.util.Objects;
@@ -30,8 +31,10 @@ public class RandomString {
     private final char[] buf;
 
     public RandomString(int length, Random random, String symbols) {
-        if (length < 1) throw new IllegalArgumentException();
-        if (symbols.length() < 2) throw new IllegalArgumentException();
+        if (length < 1)
+            throw new IllegalArgumentException();
+        if (symbols.length() < 2)
+            throw new IllegalArgumentException();
         this.random = Objects.requireNonNull(random);
         this.symbols = symbols.toCharArray();
         this.buf = new char[length];

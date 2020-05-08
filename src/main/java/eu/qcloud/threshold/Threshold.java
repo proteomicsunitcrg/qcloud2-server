@@ -33,7 +33,7 @@ import eu.qcloud.threshold.params.ThresholdParams;
  * This class represents a threshold. There are two ENUMS used
  * to hold what direction has the threshold and what type of threshold
  * it is.
- * The unique constraint of the table will prevent a user to have 
+ * The unique constraint of the table will prevent a user to have
  * more than one threshold at one instrument per sample type and param.
  * Lab system can be null in order to save the DEFAULT threshold in case
  * of the MANUAL type of threshold has not user values yet.

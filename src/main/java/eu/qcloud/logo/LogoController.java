@@ -22,7 +22,7 @@ import eu.qcloud.exceptions.NotFoundException;
 @RestController
 @RequestMapping(value = "/api/logo")
 public class LogoController {
-    
+
     @Autowired
     LogoService logoService;
 
@@ -64,7 +64,7 @@ public class LogoController {
     public Logo getEnabledLogo() {
         try {
             return logoService.getEnabledLogo();
-            
+
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -75,7 +75,7 @@ public class LogoController {
     public Logo getByApiKey(@PathVariable UUID apiKey) {
         try {
             return logoService.getByApiKey(apiKey);
-            
+
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -86,7 +86,7 @@ public class LogoController {
     public Logo updateLogo(@RequestBody @NotNull @NotEmpty final Logo logo) {
         try {
             return logoService.updateLogo(logo);
-            
+
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

@@ -26,7 +26,7 @@ import eu.qcloud.sampleType.SampleTypeRepository;
 
 /**
  * Service for charts and chart params
- * 
+ *
  * @author dmancera
  *
  */
@@ -90,7 +90,7 @@ public class ChartService {
 	/**
 	 * Add the params to a chart. If it fails in some point it will remove the
 	 * inserted chart params in case there is any.
-	 * 
+	 *
 	 * @param chartParams
 	 * @param chartId
 	 * @return
@@ -198,7 +198,7 @@ public class ChartService {
 
 	/**
 	 * Get a list of the sample types of the charts by cv
-	 * 
+	 *
 	 * @param cvId the id of the CV
 	 * @return
 	 */

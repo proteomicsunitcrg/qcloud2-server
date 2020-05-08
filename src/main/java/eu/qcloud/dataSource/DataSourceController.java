@@ -28,7 +28,7 @@ import eu.qcloud.security.service.UserService;
 
 /**
  * Data source controller.
- * 
+ *
  * @author dmancera
  *
  */
@@ -68,7 +68,7 @@ public class DataSourceController {
 
 	/**
 	 * Add a new data source. It will generate an UUID
-	 * 
+	 *
 	 * @param dataSource
 	 * @return a list with the node current datasources
 	 */
@@ -85,7 +85,7 @@ public class DataSourceController {
 	/**
 	 * Delete a data source from the server. It will perform some checks before
 	 * delete.
-	 * 
+	 *
 	 * @param apiKey
 	 * @return
 	 */
@@ -139,7 +139,7 @@ public class DataSourceController {
 	/**
 	 * This endpoint is for migration purposes. The data from the old database is
 	 * not enought to use the current addSource function.
-	 * 
+	 *
 	 * @param dataSource
 	 * @return
 	 */
@@ -158,7 +158,7 @@ public class DataSourceController {
 	 */
 	/**
 	 * Get the current user from the security context
-	 * 
+	 *
 	 * @return the logged user
 	 */
 	private User getManagerFromSecurityContext() {

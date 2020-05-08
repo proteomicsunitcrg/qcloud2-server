@@ -85,7 +85,7 @@ public class UserService {
 
 	/**
 	 * Update a member role, if USER add MANAGER, if MANAGER removes MANAGER
-	 * 
+	 *
 	 * @param userUuid the member apikey to update
 	 * @return the updated member
 	 */
@@ -194,8 +194,7 @@ public class UserService {
 			userRepository.save(u);
 			return u;
 		} else {
-			throw new InvalidActionException(
-					"You can't modify yourself");
+			throw new InvalidActionException("You can't modify yourself");
 		}
 
 	}

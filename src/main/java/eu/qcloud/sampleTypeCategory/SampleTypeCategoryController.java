@@ -25,7 +25,7 @@ import eu.qcloud.sampleType.SampleType;
 
 /**
  * Controller for the sample type category
- * 
+ *
  * @author dmancera
  *
  */
@@ -38,7 +38,7 @@ public class SampleTypeCategoryController {
 
 	/**
 	 * Add a new sample type category into the database
-	 * 
+	 *
 	 * @param sampleTypeCategory
 	 * @return SampleTypeCategory the inserted sample type category
 	 */
@@ -49,7 +49,7 @@ public class SampleTypeCategoryController {
 
 	/**
 	 * Return a list of sample type categories
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/api/samplecategory", method = RequestMethod.GET)
@@ -70,7 +70,7 @@ public class SampleTypeCategoryController {
 
 	/**
 	 * Delete a sample type category from the database
-	 * 
+	 *
 	 * @param sampleTypeCategory
 	 */
 	@RequestMapping(value = "/api/samplecategory/{sampleTypeCategoryId}", method = RequestMethod.DELETE)
@@ -81,7 +81,7 @@ public class SampleTypeCategoryController {
 
 	/**
 	 * Add a sample type into a sample type category
-	 * 
+	 *
 	 * @param sampleTypeCategoryId the category id
 	 * @param sampleType           the sample type to insert into
 	 * @return
@@ -94,7 +94,7 @@ public class SampleTypeCategoryController {
 
 	/**
 	 * Remove a sample type from a sampletype category
-	 * 
+	 *
 	 * @param sampleTypeCategoryId the category id
 	 * @param sampleType           the sample type to remove from the sample type
 	 *                             category
@@ -108,7 +108,7 @@ public class SampleTypeCategoryController {
 
 	/**
 	 * Return the values of the complexity enumeration
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/api/samplecategory/complexities", method = RequestMethod.GET)
@@ -118,7 +118,7 @@ public class SampleTypeCategoryController {
 
 	/**
 	 * Get the sampletype categories by complexity
-	 * 
+	 *
 	 * @param complexity
 	 * @return
 	 */

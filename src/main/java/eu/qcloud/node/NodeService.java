@@ -15,7 +15,7 @@ import eu.qcloud.security.repository.UserRepository;
 
 /**
  * Main service for node
- * 
+ *
  * @author Daniel Mancera <daniel.mancera@crg.eu>
  */
 
@@ -36,7 +36,7 @@ public class NodeService {
 
 	/**
 	 * Try to insert a new node in the database
-	 * 
+	 *
 	 * @author Daniel Mancera
 	 * @param n the node to insert
 	 * @return <Node> inserted node or <null> if error
@@ -48,7 +48,7 @@ public class NodeService {
 
 	/**
 	 * Delete a node
-	 * 
+	 *
 	 * @param the node to delete
 	 * @return true or false
 	 */

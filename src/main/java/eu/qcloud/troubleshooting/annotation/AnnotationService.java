@@ -65,7 +65,7 @@ public class AnnotationService {
 	/**
 	 * It will throw an exception if an user is trying to access a other node lab
 	 * system
-	 * 
+	 *
 	 * @param labSystem
 	 * @param user
 	 */
@@ -118,11 +118,11 @@ public class AnnotationService {
 	}
 
 	// private List<Action> getActionsFromDb(List<Action> actions) {
-	// 	List<Action> actionsFromDb = new ArrayList<>();
-	// 	actions.forEach(a -> {
-	// 		actionsFromDb.add(actionRepository.findByQccv(a.getQccv()).get());
-	// 	});
-	// 	return actionsFromDb;
+	// List<Action> actionsFromDb = new ArrayList<>();
+	// actions.forEach(a -> {
+	// actionsFromDb.add(actionRepository.findByQccv(a.getQccv()).get());
+	// });
+	// return actionsFromDb;
 	// }
 
 }

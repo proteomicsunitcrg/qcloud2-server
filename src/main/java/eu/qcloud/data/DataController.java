@@ -32,7 +32,7 @@ import eu.qcloud.param.ParamRepository;
 
 /**
  * Data controller. It handles the add new data and recover data.
- * 
+ *
  * @author dmancera
  *
  */
@@ -56,7 +56,7 @@ public class DataController {
 	 * Insert new data into the database. Before add new data there must be a file
 	 * of reference. Use this function if your parameter holds more than one context
 	 * source
-	 * 
+	 *
 	 * @param paramId
 	 * @param quantificationSourceSequence
 	 * @param checksum
@@ -78,7 +78,7 @@ public class DataController {
 	 * Insert new data into the database. Before add new data there must be a file
 	 * of reference. Use this function only if your parameter has only one context
 	 * source.
-	 * 
+	 *
 	 * @param paramId
 	 * @param instrumentSampleId
 	 * @param checksum
@@ -100,7 +100,7 @@ public class DataController {
 
 	/**
 	 * This function retrieves data between two dates.
-	 * 
+	 *
 	 * @param startDate
 	 * @param endDate
 	 * @param chartId
@@ -112,22 +112,22 @@ public class DataController {
 	 * @RequestMapping(value=
 	 * "/api/data/{startDate}/{endDate}/{chartApiKey}/{labSystemApiKey}/{sampleTypeQCCV}",
 	 * method=RequestMethod.GET)
-	 * 
+	 *
 	 * @PreAuthorize("hasRole('USER')") public List<DataForPlot>
 	 * getPlotData(@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date
 	 * startDate,
-	 * 
+	 *
 	 * @PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date endDate,
-	 * 
+	 *
 	 * @PathVariable UUID chartApiKey,
-	 * 
+	 *
 	 * @PathVariable UUID labSystemApiKey,
-	 * 
+	 *
 	 * @PathVariable String sampleTypeQCCV) {
-	 * 
+	 *
 	 * return dataService.getPlotData(startDate, endDate, chartApiKey,
 	 * labSystemApiKey, sampleTypeQCCV);
-	 * 
+	 *
 	 * }
 	 */
 
@@ -157,7 +157,7 @@ public class DataController {
 
 	/**
 	 * Insert data from the pipeline into the database
-	 * 
+	 *
 	 * @param dataFromPipeline the data to insert
 	 */
 	@RequestMapping(value = "/api/data/pipeline", method = RequestMethod.POST)

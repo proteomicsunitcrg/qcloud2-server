@@ -28,7 +28,7 @@ import eu.qcloud.guideset.GuideSet;
  * has some data source attached The way for recover the node systems is doing a
  * query of the system data sources, check the SystemRepository.findAllByNode()
  * function.
- * 
+ *
  * @author dmancera
  *
  */

@@ -145,8 +145,8 @@ public class WebSocketService {
 		for (SimpUser s : userRegistry.getUsers()) {
 			User user = userRepository.findByUsername(s.getName());
 			if (user.getAuthorities().size() == 3) {
-				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply", 
-					new WebSocketNotification("fileIntranet-", null, null, file));
+				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
+						new WebSocketNotification("fileIntranet-", null, null, file));
 			}
 		}
 	}

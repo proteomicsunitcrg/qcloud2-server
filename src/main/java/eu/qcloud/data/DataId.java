@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
 public class DataId implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 17785L;
 

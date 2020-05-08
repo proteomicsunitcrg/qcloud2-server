@@ -14,7 +14,7 @@ import eu.qcloud.sampleType.SampleTypeRepository;
 
 /**
  * Service for sample type category
- * 
+ *
  * @author dmancera
  *
  */
@@ -29,7 +29,7 @@ public class SampleTypeCategoryService {
 
 	/**
 	 * Add a sample type category to the database
-	 * 
+	 *
 	 * @param sampleTypeCategory
 	 * @return the added sample type
 	 */
@@ -44,7 +44,7 @@ public class SampleTypeCategoryService {
 
 	/**
 	 * Find all sample type categories
-	 * 
+	 *
 	 * @return a list with the sample type catgories
 	 */
 	public List<SampleTypeCategory> getAll() {
@@ -56,7 +56,7 @@ public class SampleTypeCategoryService {
 	/**
 	 * Add a sample type to a category If it fails will throw a 409 error, if not a
 	 * success 200
-	 * 
+	 *
 	 * @param sampleTypeCategoryId
 	 * @param sampleType
 	 */
@@ -75,7 +75,7 @@ public class SampleTypeCategoryService {
 	/**
 	 * Delete a sample type category If there is a sample in the category it will
 	 * fail
-	 * 
+	 *
 	 * @param sampleTypeCategoryId
 	 */
 	public void deleteSampleTypeCategory(Long sampleTypeCategoryId) {

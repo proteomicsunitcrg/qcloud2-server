@@ -16,7 +16,7 @@ import eu.qcloud.guideset.GuideSetRepository;
 
 /**
  * Data source service
- * 
+ *
  * @author dmancera
  *
  */
@@ -52,7 +52,7 @@ public class DataSourceService {
 
 	/**
 	 * Checks if the current user has the requested data source
-	 * 
+	 *
 	 * @return true or false
 	 */
 	public boolean checkIfNodeHasDataSource(Long dataSourceId, Long nodeId) {

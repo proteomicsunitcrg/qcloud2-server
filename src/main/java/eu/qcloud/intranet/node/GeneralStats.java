@@ -77,7 +77,4 @@ public class GeneralStats {
         this.labSystemsWithFiles6Months = labSystemsWithFiles6Months;
     }
 
-    
-
-
 }

@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
 public class ViewDisplayId implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 342321L;
 

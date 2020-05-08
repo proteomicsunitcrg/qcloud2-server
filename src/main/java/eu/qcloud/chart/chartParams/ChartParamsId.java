@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
 public class ChartParamsId implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 14323L;
 

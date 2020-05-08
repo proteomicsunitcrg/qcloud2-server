@@ -129,7 +129,7 @@ public class ThresholdService {
 
 	/**
 	 * Find a threshold in the database
-	 * 
+	 *
 	 * @param sampleTypeId
 	 * @param paramId
 	 * @param cvId
@@ -164,44 +164,44 @@ public class ThresholdService {
 		 * specific son.
 		 */
 		switch (type) {
-		case SIGMALOG2:
-			SigmaLog2Threshold stlog2 = new SigmaLog2Threshold();
-			stlog2.setCv(instrument.get());
-			stlog2.setSteps(threshold.getSteps());
-			stlog2.setParam(p);
-			stlog2.setSampleType(sampleType.get());
-			stlog2.setEnabled(true);
-			stlog2.setName(threshold.getName());
-			stlog2.setMonitored(true);
-			stlog2.setNonConformityDirection(threshold.getNonConformityDirection());
-			stlog2.setApiKey(UUID.randomUUID());
-			return saveSigmaLog2Threshold(stlog2);
-		case HARDLIMIT:
-			HardLimitThreshold ht = new HardLimitThreshold();
-			ht.setCv(instrument.get());
-			ht.setSteps(threshold.getSteps());
-			ht.setName(threshold.getName());
-			ht.setParam(p);
-			ht.setSampleType(sampleType.get());
-			ht.setNonConformityDirection(threshold.getNonConformityDirection());
-			ht.setEnabled(true);
-			ht.setMonitored(true);
-			ht.setApiKey(UUID.randomUUID());
-			return saveHardLimitThreshold(ht);
-		case SIGMA:
-			SigmaThreshold st = new SigmaThreshold();
-			st.setCv(instrument.get());
-			st.setName(threshold.getName());
-			st.setSteps(threshold.getSteps());
-			st.setParam(p);
-			st.setSampleType(sampleType.get());
-			st.setEnabled(true);
-			st.setMonitored(true);
-			st.setNonConformityDirection(threshold.getNonConformityDirection());
-			st.setApiKey(UUID.randomUUID());
-			return saveSigmaThreshold(st);
-		default:
-			return null;
+			case SIGMALOG2:
+				SigmaLog2Threshold stlog2 = new SigmaLog2Threshold();
+				stlog2.setCv(instrument.get());
+				stlog2.setSteps(threshold.getSteps());
+				stlog2.setParam(p);
+				stlog2.setSampleType(sampleType.get());
+				stlog2.setEnabled(true);
+				stlog2.setName(threshold.getName());
+				stlog2.setMonitored(true);
+				stlog2.setNonConformityDirection(threshold.getNonConformityDirection());
+				stlog2.setApiKey(UUID.randomUUID());
+				return saveSigmaLog2Threshold(stlog2);
+			case HARDLIMIT:
+				HardLimitThreshold ht = new HardLimitThreshold();
+				ht.setCv(instrument.get());
+				ht.setSteps(threshold.getSteps());
+				ht.setName(threshold.getName());
+				ht.setParam(p);
+				ht.setSampleType(sampleType.get());
+				ht.setNonConformityDirection(threshold.getNonConformityDirection());
+				ht.setEnabled(true);
+				ht.setMonitored(true);
+				ht.setApiKey(UUID.randomUUID());
+				return saveHardLimitThreshold(ht);
+			case SIGMA:
+				SigmaThreshold st = new SigmaThreshold();
+				st.setCv(instrument.get());
+				st.setName(threshold.getName());
+				st.setSteps(threshold.getSteps());
+				st.setParam(p);
+				st.setSampleType(sampleType.get());
+				st.setEnabled(true);
+				st.setMonitored(true);
+				st.setNonConformityDirection(threshold.getNonConformityDirection());
+				st.setApiKey(UUID.randomUUID());
+				return saveSigmaThreshold(st);
+			default:
+				return null;
 		}
 	}
 
@@ -218,7 +218,7 @@ public class ThresholdService {
 
 	/**
 	 * Find all threshold params by lab system.
-	 * 
+	 *
 	 * @param labSystemApiKey
 	 * @return
 	 */
@@ -260,7 +260,7 @@ public class ThresholdService {
 	 * Update the threshold parameters creating a new one and saving the updated one
 	 * and disabling it. This is because we need to keep a trace of the
 	 * non-conformities.
-	 * 
+	 *
 	 * @param thresholdId
 	 * @param thresholdParams TODO: check if the threshold belongs to the current
 	 *                        user
@@ -272,46 +272,46 @@ public class ThresholdService {
 			Threshold threshold = t.get();
 			// compare both thresholdparams
 			switch (threshold.getThresholdType()) {
-			case HARDLIMIT:
-				if (compareParams(threshold.getThresholdParams(), thresholdParams)) {
-					// check for constraints
-					if (threshold.getManagerThresholdConstraint().isGlobalInitialValue()) {
-						// check if all the values are equal
-						if (checkGlobalInitialValues(thresholdParams)) {
-							if (threshold.getManagerThresholdConstraint().isGlobalStepValue()) {
-								if (checkGlobalStepValue(thresholdParams)) {
-									// disable current threshold and create a new one
-									threshold.setEnabled(false);
-									thresholdRepository.save(threshold);
-									entityManager.detach(threshold);
-									threshold.setEnabled(true);
-									threshold.setId(null);
-									threshold.setApiKey(UUID.randomUUID());
-									threshold = thresholdRepository.save(threshold);
-									for (ThresholdParams p : thresholdParams) {
-										p.setThreshold(threshold);
-										ThresholdParamsId tid = new ThresholdParamsId();
-										tid.setContextSourceId(p.getContextSource().getId());
-										tid.setThresholdId(threshold.getId());
-										p.setThresholdParamsId(tid);
-										thresholdParamsRepository.save(p);
+				case HARDLIMIT:
+					if (compareParams(threshold.getThresholdParams(), thresholdParams)) {
+						// check for constraints
+						if (threshold.getManagerThresholdConstraint().isGlobalInitialValue()) {
+							// check if all the values are equal
+							if (checkGlobalInitialValues(thresholdParams)) {
+								if (threshold.getManagerThresholdConstraint().isGlobalStepValue()) {
+									if (checkGlobalStepValue(thresholdParams)) {
+										// disable current threshold and create a new one
+										threshold.setEnabled(false);
+										thresholdRepository.save(threshold);
+										entityManager.detach(threshold);
+										threshold.setEnabled(true);
+										threshold.setId(null);
+										threshold.setApiKey(UUID.randomUUID());
+										threshold = thresholdRepository.save(threshold);
+										for (ThresholdParams p : thresholdParams) {
+											p.setThreshold(threshold);
+											ThresholdParamsId tid = new ThresholdParamsId();
+											tid.setContextSourceId(p.getContextSource().getId());
+											tid.setThresholdId(threshold.getId());
+											p.setThresholdParamsId(tid);
+											thresholdParamsRepository.save(p);
+										}
+									} else {
+										throw new DataIntegrityViolationException(
+												"Invalid threshold parameters. Constraint validation failed");
 									}
-								} else {
-									throw new DataIntegrityViolationException(
-											"Invalid threshold parameters. Constraint validation failed");
 								}
-							}
 
-						} else {
-							throw new DataIntegrityViolationException(
-									"Invalid threshold parameters. Constraint validation failed");
+							} else {
+								throw new DataIntegrityViolationException(
+										"Invalid threshold parameters. Constraint validation failed");
+							}
 						}
 					}
-				}
 
-				break;
-			default:
-				throw new InvalidActionException("This threshold parameters can not be updated.");
+					break;
+				default:
+					throw new InvalidActionException("This threshold parameters can not be updated.");
 			}
 
 		} else {
@@ -343,7 +343,7 @@ public class ThresholdService {
 
 	/**
 	 * Compare two threshold params by size and by CV.
-	 * 
+	 *
 	 * @param thresholdParams
 	 * @param thresholdParams2
 	 * @return
@@ -400,7 +400,7 @@ public class ThresholdService {
 	}
 
 	public List<LabSystemStatus> getLabSystemStatus2(LabSystem labSystem) {
-		List <withParamsWithoutThreshold> lsThresholds = thresholdRepository.findLabSystemThresholds(labSystem.getId());
+		List<withParamsWithoutThreshold> lsThresholds = thresholdRepository.findLabSystemThresholds(labSystem.getId());
 		List<LabSystemStatus> labSystemStatus = new ArrayList<>();
 		Optional<File> file = fileRepository.findTop1ByLabSystemIdOrderByCreationDateDesc(labSystem.getId());
 		if (file.isPresent()) {
@@ -409,7 +409,7 @@ public class ThresholdService {
 				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
 				return labSystemStatus;
 			}
-			if(lsThresholds.size() == 0 ) {
+			if (lsThresholds.size() == 0) {
 				labSystemStatus.clear();
 				labSystemStatus.add(thresholdUtils.createNoThresholdNonConformity(labSystem));
 				return labSystemStatus;
@@ -501,7 +501,7 @@ public class ThresholdService {
 
 	/**
 	 * Updates a threshold
-	 * 
+	 *
 	 * @param thresholdNew the new threshod values
 	 * @return thresholdNew in case everything ok
 	 */
@@ -517,27 +517,30 @@ public class ThresholdService {
 			thres.setNonConformityDirection(thresholdNew.getNonConformityDirection());
 			thres.setSteps(thresholdNew.getSteps());
 			switch (thres.getThresholdType()) {
-			case SIGMA:
-				thres.setProcessor(new SigmaProcessor());
-				thres.setAdminThresholdConstraint(new ThresholdConstraint(false, false, false, true, false, false));
-				thres.setManagerThresholdConstraint(new ThresholdConstraint(false, false, false, false, false, false));
-				thres.setThresholdType(ThresholdType.SIGMA);
-				thresholdRepository.updateDType("sigma", thres.getId());
-				break;
-			case SIGMALOG2:
-				thres.setAdminThresholdConstraint(new ThresholdConstraint(false, false, false, true, false, false));
-				thres.setManagerThresholdConstraint(new ThresholdConstraint(false, false, false, false, false, false));
-				thres.setThresholdType(ThresholdType.SIGMALOG2);
-				thresholdRepository.updateDType("sigmalog2", thres.getId());
-				break;
-			case HARDLIMIT:
-				thres.setAdminThresholdConstraint(new ThresholdConstraint(false, false, false, true, true, true));
-				thres.setManagerThresholdConstraint(new ThresholdConstraint(false, false, false, false, true, true));
-				thres.setThresholdType(ThresholdType.HARDLIMIT);
-				thresholdRepository.updateDType("hard_limit", thres.getId());
-				break;
-			default:
-				break;
+				case SIGMA:
+					thres.setProcessor(new SigmaProcessor());
+					thres.setAdminThresholdConstraint(new ThresholdConstraint(false, false, false, true, false, false));
+					thres.setManagerThresholdConstraint(
+							new ThresholdConstraint(false, false, false, false, false, false));
+					thres.setThresholdType(ThresholdType.SIGMA);
+					thresholdRepository.updateDType("sigma", thres.getId());
+					break;
+				case SIGMALOG2:
+					thres.setAdminThresholdConstraint(new ThresholdConstraint(false, false, false, true, false, false));
+					thres.setManagerThresholdConstraint(
+							new ThresholdConstraint(false, false, false, false, false, false));
+					thres.setThresholdType(ThresholdType.SIGMALOG2);
+					thresholdRepository.updateDType("sigmalog2", thres.getId());
+					break;
+				case HARDLIMIT:
+					thres.setAdminThresholdConstraint(new ThresholdConstraint(false, false, false, true, true, true));
+					thres.setManagerThresholdConstraint(
+							new ThresholdConstraint(false, false, false, false, true, true));
+					thres.setThresholdType(ThresholdType.HARDLIMIT);
+					thresholdRepository.updateDType("hard_limit", thres.getId());
+					break;
+				default:
+					break;
 			}
 			thresholdRepository.save(thres);
 		}

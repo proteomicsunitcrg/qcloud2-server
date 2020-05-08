@@ -17,7 +17,7 @@ import eu.qcloud.traceColor.TraceColorRepository;
 
 /**
  * Service for peptides
- * 
+ *
  * @author dmancera
  *
  */
@@ -32,7 +32,7 @@ public class PeptideService {
 
 	/**
 	 * Add a new peptide into the database
-	 * 
+	 *
 	 * @param p the peptide to ad
 	 * @return the inserted peptide
 	 */
@@ -70,7 +70,7 @@ public class PeptideService {
 
 	/**
 	 * Get all peptides that are not isotopologues
-	 * 
+	 *
 	 * @return
 	 */
 	public List<Peptide> getAllPeptides() {
@@ -79,7 +79,7 @@ public class PeptideService {
 
 	/**
 	 * Find a peptide by its id
-	 * 
+	 *
 	 * @param peptideId the id
 	 * @return a peptide
 	 */
@@ -93,7 +93,7 @@ public class PeptideService {
 
 	/**
 	 * Find peptides by its id
-	 * 
+	 *
 	 * @param peptides a list of peptides with ids
 	 * @return a list of peptides
 	 */
@@ -112,7 +112,7 @@ public class PeptideService {
 
 	/**
 	 * Find a peptide by its sequence. Use this function to return a JSON
-	 * 
+	 *
 	 * @param sequence the peptide sequence
 	 * @return a peptide
 	 */
@@ -122,7 +122,7 @@ public class PeptideService {
 
 	/**
 	 * Find a peptide by its sequence
-	 * 
+	 *
 	 * @param contextSourceSequence
 	 * @return a full peptide object
 	 */
@@ -132,7 +132,7 @@ public class PeptideService {
 
 	/**
 	 * Find a peptide by name
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */

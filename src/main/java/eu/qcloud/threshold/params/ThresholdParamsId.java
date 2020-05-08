@@ -8,7 +8,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class ThresholdParamsId implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 13329L;
 

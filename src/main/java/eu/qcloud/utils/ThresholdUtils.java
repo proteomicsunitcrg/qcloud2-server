@@ -93,7 +93,7 @@ public class ThresholdUtils {
 
 	/**
 	 * Generate a guide set with the first and last file with valid values
-	 * 
+	 *
 	 * @param file
 	 * @param param
 	 * @param contextSource
@@ -142,7 +142,7 @@ public class ThresholdUtils {
 	/**
 	 * Generate a guideset with the first and the last minus one files with valid
 	 * values
-	 * 
+	 *
 	 * @param file
 	 * @param param
 	 * @param contextSource
@@ -184,13 +184,13 @@ public class ThresholdUtils {
 
 	public Float processValueWithThresholdProcessor(float value, ThresholdType thresholdType) {
 		switch (thresholdType) {
-		case HARDLIMIT:
-			return value;
-		case SIGMA:
-			return (value > 0) ? log2(value) : value;
+			case HARDLIMIT:
+				return value;
+			case SIGMA:
+				return (value > 0) ? log2(value) : value;
 
-		default:
-			return null;
+			default:
+				return null;
 		}
 	}
 
@@ -199,7 +199,7 @@ public class ThresholdUtils {
 	 * yet, it will get the default threshold (the threshold with null value at
 	 * labsystem field) and save a new threshold for that lab system and then it
 	 * will return it.
-	 * 
+	 *
 	 * @param sampleTypeId
 	 * @param paramId
 	 * @param cvId
@@ -223,33 +223,33 @@ public class ThresholdUtils {
 			if (t.isPresent()) {
 				t.get().setLabSystem(ls.get());
 				switch (t.get().getThresholdType()) {
-				case SIGMALOG2:
-					entityManager.detach(t.get());
-					t.get().setId(null);
-					// save threshold params for new labsystem threshold
-					Threshold labSystemSigmaLog2Threshold = saveSigmaLog2Threshold((SigmaLog2Threshold) t.get());
-					entityManager.detach(labSystemSigmaLog2Threshold);
-					labSystemSigmaLog2Threshold.setApiKey(UUID.randomUUID());
-					saveThresholdParams(labSystemSigmaLog2Threshold);
-					return labSystemSigmaLog2Threshold;
-				case HARDLIMIT:
-					entityManager.detach(t.get());
-					t.get().setId(null);
-					Threshold labSystemHardLimitThreshold = saveHardLimitThreshold((HardLimitThreshold) t.get());
-					entityManager.detach(labSystemHardLimitThreshold);
-					labSystemHardLimitThreshold.setApiKey(UUID.randomUUID());
-					saveThresholdParams(labSystemHardLimitThreshold);
-					return labSystemHardLimitThreshold;
-				case SIGMA:
-					entityManager.detach(t.get());
-					t.get().setId(null);
-					Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaThreshold) t.get());
-					entityManager.detach(labSystemSigmaThreshold);
-					labSystemSigmaThreshold.setApiKey(UUID.randomUUID());
-					saveThresholdParams(labSystemSigmaThreshold);
-					return labSystemSigmaThreshold;
-				default:
-					break;
+					case SIGMALOG2:
+						entityManager.detach(t.get());
+						t.get().setId(null);
+						// save threshold params for new labsystem threshold
+						Threshold labSystemSigmaLog2Threshold = saveSigmaLog2Threshold((SigmaLog2Threshold) t.get());
+						entityManager.detach(labSystemSigmaLog2Threshold);
+						labSystemSigmaLog2Threshold.setApiKey(UUID.randomUUID());
+						saveThresholdParams(labSystemSigmaLog2Threshold);
+						return labSystemSigmaLog2Threshold;
+					case HARDLIMIT:
+						entityManager.detach(t.get());
+						t.get().setId(null);
+						Threshold labSystemHardLimitThreshold = saveHardLimitThreshold((HardLimitThreshold) t.get());
+						entityManager.detach(labSystemHardLimitThreshold);
+						labSystemHardLimitThreshold.setApiKey(UUID.randomUUID());
+						saveThresholdParams(labSystemHardLimitThreshold);
+						return labSystemHardLimitThreshold;
+					case SIGMA:
+						entityManager.detach(t.get());
+						t.get().setId(null);
+						Threshold labSystemSigmaThreshold = saveSigmaThreshold((SigmaThreshold) t.get());
+						entityManager.detach(labSystemSigmaThreshold);
+						labSystemSigmaThreshold.setApiKey(UUID.randomUUID());
+						saveThresholdParams(labSystemSigmaThreshold);
+						return labSystemSigmaThreshold;
+					default:
+						break;
 				}
 			}
 
@@ -280,7 +280,7 @@ public class ThresholdUtils {
 	 * Save the params of a new labsystem threshold It is necessary to detach the
 	 * entity in order to persist because it still hold the threshold, and the
 	 * threshold id of the parent (default) threshold.
-	 * 
+	 *
 	 * @param labSystemThreshold
 	 */
 	private void saveThresholdParams(Threshold labSystemThreshold) {

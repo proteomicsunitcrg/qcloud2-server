@@ -68,19 +68,20 @@ public class AuthenticationRestController {
     }
 
     /**
-     * 
+     *
      * @param RequestHeader String username
      * @param RequestHeader String password
      * @return A response with the login token
      * @throws AuthenticationException
-     * @desc Just calls the other auth method 
-     * This endpoint is used by the pipeline and QCrawler and uses the headers instead the body, but at the end is the same because just calls the same method
-     * If some header is missing just throws a bad request error
-     * If the credentials are wrong just returns a 401 error
+     * @desc Just calls the other auth method This endpoint is used by the pipeline
+     *       and QCrawler and uses the headers instead the body, but at the end is
+     *       the same because just calls the same method If some header is missing
+     *       just throws a bad request error If the credentials are wrong just
+     *       returns a 401 error
      */
     @RequestMapping(value = "/api/4uth", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationTokenPipeline(@RequestHeader(name = "username") String username, @RequestHeader(name = "password") String password)
-            throws AuthenticationException {
+    public ResponseEntity<?> createAuthenticationTokenPipeline(@RequestHeader(name = "username") String username,
+            @RequestHeader(name = "password") String password) throws AuthenticationException {
         return createAuthenticationToken(new JwtAuthenticationRequest(username, password));
     }
 
@@ -95,7 +96,7 @@ public class AuthenticationRestController {
      * request.getHeader(tokenHeader); String username =
      * jwtTokenUtil.getUsernameFromToken(token); JwtUser user = (JwtUser)
      * userDetailsService.loadUserByUsername(username);
-     * 
+     *
      * if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate()))
      * { String refreshedToken = jwtTokenUtil.refreshToken(token); return
      * ResponseEntity.ok(new JwtAuthenticationResponse(refreshedToken)); } else {

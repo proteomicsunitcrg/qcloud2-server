@@ -56,7 +56,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	/**
 	 * Find how many files exists after the given file
-	 * 
+	 *
 	 * @param labSystemId
 	 * @param sampleTypeId
 	 * @param creationDate
@@ -85,7 +85,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 	/**
 	 * Get the files from a date excluding with a value of 0 at a given context
 	 * source
-	 * 
+	 *
 	 * @param labSystemId
 	 * @param sampleTypeId
 	 * @param creationDate
@@ -100,7 +100,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 	/**
 	 * Get the files from a date including files with a value of 0 at a given
 	 * context source
-	 * 
+	 *
 	 * @param labSystemId
 	 * @param sampleTypeId
 	 * @param creationDate
@@ -116,7 +116,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 	/**
 	 * Find the last files excluding files with a value of 0 at a given context
 	 * source
-	 * 
+	 *
 	 * @param labSystemId
 	 * @param sampleTypeId
 	 * @param paramId
@@ -130,7 +130,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 	/**
 	 * Find the last files including files with a value of 0 at a given context
 	 * source
-	 * 
+	 *
 	 * @param labSystemId
 	 * @param sampleTypeId
 	 * @param paramId
@@ -142,7 +142,7 @@ public interface FileRepository extends JpaRepository<File, Long> {
 			Long contextSourceId, Pageable maxPages);
 
 	/**
-	 * 
+	 *
 	 * @param paramId
 	 * @param contextSourceId
 	 * @param labSystemId
@@ -216,10 +216,9 @@ public interface FileRepository extends JpaRepository<File, Long> {
 			String filename, String cheksum, String labsystemName, String sampleTypeId, String nodeName,
 			Long categoryId);
 
-	public List <File> findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(
+	public List<File> findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(
 			String filename, String cheksum, String labsystemName, String sampleTypeId);
 
-	
-	public List <File> findByCreationDateAfter(Date date);
+	public List<File> findByCreationDateAfter(Date date);
 
 }

@@ -49,7 +49,7 @@ public class WebSocketNotification {
 
 	/**
 	 * Apikey is not mandatory. Use only if needed.
-	 * 
+	 *
 	 * @param action
 	 * @param apiKey
 	 * @param qccv

@@ -19,7 +19,7 @@ import eu.qcloud.data.ProcessorType;
 
 /**
  * Parameter controller
- * 
+ *
  * @author dmancera
  *
  */
@@ -48,7 +48,7 @@ public class ParamController {
 
 	/**
 	 * Return the names of the extended classes of the context source parent class.
-	 * 
+	 *
 	 * @return a list with the names
 	 */
 	@RequestMapping(value = "/api/param/types", method = RequestMethod.GET)
@@ -80,7 +80,7 @@ public class ParamController {
 
 	/**
 	 * Find a param by its QC CV
-	 * 
+	 *
 	 * @param qCCV the QC CV to look for
 	 * @return a param or null
 	 */

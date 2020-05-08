@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * MessageController Main controller for message related operations
- * 
+ *
  * @author Marc Serret <marc.serret@crg.eu>
  */
 @RestController

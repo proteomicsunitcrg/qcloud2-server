@@ -75,7 +75,7 @@ public class User {
     private Long telegramChatId;
 
     @Column(name = "spam", columnDefinition = "BIT default true", nullable = false)
-	private boolean spam;
+    private boolean spam;
 
     @Column(name = "ENABLED")
     @NotNull

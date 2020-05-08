@@ -16,7 +16,7 @@ import eu.qcloud.sampleType.SampleTypeRepository;
 
 /**
  * Controlled vocabulary service
- * 
+ *
  * @author dmancera
  *
  */

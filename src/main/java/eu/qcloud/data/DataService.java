@@ -75,7 +75,7 @@ import eu.qcloud.websocket.WebSocketService;
 
 /**
  * Service for the data
- * 
+ *
  * @author dmancera
  *
  */
@@ -165,9 +165,9 @@ public class DataService {
 	 * Recover data from the server by parameters. Note the usage of a class named
 	 * DataForPlot and its extensions. If there is a need for further data
 	 * processing it will do by reflections. Take a look at the processor package.
-	 * 
+	 *
 	 * @author Daniel Mancera <daniel.mancera@crg.eu>
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @param chartId
@@ -204,7 +204,7 @@ public class DataService {
 
 	/**
 	 * It needs some supervision
-	 * 
+	 *
 	 * @param list
 	 * @param labSystem
 	 * @param sampleType
@@ -252,7 +252,7 @@ public class DataService {
 	 * Prepare the output data for the client. It will take into account if the
 	 * sample category is HIGHWITHISOTOPOLOGUE for susbsitute the abbreviated name
 	 * with the concentration
-	 * 
+	 *
 	 * @param dataFromDb
 	 * @param sampleType
 	 * @param param
@@ -261,29 +261,29 @@ public class DataService {
 	private List<DataForPlot> prepareDataForPlot(List<Data> dataFromDb, SampleType sampleType, Param param) {
 		List<DataForPlot> dataForPlot = new ArrayList<>();
 		switch (sampleType.getSampleTypeCategory().getSampleTypeComplexity()) {
-		case HIGHWITHISOTOPOLOGUES:
-			// QC:1000894 is RT and we don't need concentration and the processor dies with
-			// the concentration
-			if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894")
-					&& !param.getqCCV().equals("QC:1000014")) {
-				for (Data data : dataFromDb) {
-					// Instead of getting the full name or the abbreviated one we need to get the
-					// concentration
-					SampleComposition concentration = sampleCompositionRepository
-							.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.getId(),
-									data.getContextSource().getId());
-					dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-							concentration.getConcentration().toString(), data.getValue(),
-							data.getNonConformityStatus()));
-					Collections.sort(dataForPlot);
+			case HIGHWITHISOTOPOLOGUES:
+				// QC:1000894 is RT and we don't need concentration and the processor dies with
+				// the concentration
+				if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894")
+						&& !param.getqCCV().equals("QC:1000014")) {
+					for (Data data : dataFromDb) {
+						// Instead of getting the full name or the abbreviated one we need to get the
+						// concentration
+						SampleComposition concentration = sampleCompositionRepository
+								.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.getId(),
+										data.getContextSource().getId());
+						dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
+								concentration.getConcentration().toString(), data.getValue(),
+								data.getNonConformityStatus()));
+						Collections.sort(dataForPlot);
+					}
+				} else {
+					convertDbDataToPlotData(dataFromDb, dataForPlot);
 				}
-			} else {
+				break;
+			default:
 				convertDbDataToPlotData(dataFromDb, dataForPlot);
-			}
-			break;
-		default:
-			convertDbDataToPlotData(dataFromDb, dataForPlot);
-			break;
+				break;
 		}
 
 		return dataForPlot;
@@ -293,28 +293,28 @@ public class DataService {
 
 		List<DataForPlot> dataForPlot = new ArrayList<>();
 		switch (sampleType.getSampleTypeCategory().getSampleTypeComplexity()) {
-		case HIGHWITHISOTOPOLOGUES:
-			if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894")
-					&& !param.getqCCV().equals("QC:1000014")) {
-				for (Data data : dataFromDb) {
-					// Instead of getting the full name or the abbreviated one we need to get the
-					// concentration
-					SampleComposition concentration = sampleCompositionRepository
-							.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.getId(),
-									data.getContextSource().getId());
+			case HIGHWITHISOTOPOLOGUES:
+				if (param.getIsFor().equals("Peptide") && !param.getqCCV().equals("QC:1000894")
+						&& !param.getqCCV().equals("QC:1000014")) {
+					for (Data data : dataFromDb) {
+						// Instead of getting the full name or the abbreviated one we need to get the
+						// concentration
+						SampleComposition concentration = sampleCompositionRepository
+								.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.getId(),
+										data.getContextSource().getId());
 
-					dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
-							concentration.getConcentration().toString(), data.getCalculatedValue(),
-							data.getNonConformityStatus()));
-					Collections.sort(dataForPlot);
+						dataForPlot.add(new DataForPlot(data.getFile().getFilename(), data.getFile().getCreationDate(),
+								concentration.getConcentration().toString(), data.getCalculatedValue(),
+								data.getNonConformityStatus()));
+						Collections.sort(dataForPlot);
+					}
+				} else {
+					convertDbDataToCalculatedPlotData(dataFromDb, dataForPlot);
 				}
-			} else {
+				break;
+			default:
 				convertDbDataToCalculatedPlotData(dataFromDb, dataForPlot);
-			}
-			break;
-		default:
-			convertDbDataToCalculatedPlotData(dataFromDb, dataForPlot);
-			break;
+				break;
 		}
 
 		return dataForPlot;
@@ -337,7 +337,7 @@ public class DataService {
 
 	/**
 	 * Insert data from the pipeline into the database
-	 * 
+	 *
 	 * @param dataFromPipeline
 	 */
 	public void insertDataFromPipeline(DataFromPipeline dataFromPipeline) {
@@ -369,27 +369,27 @@ public class DataService {
 			for (DataValues dataValue : parameterData.getValues()) {
 				ContextSource cs = null;
 				switch (param.getIsFor()) {
-				case "Peptide":
-					cs = peptideRepository.findBySequence(dataValue.getContextSource());
-					if (cs == null) {
-						continue;
-					}
-					if (!peptideBelongsToSampleType(file.getSampleType(), dataValue.getContextSource())) {
-						logger.debug("Peptide: " + dataValue.getContextSource()
-								+ " does not belong to this sample type(" + file.getSampleType().getName() + ")");
-						continue;
-					}
-					break;
-				case "InstrumentSample":
-					cs = instrumentSampleRepository
-							.findByQualityControlControlledVocabulary(dataValue.getContextSource());
-					if (cs == null) {
-						continue;
-					}
-					break;
-				default:
-					logger.info("Unknown isFor");
-					break;
+					case "Peptide":
+						cs = peptideRepository.findBySequence(dataValue.getContextSource());
+						if (cs == null) {
+							continue;
+						}
+						if (!peptideBelongsToSampleType(file.getSampleType(), dataValue.getContextSource())) {
+							logger.debug("Peptide: " + dataValue.getContextSource()
+									+ " does not belong to this sample type(" + file.getSampleType().getName() + ")");
+							continue;
+						}
+						break;
+					case "InstrumentSample":
+						cs = instrumentSampleRepository
+								.findByQualityControlControlledVocabulary(dataValue.getContextSource());
+						if (cs == null) {
+							continue;
+						}
+						break;
+					default:
+						logger.info("Unknown isFor");
+						break;
 				}
 
 				Data d = new Data(param, cs, file);
@@ -605,10 +605,10 @@ public class DataService {
 
 	private ContextSource getContextSourceFromDatabase(String name, String isFor) {
 		switch (isFor) {
-		case "Peptide":
-			return peptideRepository.findBySequence(name);
-		case "InstrumentSample":
-			return instrumentSampleRepository.findByQualityControlControlledVocabulary(name);
+			case "Peptide":
+				return peptideRepository.findBySequence(name);
+			case "InstrumentSample":
+				return instrumentSampleRepository.findByQualityControlControlledVocabulary(name);
 		}
 		return null;
 	}
@@ -620,42 +620,42 @@ public class DataService {
 		Float midUpLimit = initialValue + (stepValue * (steps - 1));
 		Float lowerLimit = initialValue - (stepValue * steps);
 		switch (direction) {
-		case DOWN:
-			// taking care if there is only one step
-			if (steps == 1) {
-				if (value < lowerLimit) {
-					return InstrumentStatus.DANGER;
+			case DOWN:
+				// taking care if there is only one step
+				if (steps == 1) {
+					if (value < lowerLimit) {
+						return InstrumentStatus.DANGER;
 
+					}
+				} else {
+					if (value < lowerLimit) {
+						return InstrumentStatus.DANGER;
+					} else if (value >= lowerLimit && value < midDownLimit) {
+						return InstrumentStatus.WARNING;
+					}
 				}
-			} else {
-				if (value < lowerLimit) {
-					return InstrumentStatus.DANGER;
-				} else if (value >= lowerLimit && value < midDownLimit) {
-					return InstrumentStatus.WARNING;
-				}
-			}
-			break;
-		case UPDOWN:
-			if (value < lowerLimit || value > upperLimit) {
-				return InstrumentStatus.DANGER;
-			}
-			break;
-		case UP:
-			if (steps == 1) {
-				if (value > upperLimit) {
+				break;
+			case UPDOWN:
+				if (value < lowerLimit || value > upperLimit) {
 					return InstrumentStatus.DANGER;
 				}
-			} else {
-				if (value > upperLimit) {
-					return InstrumentStatus.DANGER;
-				} else if (value <= upperLimit && value > midUpLimit) {
-					return InstrumentStatus.WARNING;
+				break;
+			case UP:
+				if (steps == 1) {
+					if (value > upperLimit) {
+						return InstrumentStatus.DANGER;
+					}
+				} else {
+					if (value > upperLimit) {
+						return InstrumentStatus.DANGER;
+					} else if (value <= upperLimit && value > midUpLimit) {
+						return InstrumentStatus.WARNING;
+					}
 				}
-			}
 
-			break;
-		default:
-			System.out.println("Direction not found");
+				break;
+			default:
+				System.out.println("Direction not found");
 		}
 		return InstrumentStatus.OK;
 	}
@@ -664,18 +664,18 @@ public class DataService {
 			String isFor) {
 		switch (isFor) {
 
-		case "Peptide":
-			return tp.stream().filter(cs -> {
-				return cs.getContextSource().getName().equals(contextSourceName);
-			}).collect(Collectors.toList()).get(0).getInitialValue();
-		case "InstrumentSample":
-			return tp.stream().filter(cs -> {
-				InstrumentSample is = (InstrumentSample) cs.getContextSource();
-				return is.getqCCV().equals(contextSourceName);
-			}).collect(Collectors.toList()).get(0).getInitialValue();
-		default:
-			logger.info("Unknown is for parameter");
-			break;
+			case "Peptide":
+				return tp.stream().filter(cs -> {
+					return cs.getContextSource().getName().equals(contextSourceName);
+				}).collect(Collectors.toList()).get(0).getInitialValue();
+			case "InstrumentSample":
+				return tp.stream().filter(cs -> {
+					InstrumentSample is = (InstrumentSample) cs.getContextSource();
+					return is.getqCCV().equals(contextSourceName);
+				}).collect(Collectors.toList()).get(0).getInitialValue();
+			default:
+				logger.info("Unknown is for parameter");
+				break;
 		}
 
 		return null;
@@ -685,18 +685,18 @@ public class DataService {
 			String isFor) {
 		switch (isFor) {
 
-		case "Peptide":
-			return tp.stream().filter(cs -> {
-				return cs.getContextSource().getName().equals(contextSourceName);
-			}).collect(Collectors.toList()).get(0).getStepValue();
-		case "InstrumentSample":
-			return tp.stream().filter(cs -> {
-				InstrumentSample is = (InstrumentSample) cs.getContextSource();
-				return is.getqCCV().equals(contextSourceName);
-			}).collect(Collectors.toList()).get(0).getStepValue();
-		default:
-			logger.info("Unknown is for parameter");
-			break;
+			case "Peptide":
+				return tp.stream().filter(cs -> {
+					return cs.getContextSource().getName().equals(contextSourceName);
+				}).collect(Collectors.toList()).get(0).getStepValue();
+			case "InstrumentSample":
+				return tp.stream().filter(cs -> {
+					InstrumentSample is = (InstrumentSample) cs.getContextSource();
+					return is.getqCCV().equals(contextSourceName);
+				}).collect(Collectors.toList()).get(0).getStepValue();
+			default:
+				logger.info("Unknown is for parameter");
+				break;
 		}
 
 		return null;
@@ -713,7 +713,7 @@ public class DataService {
 
 	/**
 	 * Check if a peptide belongs to a sample type
-	 * 
+	 *
 	 * @param sampleType
 	 * @param sequence
 	 * @return true or false
@@ -731,7 +731,7 @@ public class DataService {
 
 	/**
 	 * TODO: try to use the generic data getter
-	 * 
+	 *
 	 * @param checksum
 	 * @param abbreviatedSequence
 	 * @return
@@ -799,7 +799,7 @@ public class DataService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param labSystem
 	 * @param param
 	 * @param contextSources
@@ -812,25 +812,27 @@ public class DataService {
 			SampleType sampleType, java.util.Date startDate, java.util.Date endDate) {
 		List<DataForPlot> dataForPlot = new ArrayList<>();
 		switch (param.getIsFor()) {
-		case "Peptide":
-			List<Peptide> peptides = new ArrayList<>();
-			contextSources.forEach((cs) -> {
-				peptides.add(peptideRepository.findById(cs.getId()).get());
-			});
-			Collections.sort(peptides, (p1, p2) -> p2.getMz().compareTo(p1.getMz()));
-			peptides.forEach(cs -> {
-				dataForPlot.addAll(getContextSourceDataForPlot(cs, param, startDate, endDate, labSystem, sampleType));
-			});
-			break;
-		case "InstrumentSample":
-			Collections.sort(contextSources, (cs1, cs2) -> cs1.getAbbreviated().compareTo(cs2.getAbbreviated()));
-			contextSources.forEach(cs -> {
-				dataForPlot.addAll(getContextSourceDataForPlot(cs, param, startDate, endDate, labSystem, sampleType));
-			});
-			break;
-		default:
-			logger.error("Unknown isfor at getDataForPlot()");
-			break;
+			case "Peptide":
+				List<Peptide> peptides = new ArrayList<>();
+				contextSources.forEach((cs) -> {
+					peptides.add(peptideRepository.findById(cs.getId()).get());
+				});
+				Collections.sort(peptides, (p1, p2) -> p2.getMz().compareTo(p1.getMz()));
+				peptides.forEach(cs -> {
+					dataForPlot
+							.addAll(getContextSourceDataForPlot(cs, param, startDate, endDate, labSystem, sampleType));
+				});
+				break;
+			case "InstrumentSample":
+				Collections.sort(contextSources, (cs1, cs2) -> cs1.getAbbreviated().compareTo(cs2.getAbbreviated()));
+				contextSources.forEach(cs -> {
+					dataForPlot
+							.addAll(getContextSourceDataForPlot(cs, param, startDate, endDate, labSystem, sampleType));
+				});
+				break;
+			default:
+				logger.error("Unknown isfor at getDataForPlot()");
+				break;
 		}
 		return dataForPlot;
 	}
@@ -883,7 +885,7 @@ public class DataService {
 	/**
 	 * Retrieve the files for the auto plot. It will consider if the 0.0 values are
 	 * no data or just a 0.0
-	 * 
+	 *
 	 * @param threshold
 	 * @param param
 	 * @param labSystem
@@ -911,7 +913,7 @@ public class DataService {
 	/**
 	 * Check if all the required parameters for the function are ok. It will throw
 	 * exceptions if it fails.
-	 * 
+	 *
 	 * @param threshold
 	 * @param param
 	 * @param labSystem
@@ -941,7 +943,7 @@ public class DataService {
 	/**
 	 * Check if the parameters for the function are setted properly, if not it will
 	 * throw an exception
-	 * 
+	 *
 	 * @param param
 	 * @param labSystem
 	 * @param contextSource
@@ -1036,10 +1038,10 @@ public class DataService {
 		/**
 		 * TODO Remove the harcoded 1l and use DB to determine if the error trace has to
 		 * be shown
-		 * 
+		 *
 		 * THis adds the trace error, this only appears if the plot to draw is about th
 		 * param Peak Area (id 1 in the DB)
-		 * 
+		 *
 		 * Do this 4 the sample type too
 		 */
 		if (chart.get().getParam().getId().equals(1l) && sampleType.get().getId().equals(1l)) {

@@ -96,9 +96,9 @@ public class ThresholdParams {
 
 	@Override
 	public String toString() {
-		return "ThresholdParams [contextSourceNAME=" + contextSource.getName() + ", initialValue=" + initialValue + ", isEnabled="
-				+ isEnabled + ", stepValue=" + stepValue + ", thresholdID=" + threshold.getId() + ", thresholdParamsId="
-				+ thresholdParamsId + "]";
+		return "ThresholdParams [contextSourceNAME=" + contextSource.getName() + ", initialValue=" + initialValue
+				+ ", isEnabled=" + isEnabled + ", stepValue=" + stepValue + ", thresholdID=" + threshold.getId()
+				+ ", thresholdParamsId=" + thresholdParamsId + "]";
 	}
 
 }

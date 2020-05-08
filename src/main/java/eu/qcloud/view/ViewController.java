@@ -27,7 +27,7 @@ import eu.qcloud.view.ViewRepository.UserViewWithoutUser;
  * View controller. It handles the views and the displays. There are 2 types of
  * displays, default displays limited to a CV and user views with any available
  * chart to the node.
- * 
+ *
  * @author dmancera
  *
  */
@@ -121,7 +121,7 @@ public class ViewController {
 
 	/**
 	 * Get all views by user. The user is retrieved via the security context
-	 * 
+	 *
 	 * @return a list of views
 	 */
 	@RequestMapping(value = "/api/views/user", method = RequestMethod.GET)
@@ -131,7 +131,7 @@ public class ViewController {
 
 	/**
 	 * This method returns the views by CV
-	 * 
+	 *
 	 * @param cvId
 	 * @return
 	 */
@@ -142,7 +142,7 @@ public class ViewController {
 
 	/**
 	 * This method returns the views by CV but first checks if the ls has qc3
-	 * 
+	 *
 	 * @param cvId
 	 * @return
 	 */
@@ -153,7 +153,7 @@ public class ViewController {
 
 	/**
 	 * Returns a view by cv and sample type category
-	 * 
+	 *
 	 * @param cvId
 	 * @param sampleTypeCategoryId
 	 * @return

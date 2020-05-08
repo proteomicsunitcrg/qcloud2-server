@@ -28,7 +28,7 @@ public interface ChartParamsRepository extends CrudRepository<ChartParams, Chart
 	/**
 	 * This interface is used to avoid returning circular and extra information to
 	 * the user.
-	 * 
+	 *
 	 * @author dmancera
 	 *
 	 */

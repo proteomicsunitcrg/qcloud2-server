@@ -16,18 +16,18 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Table(name = "Pipeline_file")
 public class PipeLineFile {
     @Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "pipeline_file_seq")
-	@SequenceGenerator(name = "pipeline_file_seq", sequenceName = "pipeline_file_seq", allocationSize = 1)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "pipeline_file_seq")
+    @SequenceGenerator(name = "pipeline_file_seq", sequenceName = "pipeline_file_seq", allocationSize = 1)
     private Long id;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Column(name = "creation_date", columnDefinition = "DATETIME")
+    @Column(name = "creation_date", columnDefinition = "DATETIME")
     private Date creationDate;
-    
+
     @Column(name = "checksum", unique = true)
     private String checksum;
-    
+
     @Column(name = "start_end")
     private String startEnd;
 
@@ -70,7 +70,4 @@ public class PipeLineFile {
         this.startEnd = startEnd;
     }
 
-    
-    
-    
 }

@@ -18,7 +18,7 @@ import eu.qcloud.sampleType.SampleTypeRepository;
 
 /**
  * Service for sampleComposition
- * 
+ *
  * @author dmancera
  *
  */
@@ -36,7 +36,7 @@ public class SampleCompositionService {
 
 	/**
 	 * Before add the sample composition an id(composite) must be generated.
-	 * 
+	 *
 	 * @param sampleComposition
 	 * @return
 	 */

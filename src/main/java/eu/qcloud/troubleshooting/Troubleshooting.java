@@ -41,19 +41,18 @@ public class Troubleshooting {
     @Column(name = "apiKey", updatable = false, nullable = false, unique = true, columnDefinition = "BINARY(16)")
     @org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDBinaryType")
     private UUID apiKey;
-    
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private Troubleshooting parent; 
+    private Troubleshooting parent;
 
-    @OneToMany(mappedBy = "parent", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "parent", cascade = { CascadeType.REMOVE, CascadeType.PERSIST })
     private List<Troubleshooting> childs;
-	
-	
-	@Enumerated(EnumType.STRING)
-	@Column(name = "type", nullable = false)
-	private TroubleshootingType type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private TroubleshootingType type;
 
     public Long getId() {
         return id;
@@ -124,15 +123,12 @@ public class Troubleshooting {
         this.parent = parent;
     }
 
-	public TroubleshootingType getType() {
-		return type;
-	}
+    public TroubleshootingType getType() {
+        return type;
+    }
 
-	public void setType(TroubleshootingType type) {
-		this.type = type;
-	}
-
-
+    public void setType(TroubleshootingType type) {
+        this.type = type;
+    }
 
 }
-    

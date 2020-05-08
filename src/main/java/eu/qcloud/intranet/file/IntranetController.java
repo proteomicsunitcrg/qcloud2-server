@@ -25,8 +25,9 @@ public class IntranetController {
     @Autowired
     IntranetService intranetService;
 
-    @Autowired FileService fileService;
-    
+    @Autowired
+    FileService fileService;
+
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "api/intranet/file/countAll", method = RequestMethod.GET)
     public Long countAllFiles() {
@@ -34,9 +35,14 @@ public class IntranetController {
     }
 
     // @PreAuthorize("hasRole('ADMIN')")
-    // @RequestMapping(value = "api/intranet/file/{name}/{checksum}/{labsystemName}/{sampleTypeId}/{exact}", method = RequestMethod.GET)
-    // // public List<File> getAllFIles(@PathVariable String name, @PathVariable String checksum, @PathVariable String labsystemName, @PathVariable String sampleTypeId, @PathVariable boolean exact) {
-    //     // return intranetService.getAllFiles(name, checksum, labsystemName, sampleTypeId, exact);
+    // @RequestMapping(value =
+    // "api/intranet/file/{name}/{checksum}/{labsystemName}/{sampleTypeId}/{exact}",
+    // method = RequestMethod.GET)
+    // // public List<File> getAllFIles(@PathVariable String name, @PathVariable
+    // String checksum, @PathVariable String labsystemName, @PathVariable String
+    // sampleTypeId, @PathVariable boolean exact) {
+    // // return intranetService.getAllFiles(name, checksum, labsystemName,
+    // sampleTypeId, exact);
     // }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -48,7 +54,9 @@ public class IntranetController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "api/intranet/file/getPage", method = RequestMethod.GET)
-    public Page<File> loadPage(Pageable page, @RequestParam String name, @RequestParam String checksum,@RequestParam String labsystemName, @RequestParam String sampleTypeId, @RequestParam String node, @RequestParam String email, @RequestParam boolean exact) {
+    public Page<File> loadPage(Pageable page, @RequestParam String name, @RequestParam String checksum,
+            @RequestParam String labsystemName, @RequestParam String sampleTypeId, @RequestParam String node,
+            @RequestParam String email, @RequestParam boolean exact) {
         return intranetService.getAllFiles(name, checksum, labsystemName, sampleTypeId, page, node, email, exact);
     }
 
@@ -60,25 +68,28 @@ public class IntranetController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "api/intranet/file/getNodeAndFileInfo", method = RequestMethod.GET)
-    public NodeAndFileStatus getNodeByDataSourceApiKey(@RequestParam UUID dataSourceApiKey, @RequestParam String fileChecksum) {
+    public NodeAndFileStatus getNodeByDataSourceApiKey(@RequestParam UUID dataSourceApiKey,
+            @RequestParam String fileChecksum) {
         return intranetService.getNodeAndFileStatus(dataSourceApiKey, fileChecksum);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "api/intranet/file/data", method = RequestMethod.GET)
-    public List <Data> getData(@RequestParam String checksum) {
+    public List<Data> getData(@RequestParam String checksum) {
         return intranetService.getDataBychecksum(checksum);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "api/intranet/file/user", method = RequestMethod.GET)
-    public List <User> getUsers(@RequestParam String email) {
+    public List<User> getUsers(@RequestParam String email) {
         return intranetService.getUsers(email);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "api/intranet/file/fullData", method = RequestMethod.GET)
-    public List<File> getJSON(@RequestParam String name, @RequestParam String checksum,@RequestParam String labsystemName, @RequestParam String sampleTypeId, @RequestParam String node, @RequestParam String email, @RequestParam boolean exact) {
+    public List<File> getJSON(@RequestParam String name, @RequestParam String checksum,
+            @RequestParam String labsystemName, @RequestParam String sampleTypeId, @RequestParam String node,
+            @RequestParam String email, @RequestParam boolean exact) {
         return intranetService.getJSON(name, checksum, labsystemName, sampleTypeId, node, email, exact);
     }
 
@@ -88,10 +99,11 @@ public class IntranetController {
         return this.intranetService.getPipelineStatus();
     }
 
-    // @RequestMapping(value = "api/intranet/file/socketTry", method = RequestMethod.GET)
+    // @RequestMapping(value = "api/intranet/file/socketTry", method =
+    // RequestMethod.GET)
     // public boolean socketTry() {
-    //     fileService.testIntranetSocket();
-    //     return true;
+    // fileService.testIntranetSocket();
+    // return true;
     // }
 
 }

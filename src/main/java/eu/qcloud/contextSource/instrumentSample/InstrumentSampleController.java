@@ -20,7 +20,7 @@ import eu.qcloud.exceptions.InvalidActionException;
 
 /**
  * Instrument sample controller
- * 
+ *
  * @author dmancera
  *
  */

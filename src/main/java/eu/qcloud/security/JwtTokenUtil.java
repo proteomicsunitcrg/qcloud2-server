@@ -86,7 +86,7 @@ public class JwtTokenUtil implements Serializable {
 
     /**
      * here
-     * 
+     *
      * @param token
      * @return
      */
@@ -132,17 +132,17 @@ public class JwtTokenUtil implements Serializable {
      * userDetails.getUsername()); claims.put(CLAIM_KEY_AUTHORITIES,
      * userDetails.getAuthorities()); claims.put(CLAIM_KEY_AUDIENCE, AUDIENCE_WEB);
      * claims.put(CLAIM_KEY_CREATED, new Date()); return generateToken(claims); }
-     * 
+     *
      * String generateToken(Map<String, Object> claims) { return Jwts.builder()
      * .setClaims(claims) .setExpiration(generateExpirationDate())
      * .signWith(SignatureAlgorithm.HS512, secret) .compact(); }
-     * 
-     * 
+     *
+     *
      * public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
      * final Date created = getCreatedDateFromToken(token); return
      * !isCreatedBeforeLastPasswordReset(created, lastPasswordReset) &&
      * (!isTokenExpired(token) || ignoreTokenExpiration(token)); }
-     * 
+     *
      * public String refreshToken(String token) { String refreshedToken; try { final
      * Claims claims = getClaimsFromToken(token); claims.put(CLAIM_KEY_CREATED, new
      * Date()); refreshedToken = generateToken(claims); } catch (Exception e) {

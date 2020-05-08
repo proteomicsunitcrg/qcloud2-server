@@ -80,7 +80,7 @@ public class EmailService {
     }
 
     public boolean sendSpamAll(Mail mail) {
-        List <String> mailList = new ArrayList<>();
+        List<String> mailList = new ArrayList<>();
         userRepo.findAllByEnabledTrueAndSpamTrue().forEach(user -> mailList.add(user.getEmail()));
         String[] strings = mailList.stream().toArray(String[]::new);
         mail.setTo(strings);
@@ -88,8 +88,9 @@ public class EmailService {
     }
 
     public boolean sendSpamAllManagers(Mail mail) {
-        List <String> mailList = new ArrayList<>();
-        userRepo.findAllByEnabledTrueAndSpamTrue().stream().filter(user -> user.getAuthorities().size() >= 2).forEach(user -> mailList.add(user.getEmail()));
+        List<String> mailList = new ArrayList<>();
+        userRepo.findAllByEnabledTrueAndSpamTrue().stream().filter(user -> user.getAuthorities().size() >= 2)
+                .forEach(user -> mailList.add(user.getEmail()));
         String[] strings = mailList.stream().toArray(String[]::new);
         mail.setTo(strings);
         return sendManualEmail(mail);

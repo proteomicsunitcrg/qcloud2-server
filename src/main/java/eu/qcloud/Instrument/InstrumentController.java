@@ -22,7 +22,7 @@ import eu.qcloud.sampleType.SampleType;
 
 /**
  * Controlled vocabulary controller
- * 
+ *
  * @author dmancera
  *
  */
@@ -34,7 +34,7 @@ public class InstrumentController {
 
 	/**
 	 * Add a CV to the database by category id
-	 * 
+	 *
 	 * @param cv
 	 * @param categoryId
 	 * @return the inserted CV

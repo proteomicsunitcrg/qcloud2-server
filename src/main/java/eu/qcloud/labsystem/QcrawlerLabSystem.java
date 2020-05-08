@@ -36,7 +36,7 @@ public class QcrawlerLabSystem {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param name
 	 * @param apiKey
 	 * @param sampleTypes

@@ -15,7 +15,6 @@ public class TroubleshootingService {
 	@Autowired
 	private TroubleshootingRepo troubleshootingRepository;
 
-
 	public Troubleshooting addTroubleshootingItem(Troubleshooting troubleshooting) {
 		Optional<Troubleshooting> ts = troubleshootingRepository.findByQccv(troubleshooting.getQccv());
 		troubleshooting.setApiKey(UUID.randomUUID());
@@ -30,9 +29,9 @@ public class TroubleshootingService {
 	}
 
 	public Troubleshooting getByApiKey(UUID apiKey) {
-		Optional<Troubleshooting> tr= troubleshootingRepository.findByApiKey(apiKey);
+		Optional<Troubleshooting> tr = troubleshootingRepository.findByApiKey(apiKey);
 		if (!tr.isPresent()) {
-			throw new DataRetrievalFailureException("Chart not found"); 
+			throw new DataRetrievalFailureException("Chart not found");
 		} else {
 			return tr.get();
 		}
@@ -45,7 +44,7 @@ public class TroubleshootingService {
 	}
 
 	public List<Troubleshooting> getByParentNullChildsNullAndType(TroubleshootingType type) {
-		List <Troubleshooting> trs = troubleshootingRepository.findAllByParentIsNullAndChildsIsNullAndType(type);
+		List<Troubleshooting> trs = troubleshootingRepository.findAllByParentIsNullAndChildsIsNullAndType(type);
 		return trs;
 	}
 

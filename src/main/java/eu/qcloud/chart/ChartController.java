@@ -30,7 +30,7 @@ import eu.qcloud.sampleType.SampleTypeService;
 
 /**
  * Controller for charts. It will handle also the chart params.
- * 
+ *
  * @author dmancera
  *
  */
@@ -45,7 +45,7 @@ public class ChartController {
 
 	/**
 	 * Add a new chart into the database
-	 * 
+	 *
 	 * @param chart the chart to add
 	 * @return the saved chart
 	 */
@@ -57,7 +57,7 @@ public class ChartController {
 
 	/**
 	 * Update a chart
-	 * 
+	 *
 	 * @param chart
 	 * @return the updated chart
 	 */
@@ -69,7 +69,7 @@ public class ChartController {
 
 	/**
 	 * Retrieves all the charts
-	 * 
+	 *
 	 * @return a List with the charts found
 	 */
 	@RequestMapping(value = "/api/chart", method = RequestMethod.GET)
@@ -82,7 +82,7 @@ public class ChartController {
 
 	/**
 	 * Return a list of charts by controlled vocabulary id
-	 * 
+	 *
 	 * @param cvId the cv id
 	 * @return a list with the results
 	 */
@@ -101,7 +101,7 @@ public class ChartController {
 
 	/**
 	 * Get a list of charts of the main sample type of a sample type category
-	 * 
+	 *
 	 * @param cvId
 	 * @param sampleTypeCategoryId
 	 * @return
@@ -117,7 +117,7 @@ public class ChartController {
 
 	/**
 	 * Update the chart params of a chart by chart id
-	 * 
+	 *
 	 * @param chartParams a list with the params to add to the chart
 	 * @param chartId     the id of the chart whose params would be updated
 	 * @return a list with the new chart params
@@ -145,7 +145,7 @@ public class ChartController {
 
 	/**
 	 * Add a list of chart params to a chart
-	 * 
+	 *
 	 * @param chartParams the list of chart params to add
 	 * @param chartId     the chart id to add the params
 	 * @return a list with the chart params added
@@ -177,7 +177,7 @@ public class ChartController {
 
 	/**
 	 * Get a list of chart params by chart id
-	 * 
+	 *
 	 * @param chartId
 	 * @return Return a list of fullParams, this is a spring jpa projection. Check
 	 *         the manual for more information on that topic or go to the repository
@@ -191,7 +191,7 @@ public class ChartController {
 
 	/**
 	 * Get a chart by its Id
-	 * 
+	 *
 	 * @param chartId
 	 * @return a chart
 	 */

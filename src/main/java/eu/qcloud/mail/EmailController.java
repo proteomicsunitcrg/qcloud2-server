@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * EmailController Main controller for email related operations
- * 
+ *
  * @author Marc Serret <marc.serret@crg.eu>
  */
 @RestController

@@ -5,7 +5,7 @@ import eu.qcloud.node.Node;
 public class NodeAndStats {
     private Node node;
     private Long filesLastWeek;
-    private Long totalFiles; 
+    private Long totalFiles;
 
     public Node getNode() {
         return node;
@@ -41,9 +41,9 @@ public class NodeAndStats {
 
     // @Override
     // public int compareTo(NodeAndStats u) {
-    //   if (getTotalFiles() == null || u.getTotalFiles() == null) {
-    //     return 0;
-    //   }
-    //   return getTotalFiles().compareTo(u.getTotalFiles());
+    // if (getTotalFiles() == null || u.getTotalFiles() == null) {
+    // return 0;
+    // }
+    // return getTotalFiles().compareTo(u.getTotalFiles());
     // }
 }

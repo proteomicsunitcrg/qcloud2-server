@@ -30,6 +30,4 @@ public class NodeAndFileStatus {
         this.isDataOk = isDataOk;
     }
 
-    
-    
 }

@@ -36,7 +36,7 @@ public class LinkController {
     public Link updateLink(@RequestBody @NotNull @NotEmpty final Link link) {
         try {
             return linkService.updateLink(link);
-            
+
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -47,10 +47,10 @@ public class LinkController {
     public Link getByApiKey(@PathVariable @NotNull @NotEmpty final UUID apiKey) {
         try {
             return linkService.getByApiKey(apiKey);
-            
+
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
-    
+
 }

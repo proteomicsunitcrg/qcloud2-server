@@ -40,33 +40,33 @@ public class UserDefaultViewService {
 		deletePreviousDefaultViews(user);
 		UserDefaultView udv = null;
 		switch (userDefaultView.getViewType()) {
-		case DEFAULT:
-			user.setUserDefaultView(null);
-			userRepository.save(user);
-			break;
-		case INSTRUMENT:
-			Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(userDefaultView.getView().getApiKey());
-			if (!labSystem.isPresent()) {
-				throw new DataRetrievalFailureException("Lab system not found");
-			}
-			userDefaultView.setView(null);
-			userDefaultView.setLabSystem(labSystem.get());
-			udv = userDefaultViewRepository.save(userDefaultView);
-			user.setUserDefaultView(udv);
-			userRepository.save(user);
-			break;
-		case USER:
-			Optional<View> view = viewRepository.findOptionalByApiKey(userDefaultView.getView().getApiKey());
-			if (!view.isPresent()) {
-				throw new DataRetrievalFailureException("View not found");
-			}
-			userDefaultView.setView(view.get());
-			udv = userDefaultViewRepository.save(userDefaultView);
-			user.setUserDefaultView(udv);
-			userRepository.save(user);
-			break;
-		default:
-			break;
+			case DEFAULT:
+				user.setUserDefaultView(null);
+				userRepository.save(user);
+				break;
+			case INSTRUMENT:
+				Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(userDefaultView.getView().getApiKey());
+				if (!labSystem.isPresent()) {
+					throw new DataRetrievalFailureException("Lab system not found");
+				}
+				userDefaultView.setView(null);
+				userDefaultView.setLabSystem(labSystem.get());
+				udv = userDefaultViewRepository.save(userDefaultView);
+				user.setUserDefaultView(udv);
+				userRepository.save(user);
+				break;
+			case USER:
+				Optional<View> view = viewRepository.findOptionalByApiKey(userDefaultView.getView().getApiKey());
+				if (!view.isPresent()) {
+					throw new DataRetrievalFailureException("View not found");
+				}
+				userDefaultView.setView(view.get());
+				udv = userDefaultViewRepository.save(userDefaultView);
+				user.setUserDefaultView(udv);
+				userRepository.save(user);
+				break;
+			default:
+				break;
 		}
 		return null;
 	}

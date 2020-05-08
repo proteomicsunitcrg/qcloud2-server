@@ -10,18 +10,18 @@ public class ProcessorFactory {
 
 	public static Processor getProcessor(ProcessorType processorName) {
 		switch (processorName) {
-		case RETENTION_TIME:
-			return new RetentionTimeProcessor();
-		case LOG2:
-			return new Log2Processor();
-		case MEDIANFWHM:
-			System.out.println("median");
-			break;
-		case NO_PROCESSOR:
-			return new NoProcessor();
-		default:
-			System.out.println("errol");
-			break;
+			case RETENTION_TIME:
+				return new RetentionTimeProcessor();
+			case LOG2:
+				return new Log2Processor();
+			case MEDIANFWHM:
+				System.out.println("median");
+				break;
+			case NO_PROCESSOR:
+				return new NoProcessor();
+			default:
+				System.out.println("errol");
+				break;
 		}
 
 		return null;

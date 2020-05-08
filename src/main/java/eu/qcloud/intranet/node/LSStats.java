@@ -3,7 +3,7 @@ package eu.qcloud.intranet.node;
 public class LSStats {
 
     private Long totalFiles;
-    
+
     private Long filesLastMonths;
 
     public Long getTotalFiles() {
@@ -29,6 +29,5 @@ public class LSStats {
 
     public LSStats() {
     }
-    
-    
+
 }

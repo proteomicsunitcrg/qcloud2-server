@@ -32,7 +32,7 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 			String sampleTypeQCCV, String paramQCCV, String instrumentQCCV);
 
 	/**
-	 * 
+	 *
 	 * @param sampleTypeQCCV
 	 * @param paramQCCV
 	 * @param instrumentQCCV
@@ -48,7 +48,7 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 
 	/**
 	 * Find a default threshold
-	 * 
+	 *
 	 * @param sampleTypeId
 	 * @param paramId
 	 * @param cvId
@@ -107,7 +107,7 @@ public interface ThresholdRepository<T extends Threshold> extends CrudRepository
 	public void updateDType(String dtype, Long thresholdId);
 
 	/**
-	 * 
+	 *
 	 * @param labSystemApiKey
 	 * @param sampleTypeQccv
 	 * @return
