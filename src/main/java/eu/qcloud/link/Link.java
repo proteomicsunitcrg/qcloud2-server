@@ -1,4 +1,4 @@
-package eu.qcloud.logo;
+package eu.qcloud.link;
 
 import java.util.UUID;
 
@@ -11,13 +11,13 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "logo")
-public class Logo {
+@Table(name = "link")
+public class Link {
     
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "logo_increment")
-    @SequenceGenerator(name = "logo_increment", sequenceName = "logo_increment", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "link_increment")
+    @SequenceGenerator(name = "link_increment", sequenceName = "link_increment", allocationSize = 1)
     private Long id;
 
     @Column(name = "api_key", updatable = true, nullable = false, unique = true, columnDefinition = "BINARY(16)")
@@ -27,14 +27,9 @@ public class Logo {
     @Column(name = "url", nullable = false)
     private String url;
 
-    @Column(name = "alt")
-    private String alt;
-
+    
     @Column(name = "name")
     private String name;
-
-    @Column(name = "is_active", columnDefinition = "BIT")
-    private boolean active;
 
     public Long getId() {
         return id;
@@ -60,17 +55,6 @@ public class Logo {
         this.url = url;
     }
 
-    public Logo() {
-    }
-
-    public String getAlt() {
-        return alt;
-    }
-
-    public void setAlt(String alt) {
-        this.alt = alt;
-    }
-
     public String getName() {
         return name;
     }
@@ -79,27 +63,15 @@ public class Logo {
         this.name = name;
     }
 
-    public boolean isActive() {
-        return active;
+    public Link() {
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public Logo(Long id, UUID apiKey, String url, String alt, String name, boolean active) {
+    public Link(Long id, UUID apiKey, String url, String name) {
         this.id = id;
         this.apiKey = apiKey;
         this.url = url;
-        this.alt = alt;
         this.name = name;
-        this.active = active;
     }
 
-    @Override
-    public String toString() {
-        return "Logo [active=" + active + ", alt=" + alt + ", apiKey=" + apiKey + ", id=" + id + ", name=" + name
-                + ", url=" + url + "]";
-    }
 
 }
