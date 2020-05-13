@@ -174,11 +174,15 @@ public class IntranetService {
     }
 
     public boolean getPipelineStatus() {
-        File file = fileRepo.findFirstByOrderByIdDesc();
-        if (TimeUnit.MILLISECONDS.toHours(new Date().getTime() - file.getInsertDate().getTime()) >= pipelineHours) {
+        try {
+            File file = fileRepo.findFirstByOrderByIdDesc();
+            if (TimeUnit.MILLISECONDS.toHours(new Date().getTime() - file.getInsertDate().getTime()) >= pipelineHours) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (NullPointerException e) {
             return false;
-        } else {
-            return true;
         }
     }
 

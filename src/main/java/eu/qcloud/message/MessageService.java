@@ -3,6 +3,7 @@ package eu.qcloud.message;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class MessageService {
 	}
 
 	public Message getLastMessage() {
-		return messageRepository.findFirstByOrderByIdDesc();
+		return messageRepository.findFirstByOrderByIdDesc().get();
 	}
 
 	public Message saveMessage(Message msg) {
@@ -41,12 +42,15 @@ public class MessageService {
 	}
 
 	public boolean showNotification() {
-		Message msg = messageRepository.findFirstByOrderByIdDesc();
-		if (!msg.getShow()) {
+		Optional <Message> msg = messageRepository.findFirstByOrderByIdDesc();
+		if (!msg.isPresent()) {
+			return false;
+		}
+		if (!msg.get().getShow()) {
 			return false;
 		}
 		Date now = new Date();
-		Long hoursDiff = TimeUnit.MILLISECONDS.toHours(now.getTime() - msg.getCreationDate().getTime());
+		Long hoursDiff = TimeUnit.MILLISECONDS.toHours(now.getTime() - msg.get().getCreationDate().getTime());
 		if (hoursDiff < 3) {
 			return true;
 		} else {
