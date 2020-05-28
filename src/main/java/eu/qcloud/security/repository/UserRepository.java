@@ -1,6 +1,7 @@
 package eu.qcloud.security.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,6 +29,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByNodeApiKey(UUID apiKey);
 
     List<User> findByUsernameContaining(String username);
+
+    Optional <User> findOneByUsername(String username);
 
     List<User> findAllByEnabledTrueAndSpamTrue();
 

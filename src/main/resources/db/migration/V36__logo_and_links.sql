@@ -41,4 +41,4 @@ INSERT INTO `link_increment` VALUES (1);
 
 INSERT INTO `link` VALUES (1,_binary 'apiKey1\0\0\0\0\0\0\0\0\0','Download','https://www.dropbox.com/s/kotvlfuu5zn8gnz/QCrawler0192.exe'),(2,_binary 'apiKey2\0\0\0\0\0\0\0\0\0','Manual','https://www.dropbox.com/s/cwlf08ofx7u1z2n/Qcrawler_for%20Qcloud_2.1.pdf');
 
-INSERT INTO `logo` VALUES (142,_binary '\0','May the force with u',_binary 'Äó░\▄%ÄMë♦\ÊM\r.☻┴','Star Wars','https://i.imgur.com/9hXWCat.png'),(145,_binary '\0','Happy Sant jordi!',_binary '|Uè~/ GÄî*z½\Þ.ö$','Sant Jordi','https://i.imgur.com/ueoSLUU.png'),(147,_binary '\0','Happy christmas',_binary '♦f\Ô\╩Ð©C´Öè«%S\È\¶,','Xmas LUL','https://i.imgur.com/L0gu7hj.png');
+INSERT INTO `logo` VALUES (142,_binary '\0','May the force with u','apiKey1','Star Wars','https://i.imgur.com/9hXWCat.png'),(145,_binary '\0','Happy Sant jordi!','apiKey2','Sant Jordi','https://i.imgur.com/ueoSLUU.png'),(147,_binary '\0','Happy christmas','apiKey3','Xmas LUL','https://i.imgur.com/L0gu7hj.png');

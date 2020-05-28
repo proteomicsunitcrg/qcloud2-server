@@ -334,7 +334,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,_binary 'L\�G��Eȳ����$\�','zeus@admin.eu',1,'Zeus','2018-09-27 10:14:00.366000','Jupiter','$2a$10$f4.VFIdQR7fjjU2/YnIEO.667F1gmF2cwM2Un03b/asXP.pSErA.a','zeus@admin.eu',1,NULL);
+INSERT INTO `user` VALUES (1,_binary 'L\�G��Eȳ����$\�','zeus@admin.eu',1,'Zeus','2018-09-27 10:14:00.366000','Jupiter','$2a$10$SHcPe60T86QwNHV.2GCM7OQ9tpTC8rEL9jAXys0iPIaZ./k34K5Ny','zeus@admin.eu',1,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 

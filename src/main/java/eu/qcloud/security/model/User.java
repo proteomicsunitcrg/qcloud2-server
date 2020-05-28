@@ -77,6 +77,9 @@ public class User {
     @Column(name = "spam", columnDefinition = "BIT default true", nullable = false)
     private boolean spam;
 
+    @Column(name = "last_qcrawler_login_date")
+    private Date lastQcrawlerLoginDate;
+
     @Column(name = "ENABLED")
     @NotNull
     private Boolean enabled;
@@ -215,6 +218,40 @@ public class User {
 
     public void setSpam(boolean spam) {
         this.spam = spam;
+    }
+
+    public Date getLastQcrawlerLoginDate() {
+        return lastQcrawlerLoginDate;
+    }
+
+    public void setLastQcrawlerLoginDate(Date lastQcrawlerLoginDate) {
+        this.lastQcrawlerLoginDate = lastQcrawlerLoginDate;
+    }
+
+    public User(Long id, UUID apiKey, UserDefaultView userDefaultView,
+            @NotNull @Size(min = 4, max = 50) String username, @NotNull @Size(min = 4, max = 100) String password,
+            @NotNull String firstname, @NotNull String lastname, @NotNull @Size(min = 4, max = 50) String email,
+            String telegram_code, Long telegramChatId, boolean spam, Date lastQcrawlerLoginDate,
+            @NotNull Boolean enabled, @NotNull Date lastPasswordResetDate, List<Authority> authorities, Node node) {
+        this.id = id;
+        this.apiKey = apiKey;
+        this.userDefaultView = userDefaultView;
+        this.username = username;
+        this.password = password;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.telegram_code = telegram_code;
+        this.telegramChatId = telegramChatId;
+        this.spam = spam;
+        this.lastQcrawlerLoginDate = lastQcrawlerLoginDate;
+        this.enabled = enabled;
+        this.lastPasswordResetDate = lastPasswordResetDate;
+        this.authorities = authorities;
+        this.node = node;
+    }
+
+    public User() {
     }
 
 }

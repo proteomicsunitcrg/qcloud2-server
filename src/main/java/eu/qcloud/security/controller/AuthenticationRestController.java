@@ -1,6 +1,7 @@
 package eu.qcloud.security.controller;
 
 import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.security.JwtAuthenticationRequest;
 import eu.qcloud.security.JwtTokenUtil;
+import eu.qcloud.security.model.User;
+import eu.qcloud.security.repository.UserRepository;
 import eu.qcloud.security.service.JwtAuthenticationResponse;
 
 @RestController
@@ -41,6 +44,9 @@ public class AuthenticationRestController {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @RequestMapping(value = "${jwt.route.authentication.path}", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest)
@@ -82,25 +88,15 @@ public class AuthenticationRestController {
     @RequestMapping(value = "/api/4uth", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationTokenPipeline(@RequestHeader(name = "username") String username,
             @RequestHeader(name = "password") String password) throws AuthenticationException {
+        Optional<User> userOpt = userRepository.findOneByUsername(username);
+        if (userOpt.isPresent()) {
+            userOpt.get().setLastQcrawlerLoginDate(new Date());
+            userRepository.save(userOpt.get());
+        }
         return createAuthenticationToken(new JwtAuthenticationRequest(username, password));
     }
 
     private Date generateExpirationDate() {
         return new Date(System.currentTimeMillis() + expiration * 1000);
     }
-    // I have commented it in order to test JWT
-    /*
-     * @RequestMapping(value = "${jwt.route.authentication.refresh}", method =
-     * RequestMethod.GET) public ResponseEntity<?>
-     * refreshAndGetAuthenticationToken(HttpServletRequest request) { String token =
-     * request.getHeader(tokenHeader); String username =
-     * jwtTokenUtil.getUsernameFromToken(token); JwtUser user = (JwtUser)
-     * userDetailsService.loadUserByUsername(username);
-     *
-     * if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate()))
-     * { String refreshedToken = jwtTokenUtil.refreshToken(token); return
-     * ResponseEntity.ok(new JwtAuthenticationResponse(refreshedToken)); } else {
-     * return ResponseEntity.badRequest().body(null); } }
-     */
-
 }
