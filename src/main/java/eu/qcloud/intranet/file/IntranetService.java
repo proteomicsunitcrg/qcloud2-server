@@ -1,5 +1,6 @@
 package eu.qcloud.intranet.file;
 
+import java.net.ConnectException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -7,11 +8,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataRepository;
@@ -44,6 +50,15 @@ public class IntranetService {
 
     @Value("${qcloud.intranet.pipeline-valid-hours}")
     private int pipelineHours;
+
+    @Value("${qcloud.intranet.api-url}")
+    private String APIUrl;
+
+    private final RestTemplate restTemplate;
+
+    public IntranetService(final RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
+    }
 
     public Long countAllFiles() {
         return fileRepo.count();
@@ -182,6 +197,22 @@ public class IntranetService {
                 return true;
             }
         } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    public boolean testAPI() {
+        final HttpHeaders headers = new HttpHeaders();
+        final HttpEntity entity = new HttpEntity(headers);
+        try {
+            final ResponseEntity<String> response = restTemplate.exchange(APIUrl + "/isup", HttpMethod.GET,
+                    entity, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) { // Somethign fails (404, 500, etc)
             return false;
         }
     }

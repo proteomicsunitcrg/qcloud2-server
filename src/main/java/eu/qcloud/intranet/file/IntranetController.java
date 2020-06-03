@@ -99,6 +99,12 @@ public class IntranetController {
         return this.intranetService.getPipelineStatus();
     }
 
+    @RequestMapping(value = "/api/intranet/file/checkAPI", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public boolean testAPI() {
+		return intranetService.testAPI();
+	}
+
     // @RequestMapping(value = "api/intranet/file/socketTry", method =
     // RequestMethod.GET)
     // public boolean socketTry() {

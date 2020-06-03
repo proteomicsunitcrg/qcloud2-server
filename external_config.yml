@@ -2,10 +2,10 @@
 server:
   port: 8089 #Dont change port in local version pls
 # mail properties
-  
+
 application:
   version: LOCAL
-  
+
 management.endpoint.health.show-details: always
 
 
@@ -16,13 +16,13 @@ spring:
       Europe/Madrid
     serialization:
       INDENT_OUTPUT: true
-  datasource:    
+  datasource:
     ## MYSQL
     url: jdbc:mysql://localhost:3306/qcloud2
     username: ""
     password: ""
     driver-class-name: com.mysql.jdbc.Driver
-    
+
   h2:
     console:
       enabled: false
@@ -35,12 +35,12 @@ spring:
     show-sql: false
   flyway:
     enabled: true
-  
+
   mail:
     default-encoding: UTF-8
-    host: 
-    username: 
-    password: 
+    host:
+    username:
+    password:
     port: 587
     properties:
       mail:
@@ -60,7 +60,7 @@ jwt:
   secret: L+0P1i+38a26pHiW10iHqPBYAyklvqPdySy98BV9PPCZyDogMggoSZkYxULqCF+WG6Nimlfxd53H6zjdIUJNJA==
 
 
-  expiration: 604800  
+  expiration: 604800
   route:
     authentication:
       path: api/auth
@@ -84,18 +84,18 @@ qcloud:
     address: your@mail.cat
   intranet:
     pipeline-valid-hours: 3
+    api-url: https://api.qcloud2.crg.eu
 
 logging:
   level:
     org.springframework:
       security: ERROR
-    
-    org.hibernate:      
+
+    org.hibernate:
       # SQL: DEBUG
       # type: TRACE
-  
+
 ---
 
 spring.main.allow-bean-definition-overriding: true
 
- 

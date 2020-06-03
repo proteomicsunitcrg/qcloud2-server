@@ -217,17 +217,4 @@ public class FileService {
 		return sample;
 	}
 
-	// public void testIntranetSocket() {
-	// File file = new File();
-	// int random = (int)(Math.random() * 10000 + 1);
-	// file.setChecksum("cacacacaca" + random);
-	// file.setCreationDate(new Date());
-	// file.setFilename("puccagaru" + random);
-	// file.setId(42300l);
-	// file.setLabSystem(labSystemService.findSystemBySystemId(25l).get());
-	// file.setInsertDate(new Date());
-	// file.setSampleType(sampleTypeRepository.findById(1l).get());
-	// webSocket.sendUpdateIntranet(file);
-	// }
-
 }
