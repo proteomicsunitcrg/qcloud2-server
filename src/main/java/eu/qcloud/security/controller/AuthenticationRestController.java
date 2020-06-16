@@ -58,6 +58,14 @@ public class AuthenticationRestController {
                         authenticationRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        if (authentication.isAuthenticated()) {
+            Optional<User> userOpt = userRepository.findOneByUsername(authenticationRequest.getUsername());
+            if (userOpt.isPresent()) {
+                userOpt.get().setLastQCloudLoginDate(new Date());
+                userRepository.save(userOpt.get());
+            }
+        }
+
         // Reload password post-security so we can generate token
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         Date expirationDate = generateExpirationDate();
@@ -88,15 +96,31 @@ public class AuthenticationRestController {
     @RequestMapping(value = "/api/4uth", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationTokenPipeline(@RequestHeader(name = "username") String username,
             @RequestHeader(name = "password") String password) throws AuthenticationException {
-        Optional<User> userOpt = userRepository.findOneByUsername(username);
-        if (userOpt.isPresent()) {
-            userOpt.get().setLastQcrawlerLoginDate(new Date());
-            userRepository.save(userOpt.get());
+        final Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        if (authentication.isAuthenticated()) {
+            Optional<User> userOpt = userRepository.findOneByUsername(username);
+            if (userOpt.isPresent()) {
+                userOpt.get().setLastQcrawlerLoginDate(new Date());
+                userRepository.save(userOpt.get());
+            }
         }
-        return createAuthenticationToken(new JwtAuthenticationRequest(username, password));
+
+        // Reload password post-security so we can generate token
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        Date expirationDate = generateExpirationDate();
+        final String token = jwtTokenUtil.generateToken(userDetails, expirationDate);
+
+        // Return the token
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("tokenexpiration", Long.toString((expirationDate.getTime())));
+        return (new ResponseEntity<>(new JwtAuthenticationResponse(token), headers, HttpStatus.OK));
     }
 
     private Date generateExpirationDate() {
         return new Date(System.currentTimeMillis() + expiration * 1000);
     }
+
 }
