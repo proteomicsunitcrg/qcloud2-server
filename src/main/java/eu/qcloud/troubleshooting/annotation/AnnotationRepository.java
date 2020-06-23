@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository.LabSystemNameAndApiKey;
 import eu.qcloud.security.repository.UserRepository.UserForAnnotation;
 import eu.qcloud.troubleshooting.Troubleshooting;
@@ -20,6 +23,11 @@ public interface AnnotationRepository extends CrudRepository<Annotation, Long> {
 	List<AnnotationForPlot> getAll();
 
 	List<AnnotationForPlot> findByLabSystemIdAndDateBetween(Long labSystemId, Date startDate, Date endDate);
+
+	Page<Annotation> findByLabSystemInAndDateBetweenOrderByIdDesc(List <LabSystem> labsystem, Pageable page, Date startDate, Date endDate);
+
+	Page<Annotation> findByLabSystemApiKeyAndDateBetweenOrderByIdDesc(UUID labsystem, Pageable page, Date startDate, Date endDate);
+
 
 	interface AnnotationForPlot {
 		Date getDate();

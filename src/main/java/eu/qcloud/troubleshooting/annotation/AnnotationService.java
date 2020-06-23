@@ -9,12 +9,17 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.security.model.User;
+import eu.qcloud.security.service.UserService;
 // import eu.qcloud.troubleshooting.action.ActionRepository;
 import eu.qcloud.troubleshooting.annotation.AnnotationRepository.AnnotationForPlot;
 import eu.qcloud.websocket.WebSocketService;
@@ -30,6 +35,12 @@ public class AnnotationService {
 
 	@Autowired
 	private WebSocketService webSocketService;
+
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+	private LabSystemRepository lsRepo;
 
 	private final Log logger = LogFactory.getLog(this.getClass());
 
@@ -117,12 +128,20 @@ public class AnnotationService {
 		return annotationRepository.findAnnotationForPlotById(savedAnnotation.getId());
 	}
 
-	// private List<Action> getActionsFromDb(List<Action> actions) {
-	// List<Action> actionsFromDb = new ArrayList<>();
-	// actions.forEach(a -> {
-	// actionsFromDb.add(actionRepository.findByQccv(a.getQccv()).get());
-	// });
-	// return actionsFromDb;
-	// }
+	public Page<Annotation> getPage(Pageable page, String lsApiKey, Date startDate, Date endDate) {
+		User u = getManagerFromSecurityContext();
+		List <LabSystem> ls = lsRepo.findAllByNode(u.getNode().getId());
+		if (!lsApiKey.equals("null")) {
+			return annotationRepository.findByLabSystemApiKeyAndDateBetweenOrderByIdDesc(UUID.fromString(lsApiKey), page, startDate, endDate);
+		}
+		return annotationRepository.findByLabSystemInAndDateBetweenOrderByIdDesc(ls, page, startDate, endDate);
+	}
+
+	private User getManagerFromSecurityContext() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User manager = userService.getUserByUsername(authentication.getName());
+		return manager;
+	}
+
 
 }

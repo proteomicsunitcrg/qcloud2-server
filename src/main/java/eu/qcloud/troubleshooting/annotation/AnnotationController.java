@@ -8,7 +8,9 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.qcloud.security.model.User;
@@ -67,6 +70,13 @@ public class AnnotationController {
 	@PreAuthorize("hasRole('USER')")
 	public AnnotationForPlot updateAnnotation(@PathVariable UUID annotationApiKey, @RequestBody Annotation annotation) {
 		return annotationService.updateAnnotation(annotationApiKey, annotation, getUserFromSecurityContext());
+	}
+
+
+	@RequestMapping(value = "/api/troubleshooting/annotation/getPage", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
+	public Page<Annotation> getPage(Pageable page, @RequestParam String lsApiKey, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  Date endDate) {
+		return annotationService.getPage(page, lsApiKey, endDate, startDate);
 	}
 
 	@ExceptionHandler(DataRetrievalFailureException.class)
