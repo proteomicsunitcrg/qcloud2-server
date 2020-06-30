@@ -28,6 +28,10 @@ public interface AnnotationRepository extends CrudRepository<Annotation, Long> {
 
 	Page<Annotation> findByLabSystemApiKeyAndDateBetweenOrderByIdDesc(UUID labsystem, Pageable page, Date startDate, Date endDate);
 
+	Page<Annotation> findByLabSystemApiKeyAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(UUID labsystem, Pageable page, Date startDate, Date endDate, String troubleshootingName);
+
+	Page<Annotation> findByLabSystemInAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(List <LabSystem> labsystem, Pageable page, Date startDate, Date endDate, String troubleshootingName);
+
 
 	interface AnnotationForPlot {
 		Date getDate();

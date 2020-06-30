@@ -128,13 +128,13 @@ public class AnnotationService {
 		return annotationRepository.findAnnotationForPlotById(savedAnnotation.getId());
 	}
 
-	public Page<Annotation> getPage(Pageable page, String lsApiKey, Date startDate, Date endDate) {
+	public Page<Annotation> getPage(Pageable page, String lsApiKey, Date startDate, Date endDate, String troubleshootingName) {
 		User u = getManagerFromSecurityContext();
 		List <LabSystem> ls = lsRepo.findAllByNode(u.getNode().getId());
 		if (!lsApiKey.equals("null")) {
-			return annotationRepository.findByLabSystemApiKeyAndDateBetweenOrderByIdDesc(UUID.fromString(lsApiKey), page, startDate, endDate);
+			return annotationRepository.findByLabSystemApiKeyAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(UUID.fromString(lsApiKey), page, startDate, endDate, troubleshootingName);
 		}
-		return annotationRepository.findByLabSystemInAndDateBetweenOrderByIdDesc(ls, page, startDate, endDate);
+		return annotationRepository.findByLabSystemInAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(ls, page, startDate, endDate, troubleshootingName);
 	}
 
 	private User getManagerFromSecurityContext() {

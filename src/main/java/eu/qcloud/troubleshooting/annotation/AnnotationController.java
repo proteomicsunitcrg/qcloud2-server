@@ -75,8 +75,8 @@ public class AnnotationController {
 
 	@RequestMapping(value = "/api/troubleshooting/annotation/getPage", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('USER')")
-	public Page<Annotation> getPage(Pageable page, @RequestParam String lsApiKey, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  Date endDate) {
-		return annotationService.getPage(page, lsApiKey, endDate, startDate);
+	public Page<Annotation> getPage(Pageable page, @RequestParam String lsApiKey, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  Date endDate, @RequestParam String troubleshootingName) {
+		return annotationService.getPage(page, lsApiKey, endDate, startDate, troubleshootingName);
 	}
 
 	@ExceptionHandler(DataRetrievalFailureException.class)
