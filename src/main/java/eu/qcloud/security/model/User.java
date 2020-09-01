@@ -23,6 +23,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import eu.qcloud.node.Node;
@@ -53,7 +54,6 @@ public class User {
     @Column(name = "PASSWORD", length = 100)
     @NotNull
     @Size(min = 4, max = 100)
-    @JsonIgnore
     private String password;
 
     @Column(name = "FIRSTNAME", length = 50)
@@ -289,6 +289,15 @@ public class User {
         this.lastPasswordResetDate = lastPasswordResetDate;
         this.authorities = authorities;
         this.node = node;
+    }
+
+    @Override
+    public String toString() {
+        return "User [apiKey=" + apiKey + ", email=" + email + ", enabled=" + enabled + ", firstname=" + firstname
+                + ", id=" + id + ", lastPasswordResetDate=" + lastPasswordResetDate + ", lastQCloudLoginDate="
+                + lastQCloudLoginDate + ", lastQcrawlerLoginDate=" + lastQcrawlerLoginDate + ", lastname=" + lastname
+                + ", node=" + node + ", password=" + password + ", spam=" + spam + ", telegramChatId=" + telegramChatId
+                + ", telegram_code=" + telegram_code + ", username=" + username + "]";
     }
 
 }

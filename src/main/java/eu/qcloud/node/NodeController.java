@@ -86,7 +86,6 @@ public class NodeController {
 	public Node insertNewNode(@RequestBody Node n) {
 		UUID nodeUuid = UUID.randomUUID();
 		UUID userUuid = UUID.randomUUID();
-
 		n.getUsers().get(0).setLastPasswordResetDate(new Date());
 		n.getUsers().get(0).setEnabled(true);
 		n.getUsers().get(0).setPassword(passwordEncoderNodeController().encode(n.getUsers().get(0).getPassword()));
