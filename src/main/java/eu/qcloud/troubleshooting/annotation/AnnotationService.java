@@ -132,9 +132,9 @@ public class AnnotationService {
 		User u = getManagerFromSecurityContext();
 		List <LabSystem> ls = lsRepo.findAllByNode(u.getNode().getId());
 		if (!lsApiKey.equals("null")) {
-			return annotationRepository.findByLabSystemApiKeyAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(UUID.fromString(lsApiKey), page, startDate, endDate, troubleshootingName);
+			return annotationRepository.findDistinctByLabSystemApiKeyAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(UUID.fromString(lsApiKey), page, startDate, endDate, troubleshootingName);
 		}
-		return annotationRepository.findByLabSystemInAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(ls, page, startDate, endDate, troubleshootingName);
+		return annotationRepository.findDistinctByLabSystemInAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(ls, page, startDate, endDate, troubleshootingName);
 	}
 
 	private User getManagerFromSecurityContext() {
