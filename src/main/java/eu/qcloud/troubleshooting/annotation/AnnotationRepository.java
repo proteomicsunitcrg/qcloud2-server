@@ -19,41 +19,43 @@ import eu.qcloud.troubleshooting.Troubleshooting;
 @Repository
 public interface AnnotationRepository extends CrudRepository<Annotation, Long> {
 
-	@Query("select c from Annotation c")
-	List<AnnotationForPlot> getAll();
+    @Query("select c from Annotation c")
+    List<AnnotationForPlot> getAll();
 
-	List<AnnotationForPlot> findByLabSystemIdAndDateBetween(Long labSystemId, Date startDate, Date endDate);
+    List<AnnotationForPlot> findByLabSystemIdAndDateBetween(Long labSystemId, Date startDate, Date endDate);
 
-	Page<Annotation> findByLabSystemInAndDateBetweenOrderByIdDesc(List <LabSystem> labsystem, Pageable page, Date startDate, Date endDate);
+    Page<Annotation> findByLabSystemInAndDateBetweenOrderByIdDesc(List <LabSystem> labsystem, Pageable page, Date startDate, Date endDate);
 
-	Page<Annotation> findByLabSystemApiKeyAndDateBetweenOrderByIdDesc(UUID labsystem, Pageable page, Date startDate, Date endDate);
+    Page<Annotation> findByLabSystemApiKeyAndDateBetweenOrderByIdDesc(UUID labsystem, Pageable page, Date startDate, Date endDate);
 
-	Page<Annotation> findDistinctByLabSystemApiKeyAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(UUID labsystem, Pageable page, Date startDate, Date endDate, String troubleshootingName);
+    Page<Annotation> findDistinctByLabSystemApiKeyAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(UUID labsystem, Pageable page, Date startDate, Date endDate, String troubleshootingName);
 
-	Page<Annotation> findDistinctByLabSystemInAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(List <LabSystem> labsystem, Pageable page, Date startDate, Date endDate, String troubleshootingName);
+    Page<Annotation> findDistinctByLabSystemInAndDateBetweenAndTroubleshootingsNameContainsIgnoreCaseOrderByIdDesc(List <LabSystem> labsystem, Pageable page, Date startDate, Date endDate, String troubleshootingName);
+
+    List<Annotation> findByLabSystemApiKey(UUID labsystemApiKey);
 
 
-	interface AnnotationForPlot {
-		Date getDate();
+    interface AnnotationForPlot {
+        Date getDate();
 
-		List<Troubleshooting> getTroubleshootings();
+        List<Troubleshooting> getTroubleshootings();
 
-		LabSystemNameAndApiKey getLabSystem();
+        LabSystemNameAndApiKey getLabSystem();
 
-		UUID getApiKey();
+        UUID getApiKey();
 
-		String getDescription();
+        String getDescription();
 
-		UserForAnnotation getUser();
+        UserForAnnotation getUser();
 
-		Date getAnnotationDate();
-	}
+        Date getAnnotationDate();
+    }
 
-	AnnotationForPlot findByLabSystemApiKeyAndDate(UUID labSystemApiKey, Date date);
+    AnnotationForPlot findByLabSystemApiKeyAndDate(UUID labSystemApiKey, Date date);
 
-	Optional<Annotation> findByApiKey(UUID annotationApiKey);
+    Optional<Annotation> findByApiKey(UUID annotationApiKey);
 
-	@Query("select a from Annotation a where id = ?1")
-	AnnotationForPlot findAnnotationForPlotById(Long id);
+    @Query("select a from Annotation a where id = ?1")
+    AnnotationForPlot findAnnotationForPlotById(Long id);
 
 }
