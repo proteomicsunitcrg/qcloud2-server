@@ -99,7 +99,7 @@ public class TroubleshootingService {
         sortedMap.forEach((k,v)->System.out.println("Key : " + k + " Value : " + v));
 
         for (Map.Entry<String, Long> entry : sortedMap.entrySet()) {
-            if (entry.getValue() * 100/total + acumulat > 95) {
+            if (entry.getValue() * 100/total + acumulat > 80) {
                 return dataForParetto;
             }
             acumulat += (entry.getValue() * 100)/total;

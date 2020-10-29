@@ -171,7 +171,6 @@ public class DataController {
 	public List<PlotTrace> getTrace(@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date startDate,
 			@PathVariable @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date endDate, @PathVariable UUID chartApiKey,
 			@PathVariable UUID labSystemApiKey, @PathVariable String sampleTypeQCCV) {
-
 		return dataService.getTraceData(startDate, endDate, chartApiKey, labSystemApiKey, sampleTypeQCCV);
 	}
 
