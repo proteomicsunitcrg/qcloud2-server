@@ -76,27 +76,27 @@ public class TroubleshootingService {
         return troubleshootingRepository.save(troubleshooting);
     }
 
-    public List<DataForParetto> getForParetto(UUID lsApiKey) {
+    public List<DataForParetto> getForParetto(UUID lsApiKey, TroubleshootingType type) {
         List<DataForParetto> dataForParetto = new ArrayList<>();
         List <String> allTroublesName = new ArrayList<>();
         List <Annotation> allAnos = annoRepo.findByLabSystemApiKey(lsApiKey);
         for (Annotation ano : allAnos) {
             for (Troubleshooting tr : ano.getTroubleshootings())  {
-                if (tr.getType().equals(TroubleshootingType.PROBLEM)) {
+                if (tr.getType().equals(type)) {
                     allTroublesName.add(tr.getName());
                 }
             }
         }
         int total = allTroublesName.size();
         Float acumulat = 0f;
-        System.out.println("TOTAL: " + total);
+        // System.out.println("TOTAL: " + total);
         Map<String, Long> counter = allTroublesName.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
         Map<String, Long> sortedMap =
         counter.entrySet().stream()
         .sorted(Entry.<String, Long>comparingByValue().reversed())
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue,(e1, e2) -> e1, LinkedHashMap::new));
 
-        sortedMap.forEach((k,v)->System.out.println("Key : " + k + " Value : " + v));
+        // sortedMap.forEach((k,v)->System.out.println("Key : " + k + " Value : " + v));
 
         for (Map.Entry<String, Long> entry : sortedMap.entrySet()) {
             if (entry.getValue() * 100/total + acumulat > 80) {

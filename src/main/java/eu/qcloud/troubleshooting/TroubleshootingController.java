@@ -77,10 +77,11 @@ public class TroubleshootingController {
         return troubleshootingService.linkChild(parentApiKey, child);
     }
 
-    @RequestMapping(value = "/paretto/{lsApiKey}", method = RequestMethod.GET)
+    @RequestMapping(value = "/paretto/{lsApiKey}/{type}", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ADMIN')")
-    public List<DataForParetto> getForParetto(@PathVariable UUID lsApiKey) {
-        return troubleshootingService.getForParetto(lsApiKey);
+    public List<DataForParetto> getForParetto(@PathVariable UUID lsApiKey, @PathVariable TroubleshootingType type) {
+        System.out.println(type);
+        return troubleshootingService.getForParetto(lsApiKey, type);
     }
 
     /*
