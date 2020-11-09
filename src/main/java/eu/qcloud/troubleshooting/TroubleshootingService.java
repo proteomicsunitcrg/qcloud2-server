@@ -83,21 +83,18 @@ public class TroubleshootingService {
         for (Annotation ano : allAnos) {
             for (Troubleshooting tr : ano.getTroubleshootings())  {
                 if (tr.getType().equals(type)) {
-                    allTroublesName.add(tr.getName());
+                    getSecondLevelTroubleshooting(tr);
+                    allTroublesName.add(getSecondLevelTroubleshooting(tr).getName());
                 }
             }
         }
         int total = allTroublesName.size();
         Float acumulat = 0f;
-        // System.out.println("TOTAL: " + total);
         Map<String, Long> counter = allTroublesName.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
         Map<String, Long> sortedMap =
         counter.entrySet().stream()
         .sorted(Entry.<String, Long>comparingByValue().reversed())
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue,(e1, e2) -> e1, LinkedHashMap::new));
-
-        // sortedMap.forEach((k,v)->System.out.println("Key : " + k + " Value : " + v));
-
         for (Map.Entry<String, Long> entry : sortedMap.entrySet()) {
             if (entry.getValue() * 100/total + acumulat > 80) {
                 return dataForParetto;
@@ -107,6 +104,19 @@ public class TroubleshootingService {
         }
 
         return dataForParetto;
+    }
+
+
+    // TODO improve this...is a workaround and only works with 3 levels
+    private Troubleshooting getSecondLevelTroubleshooting(Troubleshooting tr) {
+        if (tr.getParent() != null) {  // if his parent is not null means that has parent and isnt the first level
+            if (tr.getParent().getParent() != null) {   // and if his parent has parent means that he is grandchild...
+                return tr.getParent();
+            } else {
+                return tr;
+            }
+        }
+        return tr;
     }
 
 }
