@@ -104,7 +104,7 @@ public class Threshold implements Cloneable {
 	@JoinColumn(name = "lab_system_id")
 	protected LabSystem labSystem;
 
-	@OneToMany(mappedBy = "threshold", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "threshold")
 	protected List<ThresholdParams> thresholdParams;
 
 	public LabSystem getLabSystem() {

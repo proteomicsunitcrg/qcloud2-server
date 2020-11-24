@@ -67,4 +67,9 @@ public class ThresholdParamsId implements Serializable {
 		return true;
 	}
 
+	public ThresholdParamsId(Long thresholdId, Long contextSourceId) {
+		this.thresholdId = thresholdId;
+		this.contextSourceId = contextSourceId;
+	}
+
 }

@@ -43,11 +43,8 @@ public class GuideSetService {
 	@Autowired
 	private ContextSourceRepository contextSourceRepository;
 
-	@Value("${qcloud.threshold.min-valid-context-source-points}")
-	private int minValidPointsManualThreshold;
-
-	@Value("${qcloud.threshold.min-points-manual}")
-	private int recomendedValidPoints;
+	@Value("${qcloud.threshold.min-points-guideset}")
+	private int minPointsGuideSet;
 
 	public long getFilesInThreshold(UUID labSystemApiKey, Date startDate, Date endDate, String sampleTypeQccv) {
 
@@ -72,15 +69,17 @@ public class GuideSetService {
 						.countByContextSourceIdAndParamIdAndFileLabSystemApiKeyAndFileCreationDateBetweenAndCalculatedValueIsNotNull(
 								thresholdParam.getContextSource().getId(), threshold.getParam().getId(),
 								labSystemApiKey, startDate, endDate);
-				if (count < minValidPointsManualThreshold) {
+				if (count < minPointsGuideSet) {
 					evaluation.add(new GuideSetContextSourceStatus(threshold.getParam(),
 							thresholdParam.getContextSource(), ContextSourceStatus.NO_VALID, count));
-				} else if (count < recomendedValidPoints) {
-					evaluation.add(new GuideSetContextSourceStatus(threshold.getParam(),
-							thresholdParam.getContextSource(), ContextSourceStatus.NOT_RECOMENDED, count));
 				}
 			}
 		}
+		// // System.out.println(evaluation);
+		// for (GuideSetContextSourceStatus caca : evaluation) {
+		// 	System.out.println(caca.getCount());
+		// 	System.out.println(caca.getStatus().toString());
+		// }
 		return evaluation;
 	}
 
@@ -98,12 +97,9 @@ public class GuideSetService {
 							.countByContextSourceIdAndParamIdAndFileLabSystemApiKeyAndFileCreationDateBetweenAndCalculatedValueIsNotNull(
 									thresholdParam.getContextSource().getId(), threshold.getParam().getId(),
 									labSystemApiKey, startDate, endDate);
-					if (count < minValidPointsManualThreshold) {
+					if (count < minPointsGuideSet) {
 						return new GuideSetContextSourceStatus(threshold.getParam(), thresholdParam.getContextSource(),
 								ContextSourceStatus.NO_VALID, count);
-					} else if (count < recomendedValidPoints) {
-						return new GuideSetContextSourceStatus(threshold.getParam(), thresholdParam.getContextSource(),
-								ContextSourceStatus.NOT_RECOMENDED, count);
 					}
 				}
 			}

@@ -33,16 +33,14 @@ public class GuideSetController {
 	@Autowired
 	private AutomaticGuideSetService automaticGuideSetService;
 
-	@Value("${qcloud.threshold.min-points-manual}")
-	private int minFilesForManualGuideSet;
 
-	@Value("${qcloud.threshold.min-valid-context-source-points}")
-	private int minValidPointsManualThreshold;
+	@Value("${qcloud.threshold.min-points-guideset}")
+	private int minPointsGuideSet;
 
 	@RequestMapping(value = "/api/guideset/minmanual", method = RequestMethod.GET)
 	public int getMinFilesForManualGuideSet(HttpServletResponse response) {
-		response.addIntHeader("minpoints", minValidPointsManualThreshold);
-		return minFilesForManualGuideSet;
+		response.addIntHeader("minpoints", minPointsGuideSet);
+		return minPointsGuideSet;
 	}
 
 	@RequestMapping(value = "/api/guideset/checkguideset/{labSystemApiKey}/{sampleTypeQccv}/{contextSourceApiKey}", method = RequestMethod.GET)

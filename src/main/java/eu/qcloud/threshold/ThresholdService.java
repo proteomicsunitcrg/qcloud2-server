@@ -212,6 +212,7 @@ public class ThresholdService {
 			pId.setContextSourceId(p.getContextSource().getId());
 			pId.setThresholdId(thres.getId());
 			p.setThresholdParamsId(pId);
+			p.setThreshold(thres);
 			thresholdParamsRepository.save(p);
 		}
 	}
@@ -507,6 +508,7 @@ public class ThresholdService {
 	 */
 	@Transactional
 	public Threshold editThreshold(Threshold thresholdNew) {
+		System.out.println("edit");
 		Param thresholdParam = paramRepository.findByQccv(thresholdNew.getParam().getqCCV());
 		List<Threshold> allThres = thresholdRepository.findByParamIdAndCVIdAndSampletypeId(thresholdNew.getCv().getId(),
 				thresholdNew.getSampleType().getId(), thresholdParam.getId());
