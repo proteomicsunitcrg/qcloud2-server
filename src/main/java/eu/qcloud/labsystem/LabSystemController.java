@@ -26,6 +26,9 @@ import eu.qcloud.guideset.manual.ManualGuideSet;
 import eu.qcloud.guideset.manual.ManualGuideSetService;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
+import eu.qcloud.threshold.Threshold;
+import eu.qcloud.threshold.ThresholdRepository;
+import eu.qcloud.threshold.ThresholdService;
 
 /**
  * Controller for system
@@ -44,6 +47,9 @@ public class LabSystemController {
 
 	@Autowired
 	private ManualGuideSetService manualGuideSetService;
+
+	@Autowired
+	private ThresholdService thresService;
 
 	/**
 	 * Save the given system into the database
@@ -85,10 +91,13 @@ public class LabSystemController {
 	@PreAuthorize("hasRole('MANAGER')")
 	@RequestMapping(value = "/api/system/guideset/{apikey}", method = RequestMethod.POST)
 	public LabSystem addGuideSetToLabSystem(@PathVariable UUID apikey, @RequestBody ManualGuideSet guideSet) {
-
 		Optional<LabSystem> labSystem = labSystemService.findSystemByApiKey(apikey);
 		if (labSystem.isPresent()) {
 			LabSystem ls = labSystem.get();
+			Optional<List<Threshold>> thres= thresService.getThresholdBySampleTypeIdAndLabsystemId(guideSet.getSampleType().getId(), ls.getId());
+			if (!thres.isPresent()) {
+				throw new InvalidActionException("Create a threshold in order to set up a guideset");
+			}
 
 			// Check for others guideset and set it to false before add the new one
 			manualGuideSetService.setAllLabSystemGuideSetsBySampleTypeDisabled(ls.getGuideSets(), guideSet);

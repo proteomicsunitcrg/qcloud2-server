@@ -549,4 +549,8 @@ public class ThresholdService {
 		return thresholdNew;
 	}
 
+	public Optional<List<Threshold>> getThresholdBySampleTypeIdAndLabsystemId(Long sampleTypeId, Long lsIs) {
+		return thresholdRepository.findThresholdBySampleTypeIdAndLabSystemId(sampleTypeId, lsIs);
+	}
+
 }
