@@ -3,6 +3,7 @@ package eu.qcloud.node;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import javax.validation.ConstraintViolationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -63,6 +65,9 @@ public class NodeController {
 	@Autowired
 	private EmailService emailService;
 
+	@Value("${qcloud.admin-email}")
+	private String adminMail;
+
 	private final Log logger = LogFactory.getLog(this.getClass());
 
 	@Bean
@@ -93,14 +98,22 @@ public class NodeController {
 
 		n.setApiKey(nodeUuid);
 		n.getUsers().get(0).setApiKey(userUuid);
-
+		List<Authority> authorities = new ArrayList<>();
 		Authority manager = new Authority();
 		manager.setId(2L);
 		manager.setName(AuthorityName.ROLE_MANAGER);
+		authorities.add(manager);
 		Authority userRole = new Authority();
 		userRole.setId(1L);
 		userRole.setName(AuthorityName.ROLE_USER);
-		n.getUsers().get(0).setAuthorities(Arrays.asList(userRole, manager));
+		authorities.add(userRole);
+		if (userService.findAllUsers().size() == 0 && n.getUsers().get(0).getEmail().equals(adminMail)) {
+			Authority admin = new Authority();
+			admin.setId(3L);
+			admin.setName(AuthorityName.ROLE_ADMIN);
+			authorities.add(admin);
+		}
+		n.getUsers().get(0).setAuthorities(authorities);
 		n.getUsers().get(0).setNode(n);
 		Node insertedNode = null;
 		try {

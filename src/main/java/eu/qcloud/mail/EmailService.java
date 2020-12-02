@@ -50,6 +50,9 @@ public class EmailService {
     @Value("${qcloud.email.address}")
     private String emailAddress;
 
+    @Value("${qcloud.admin-email}")
+	private String adminMail;
+
     public boolean sendManualEmail(Mail mail) {
         try {
             Map<String, String> model = new HashMap<>();
@@ -106,7 +109,7 @@ public class EmailService {
         Template t = freemarkerConfig.getTemplate("new-user.ftl");
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, mail.getModel());
         helper.setTo(mail.getTo());
-        helper.setBcc("roger.olivella@crg.eu");
+        helper.setBcc(adminMail);
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
         // helper.setFrom(mail.getFrom());
@@ -125,7 +128,7 @@ public class EmailService {
         Template t = freemarkerConfig.getTemplate("new-node.ftl");
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, mail.getModel());
         helper.setTo(mail.getTo());
-        helper.setBcc("roger.olivella@crg.eu");
+        helper.setBcc(adminMail);
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
         helper.setReplyTo("qcloud@crg.eu", "QCloud");

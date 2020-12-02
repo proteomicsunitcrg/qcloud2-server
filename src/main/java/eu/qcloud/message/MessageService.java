@@ -33,7 +33,12 @@ public class MessageService {
 	}
 
 	public Message getLastMessage() {
-		return messageRepository.findFirstByOrderByIdDesc().get();
+		Optional<Message> msg = messageRepository.findFirstByOrderByIdDesc();
+		if (msg.isPresent()) {
+			return msg.get();
+		} else {
+			return null;
+		}
 	}
 
 	public Message saveMessage(Message msg) {
