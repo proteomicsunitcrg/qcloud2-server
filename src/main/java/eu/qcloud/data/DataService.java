@@ -5,12 +5,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -473,15 +478,12 @@ public class DataService {
 		List<ThresholdParams> params = new ArrayList<>();
 		nodeThresholds.forEach(nodeThreshold -> {
 			nodeThreshold.getThresholdParams().forEach(tp -> {
-
 				GuideSet gs = thresholdUtils.generateGuideSetFromWithFile(file, nodeThreshold.getParam(),
 						tp.getContextSource());
-
 				if (gs != null) {
 					params.add(thresholdUtils.processThresholdParam(nodeThreshold, gs, tp));
 				}
 			});
-
 			nodeThreshold.setThresholdParams(params);
 			saveThresholdParams(nodeThreshold);
 		});
@@ -704,12 +706,15 @@ public class DataService {
 	}
 
 	private void saveThresholdParams(Threshold threshold) {
-		for (ThresholdParams p : threshold.getThresholdParams()) {
+		List<ThresholdParams> parameters = new ArrayList<>(threshold.getThresholdParams()); // ???????
+		Iterator <ThresholdParams> iterator = parameters.listIterator();
+		while (iterator.hasNext()) {
+			ThresholdParams p = iterator.next();
 			if (!p.getInitialValue().isNaN() && !p.getStepValue().isNaN()) {
 				thresholdParamsRepository.save(p);
 			}
-		}
 	}
+}
 
 	/**
 	 * Check if a peptide belongs to a sample type

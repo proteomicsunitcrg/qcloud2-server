@@ -130,10 +130,6 @@ public class FileService {
 
 		Optional<LabSystem> ls = labSystemService.findSystemByApiKey(labSystemApiKey);
 
-		if (!isLastFile(file, st, ls.get())) {
-			throw new DataIntegrityViolationException(
-					"Can not insert this file because it is not the last file! " + file.getChecksum());
-		}
 		if (ls.isPresent()) {
 			file.setSampleType(st);
 			file.setLabSystem(ls.get());
@@ -142,15 +138,19 @@ public class FileService {
 				file.setGuideSet(mgs);
 			}
 			file.setInsertDate(new Date());
-			fileRepository.save(file);
 			logger.info("File inserted with checksum: " + file.getChecksum() + " for labsystem: "
-					+ file.getLabSystem().getName());
+			+ file.getLabSystem().getName());
 			// webSocket.sendUpdateIntranet(file); // perform this in the data insert to
 			// avoid errors
-			return file;
 		} else {
 			throw new DataRetrievalFailureException("Lab system not found.");
 		}
+		if (!isLastFile(file, st, ls.get())) {
+			throw new DataIntegrityViolationException(
+				"Can not insert this file because it is not the last file! " + file.getChecksum());
+			}
+		fileRepository.save(file);
+		return file;
 	}
 
 	private boolean isLastFile(File file, SampleType st, LabSystem labSystem) {

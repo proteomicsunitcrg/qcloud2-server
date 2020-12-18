@@ -146,6 +146,7 @@ public class NodeController {
 		UUID userUuid = UUID.randomUUID();
 		newUser.setNode(manager.getNode());
 		String passwordNormal = getEmailUsername(newUser.getEmail()) + "." + LocalDate.now().getYear();
+		// System.out.println(passwordNormal);
 		newUser.setPassword(passwordEncoderNodeController().encode(passwordNormal));
 		Authority userRole = new Authority();
 		userRole.setId(1L);

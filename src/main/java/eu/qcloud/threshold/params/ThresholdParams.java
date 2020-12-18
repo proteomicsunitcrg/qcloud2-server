@@ -39,7 +39,7 @@ public class ThresholdParams {
 		this.isEnabled = isEnabled;
 	}
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne()
 	@JoinColumn(name = "thresholdId", insertable = false, updatable = false)
 	private Threshold threshold;
 
