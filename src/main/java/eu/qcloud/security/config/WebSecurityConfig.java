@@ -73,7 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // allow anonymous resource requests
                 .antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.jpg",
                         "/**/*.png", "/**/*.js", "/api/email", "/assets/**", "/login", "/application/**",
-                        "/api/gs-guide-websocket/**", "/api/passwordreset/check/**")
+                        "/api/gs-guide-websocket/**", "/api/passwordreset/check/**", "/api/intranet/node/homePageStats")
                 .permitAll()
                 .antMatchers(HttpMethod.POST, "/user", "/api/node", "/api/gs-guide-websocket/**", "/api/passwordreset")
                 .permitAll().antMatchers("/api/auth/**", "/api/4uth/**").permitAll().antMatchers("/ws/**").permitAll()

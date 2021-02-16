@@ -124,6 +124,28 @@ public class IntranetNodeService {
         return nodeStats;
     }
 
+    public HomePageStats getHomePageStats() {
+        List<Node> nodes = new ArrayList<>();
+        List<LabSystem> labsystems = new ArrayList<>();
+        Calendar today = Calendar.getInstance();
+        today.add(Calendar.MONTH, -6);
+        Date month6Ago = today.getTime();
+        HomePageStats stats = new HomePageStats();
+        stats.setTotalFiles(fileRepo.findTopByOrderByIdDesc().getId());
+        List<File> files6MonthsAgo = fileRepo.findByCreationDateAfter(month6Ago);
+        for (File file : files6MonthsAgo) {
+            if (!nodes.contains(file.getLabSystem().getMainDataSource().getNode())) {
+                nodes.add(file.getLabSystem().getMainDataSource().getNode());
+            }
+            if (!labsystems.contains(file.getLabSystem())) {
+                labsystems.add(file.getLabSystem());
+            }
+        }
+        stats.setTotalLs(new Long(labsystems.size()));
+        stats.setTotalNodes(new Long(nodes.size()));
+        return stats;
+    }
+
     public GeneralStats getGeneralStats() {
         Long labSystemsWithGuidesets = 0l;
         List<Node> nodes = new ArrayList<>();
@@ -151,6 +173,7 @@ public class IntranetNodeService {
             if (!labsystems.contains(file.getLabSystem())) {
                 labsystems.add(file.getLabSystem());
             }
+            // System.out.println(file.getFilename());
         }
         stats.setNodesWithFiles6Months(new Long(nodes.size()));
         stats.setUsersWithFiles6Months(new Long(users.size()));
