@@ -21,8 +21,8 @@
     <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
         <tr>
             <td align="center" style="padding: 40px 0 30px 0; background-color: #c6e3d8">
-                <img id  = "headerImg"src="https://i.imgur.com/xV9j3T2.png" alt="qcloud2.crg.eu" style="display: block; width: 325px; height: 105px;" />
-                
+                <img id  = "headerImg"src="https://i.imgur.com/xV9j3T2.png" alt="QCloud2 logo" style="display: block; width: 325px; height: 105px;" />
+
             </td>
         </tr>
         <#--  <tr>

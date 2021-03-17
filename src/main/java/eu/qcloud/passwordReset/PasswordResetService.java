@@ -12,6 +12,7 @@ import java.util.UUID;
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,6 +40,12 @@ public class PasswordResetService {
 
 	@Autowired
 	private EmailService emailService;
+
+	@Value("${qcloud.admin-email}")
+	private String adminMail;
+
+	@Value("${qcloud.app-url}")
+	private String appUrl;
 
 	@Bean
 	public PasswordEncoder passwordEncoderReset() {
@@ -112,6 +119,7 @@ public class PasswordResetService {
 		Map<String, String> model = new HashMap<>();
 		model.put("name", token.getUser().getFirstname() + " " + token.getUser().getLastname());
 		model.put("token", token.getToken().toString());
+		model.put("appUrl", appUrl);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		String churro = null;

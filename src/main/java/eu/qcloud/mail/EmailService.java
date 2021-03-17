@@ -53,6 +53,9 @@ public class EmailService {
     @Value("${qcloud.admin-email}")
 	private String adminMail;
 
+    @Value("${qcloud.app-url}")
+	private String appUrl;
+
     public boolean sendManualEmail(Mail mail) {
         try {
             Map<String, String> model = new HashMap<>();
@@ -131,7 +134,7 @@ public class EmailService {
         helper.setBcc(adminMail);
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
-        helper.setReplyTo("qcloud@crg.eu", "QCloud");
+        helper.setReplyTo(emailAddress, "QCloud");
         // helper.setFrom(mail.getFrom());
         helper.setFrom(emailAddress, "QCloud");
         emailSender.send(message);

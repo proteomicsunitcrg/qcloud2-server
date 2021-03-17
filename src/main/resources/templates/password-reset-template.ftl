@@ -16,8 +16,8 @@
     <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
         <tr>
             <td align="center" style="padding: 40px 0 30px 0; background-color: #c6e3d8">
-                <img id  = "headerImg"src="https://i.imgur.com/xV9j3T2.png" alt="qcloud2.crg.eu" style="display: block; width: 325px; height: 105px;" />
-                
+                <img id  = "headerImg"src="https://i.imgur.com/xV9j3T2.png" alt="QCloud2 logo" style="display: block; width: 325px; height: 105px;" />
+
             </td>
         </tr>
         <#--  <tr>
@@ -29,7 +29,7 @@
             <td style="padding: 30px 30px 40px 30px; background-color: #fdfdfd;">
                 <p>Dear ${name},</p>
                 <p>Please follow this link in order to reset your password:</p>
-                <p><a href="http://qcloud2.crg.eu/recovery?a=${base}&token={token}">Reset password link</a></p>
+                <p><a href="http://${appUrl}/recovery?a=${base}&token={token}">Reset password link</a></p>
                 <p>This link will expire in 24 hours.</p>
                 <p>Best regards</p>            </td>
         </tr>
@@ -54,7 +54,7 @@
                 <p>If you have any questions <a href="mailto:qcloud@crg.eu" style = "color: #5c8d89; text-decoration: none">email us</a>.</p>
             </td>
         </tr>
-            
+
         </tr>
     </table>
 

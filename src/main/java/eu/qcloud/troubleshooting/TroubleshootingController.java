@@ -78,7 +78,7 @@ public class TroubleshootingController {
     }
 
     @RequestMapping(value = "/paretto/{lsApiKey}/{type}", method = RequestMethod.GET)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     public List<DataForParetto> getForParetto(@PathVariable UUID lsApiKey, @PathVariable TroubleshootingType type) {
         return troubleshootingService.getForParetto(lsApiKey, type);
     }

@@ -68,6 +68,9 @@ public class NodeController {
 	@Value("${qcloud.admin-email}")
 	private String adminMail;
 
+	@Value("${qcloud.app-url}")
+	private String appUrl;
+
 	private final Log logger = LogFactory.getLog(this.getClass());
 
 	@Bean
@@ -309,8 +312,8 @@ public class NodeController {
 		mail.setSubject("Welcome to QCloud 2.0");
 
 		Map<String, String> model = new HashMap<>();
+		model.put("appUrl", appUrl);
 		mail.setModel(model);
-
 		try {
 			emailService.sendWelcomeNodeHtmlMessage(mail);
 		} catch (MessagingException | IOException | TemplateException e) {
@@ -328,6 +331,7 @@ public class NodeController {
 		Map<String, String> model = new HashMap<>();
 		model.put("name", user.getFirstname() + " " + user.getLastname());
 		model.put("password", password);
+		model.put("appUrl", appUrl);
 		mail.setModel(model);
 
 		try {

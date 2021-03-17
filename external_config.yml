@@ -70,6 +70,8 @@ jwt:
       refresh: refresh
 
 qcloud:
+  app-url: test.com # This is for some template links like the password reset one, this doesnt change the serve url
+  admin-email: roger.olivella@crg.eu
   threshold:
     min-points-auto: 10
     min-points-manual: 20
@@ -84,7 +86,7 @@ qcloud:
     address: your@mail.cat
   intranet:
     pipeline-valid-hours: 3
-    api-url: https://api.qcloud2.crg.eu
+    api-url: https://api.qcloud2.crg.eu # This is the external api qcloud2. For local versions
 
 logging:
   level:
