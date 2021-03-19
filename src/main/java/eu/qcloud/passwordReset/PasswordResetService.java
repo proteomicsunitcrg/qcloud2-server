@@ -59,7 +59,9 @@ public class PasswordResetService {
 		}
 
 		Optional<PasswordReset> passwordReset = passwordResetRepository.findOptionalByUserId(user.getId());
-
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DAY_OF_YEAR, 7);
+		Date date = calendar.getTime();
 		if (passwordReset.isPresent()) {
 			if (passwordReset.get().getNumberOfRequests() > 10) {
 				throw new InvalidActionException("Too many password reset requests. "
@@ -68,6 +70,9 @@ public class PasswordResetService {
 			} else {
 				passwordReset.get().setNumberOfRequests(passwordReset.get().getNumberOfRequests() + 1);
 				passwordResetRepository.save(passwordReset.get());
+				passwordReset.get().setExpirationDate(date);
+				passwordResetRepository.save(passwordReset.get());
+
 				// send email
 				sendPasswordResetHtmlEmail(passwordReset.get());
 			}
@@ -77,9 +82,6 @@ public class PasswordResetService {
 			token.setUser(user);
 			token.setToken(UUID.randomUUID());
 
-			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.DAY_OF_YEAR, 7);
-			Date date = calendar.getTime();
 			token.setExpirationDate(date);
 			token.setNumberOfRequests(1);
 			passwordResetRepository.save(token);
