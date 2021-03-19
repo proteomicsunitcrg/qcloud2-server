@@ -29,7 +29,7 @@
             <td style="padding: 30px 30px 40px 30px; background-color: #fdfdfd;">
                 <p>Dear ${name},</p>
                 <p>Please follow this link in order to reset your password:</p>
-                <p><a href="http://${appUrl}/recovery?a=${base}&token={token}">Reset password link</a></p>
+                <p><a href="${appUrl}/recovery?a=${base}&token={token}">Reset password link</a></p>
                 <p>This link will expire in 24 hours.</p>
                 <p>Best regards</p>            </td>
         </tr>
