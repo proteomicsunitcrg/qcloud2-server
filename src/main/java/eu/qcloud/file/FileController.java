@@ -9,12 +9,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
@@ -143,6 +146,18 @@ public class FileController {
 	@PreAuthorize("hasRole('USER')")
 	public List<SampleType> findSampleTypesUseByLabSystemByLabSystemApiKey(@PathVariable UUID labSystemApiKey) {
 		return fileService.findSampleTypesByLabSystemApiKey(labSystemApiKey);
+	}
+
+	@GetMapping(value = "/api/file/dashboard")
+	@PreAuthorize("hasRole('USER')")
+	public Page<File> getFilesByNodePaged(Pageable page, String filename, String labsystemApiKey, String sampleTypeQCCV) {
+		return fileService.getFilesByNodePaged(getUserFromSecurityContext().getNode(), page, filename, labsystemApiKey, sampleTypeQCCV);
+	}
+
+	@GetMapping(value = "/api/file/fileStatus/{checksum}")
+	@PreAuthorize("hasRole('USER')")
+	public boolean getFileStatusByChecksum(@PathVariable String checksum) {
+		return this.fileService.getFileStatusByChecksum(checksum);
 	}
 
 	@ExceptionHandler(DataRetrievalFailureException.class)

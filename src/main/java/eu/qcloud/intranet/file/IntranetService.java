@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.Checksum;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -121,9 +122,14 @@ public class IntranetService {
     }
 
     public NodeAndFileStatus getNodeAndFileStatus(UUID dataSourceApiKey, String fileChecksum) {
-        int nanCounter = 0;
         NodeAndFileStatus response = new NodeAndFileStatus();
         response.setNode(getNodeByDataSourceApiKey(dataSourceApiKey));
+        response.setDataOk(getFileStatus(fileChecksum));
+        return response;
+    }
+
+    public boolean getFileStatus(String fileChecksum) {
+        int nanCounter = 0;
         List<Data> data = dataRepo.findByFileChecksumAndParamId(fileChecksum, 1l);
         for (Data d : data) {
             if (Float.isNaN(d.getCalculatedValue())) {
@@ -132,14 +138,13 @@ public class IntranetService {
         }
         try {
             if ((nanCounter * 100) / data.size() < 60) {
-                response.setDataOk(true);
+                return true;
             } else {
-                response.setDataOk(false);
+                return false;
             }
         } catch (ArithmeticException e) {
-            response.setDataOk(false);
+            return false;
         }
-        return response;
     }
 
     public Node getNodeByDataSourceApiKey(UUID apiKey) {

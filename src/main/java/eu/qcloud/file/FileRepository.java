@@ -219,6 +219,12 @@ public interface FileRepository extends JpaRepository<File, Long> {
 	public List<File> findByFilenameContainingAndChecksumContainingAndLabSystemNameAndSampleTypeQualityControlControlledVocabularyContainingOrderByIdDesc(
 			String filename, String cheksum, String labsystemName, String sampleTypeId);
 
+	public Page<File> findBylabSystemInOrderByIdDesc(List<LabSystem> ls, Pageable page);
+
+	public Page<File> findByFilenameContainingAndLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemInOrderByIdDesc(String filename, UUID labsystemApiKey, String sampleTypeId, List<LabSystem> ls,Pageable page);
+
+	public Page<File> findByFilenameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemInOrderByIdDesc(String filename, String sampleTypeId, List<LabSystem> ls,Pageable page);
+
 	public List<File> findByCreationDateAfter(Date date);
 
 	public File findTopByOrderByIdDesc();
