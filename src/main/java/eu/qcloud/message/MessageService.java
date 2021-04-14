@@ -28,7 +28,7 @@ public class MessageService {
 
 	public List<Message> getAllMessages() {
 		List<Message> messages = new ArrayList<>();
-		messageRepository.findAll().forEach(messages::add);
+		messageRepository.findAllByOrderByIdDesc().forEach(messages::add);
 		return messages;
 	}
 
@@ -59,6 +59,15 @@ public class MessageService {
 		if (hoursDiff < 3) {
 			return true;
 		} else {
+			return false;
+		}
+	}
+
+	public boolean deleteMessage(Long msgId) {
+		try {
+			messageRepository.deleteById(msgId);
+			return true;
+		} catch (Exception e) {
 			return false;
 		}
 	}

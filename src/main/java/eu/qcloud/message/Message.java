@@ -1,5 +1,6 @@
 package eu.qcloud.message;
 
+import java.lang.annotation.Repeatable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -15,6 +16,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import org.hibernate.validator.constraints.UniqueElements;
 
 @Entity
 @Table(name = "message")
@@ -46,6 +49,10 @@ public class Message {
 	@Column(name = "creation_date", columnDefinition = "DATETIME")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationDate;
+
+    @NotNull
+    @Column(name = "priority")
+    private Integer priority;
 
     public void setId(Long id) {
         this.id = id;
@@ -99,6 +106,36 @@ public class Message {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public String getMessage_type() {
+        return message_type;
+    }
+
+    public void setMessage_type(String message_type) {
+        this.message_type = message_type;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public Message(Long id, @NotBlank String title, @NotBlank String message, @NotNull boolean show,
+            @NotNull String message_type, Date creationDate, @NotNull Integer priority) {
+        this.id = id;
+        this.title = title;
+        this.message = message;
+        this.show = show;
+        this.message_type = message_type;
+        this.creationDate = creationDate;
+        this.priority = priority;
+    }
+
+    public Message() {
     }
 
 }
