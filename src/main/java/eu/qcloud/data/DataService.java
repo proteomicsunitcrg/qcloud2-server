@@ -425,7 +425,6 @@ public class DataService {
 				file.getLabSystem(), file.getSampleType());
 
 		webSocketService.sendUpdateIntranet(file);
-
 	}
 
 	private List<PlotTrace> generatePlotTraceList(List<Data> dataFromDb, SampleType sampleType, Param param) {

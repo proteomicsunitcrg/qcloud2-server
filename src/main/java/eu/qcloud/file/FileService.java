@@ -54,7 +54,7 @@ public class FileService {
     private SampleTypeRepository sampleTypeRepository;
 
     @Autowired
-    private WebSocketService webSocket;
+    private WebSocketService webSocketService;
 
     @Autowired
     private IntranetService intranetService;
@@ -157,6 +157,7 @@ public class FileService {
                     "Can not insert this file because it is not the last file! " + file.getChecksum());
         }
         fileRepository.save(file);
+        webSocketService.sendUpdateForDashboard(file);
         return file;
     }
 

@@ -158,4 +158,13 @@ public class WebSocketService {
 		}
 	}
 
+	public void sendUpdateForDashboard(File file) {
+		for (SimpUser s : userRegistry.getUsers()) {
+			User user = userRepository.findByUsername(s.getName());
+			if (user.getNode().getId() == file.getLabSystem().getMainDataSource().getNode().getId()) {
+				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply", new WebSocketNotification("fileDashboard-", null, null, file));
+			}
+		}
+	}
+
 }
