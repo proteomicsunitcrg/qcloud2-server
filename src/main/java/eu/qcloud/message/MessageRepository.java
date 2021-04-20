@@ -17,4 +17,6 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
 
 	public List<Message> findAllByOrderByIdDesc();
 
+	public List<Message> findAllByShowOrderByPriorityAsc(boolean show);
+
 }

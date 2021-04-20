@@ -141,6 +141,13 @@ public class WebSocketService {
 		}
 	}
 
+	public void sendActiveMessagesToAllUsers(List <Message> messages) {
+		for (SimpUser s : userRegistry.getUsers()) {
+			messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
+					new WebSocketNotification("message-", null, null, messages));
+		}
+	}
+
 	public void sendUpdateIntranet(File file) {
 		for (SimpUser s : userRegistry.getUsers()) {
 			User user = userRepository.findByUsername(s.getName());

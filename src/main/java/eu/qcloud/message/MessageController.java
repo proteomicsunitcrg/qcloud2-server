@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,4 +53,9 @@ public class MessageController {
 		return messageService.deleteMessage(msgId);
 	}
 
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping(value = "/api/message/getActive")
+	public List<Message> getActiveMessages(){
+		return this.messageService.getActiveMessages();
+	}
 }

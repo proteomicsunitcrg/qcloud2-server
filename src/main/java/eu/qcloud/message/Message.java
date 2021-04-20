@@ -42,15 +42,14 @@ public class Message {
     private boolean show;
 
     @NotNull
-    @Column(name = "Message_type")
-    private String message_type;
+    @Column(name = "type")
+    private String type;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Column(name = "creation_date", columnDefinition = "DATETIME")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationDate;
 
-    @NotNull
     @Column(name = "priority")
     private Integer priority;
 
@@ -70,8 +69,8 @@ public class Message {
         this.show = show;
     }
 
-    public void setType(String message_type) {
-        this.message_type = message_type;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Long getId() {
@@ -90,14 +89,14 @@ public class Message {
         return this.show;
     }
 
-    public String getMessageType() {
-        return this.message_type;
+    public String getType() {
+        return this.type;
     }
 
     @Override
     public String toString() {
         return "Message [creationDate=" + creationDate + ", id=" + id + ", message=" + message + ", message_type="
-                + message_type + ", show=" + show + ", title=" + title + "]";
+                + type + ", show=" + show + ", title=" + title + "]";
     }
 
     public Date getCreationDate() {
@@ -106,14 +105,6 @@ public class Message {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
-    }
-
-    public String getMessage_type() {
-        return message_type;
-    }
-
-    public void setMessage_type(String message_type) {
-        this.message_type = message_type;
     }
 
     public Integer getPriority() {
@@ -130,7 +121,7 @@ public class Message {
         this.title = title;
         this.message = message;
         this.show = show;
-        this.message_type = message_type;
+        this.type = message_type;
         this.creationDate = creationDate;
         this.priority = priority;
     }

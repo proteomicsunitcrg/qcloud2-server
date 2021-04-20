@@ -42,8 +42,9 @@ public class MessageService {
 	}
 
 	public Message saveMessage(Message msg) {
-		webSocketService.sendMessageToAllUsers(msg);
-		return messageRepository.save(msg);
+		messageRepository.save(msg);
+		webSocketService.sendActiveMessagesToAllUsers(getActiveMessages());
+		return msg;
 	}
 
 	public boolean showNotification() {
@@ -70,6 +71,10 @@ public class MessageService {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	public List<Message> getActiveMessages() {
+		return messageRepository.findAllByShowOrderByPriorityAsc(true);
 	}
 
 }
