@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.data.Data;
+import eu.qcloud.data.DataRepository;
 import eu.qcloud.file.FileRepository.OnlyChecksum;
 import eu.qcloud.file.FileRepository.OnlySmalls;
 import eu.qcloud.guideset.GuideSet;
@@ -23,11 +25,16 @@ import eu.qcloud.intranet.file.IntranetService;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemService;
 import eu.qcloud.node.Node;
+import eu.qcloud.sampleComposition.SampleComposition;
+import eu.qcloud.sampleComposition.SampleCompositionRepository;
+import eu.qcloud.sampleComposition.SampleCompositionService;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.sampleType.SampleTypeService;
 import eu.qcloud.security.model.User;
 import eu.qcloud.websocket.WebSocketService;
+
+import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
 
 /**
  * File service
@@ -58,6 +65,15 @@ public class FileService {
 
     @Autowired
     private IntranetService intranetService;
+
+    @Autowired
+    private SampleCompositionService sampleCompositionService;
+
+    @Autowired
+    private SampleCompositionRepository sampleCompositionRepository;
+
+    @Autowired
+    private DataRepository dataRepository;
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
@@ -239,6 +255,20 @@ public class FileService {
 
     public boolean getFileStatusByChecksum(String checksum) {
         return intranetService.getFileStatus(checksum);
+    }
+
+    public List<Summary> getSummary(String checksum) {
+        List<Summary> summaryList = new ArrayList<>();
+        File file = fileRepository.findByChecksum(checksum);
+        List<PeptidesFromSample> peptides = sampleCompositionRepository.findBySampleType(file.getSampleType());
+        for (PeptidesFromSample peptide: peptides) {
+            Summary summary = new Summary();
+            summary.setSequence(peptide.getPeptide().getSequence());
+            List<Data> data = dataRepository.findByFileAndContextSourceId(file, peptide.getPeptide().getId());
+            summary.setValues(data);
+            summaryList.add(summary);
+        }
+        return summaryList;
     }
 
 }

@@ -160,6 +160,12 @@ public class FileController {
 		return this.fileService.getFileStatusByChecksum(checksum);
 	}
 
+	@GetMapping(value = "/api/file/summary/{checksum}")
+	@PreAuthorize("hasRole('USER')")
+	public List<Summary> getResumen(@PathVariable String checksum){
+		return fileService.getSummary(checksum);
+	}
+
 	@ExceptionHandler(DataRetrievalFailureException.class)
 	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());

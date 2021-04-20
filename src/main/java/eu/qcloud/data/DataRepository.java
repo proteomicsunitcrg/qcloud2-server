@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import eu.qcloud.contextSource.ContextSource;
+import eu.qcloud.file.File;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Repository
@@ -45,6 +48,8 @@ public interface DataRepository extends PagingAndSortingRepository<Data, DataId>
 			Long contextSourceId, Long paramId, UUID labSystemApiKey, Date startDate, Date endDate);
 
 	List<Data> findByFileChecksumOrderByParamIdAsc(String checksum);
+
+	List<Data> findByFileAndContextSourceId(File file, Long csId);
 
 	public interface MiniData {
 

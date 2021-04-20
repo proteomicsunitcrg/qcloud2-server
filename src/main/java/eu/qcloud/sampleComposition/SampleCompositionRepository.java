@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import eu.qcloud.contextSource.peptide.Peptide;
+import eu.qcloud.sampleType.SampleType;
 
 public interface SampleCompositionRepository extends CrudRepository<SampleComposition, SampleCompositionId> {
 
@@ -19,6 +20,9 @@ public interface SampleCompositionRepository extends CrudRepository<SampleCompos
 	public List<SampleComposition> findByPeptideSequence(String peptideSequence);
 
 	public List<PeptidesFromSample> findBySampleTypeName(String name);
+
+	public List<PeptidesFromSample> findBySampleType(SampleType st);
+
 
 	@Query("select sc from SampleComposition sc where sc.sampleType.id=?1 and sc.peptide.id = ?2")
 	public SampleComposition getSampleCompositionBySampleTypeIdAndPeptideId(Long sampleTypeId, Long peptideId);
