@@ -383,6 +383,15 @@ public class NodeController {
 		return userService.giveRemoveAdmin(apiKey, getManagerFromSecurityContext());
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "api/node/user/getByApiKey", method = RequestMethod.GET)
+	public Map<UUID, Node> getUserByApiKey(@RequestParam UUID apiKey) {
+		Map <UUID, Node> maperino = new HashMap<UUID, Node>();
+		User u = userService.getUserByUuid(apiKey);
+		maperino.put(u.getApiKey(), u.getNode());
+		return maperino;
+	}
+
 	/*
 	 * Helper classes
 	 */
@@ -418,5 +427,4 @@ public class NodeController {
 	void handleBadAction(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.CONFLICT.value(), e.getMessage());
 	}
-
 }

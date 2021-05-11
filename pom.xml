@@ -4,7 +4,7 @@
 
 	<groupId>eu.crg</groupId>
 	<artifactId>QCloud2</artifactId>
-	<version>1.0.24.2</version>
+	<version>1.0.24.2OUTSIDE</version>
 	<packaging>jar</packaging>
 
 	<name>QCloud2</name>
@@ -110,7 +110,7 @@
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.10.5</version>
+			<version>2.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>

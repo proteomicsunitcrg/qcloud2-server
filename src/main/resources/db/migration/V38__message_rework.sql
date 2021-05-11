@@ -1,0 +1,5 @@
+ALTER TABLE `message` ADD COLUMN priority int NULL DEFAULT NULL;
+
+ALTER TABLE `message` DROP COLUMN `message_type`;
+
+ALTER TABLE `message` ADD COLUMN `type` VARCHAR(255) NOT NULL;

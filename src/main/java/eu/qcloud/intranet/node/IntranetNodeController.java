@@ -45,6 +45,18 @@ public class IntranetNodeController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "system", method = RequestMethod.GET)
+    public LabSystem getSystemByApiKey(@RequestParam UUID apiKey) {
+        return intrNodeService.getSystemByApiKey(apiKey);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "getNodeByLsApiKey", method = RequestMethod.GET)
+    public Node getNodeByLsApiKey(@RequestParam UUID apiKey) {
+        return intrNodeService.getNodeByLsApiKey(apiKey);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "stats", method = RequestMethod.GET)
     public LSStats getStats(@RequestParam UUID apiKey) {
         return intrNodeService.getLSStats(apiKey);

@@ -1,6 +1,5 @@
 package eu.qcloud.message;
 
-import java.lang.annotation.Repeatable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -17,7 +16,6 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import org.hibernate.validator.constraints.UniqueElements;
 
 @Entity
 @Table(name = "message")

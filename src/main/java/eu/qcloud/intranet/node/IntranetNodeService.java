@@ -198,4 +198,19 @@ public class IntranetNodeService {
         return nodeAndStats;
 
     }
+
+    public LabSystem getSystemByApiKey(UUID apiKey) {
+        Optional <LabSystem> ls = lsRepo.findByApiKey(apiKey);
+        if (ls.isPresent()) {
+            return ls.get();
+        } else {
+            throw new NotFoundException("Ls not found");
+        }
+
+    }
+
+    public Node getNodeByLsApiKey(UUID apiKey) {
+        LabSystem ls = getSystemByApiKey(apiKey);
+        return ls.getMainDataSource().getNode();
+    }
 }
