@@ -51,7 +51,7 @@ public interface AnnotationRepository extends CrudRepository<Annotation, Long> {
         Date getAnnotationDate();
     }
 
-    AnnotationForPlot findByLabSystemApiKeyAndDate(UUID labSystemApiKey, Date date);
+    Optional <AnnotationForPlot> findByLabSystemApiKeyAndDate(UUID labSystemApiKey, Date date);
 
     Optional<Annotation> findByApiKey(UUID annotationApiKey);
 

@@ -95,8 +95,12 @@ public class AnnotationService {
     }
 
     public AnnotationForPlot getAnnotationByLabSystemApiKeyAndDate(UUID labSystemApiKey, Date date) {
-
-        return annotationRepository.findByLabSystemApiKeyAndDate(labSystemApiKey, date);
+        Optional <AnnotationForPlot> anno = annotationRepository.findByLabSystemApiKeyAndDate(labSystemApiKey, date);
+        if (anno.isPresent()) {
+            return anno.get();
+        } else {
+            return null;
+        }
     }
 
     public void deleteAnnotationByAnnotationApiKey(UUID annotationApiKey, User user) {

@@ -1,6 +1,8 @@
 package eu.qcloud.file;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,10 +26,13 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.qcloud.data.Data;
 import eu.qcloud.file.FileRepository.OnlyChecksum;
 import eu.qcloud.file.FileRepository.OnlySmalls;
+import eu.qcloud.helper.DataAndAnnotation;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
@@ -164,6 +169,13 @@ public class FileController {
 	@PreAuthorize("hasRole('USER')")
 	public List<Summary> getResumen(@PathVariable String checksum){
 		return fileService.getSummary(checksum);
+	}
+
+	@GetMapping(value = "/api/file/summaryByDates/{lsApiKey}")
+	@PreAuthorize("hasRole('USER')")
+	public List<DataAndAnnotation> getResumenByDates(@RequestParam @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date startDate,
+	@RequestParam @DateTimeFormat(iso = ISO.DATE_TIME) java.util.Date endDate, @PathVariable UUID lsApiKey){
+		return fileService.getSummaryByDates(startDate, endDate, lsApiKey);
 	}
 
 	@ExceptionHandler(DataRetrievalFailureException.class)

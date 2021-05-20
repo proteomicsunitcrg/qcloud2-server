@@ -1,7 +1,7 @@
 package eu.qcloud.file;
 
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,20 +21,21 @@ import eu.qcloud.file.FileRepository.OnlyChecksum;
 import eu.qcloud.file.FileRepository.OnlySmalls;
 import eu.qcloud.guideset.GuideSet;
 import eu.qcloud.guideset.automatic.AutomaticGuideSetRepository;
+import eu.qcloud.helper.DataAndAnnotation;
 import eu.qcloud.intranet.file.IntranetService;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemService;
 import eu.qcloud.node.Node;
-import eu.qcloud.sampleComposition.SampleComposition;
 import eu.qcloud.sampleComposition.SampleCompositionRepository;
+import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
 import eu.qcloud.sampleComposition.SampleCompositionService;
 import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.sampleType.SampleTypeService;
 import eu.qcloud.security.model.User;
+import eu.qcloud.troubleshooting.annotation.AnnotationRepository;
+import eu.qcloud.troubleshooting.annotation.AnnotationRepository.AnnotationForPlot;
 import eu.qcloud.websocket.WebSocketService;
-
-import eu.qcloud.sampleComposition.SampleCompositionRepository.PeptidesFromSample;
 
 /**
  * File service
@@ -67,13 +68,13 @@ public class FileService {
     private IntranetService intranetService;
 
     @Autowired
-    private SampleCompositionService sampleCompositionService;
-
-    @Autowired
     private SampleCompositionRepository sampleCompositionRepository;
 
     @Autowired
     private DataRepository dataRepository;
+
+    @Autowired
+    private AnnotationRepository annoRepo;
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
@@ -269,6 +270,21 @@ public class FileService {
             summaryList.add(summary);
         }
         return summaryList;
+    }
+
+    public List<DataAndAnnotation> getSummaryByDates(Date startDate, Date endDate, UUID lsApiKey) {
+        List<File> files = fileRepository.findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(lsApiKey, "QC:0000005", startDate, endDate);
+        List<DataAndAnnotation> dataList = new ArrayList<>();
+        for (File file: files) {
+            Optional <AnnotationForPlot> anno = annoRepo.findByLabSystemApiKeyAndDate(lsApiKey, file.getCreationDate());
+            DataAndAnnotation dataAndAnno = new DataAndAnnotation();
+            if (anno.isPresent()) {
+                dataAndAnno.setAnnotation(anno.get());
+            }
+            dataAndAnno.setData(dataRepository.findByFileId(file.getId()));
+            dataList.add(dataAndAnno);
+        }
+        return dataList;
     }
 
 }
