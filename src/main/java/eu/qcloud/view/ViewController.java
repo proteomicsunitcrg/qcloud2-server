@@ -59,7 +59,7 @@ public class ViewController {
 		return viewService.updateView(view);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER')")
 	@RequestMapping(value = "/api/views/user", method = RequestMethod.PUT)
 	public View updateUserView(@RequestBody View view) {
 		return viewService.updateView(view);

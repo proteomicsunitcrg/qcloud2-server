@@ -52,6 +52,7 @@ public class View {
 	private Instrument cv;
 
 	@OneToMany(mappedBy = "view")
+	@JsonIgnore
 	private List<ViewDisplay> viewDisplay;
 
 	@ManyToOne
@@ -118,5 +119,15 @@ public class View {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	public List<ViewDisplay> getViewDisplay() {
+		return viewDisplay;
+	}
+
+	public void setViewDisplay(List<ViewDisplay> viewDisplay) {
+		this.viewDisplay = viewDisplay;
+	}
+
+
 
 }
