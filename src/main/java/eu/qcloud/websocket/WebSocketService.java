@@ -64,6 +64,17 @@ public class WebSocketService {
 		}
 	}
 
+	public void sendUpdateCustomViewsToNodeUsers(Node node) {
+		for (SimpUser s : userRegistry.getUsers()) {
+			User user = userRepository.findByUsername(s.getName());
+			if (user.getNode().getId() == node.getId()) {
+				// send message
+				messagingTemplate.convertAndSendToUser(s.getName(), "/queue/reply",
+						new WebSocketNotification("updateCustomViews-", null, null, "update"));
+			}
+		}
+	}
+
 	public void sendDeleteAnnotationToNodeUsers(Node node, UUID annotationApiKey) {
 		for (SimpUser s : userRegistry.getUsers()) {
 			User user = userRepository.findByUsername(s.getName());

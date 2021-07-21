@@ -27,6 +27,7 @@ import eu.qcloud.security.service.UserService;
 import eu.qcloud.view.UserViewRepository.UserDisplayWithOutViewDisplay;
 import eu.qcloud.view.ViewDisplayRepository.WithOutViewDisplay;
 import eu.qcloud.view.ViewRepository.UserViewWithoutUser;
+import eu.qcloud.websocket.WebSocketService;
 
 @Service
 public class ViewService {
@@ -54,6 +55,9 @@ public class ViewService {
 
 	@Autowired
 	private FileRepository fileRepo;
+
+	@Autowired
+	private WebSocketService socket;
 
 	public List<View> getAllViews() {
 		List<View> views = new ArrayList<>();
@@ -255,6 +259,7 @@ public class ViewService {
 		if (view.isPresent()) {
 			view.get().setShared(!view.get().isIsShared());
 			viewRepository.save(view.get());
+			socket.sendUpdateCustomViewsToNodeUsers(u.getNode());
 			return view.get();
 		}
 		throw new DataIntegrityViolationException("View not found.");
