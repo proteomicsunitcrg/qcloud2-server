@@ -42,6 +42,9 @@ public class View {
 	@Column(name = "is_default", nullable = false, columnDefinition = "bit default 1")
 	private boolean isDefault;
 
+	@Column(name = "is_shared", nullable = false, columnDefinition = "bit default 0")
+	private boolean isShared;
+
 	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "userId", insertable = true, updatable = false, nullable = true)
@@ -118,5 +121,15 @@ public class View {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	public boolean isIsShared() {
+		return isShared;
+	}
+
+	public void setShared(boolean isShared) {
+		this.isShared = isShared;
+	}
+
+	
 
 }

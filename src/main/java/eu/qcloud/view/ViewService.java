@@ -249,4 +249,29 @@ public class ViewService {
 		}
 	}
 
+	public View updateShare(UUID viewApiKey) {
+		User u = getUserFromSecurityContext();
+		Optional <View> view = viewRepository.findByApiKeyAndIsDefaultAndUser(viewApiKey, false, u);
+		if (view.isPresent()) {
+			view.get().setShared(!view.get().isIsShared());
+			viewRepository.save(view.get());
+			return view.get();
+		}
+		throw new DataIntegrityViolationException("View not found.");
+	}
+
+	public List<View> getSharedViews() {
+		User u = getUserFromSecurityContext();
+		List <View> allNodeViews = new ArrayList<>();
+		for (User nodeUser : u.getNode().getUsers()) {
+			if (nodeUser.getAuthorities().size() > 1 && nodeUser.getEnabled() && !nodeUser.getApiKey().equals(u.getApiKey())) { // get the node managers enabled, but not ourselves
+				Optional <List<View>> viewListOpt = viewRepository.findByIsDefaultAndUserAndIsShared(false, nodeUser, true); // get the user shared views
+				if (viewListOpt.isPresent()) { // if the manager have shared views we insert them to the return list
+					allNodeViews.addAll(viewListOpt.get());
+				}
+			}
+		}
+		return allNodeViews;
+	}
+
 }
