@@ -12,6 +12,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -178,6 +180,16 @@ public class ViewController {
 	@RequestMapping(value = "/api/views", method = RequestMethod.DELETE)
 	public View deleteUserView(@RequestBody View view) {
 		return viewService.deleteView(view);
+	}
+
+	@PatchMapping(value = "/api/views/user/{viewApiKey}")
+	public View updateShare(@PathVariable UUID viewApiKey) {
+		return viewService.updateShare(viewApiKey);
+	}
+
+	@GetMapping(value = "/api/views/user/node")
+	public List<View> getSharedViews() {
+		return viewService.getSharedViews();
 	}
 
 	/*

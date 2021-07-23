@@ -25,6 +25,11 @@ public interface ViewRepository extends CrudRepository<View, Long> {
 
 	View findByCvIdAndSampleTypeCategoryApiKey(Long cvId, UUID sampleTypeCategoryApiKey);
 
+	Optional <View> findByApiKeyAndIsDefaultAndUser(UUID apiKey, boolean isDefault, User u);
+
+	Optional <List<View>> findByIsDefaultAndUserAndIsShared(boolean isDefault, User u, boolean isShared);
+
+
 	interface ViewWithoutDisplay {
 		Long getId();
 
@@ -47,6 +52,8 @@ public interface ViewRepository extends CrudRepository<View, Long> {
 		String getName();
 
 		UUID getApiKey();
+
+		boolean isIsShared();
 	}
 
 	@Query("SELECT v from View v where v.apiKey = ?1")
