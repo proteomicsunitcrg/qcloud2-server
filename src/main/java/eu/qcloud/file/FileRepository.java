@@ -227,6 +227,6 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	public List<File> findByCreationDateAfter(Date date);
 
-	public File findTopByOrderByIdDesc();
+	public Optional <File> findTopByOrderByIdDesc();
 
 }

@@ -131,7 +131,10 @@ public class IntranetNodeService {
         today.add(Calendar.MONTH, -6);
         Date month6Ago = today.getTime();
         HomePageStats stats = new HomePageStats();
-        stats.setTotalFiles(fileRepo.findTopByOrderByIdDesc().getId());
+        Optional <File> lastFile = fileRepo.findTopByOrderByIdDesc();
+        if (lastFile.isPresent()) {
+            stats.setTotalFiles(fileRepo.findTopByOrderByIdDesc().get().getId());
+        }
         List<File> files6MonthsAgo = fileRepo.findByCreationDateAfter(month6Ago);
         for (File file : files6MonthsAgo) {
             if (!nodes.contains(file.getLabSystem().getMainDataSource().getNode())) {
