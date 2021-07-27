@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,6 +78,12 @@ public class AnnotationController {
 	@PreAuthorize("hasRole('USER')")
 	public Page<Annotation> getPage(Pageable page, @RequestParam String lsApiKey, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  Date endDate, @RequestParam String troubleshootingName) {
 		return annotationService.getPage(page, lsApiKey, endDate, startDate, troubleshootingName);
+	}
+
+	@GetMapping(value = "/api/troubleshooting/annotation/{apiKey}")
+	@PreAuthorize("hasRole('USER')")
+	public Annotation getByApiKey(@PathVariable UUID apiKey) {
+		return annotationService.getAnnotationByApiKey(apiKey);
 	}
 
 	@ExceptionHandler(DataRetrievalFailureException.class)

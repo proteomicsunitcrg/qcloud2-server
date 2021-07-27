@@ -147,5 +147,14 @@ public class AnnotationService {
         return manager;
     }
 
+    public Annotation getAnnotationByApiKey(UUID apiKey) {
+        Optional <Annotation> anno = annotationRepository.findByApiKey(apiKey);
+        if (anno.isPresent()) {
+            return anno.get();
+        } else {
+            throw new DataRetrievalFailureException("Annotation not found");
+        }
+    }
+
 
 }
