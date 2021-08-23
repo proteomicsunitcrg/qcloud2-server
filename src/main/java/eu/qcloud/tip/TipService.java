@@ -9,18 +9,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.twitter.TwitterPoster;
+import twitter4j.TwitterException;
+
 @Service
 public class TipService {
 
     @Autowired
     TipRepository tipRepository;
 
+    @Autowired
+    TwitterPoster twitterPoster;
+
     public Tip saveTip(Tip tip) {
         return tipRepository.save(tip);
     }
 
     @Scheduled(fixedRateString = "${qcloud.tip-refresh}")
-    public void checkPublish() {
+    public void checkPublish() throws TwitterException {
         Optional<List<Tip>> tipsOpt = tipRepository.findByPublishedTwitterAndShowAtBefore(false, new Date());
         if (tipsOpt.isPresent()) {
             unShowAll();
@@ -28,7 +34,10 @@ public class TipService {
                 // publisho to twitter method here
                 System.out.println("Publishing " + tip.getTitle());
                 tip.setDisplay(true); // I need another cron to set display to false
-                tip.setPublishedTwitter(true);
+                if (!tip.isPublishedTwitter()) { // if this boolean is false we publish the tweet and then we set it to true 
+                    twitterPoster.postTweet(tip.getTwitterText());
+                    tip.setPublishedTwitter(true);
+                }
             }
             tipRepository.saveAll(tipsOpt.get());
         }

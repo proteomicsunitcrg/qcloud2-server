@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import twitter4j.TwitterException;
+
 @RestController
 @RequestMapping("/api/tip")
 public class TipController {
@@ -21,7 +23,7 @@ public class TipController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public Tip saveTip(@RequestBody Tip tip) {
+    public Tip saveTip(@RequestBody Tip tip) throws TwitterException {
         return tipService.saveTip(tip);
     }
 

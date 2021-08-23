@@ -34,6 +34,10 @@ public class Tip {
     @NotBlank
     private String message;
 
+    @Column(name = "twitter_text")
+    @NotBlank
+    private String twitterText;
+
     @JsonFormat()
     @Column(name = "showAt", columnDefinition = "DATETIME")
     @Temporal(TemporalType.TIMESTAMP)
@@ -96,6 +100,8 @@ public class Tip {
         return publishedTwitter;
     }
 
+    
+
     public void setPublishedTwitter(boolean publishedTwitter) {
         this.publishedTwitter = publishedTwitter;
     }
@@ -104,6 +110,25 @@ public class Tip {
     public String toString() {
         return "Tip [display=" + display + ", id=" + id + ", message=" + message + ", showAt=" + showAt + ", title="
                 + title + "]";
+    }
+
+    public String getTwitterText() {
+        return twitterText;
+    }
+
+    public void setTwitterText(String twitterText) {
+        this.twitterText = twitterText;
+    }
+
+    public Tip(Long id, @NotBlank String title, @NotBlank String message, @NotBlank String twitterText,
+            @NotNull Date showAt, @NotNull boolean display, @NotNull boolean publishedTwitter) {
+        this.id = id;
+        this.title = title;
+        this.message = message;
+        this.twitterText = twitterText;
+        this.showAt = showAt;
+        this.display = display;
+        this.publishedTwitter = publishedTwitter;
     }
 
 
