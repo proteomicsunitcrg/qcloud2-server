@@ -11,7 +11,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -27,15 +26,12 @@ public class Tip {
     private Long id;
 
     @Column(name = "Title")
-    @NotBlank
     private String title;
 
     @Column(name = "Message")
-    @NotBlank
     private String message;
 
     @Column(name = "twitter_text")
-    @NotBlank
     private String twitterText;
 
     @JsonFormat()
@@ -100,7 +96,7 @@ public class Tip {
         return publishedTwitter;
     }
 
-    
+
 
     public void setPublishedTwitter(boolean publishedTwitter) {
         this.publishedTwitter = publishedTwitter;
@@ -120,7 +116,7 @@ public class Tip {
         this.twitterText = twitterText;
     }
 
-    public Tip(Long id, @NotBlank String title, @NotBlank String message, @NotBlank String twitterText,
+    public Tip(Long id, String title, String message, String twitterText,
             @NotNull Date showAt, @NotNull boolean display, @NotNull boolean publishedTwitter) {
         this.id = id;
         this.title = title;
