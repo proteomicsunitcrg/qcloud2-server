@@ -15,7 +15,7 @@ public class TwitterPoster {
 
     public String postTweet(String tweet) throws TwitterException {
         Twitter twitter = twitterFactory.createTwitterInstance();
-        Status status = twitter.updateStatus(tweet);
+        Status status = twitter.updateStatus(tweet + " #proteomics");
         return status.getText();
     }
 }
