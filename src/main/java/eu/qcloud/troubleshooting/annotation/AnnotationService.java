@@ -133,6 +133,7 @@ public class AnnotationService {
     }
 
     public Page<Annotation> getPage(Pageable page, String lsApiKey, Date startDate, Date endDate, String troubleshootingName) {
+        System.out.println("RERLEMAO");
         User u = getManagerFromSecurityContext();
         List <LabSystem> ls = lsRepo.findAllByNode(u.getNode().getId());
         if (!lsApiKey.equals("null")) {

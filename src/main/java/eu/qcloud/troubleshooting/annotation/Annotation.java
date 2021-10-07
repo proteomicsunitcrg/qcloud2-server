@@ -50,6 +50,9 @@ public class Annotation {
 	@Column(name = "description")
 	private String description;
 
+	@Column(length = 1000)
+	private String note;
+
 	@ManyToMany
 	private List<Troubleshooting> troubleshootings;
 
@@ -131,5 +134,27 @@ public class Annotation {
 		this.description = description;
 		this.troubleshootings = troubleshootings;
 	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public Annotation(Long id, Date date, Date annotationDate, LabSystem labSystem, User user, UUID apiKey,
+			String description, String note, List<Troubleshooting> troubleshootings) {
+		this.id = id;
+		this.date = date;
+		this.annotationDate = annotationDate;
+		this.labSystem = labSystem;
+		this.user = user;
+		this.apiKey = apiKey;
+		this.description = description;
+		this.note = note;
+		this.troubleshootings = troubleshootings;
+	}
+
 
 }
