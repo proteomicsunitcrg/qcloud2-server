@@ -60,7 +60,7 @@ Change the name of the new jar to `QCloud2-latest.jar` and launch the following 
 
 Wait a minute and the new backend *should* work.
 
-To know how to deploy the front end check the [QCloud2-Client.md](QCloud2-Client.md) file.
+To know how to deploy the front end check the [QCloud2-Client.md](https://github.com/proteomicsunitcrg/qcloud2-client/blob/master/README.md) file.
 
 ## Errors
 
