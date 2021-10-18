@@ -1,55 +1,101 @@
-# Qcloud2Server
+# QCloud2 Server
 
-This is the backend server of QCloud 2.0 Quality control for Proteomics on the Cloud.
+## Install and launch the development environment
 
-Clone this repo in your computer in order to run it.
+### Requirements
 
-## How to deploy
+Install **Java 1.8** or higher. Other java open source *should* work.
 
-### Deploy in local server
+Install **Maven** to install packages, libraries to the project and compile the project.
 
-In order to generate a .jar file or a .war (you should change this in the pom.xml file) go to the folder and type `mvn package`
+Install the latest version of **MySQL**.
 
-This will run the tests and if it passes it will generate a .jar file.
+### Configuration file
 
-Go to the target folder and execute `./java -jar QCloudXXX.jar`
+Change the important things like the port, SQL credentials, FlyWay, QSample local mode, APIs URL and much more in the configuration file `src/main/resources/application.yml`.
 
-### Deploy test in test server
+### Starting the dev server
 
-You need to transpile the frontend as described in the readme of the client repository and copy the files in the **dist** folder of the client into the **resources/static** folder of the server.
+`code .` at `rolivella@hipnos3:~/mygit/qcloud2-server$`
 
-If this folder does not exist create it.
+I personally use the following official Spring Boot Visual Studio Code extensions to manage the project:
+1. Spring Boot Extension Pack
+2. Spring Boot Tools
 
-Then, as before, you need to execute mvn package and upload the file to the server. Then execute with the desired profile:
+I think that you have to put the JAVA PATH if the IDE asks for it and then this should appear on your VSC explorer tab:
 
-`java -jar -Dspring.profiles.active=test QCloud2XXX.jar`
+![Start local server](images/startSpringBootLocal.png)
 
-Notice the **-Dspring.profiles.active=test**
+Right-click on the project and start to run the server. And everything *should* work.
 
-There are some profiles defined in the **application.yml** file.
+## Compile the project
 
-test will execute the server listening at port 8181 and using the qcloud2test database instead of the qcloud2 production database.
+Change the version in the `pom.xml` file and with maven installed launch the following command:
 
-### Deploy in production
+`"f:\projects\qcloud2-server\mvnw.cmd" package -DskipTests -f "f:\projects\qcloud2-server\pom.xml"`
 
-As before, `mvn package` the upload to the server and run:
+Obviously change the paths.
 
-`java -jar QCloud2XXX.jar`
+This will generate a .jar file named with the POM version saved at target folder.
 
-By default it will listen to the 8080 port and use the qcloud2 production database.
+## Deploy the project
 
-Remember to transpile and upload the client as is described in the README file of the client repository.
+Send the jar to the server:
 
-## General guide for developing
+`scp target\qcloud2-XXXXX.jar admin@10.102.1.26:/home/admin/qcloud/latest`
 
-Every model has its own folder with its class definition, controller, service and repository. Try to keep it this way.
+Connect to the server, go to the qsample directory and launch the next command to stop the daemon:
 
-Try to make a dump of the current production database and use it as your development database in your local machine to assure that any change you make will not broke the database.
+`sudo systemctl stop qcloud`
 
-### Flyway
+Make a database backup:
 
-This application uses flyway migration system to keep the database integrity.
+`mysqldump  --user admin -pPASSWORDHERE qcloud2 > home/admin/sq;lqsample.sql`
 
-If you want to alter a current entity or create a new one you should first create the migration for that particular case.
+Move the old `QCloud2-latest.jar` to `QCloud2-latest.old.jar`
 
-This is a critical step and it is highly recommended to create database backup before do it.
+Change the name of the new jar to `QCloud2-latest.jar` and launch the following command:
+
+`sudo systemctl start qcloud`
+
+Wait a minute and the new backend *should* work.
+
+To know how to deploy the front end check the [QCloud2-Client.md](QCloud2-Client.md) file.
+
+## Errors
+
+Sometimes when you start the server at prod it appears to work (systemctl status returns green code) but at the reality the front-end can't establish connection.
+
+Here I stop the daemon (`sudo systemctl stop qcloud`) and I launch the jar with "manually" to check the logs easily:
+
+`/usr/bin/java -jar -Dspring.profiles.active=test|prod /home/admin/qcloud/latest/QCloud2-latest.jar`
+
+With hibernate ddl mode in validate the deployment will fail if the database schema is not the same in the Java entities. Just update the SQL schema. This happens when you add a field to a table or something like that and you don't create a new migration file with the changes. With update mode the .jar file updates the database and everything works without any problem.
+
+## QLV
+
+First of all if you are going to compile the QLV **remove** the application.yml file from the resources directory. The file contains passwords.
+
+Put the front end files inside the `resources/static directory` before compile.
+
+Switch the branch from master to QLV and work from here. The same code works, is the final user who has to launch the jar with a parameter referencing his application.yml file.
+
+## QDV
+
+Switch the branch from master to QDV, merge the changes with master and compile the project normally.
+
+The QDV uses a different database (qdv), directory (`/home/admin/qcloud2demo/latest`) and daemon (demo.service)
+
+## References
+
+[Getting started with Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html)
+
+[Proteomics unit daemons](https://github.com/proteomicsunitcrg/general-servers/issues?q=is%3Aissue+is%3Aopen+label%3Adaemon)
+
+[Spring Boot with Visual Studio Code](https://code.visualstudio.com/docs/java/java-spring-boot)
+
+----
+
+Document created by *[Marc](mailto:vesperon51@gmail.com)* with [love](https://i.imgur.com/vd91Y2x.jpg).
+
+4/10/2021
