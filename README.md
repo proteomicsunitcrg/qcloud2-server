@@ -24,7 +24,7 @@ I personally use the following official Spring Boot Visual Studio Code extension
 
 I think that you have to put the JAVA PATH if the IDE asks for it and then this should appear on your VSC explorer tab:
 
-![Start local server](images/startSpringBootLocal.png)
+![startSpringBootLocal](https://user-images.githubusercontent.com/1679820/137738784-8e520a86-9dde-4e69-a217-ffb45a42b5ce.png)
 
 Right-click on the project and start to run the server. And everything *should* work.
 
