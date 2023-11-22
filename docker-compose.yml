@@ -13,7 +13,7 @@ services:
       - 3306
     ports:
       # Mapping here for testing purposes
-      - 3308:3306
+      - 3309:3306
     environment:
       MYSQL_ROOT_PASSWORD: qcloud2022
       MYSQL_USER: qcloud2
@@ -31,9 +31,9 @@ services:
     # Below, compatible with depends in new docker compose versions (starting from 3.9)
     # Situation: https://stackoverflow.com/questions/71060072/docker-compose-depends-on-with-condition-invalid-type-should-be-an-array
     healthcheck:
-        test: ["CMD-SHELL", "mysql -h localhost -u root -p$${MYSQL_ROOT_PASSWORD} $${MYSQL_DATABASE} -e 'SELECT COUNT(*) FROM user limit 1;' || exit 1" ]
-        interval: 30s
-        timeout: 10s
+        test: ["CMD-SHELL", "mysql -h localhost -u root -p$${MYSQL_ROOT_PASSWORD} $${MYSQL_DATABASE} -e 'select count(*) from user limit 1;' || exit 1" ]
+        interval: 60s
+        timeout: 60s
         retries: 20
   app:
     # image: qcloud2:latest
@@ -41,7 +41,7 @@ services:
       dockerfile: Dockerfile
       context: .
       args:
-        qcloud2_API_PREFIX: http://localhost:8099/ #TODO: to be replaced with a fully running time system
+        qcloud2_API_PREFIX: http://localhost:8089/ #TODO: to be replaced with a fully running time system
     restart: always
     volumes:
       - type: bind
@@ -51,7 +51,7 @@ services:
       - ./tmp:/tmp
         
     environment:
-      qcloud2_API_PREFIX: http://localhost:8099/ #Adapt for the final URL to be used
+      qcloud2_API_PREFIX: http://localhost:8089/ #Adapt for the final URL to be used
       UID: 1000
       GID: 1000
     # More details in the documentation
@@ -62,7 +62,7 @@ services:
        condition: service_healthy
     ports:
       # Ports exposed outside, they should match config
-      - 8099:8099
+      - 8089:8089
     networks:
       qcloud2:
         aliases:
