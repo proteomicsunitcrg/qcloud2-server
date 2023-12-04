@@ -1,9 +1,12 @@
 package eu.qcloud.guideset;
 
 import java.io.IOException;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,8 +57,21 @@ public class GuideSetController {
 	@PreAuthorize("hasRole('MANAGER')")
 	public List<GuideSetContextSourceStatus> getFilesInThreshold(@PathVariable UUID labSystemApiKey,
 			@PathVariable String startDate, @PathVariable String endDate, @PathVariable String sampleTypeQccv) {
-		Date start = Date.valueOf(startDate);
-		Date end = Date.valueOf(endDate);
+
+    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    Date start = null;
+    Date end = null;
+    try {
+      start = formatter.parse(startDate);
+      end = formatter.parse(endDate);
+    } catch (ParseException e) {
+      e.printStackTrace();
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Date start = Date.valueOf(startDate);
+		// Date end = Date.valueOf(endDate);
 		return guideSetService.evaluateGuideSet(labSystemApiKey, start, end, sampleTypeQccv);
 	}
 
