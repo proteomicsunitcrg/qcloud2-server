@@ -1,0 +1,72 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      # Where starting dumps are stored
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # Where data will be stored
+      - ./mysql:/var/lib/mysql
+    expose:
+      - 3306
+    ports:
+      # Mapping here for testing purposes
+      - 3309:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: qcloud2022
+      MYSQL_USER: qcloud2
+      MYSQL_PASSWORD: qcloud2017
+      MYSQL_DATABASE: qcloud2
+      UID: 1000
+      GID: 1000
+    # More details in the documentation
+    # User to run database, act UID and GID accordingly thanks to 'uid -u' and 'uid -g'
+    # user: "${UID}:${GID}"
+    networks:
+      qcloud2:
+        aliases:
+          - database
+    # Below, compatible with depends in new docker compose versions (starting from 3.9)
+    # Situation: https://stackoverflow.com/questions/71060072/docker-compose-depends-on-with-condition-invalid-type-should-be-an-array
+    healthcheck:
+        test: ["CMD-SHELL", "mysql -h localhost -u root -p$${MYSQL_ROOT_PASSWORD} $${MYSQL_DATABASE} -e 'select count(*) from user limit 1;' || exit 1" ]
+        interval: 60s
+        timeout: 60s
+        retries: 20
+  app:
+    # image: qcloud2:latest
+    build: 
+      dockerfile: Dockerfile.dev
+      context: .
+      args:
+        qcloud2_API_PREFIX: http://localhost:8089/ #TODO: to be replaced with a fully running time system
+    restart: always
+    volumes:
+      - type: bind
+        source: ./application.yml
+        target: /config/application.yml
+        read_only: true
+      - ./tmp:/tmp
+        
+    environment:
+      qcloud2_API_PREFIX: http://localhost:8089/ #Adapt for the final URL to be used
+      UID: 1000
+      GID: 1000
+    # More details in the documentation
+    # user: "${UID}:${GID}"
+    depends_on:
+      # - db
+      db:
+       condition: service_healthy
+    ports:
+      # Ports exposed outside, they should match config
+      - 8089:8089
+    networks:
+      qcloud2:
+        aliases:
+          - qcloud2
+
+networks:
+  qcloud2:

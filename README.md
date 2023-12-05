@@ -1,5 +1,34 @@
 # QCloud2 Server
 
+## Docker mode
+
+### Dev server
+
+```
+# Adapt application.yml or docker-compose.dev.yml accordingly
+
+# To start backend
+docker compose -f docker-compose.dev.yml build
+docker compose -f docker-compose.dev.yml up -d
+
+# To start front-end, go to qcloud2-client
+npm run start
+# Website is accessible at localhost:4201 by default
+```
+
+### Prod server
+
+```
+# Adapt application.yml or docker-compose.yml accordingly
+
+# To start whole application
+docker compose -f docker-compose.yml build
+docker compose -f docker-compose.yml up -d
+# Website is accessible at localhost:8089 by default
+```
+
+
+
 ## Install and launch the development environment
 
 ### Requirements

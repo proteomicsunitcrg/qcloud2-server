@@ -1,0 +1,3 @@
+[submodule "qcloud2-client"]
+	path = qcloud2-client
+	url = git@github.com:proteomicsunitcrg/qcloud2-client.git

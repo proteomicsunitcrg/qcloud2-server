@@ -1,0 +1,22 @@
+FROM biocorecrg/debian-perlbrew-pyenv3-java:buster as jarserver
+
+RUN apt update && apt upgrade -y
+RUN mkdir -p /tmp
+WORKDIR /tmp
+COPY mvn* /tmp/
+COPY pom.xml /tmp/
+COPY src/ /tmp/src/
+RUN mvn package -DskipTests -f pom.xml
+# Result in target/*jar
+RUN apt clean
+
+FROM biocorecrg/debian-perlbrew-pyenv3-java:buster
+VOLUME /tmp
+RUN mkdir -p /config
+RUN mkdir -p /app
+WORKDIR /app
+COPY --from=jarserver /tmp/target/*jar /app
+# We don't keep version number for making things easier
+RUN mv /app/QCloud2-*.jar /app/QCloud2.jar 
+ENTRYPOINT java -jar -Dspring.config.location=file:/config/application.yml -Dspring.profiles.active=prod /app/QCloud2.jar
+
