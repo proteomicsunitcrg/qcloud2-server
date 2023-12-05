@@ -38,7 +38,7 @@ services:
   app:
     # image: qcloud2:latest
     build: 
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
       context: .
       args:
         qcloud2_API_PREFIX: http://localhost:8089/ #TODO: to be replaced with a fully running time system
