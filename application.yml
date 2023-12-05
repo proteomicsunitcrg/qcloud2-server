@@ -54,7 +54,6 @@ spring:
     active:
     - production
 
-
 jwt:
   header: Authorization
   secret: L+0P1i+38a26pHiW10iHqPBYAyklvqPdySy98BV9PPCZyDogMggoSZkYxULqCF+WG6Nimlfxd53H6zjdIUJNJA==
@@ -72,9 +71,11 @@ jwt:
 qcloud:
   app-url: test.com # This is for some template links like the password reset one, this doesnt change the serve url
   admin-email: roger.olivella@crg.eu
+  tip-refresh: 1800000 
   threshold:
     min-points-auto: 10
     min-points-manual: 20
+    min-points-guideset: 3
     min-valid-context-source-points: 2
     # this is for the WARNING/DANGER plot
     files-auto-plot: 10
@@ -87,6 +88,12 @@ qcloud:
   intranet:
     pipeline-valid-hours: 3
     api-url: https://api.qcloud2.crg.eu # This is the external api qcloud2. For local versions
+
+twitter: # qcloud2 account keys
+  consumer-key: 00IQt8nCuE8IQbHfXXXVRMQD
+  consumer-secret: lQpzLAXXXXXeowQQA4xnsEUeUbrd9hYYvD97000UJJcX5
+  access-token: 138224581184155XXXXXEnEKL6XJe09cT8rxxxcix
+  access-token-secret: La4CXXXXCSU2LztACiyZvr5e333335n65Ky4G
 
 logging:
   level:
