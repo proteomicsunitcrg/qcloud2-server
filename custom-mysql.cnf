@@ -1,0 +1,3 @@
+[mysqld]
+innodb_flush_method     = O_DIRECT
+innodb_redo_log_capacity=2G;

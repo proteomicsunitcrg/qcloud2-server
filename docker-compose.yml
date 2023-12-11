@@ -9,6 +9,8 @@ services:
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
       # Where data will be stored
       - ./mysql:/var/lib/mysql
+      # Configuration
+      - ./custom-mysql.cnf:/etc/mysql/conf.d/custom-mysql.cnf
     expose:
       - 3306
     ports:
