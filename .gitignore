@@ -43,3 +43,6 @@ src/main/resources/static
 
 
 .sts4-cache/classpath-data.json
+mysql/
+tmp/
+bckp.*
