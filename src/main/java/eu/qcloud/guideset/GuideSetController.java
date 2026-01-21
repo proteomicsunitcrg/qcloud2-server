@@ -58,20 +58,20 @@ public class GuideSetController {
 	public List<GuideSetContextSourceStatus> getFilesInThreshold(@PathVariable UUID labSystemApiKey,
 			@PathVariable String startDate, @PathVariable String endDate, @PathVariable String sampleTypeQccv) {
 
-    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    Date start = null;
-    Date end = null;
-    try {
-      start = formatter.parse(startDate);
-      end = formatter.parse(endDate);
-    } catch (ParseException e) {
-      e.printStackTrace();
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		//DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date start = null;
+		Date end = null;
+		try {
+		start = formatter.parse(startDate);
+		end = formatter.parse(endDate);
+		} catch (ParseException e) {
+			    throw new IllegalArgumentException(
+				"Invalid date format. Expected: yyyy-MM-dd, received: " + startDate + ", " + endDate, 
+				e
+			);
 		}
 
-		// Date start = Date.valueOf(startDate);
-		// Date end = Date.valueOf(endDate);
 		return guideSetService.evaluateGuideSet(labSystemApiKey, start, end, sampleTypeQccv);
 	}
 

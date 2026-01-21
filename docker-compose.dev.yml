@@ -53,6 +53,11 @@ services:
       - ./tmp:/tmp
         
     environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/qcloud2?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: qcloud2
+      SPRING_DATASOURCE_PASSWORD: qcloud2017
       qcloud2_API_PREFIX: http://localhost:8089/ #Adapt for the final URL to be used
       UID: 1000
       GID: 1000

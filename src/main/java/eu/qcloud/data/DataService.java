@@ -78,6 +78,20 @@ import eu.qcloud.utils.TraceHashMap;
 import eu.qcloud.utils.factory.ThresholdForPlotFactory;
 import eu.qcloud.websocket.WebSocketService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
+
 /**
  * Service for the data
  *
@@ -86,6 +100,8 @@ import eu.qcloud.websocket.WebSocketService;
  */
 @Service
 public class DataService {
+
+    private static final Logger log = LoggerFactory.getLogger(DataService.class);
 
 	@Autowired
 	private DataRepository dataRepository;
@@ -981,35 +997,55 @@ public class DataService {
 		}
 	}
 
-	public List<PlotTrace> getTraceData(Date startDate, Date endDate, UUID chartApiKey, UUID labSystemApiKey,
-			String sampleTypeQCCV) {
+	public List<PlotTrace> getTraceData(Date startDate, Date endDate,
+									UUID chartApiKey, UUID labSystemApiKey,
+									String sampleTypeQCCV) {
+
+		List<PlotTrace> result = new ArrayList<>();
+
 		Optional<Chart> chart = chartRepository.findByApiKey(chartApiKey);
-
 		Optional<LabSystem> labSystem = labSystemRepository.findByApiKey(labSystemApiKey);
+		Optional<SampleType> sampleType =
+				sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQCCV);
 
-		Optional<SampleType> sampleType = sampleTypeRepository.findByQualityControlControlledVocabulary(sampleTypeQCCV);
+		if (!chart.isPresent() || !labSystem.isPresent() || !sampleType.isPresent()) {
+			log.debug("getTraceData(): missing chart, labSystem or sampleType");
+			return result;
+		}
 
-		List<ChartParams> chartParams = chartParamRepository.findByChartId(chart.get().getId());
+		List<ChartParams> chartParams =
+				chartParamRepository.findByChartId(chart.get().getId());
 
 		List<ContextSource> contextSources = new ArrayList<>();
+		chartParams.forEach(cp -> {
+			if (cp.getContextSource() != null) {
+				contextSources.add(cp.getContextSource());
+			}
+		});
 
 		TraceHashMap<String, PlotTrace> traces = new TraceHashMap<>();
-
-		chartParams.forEach(cp -> {
-			contextSources.add(cp.getContextSource());
-		});
-
 		List<Data> data = new ArrayList<>();
 
-		contextSources.forEach(cs -> {
-			data.addAll(dataRepository.findParamData(cs.getId(), chart.get().getParam().getId(), startDate, endDate,
-					labSystem.get().getId(), sampleType.get().getId()));
-		});
+		for (ContextSource cs : contextSources) {
+			try {
+				data.addAll(dataRepository.findParamData(
+						cs.getId(),
+						chart.get().getParam().getId(),
+						startDate,
+						endDate,
+						labSystem.get().getId(),
+						sampleType.get().getId()));
+			} catch (Exception e) {
+				log.warn("Error retrieving data for ContextSource {}", cs.getId(), e);
+			}
+		}
+
+		if (data.isEmpty()) {
+			return result;
+		}
 
 		if (!isAllTraceNaN(data)) {
-			List<PlotTrace> plotTraces = traces.toList();
-			return plotTraces;
-
+			return traces.toList();
 		}
 
 		if (chart.get().getSampleType().getSampleTypeCategory()
@@ -1017,94 +1053,48 @@ public class DataService {
 				&& chart.get().getParam().getIsFor().equals("Peptide")
 				&& !chart.get().getParam().getqCCV().equals("QC:1000894")
 				&& !chart.get().getParam().getqCCV().equals("QC:1000014")) {
+
 			for (Data d : data) {
-				SampleComposition concentration = sampleCompositionRepository
-						.getSampleCompositionBySampleTypeIdAndPeptideId(sampleType.get().getId(),
+				SampleComposition concentration =
+						sampleCompositionRepository.getSampleCompositionBySampleTypeIdAndPeptideId(
+								sampleType.get().getId(),
 								d.getContextSource().getId());
-				if (!traces.containsKey(concentration.getConcentration().toString())) {
-					traces.put(concentration.getConcentration().toString(),
-							generateIsotopologuePlotTraceFromContextSource(d.getContextSource(),
-									concentration.getConcentration().toString()));
+
+				if (concentration == null) {
+					continue;
 				}
-				traces.get(concentration.getConcentration().toString()).getPlotTracePoints()
+
+				String key = concentration.getConcentration().toString();
+				if (!traces.containsKey(key)) {
+					traces.put(key,
+							generateIsotopologuePlotTraceFromContextSource(
+									d.getContextSource(), key));
+				}
+
+				traces.get(key).getPlotTracePoints()
 						.add(generatePlotTracePointFromData(d));
 			}
+
 		} else {
 			for (Data d : data) {
-				if (!traces.containsKey(d.getContextSource().getAbbreviated())) {
-					traces.put(d.getContextSource().getAbbreviated(),
+				String key = d.getContextSource().getAbbreviated();
+				if (!traces.containsKey(key)) {
+					traces.put(key,
 							generatePlotTraceFromContextSource(d.getContextSource()));
 				}
-				traces.get(d.getContextSource().getAbbreviated()).getPlotTracePoints()
+
+				traces.get(key).getPlotTracePoints()
 						.add(generatePlotTracePointFromData(d));
-			}
-		}
-		/**
-		 * TODO Remove the harcoded 1l and use DB to determine if the error trace has to
-		 * be shown
-		 *
-		 * THis adds the trace error, this only appears if the plot to draw is about th
-		 * param Peak Area (id 1 in the DB)
-		 *
-		 * Do this 4 the sample type too
-		 */
-		if (chart.get().getParam().getId().equals(1l) && sampleType.get().getId().equals(1l)) {
-			Float median = getMid(data);
-			List<File> files = fileRepository
-					.findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(
-							labSystemApiKey, sampleTypeQCCV, startDate, endDate);
-			files.forEach(file -> {
-				List<Data> dataError = dataRepository.findByFileIdAndParamId(file.getId(), new Long(2));
-				if (dataError.size() == 0) {
-					if (!traces.containsKey("ERROR")) {
-						traces.put("ERROR",
-								generatePlotTraceError(contextSourceRepository.findById(new Long(97)).get())); // Id 97
-																												// is
-																												// error
-																												// CS
-					}
-					traces.get("ERROR").getPlotTracePoints().add(generatePlotTracePointError(file, median));
-				}
-			});
-		}
-		List<CommunityLineNode> communityLinesNode = getCommunityLines();
-		if (chartParams.size() == 1) {
-			for (CommunityLineNode communityLineNode : communityLinesNode) {
-				if (labSystem.get().getMainDataSource().getCv().getId()
-						.equals(communityLineNode.getCommunityLine().getInstrument().getId())) {
-					if (chart.get().getParam().equals(communityLineNode.getCommunityLine().getParam())
-							&& communityLineNode.isActive() && chart.get().getSampleType()
-									.equals(communityLineNode.getCommunityLine().getSampleType())) {
-						for (ChartParams chartParam : chartParams) {
-							if (chartParam.getContextSource()
-									.equals(communityLineNode.getCommunityLine().getContextSource())) {
-								System.out
-										.println("LS DataSource" + labSystem.get().getMainDataSource().getCv().getId());
-								traces.put(communityLineNode.getCommunityLine().getName(),
-										generateCommunityPlotTrace(communityLineNode));
-								traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
-										.add(generatePlotTracePointCommunity(startDate,
-												communityLineNode.getCommunityLine().getValue(),
-												communityLineNode.getCommunityLine().getName()));
-								traces.get(communityLineNode.getCommunityLine().getName()).getPlotTracePoints()
-										.add(generatePlotTracePointCommunity(endDate,
-												communityLineNode.getCommunityLine().getValue(),
-												communityLineNode.getCommunityLine().getName()));
-								traces.get(communityLineNode.getCommunityLine().getName()).setCommunityPartner(
-										communityLineNode.getCommunityLine().getCommunityPartner());
-								traces.get(communityLineNode.getCommunityLine().getName()).setContextSourceId(10000l);
-							}
-						}
-					}
-				}
 			}
 		}
 
 		List<PlotTrace> plotTraces = traces.toList();
 		Collections.sort(plotTraces);
 		checkTracesForTraceColor(plotTraces);
+
 		return plotTraces;
 	}
+
 
 	private List<CommunityLineNode> getCommunityLines() {
 		Node node = getManagerFromSecurityContext().getNode();
