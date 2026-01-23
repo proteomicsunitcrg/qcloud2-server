@@ -2,7 +2,9 @@ package eu.qcloud.file;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -261,13 +263,42 @@ public class FileService {
     public List<Summary> getSummary(String checksum) {
         List<Summary> summaryList = new ArrayList<>();
         File file = fileRepository.findByChecksum(checksum);
-        List<PeptidesFromSample> peptides = sampleCompositionRepository.findBySampleType(file.getSampleType());
-        for (PeptidesFromSample peptide: peptides) {
-            Summary summary = new Summary();
-            summary.setSequence(peptide.getPeptide().getSequence());
-            List<Data> data = dataRepository.findByFileAndContextSourceId(file, peptide.getPeptide().getId());
-            summary.setValues(data);
-            summaryList.add(summary);
+        
+        // Check if this is a HeLa sample type (hela, hela_dia, or qc4l which is HeLa Isotopologues)
+        String sampleTypeName = file.getSampleType().getName().toLowerCase();
+        logger.info("DEBUG getSummary - Sample type name: " + sampleTypeName + " | Checksum: " + checksum);
+        logger.info("DEBUG getSummary - Is HeLa type: " + (sampleTypeName.contains("hela") || sampleTypeName.equals("qc4l")));
+        
+        if (sampleTypeName.contains("hela") || sampleTypeName.equals("qc4l")) {
+            // For HeLa samples, get all data grouped by contextSource
+            List<Data> allData = dataRepository.findByFileChecksumOrderByParamIdAsc(checksum);
+            logger.info("DEBUG getSummary - Total data points retrieved: " + allData.size());
+            
+            // Group data by contextSource
+            Map<String, List<Data>> dataByContext = new HashMap<>();
+            for (Data d : allData) {
+                String contextName = d.getContextSource() != null ? d.getContextSource().getName() : "Unknown";
+                dataByContext.computeIfAbsent(contextName, k -> new ArrayList<>()).add(d);
+            }
+            logger.info("DEBUG getSummary - Number of unique contexts: " + dataByContext.size());
+            
+            // Create summaries for each contextSource
+            for (Map.Entry<String, List<Data>> entry : dataByContext.entrySet()) {
+                Summary summary = new Summary();
+                summary.setSequence(entry.getKey());
+                summary.setValues(entry.getValue());
+                summaryList.add(summary);
+            }
+        } else {
+            // Original logic for BSA and other samples
+            List<PeptidesFromSample> peptides = sampleCompositionRepository.findBySampleType(file.getSampleType());
+            for (PeptidesFromSample peptide: peptides) {
+                Summary summary = new Summary();
+                summary.setSequence(peptide.getPeptide().getSequence());
+                List<Data> data = dataRepository.findByFileAndContextSourceId(file, peptide.getPeptide().getId());
+                summary.setValues(data);
+                summaryList.add(summary);
+            }
         }
         return summaryList;
     }
@@ -285,6 +316,31 @@ public class FileService {
             dataList.add(dataAndAnno);
         }
         return dataList;
+    }
+
+    public void exportSummaryToCsv(String checksum, javax.servlet.http.HttpServletResponse response) throws java.io.IOException {
+        File file = fileRepository.findByChecksum(checksum);
+        List<Data> allData = dataRepository.findByFileChecksumOrderByParamIdAsc(checksum);
+        
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFilename() + "_data.csv\"");
+        
+        java.io.PrintWriter writer = response.getWriter();
+        
+        // CSV header
+        writer.println("contextSource,param,value,calculatedValue");
+        
+        // CSV rows
+        for (Data d : allData) {
+            String contextSource = d.getContextSource() != null ? d.getContextSource().getName() : "";
+            String param = d.getParam() != null ? d.getParam().getName() : "";
+            String value = d.getValue() != null ? d.getValue().toString() : "";
+            String calculatedValue = d.getCalculatedValue() != null ? d.getCalculatedValue().toString() : "";
+            
+            writer.println(String.format("%s,%s,%s,%s", contextSource, param, value, calculatedValue));
+        }
+        
+        writer.flush();
     }
 
 }
