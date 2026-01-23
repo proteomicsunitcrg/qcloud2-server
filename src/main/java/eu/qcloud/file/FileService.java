@@ -3,6 +3,7 @@ package eu.qcloud.file;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -260,48 +261,46 @@ public class FileService {
         return intranetService.getFileStatus(checksum);
     }
 
-    public List<Summary> getSummary(String checksum) {
-        List<Summary> summaryList = new ArrayList<>();
-        File file = fileRepository.findByChecksum(checksum);
-        
-        // Check if this is a HeLa sample type (hela, hela_dia, or qc4l which is HeLa Isotopologues)
-        String sampleTypeName = file.getSampleType().getName().toLowerCase();
-        logger.info("DEBUG getSummary - Sample type name: " + sampleTypeName + " | Checksum: " + checksum);
-        logger.info("DEBUG getSummary - Is HeLa type: " + (sampleTypeName.contains("hela") || sampleTypeName.equals("qc4l")));
-        
-        if (sampleTypeName.contains("hela") || sampleTypeName.equals("qc4l")) {
-            // For HeLa samples, get all data grouped by contextSource
-            List<Data> allData = dataRepository.findByFileChecksumOrderByParamIdAsc(checksum);
-            logger.info("DEBUG getSummary - Total data points retrieved: " + allData.size());
-            
-            // Group data by contextSource
-            Map<String, List<Data>> dataByContext = new HashMap<>();
-            for (Data d : allData) {
-                String contextName = d.getContextSource() != null ? d.getContextSource().getName() : "Unknown";
-                dataByContext.computeIfAbsent(contextName, k -> new ArrayList<>()).add(d);
-            }
-            logger.info("DEBUG getSummary - Number of unique contexts: " + dataByContext.size());
-            
-            // Create summaries for each contextSource
-            for (Map.Entry<String, List<Data>> entry : dataByContext.entrySet()) {
-                Summary summary = new Summary();
-                summary.setSequence(entry.getKey());
-                summary.setValues(entry.getValue());
-                summaryList.add(summary);
-            }
-        } else {
-            // Original logic for BSA and other samples
-            List<PeptidesFromSample> peptides = sampleCompositionRepository.findBySampleType(file.getSampleType());
-            for (PeptidesFromSample peptide: peptides) {
-                Summary summary = new Summary();
-                summary.setSequence(peptide.getPeptide().getSequence());
-                List<Data> data = dataRepository.findByFileAndContextSourceId(file, peptide.getPeptide().getId());
-                summary.setValues(data);
-                summaryList.add(summary);
-            }
-        }
+public List<Summary> getSummary(String checksum) {
+    List<Summary> summaryList = new ArrayList<>();
+
+    File file = fileRepository.findByChecksum(checksum);
+    if (file == null) {
         return summaryList;
     }
+
+    // Get ALL data for the file (globals + peptide-related)
+    List<Data> allData = dataRepository.findByFileChecksumOrderByParamIdAsc(checksum);
+
+    // Group data by contextSource name
+    Map<String, List<Data>> dataByContext = new LinkedHashMap<>();
+
+    for (Data d : allData) {
+        String contextName;
+
+        if (d.getContextSource() != null && d.getContextSource().getName() != null) {
+            contextName = d.getContextSource().getName();
+        } else {
+            // Global metrics without contextSource
+            contextName = "";
+        }
+
+        if (!dataByContext.containsKey(contextName)) {
+            dataByContext.put(contextName, new ArrayList<Data>());
+        }
+        dataByContext.get(contextName).add(d);
+    }
+
+    // Build Summary list
+    for (Map.Entry<String, List<Data>> entry : dataByContext.entrySet()) {
+        Summary summary = new Summary();
+        summary.setSequence(entry.getKey()); // peptide sequence OR empty for globals
+        summary.setValues(entry.getValue());
+        summaryList.add(summary);
+    }
+
+    return summaryList;
+}
 
     public List<DataAndAnnotation> getSummaryByDates(Date startDate, Date endDate, UUID lsApiKey) {
         List<File> files = fileRepository.findByLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyAndCreationDateBetween(lsApiKey, "QC:0000005", startDate, endDate);
