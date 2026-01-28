@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  qcloud2-test:
+    image: qcloud2:latest
+    container_name: qcloud2-test
+    restart: unless-stopped
+
+    ports:
+      - 127.0.0.1:8090:8089
+
+    volumes:
+      - ./application-test.yml:/config/application.yml:ro
+      - ./tmp-test:/tmp
+
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/qcloud2?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: CRG4dm1n!
