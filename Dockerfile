@@ -34,7 +34,7 @@ WORKDIR /tmp
 COPY mvn* /tmp/
 COPY pom.xml /tmp/
 COPY src/ /tmp/src/
-COPY --from=nodeclient /tmp/dist/ /tmp/src/main/resources/static/
+COPY --from=nodeclient /tmp/qcloud2-client/dist/ /tmp/src/main/resources/static/
 RUN mvn package -DskipTests -f pom.xml
 
 RUN apt-get clean
