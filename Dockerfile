@@ -10,8 +10,8 @@ RUN sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list && \
     apt-get update && apt-get -y upgrade
 
 RUN mkdir -p /tmp
-WORKDIR /tmp
-COPY qcloud2-client/ /tmp/
+WORKDIR /tmp/qcloud2-client
+COPY qcloud2-client/ /tmp/qcloud2-client/
 RUN npm install
 RUN npm run transpile:prod
 
