@@ -1,0 +1,123 @@
+# =========================
+# SERVER
+# =========================
+server:
+  port: 8089   # NO canviar
+
+application:
+  version: LOCAL
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
+# =========================
+# SPRING
+# =========================
+spring:
+
+  jackson:
+    time-zone: Europe/Madrid
+    serialization:
+      INDENT_OUTPUT: true
+
+  datasource:
+    url: jdbc:mysql://db:3306/qcloud2?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: qcloud2
+    password: qcloud2017
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: MySQL57InnoDB
+    show-sql: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  h2:
+    console:
+      enabled: false
+
+  mail:
+    default-encoding: UTF-8
+    host:
+    username:
+    password:
+    port: 587
+    protocol: smtp
+    test-connection: false
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  main:
+    allow-bean-definition-overriding: true
+
+# =========================
+# JWT
+# =========================
+jwt:
+  header: Authorization
+  secret: L+0P1i+38a26pHiW10iHqPBYAyklvqPdySy98BV9PPCZyDogMggoSZkYxULqCF+WG6Nimlfxd53H6zjdIUJNJA==
+  expiration: 604800
+  route:
+    authentication:
+      path: api/auth
+      refresh: refresh
+    authentication-pipeline:
+      path: api/4uth
+      refresh: refresh
+
+# =========================
+# QCLOUD
+# =========================
+qcloud:
+  app-url: test.com
+  admin-email: roger.olivella@crg.eu
+  tip-refresh: 1800000
+
+  threshold:
+    min-points-auto: 10
+    min-points-manual: 20
+    min-points-guideset: 3
+    min-valid-context-source-points: 2
+    files-auto-plot: 10
+
+  threshold-nonconformity:
+    page-size: 10
+
+  instrument-status:
+    max-offline-hours: 12
+
+  email:
+    address: your@mail.cat
+
+  intranet:
+    pipeline-valid-hours: 3
+    api-url: https://api.qcloud2.crg.eu
+
+# =========================
+# TWITTER
+# =========================
+twitter:
+  consumer-key: dummy
+  consumer-secret: dummy
+  access-token: dummy
+  access-token-secret: dummy
+
+# =========================
+# LOGGING
+# =========================
+logging:
+  level:
+    org.springframework.security: ERROR
+    org.hibernate: ERROR
+
