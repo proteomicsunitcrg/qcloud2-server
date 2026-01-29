@@ -46,3 +46,16 @@ src/main/resources/static
 mysql/
 tmp/
 bckp.*
+mysql*
+tmp*
+
+# Spring Boot unpacked / runtime
+BOOT-INF/
+
+# Docker runtime leftovers
+docker-compose.override.yml
+
+# OS noise
+.DS_Store
+Thumbs.db
+
