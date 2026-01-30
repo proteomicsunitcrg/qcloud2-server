@@ -1,0 +1,2 @@
+ALTER TABLE annotation
+ADD COLUMN note VARCHAR(255);

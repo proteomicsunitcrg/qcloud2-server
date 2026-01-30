@@ -1,12 +1,34 @@
+# ==================================================
+# ENVIRONMENT: PREPROD (running on PROD infrastructure)
+#
+# This is the FINAL PROD configuration.
+# The instance using this file (qcloud2-preprod)
+# is NOT exposed to users yet.
+#
+# The switch to REAL PROD is done at Apache level.
+# ==================================================
+
+# =========================
+# PROFILE
+# =========================
+spring:
+  profiles: prod
+
 # =========================
 # SERVER
 # =========================
 server:
-  port: 8089   # NO canviar
+  port: 8088   # PROD port (used by PREPROD instance)
 
+# =========================
+# APPLICATION
+# =========================
 application:
-  version: TEST
+  version: PROD
 
+# =========================
+# MANAGEMENT
+# =========================
 management:
   endpoint:
     health:
@@ -23,9 +45,9 @@ spring:
       INDENT_OUTPUT: true
 
   datasource:
-    url: jdbc:mysql://10.44.128.23:3306/qcloud2_test?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: qcloud2
-    password: qcloud2017
+    url: jdbc:mysql://10.102.1.26:3306/qcloud2?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: admin
+    password: CRG4dm1n!
 
   jpa:
     hibernate:
@@ -37,7 +59,9 @@ spring:
 
   flyway:
     enabled: true
-    baseline-on-migrate: true
+    validate-on-migrate: true
+    baseline-on-migrate: false
+    out-of-order: false
 
   h2:
     console:
@@ -62,7 +86,7 @@ spring:
     allow-bean-definition-overriding: true
 
 # =========================
-# JWT
+# JWT (LEGACY – HARDCODED)
 # =========================
 jwt:
   header: Authorization
@@ -80,7 +104,7 @@ jwt:
 # QCLOUD
 # =========================
 qcloud:
-  app-url: test.com
+  app-url: https://qcloud2.crg.eu
   admin-email: roger.olivella@crg.eu
   tip-refresh: 1800000
 
@@ -105,7 +129,7 @@ qcloud:
     api-url: https://api.qcloud2.crg.eu
 
 # =========================
-# TWITTER
+# TWITTER (LEGACY)
 # =========================
 twitter:
   consumer-key: dummy
@@ -117,6 +141,8 @@ twitter:
 # LOGGING
 # =========================
 logging:
+  file:
+    name: /home/admin/qcloud/logs/qcloud2_docker_prod.log
   level:
     org.springframework.security: ERROR
     org.hibernate: ERROR

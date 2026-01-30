@@ -1,25 +1,6 @@
 version: "3.9"
 
 services:
-  db:
-    image: mysql:8.0
-    command: --default-authentication-plugin=mysql_native_password
-    restart: unless-stopped
-    volumes:
-      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./mysql-test:/var/lib/mysql
-      - ./custom-mysql.cnf:/etc/mysql/conf.d/custom-mysql.cnf
-    environment:
-      MYSQL_ROOT_PASSWORD: qcloud2022
-      MYSQL_USER: qcloud2
-      MYSQL_PASSWORD: qcloud2017
-      MYSQL_DATABASE: qcloud2
-    healthcheck:
-      test: ["CMD-SHELL", "mysql -h localhost -u root -p$${MYSQL_ROOT_PASSWORD} $${MYSQL_DATABASE} -e 'select 1' || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-
   qcloud2-test:
     image: qcloud2:test
     build:
@@ -37,11 +18,7 @@ services:
 
     environment:
       SPRING_PROFILES_ACTIVE: test
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/qcloud2?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://10.44.128.23:3306/qcloud2_test?useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: qcloud2
       SPRING_DATASOURCE_PASSWORD: qcloud2017
-
-    depends_on:
-      db:
-        condition: service_healthy
 

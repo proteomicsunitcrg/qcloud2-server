@@ -1,3 +1,9 @@
+# ==================================================
+# LOCAL / LEGACY ONLY
+# NOT USED by Docker TEST or PREPROD
+# ==================================================
+
+
 # config context path to "/" by setting an empty string
 server:
   port: 8089 #Dont change port in local version pls

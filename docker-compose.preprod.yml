@@ -1,0 +1,37 @@
+# ==================================================
+# QCloud2 PREPROD
+#
+# Runs on PROD server but is NOT exposed to users.
+# Apache still points to legacy QCloud2.
+#
+# This instance uses FINAL PROD configuration
+# and REAL PROD database.
+#
+# Safe to stop / restart / remove.
+# ==================================================
+
+version: "3.9"
+
+services:
+  qcloud2-preprod:
+    image: qcloud2:preprod
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: qcloud2-preprod
+    restart: unless-stopped
+
+    # Bind only to localhost (Apache is the entry point)
+    ports:
+      - 127.0.0.1:8088:8088
+
+    # Configuration and temp files
+    volumes:
+      - ./application-prod.yml:/config/application.yml:ro
+      - ./tmp-preprod:/tmp
+
+    environment:
+      # FINAL PROD Spring profile
+      SPRING_PROFILES_ACTIVE: prod
+
