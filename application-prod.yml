@@ -1,43 +1,9 @@
 # ==================================================
 # ENVIRONMENT: PREPROD (running on PROD infrastructure)
-#
-# This is the FINAL PROD configuration.
-# The instance using this file (qcloud2-preprod)
-# is NOT exposed to users yet.
-#
-# The switch to REAL PROD is done at Apache level.
 # ==================================================
 
-# =========================
-# PROFILE
-# =========================
 spring:
   profiles: prod
-
-# =========================
-# SERVER
-# =========================
-server:
-  port: 8088   # PROD port (used by PREPROD instance)
-
-# =========================
-# APPLICATION
-# =========================
-application:
-  version: PROD
-
-# =========================
-# MANAGEMENT
-# =========================
-management:
-  endpoint:
-    health:
-      show-details: always
-
-# =========================
-# SPRING
-# =========================
-spring:
 
   jackson:
     time-zone: Europe/Madrid
@@ -45,7 +11,7 @@ spring:
       INDENT_OUTPUT: true
 
   datasource:
-    url: jdbc:mysql://10.102.1.26:3306/qcloud2?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://10.102.1.57:3306/qcloud_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: admin
     password: CRG4dm1n!
 
@@ -69,25 +35,33 @@ spring:
 
   mail:
     default-encoding: UTF-8
-    host:
+    host: smtp.crg.eu
     username:
     password:
-    port: 587
+    port: 25
     protocol: smtp
     test-connection: false
     properties:
       mail:
         smtp:
-          auth: true
+          auth: false
           starttls:
-            enable: true
+            enable: false
 
   main:
     allow-bean-definition-overriding: true
 
-# =========================
-# JWT (LEGACY – HARDCODED)
-# =========================
+server:
+  port: 8088
+
+application:
+  version: PROD
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
 jwt:
   header: Authorization
   secret: L+0P1i+38a26pHiW10iHqPBYAyklvqPdySy98BV9PPCZyDogMggoSZkYxULqCF+WG6Nimlfxd53H6zjdIUJNJA==
@@ -100,9 +74,6 @@ jwt:
       path: api/4uth
       refresh: refresh
 
-# =========================
-# QCLOUD
-# =========================
 qcloud:
   app-url: https://qcloud2.crg.eu
   admin-email: roger.olivella@crg.eu
@@ -122,24 +93,18 @@ qcloud:
     max-offline-hours: 12
 
   email:
-    address: your@mail.cat
+    address: roger.olivella@crg.eu
 
   intranet:
     pipeline-valid-hours: 3
     api-url: https://api.qcloud2.crg.eu
 
-# =========================
-# TWITTER (LEGACY)
-# =========================
 twitter:
   consumer-key: dummy
   consumer-secret: dummy
   access-token: dummy
   access-token-secret: dummy
 
-# =========================
-# LOGGING
-# =========================
 logging:
   file:
     name: /home/admin/qcloud/logs/qcloud2_docker_prod.log
