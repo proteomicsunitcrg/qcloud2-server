@@ -57,7 +57,27 @@ public class IntranetController {
     public Page<File> loadPage(Pageable page, @RequestParam String name, @RequestParam String checksum,
             @RequestParam String labsystemName, @RequestParam String sampleTypeId, @RequestParam String node,
             @RequestParam String email, @RequestParam boolean exact) {
-        return intranetService.getAllFiles(name, checksum, labsystemName, sampleTypeId, page, node, email, exact);
+
+        int maxSize = 5000;
+        int safeSize = Math.min(page.getPageSize(), maxSize);
+
+        page = org.springframework.data.domain.PageRequest.of(
+            page.getPageNumber(),
+            safeSize,
+            page.getSort()
+        );
+
+        Page<File> result = intranetService.getAllFiles(name, checksum, labsystemName, sampleTypeId, page, node, email, exact);
+
+        if (result.getTotalElements() > 5000) {
+            return new org.springframework.data.domain.PageImpl<>(
+                result.getContent(),
+                result.getPageable(),
+                5000
+            );
+        }
+
+        return result;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
