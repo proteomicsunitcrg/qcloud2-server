@@ -63,7 +63,6 @@ import eu.qcloud.sampleType.SampleTypeRepository;
 import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
-import eu.qcloud.threshold.Direction;
 import eu.qcloud.threshold.InstrumentStatus;
 import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdRepository;
@@ -220,6 +219,38 @@ public class DataService {
 			return normalizeData(dataForPlot, labSystem.get(), sampleType.get(), chart.get());
 		} else {
 			return dataForPlot;
+		}
+	}
+
+	/**
+	 * The threshold band drawn on a chart is a single static value for the whole visible
+	 * range - so every plotted point must be evaluated against that same live threshold to
+	 * stay consistent with what's drawn, not just the most recent one. Points whose status
+	 * was computed at ingestion time (before a threshold edit) would otherwise silently
+	 * disagree with the band shown alongside them.
+	 */
+	private void overrideLastPointStatusWithLiveRecompute(List<DataForPlot> dataForPlot, LabSystem labSystem,
+			SampleType sampleType, Param param) {
+		File lastFile = fileRepository.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.getId(),
+				sampleType.getId());
+		if (lastFile == null) {
+			return;
+		}
+		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(param.getId(),
+				sampleType.getId(), labSystem.getId());
+		if (threshold == null || !threshold.isMonitored()) {
+			return;
+		}
+		for (DataForPlot point : dataForPlot) {
+			Optional<ThresholdParams> tp = threshold.getThresholdParams().stream()
+					.filter(p -> p.getContextSource().getAbbreviated().equals(point.getContextSourceName())
+							&& p.getIsEnabled())
+					.findFirst();
+			if (!tp.isPresent()) {
+				continue;
+			}
+			point.setNonConformityStatus(
+					thresholdUtils.computeLiveNonConformityStatus(threshold, tp.get(), lastFile, point.getValue()));
 		}
 	}
 
@@ -586,7 +617,7 @@ public class DataService {
 					continue;
 				}
 				// Compare here
-				InstrumentStatus is = isNonConformity(value,
+				InstrumentStatus is = thresholdUtils.isNonConformity(value,
 						getInitialValueFromThresholdParamByContextSource(threshold.getThresholdParams(),
 								dataValue.getContextSource(), parameterData.getParameter().getIsFor()),
 						getStepValueFromThresholdParamByContextSourceName(threshold.getThresholdParams(),
@@ -628,53 +659,6 @@ public class DataService {
 				return instrumentSampleRepository.findByQualityControlControlledVocabulary(name);
 		}
 		return null;
-	}
-
-	private InstrumentStatus isNonConformity(Float value, Float initialValue, Float stepValue, int steps,
-			Direction direction) {
-		Float upperLimit = initialValue + (stepValue * steps);
-		Float midDownLimit = initialValue - (stepValue * (steps - 1));
-		Float midUpLimit = initialValue + (stepValue * (steps - 1));
-		Float lowerLimit = initialValue - (stepValue * steps);
-		switch (direction) {
-			case DOWN:
-				// taking care if there is only one step
-				if (steps == 1) {
-					if (value < lowerLimit) {
-						return InstrumentStatus.DANGER;
-
-					}
-				} else {
-					if (value < lowerLimit) {
-						return InstrumentStatus.DANGER;
-					} else if (value >= lowerLimit && value < midDownLimit) {
-						return InstrumentStatus.WARNING;
-					}
-				}
-				break;
-			case UPDOWN:
-				if (value < lowerLimit || value > upperLimit) {
-					return InstrumentStatus.DANGER;
-				}
-				break;
-			case UP:
-				if (steps == 1) {
-					if (value > upperLimit) {
-						return InstrumentStatus.DANGER;
-					}
-				} else {
-					if (value > upperLimit) {
-						return InstrumentStatus.DANGER;
-					} else if (value <= upperLimit && value > midUpLimit) {
-						return InstrumentStatus.WARNING;
-					}
-				}
-
-				break;
-			default:
-				System.out.println("Direction not found");
-		}
-		return InstrumentStatus.OK;
 	}
 
 	private Float getInitialValueFromThresholdParamByContextSource(List<ThresholdParams> tp, String contextSourceName,
@@ -879,9 +863,14 @@ public class DataService {
 
 		List<File> files = getFilesForAutoPlot(labSystem.get(), threshold.get().getSampleType());
 
-		return getDataForPlot(labSystem.get(), threshold.get().getParam(), Arrays.asList(contextSource.get()),
-				threshold.get().getSampleType(), files.get(files.size() - 1).getCreationDate(),
-				files.get(0).getCreationDate());
+		List<DataForPlot> dataForPlot = getDataForPlot(labSystem.get(), threshold.get().getParam(),
+				Arrays.asList(contextSource.get()), threshold.get().getSampleType(),
+				files.get(files.size() - 1).getCreationDate(), files.get(0).getCreationDate());
+
+		overrideLastPointStatusWithLiveRecompute(dataForPlot, labSystem.get(), threshold.get().getSampleType(),
+				threshold.get().getParam());
+
+		return dataForPlot;
 	}
 
 	public List<DataForPlot> getNonConformityPlotData(UUID labSystemApiKey, String paramQccv, UUID contextSourceApiKey,
@@ -1092,7 +1081,41 @@ public class DataService {
 		Collections.sort(plotTraces);
 		checkTracesForTraceColor(plotTraces);
 
+		overrideLastTracePointStatusWithLiveRecompute(plotTraces, labSystem.get(), sampleType.get(),
+				chart.get().getParam());
+
 		return plotTraces;
+	}
+
+	/**
+	 * Same live-recompute as {@link #overrideLastPointStatusWithLiveRecompute} but for the
+	 * multi-context-source trace charts (the regular per-tab charts, e.g. "Mass Accuracy (ppm)")
+	 * fed by {@link #getTraceData}. The band shown is a single static value for the whole
+	 * visible range, so every point of every trace is evaluated against that same live
+	 * threshold - not just the most recent one - to stay consistent with what's drawn.
+	 */
+	private void overrideLastTracePointStatusWithLiveRecompute(List<PlotTrace> plotTraces, LabSystem labSystem,
+			SampleType sampleType, Param param) {
+		Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(param.getId(),
+				sampleType.getId(), labSystem.getId());
+		if (threshold == null || !threshold.isMonitored()) {
+			return;
+		}
+		File lastFile = fileRepository.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(labSystem.getId(),
+				sampleType.getId());
+		if (lastFile == null) {
+			return;
+		}
+		plotTraces.forEach(trace -> {
+			Optional<ThresholdParams> tp = threshold.getThresholdParams().stream()
+					.filter(p -> p.getContextSource().getId() == trace.getContextSourceId() && p.getIsEnabled())
+					.findFirst();
+			if (!tp.isPresent()) {
+				return;
+			}
+			trace.getPlotTracePoints().forEach(point -> point.setNonConformityStatus(
+					thresholdUtils.computeLiveNonConformityStatus(threshold, tp.get(), lastFile, point.getValue())));
+		});
 	}
 
 

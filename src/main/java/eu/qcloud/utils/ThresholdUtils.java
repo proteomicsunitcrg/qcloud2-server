@@ -33,6 +33,7 @@ import eu.qcloud.guideset.manual.ManualGuideSetRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
 import eu.qcloud.param.Param;
+import eu.qcloud.threshold.Direction;
 import eu.qcloud.threshold.InstrumentStatus;
 import eu.qcloud.threshold.Threshold;
 import eu.qcloud.threshold.ThresholdRepo;
@@ -351,6 +352,18 @@ public class ThresholdUtils {
 				threshold.getSampleType().getId());
 	}
 
+	public LabSystemStatus createLabSystemStatus(Threshold threshold, ContextSource contextSource,
+			InstrumentStatus status, File file) {
+		LabSystemStatus ls = new LabSystemStatus();
+		ls.setContextSource(contextSource);
+		ls.setParam(threshold.getParam());
+		ls.setSampleTypeName(file.getSampleType().getSampleTypeCategory().getName());
+		ls.setStatus(status);
+		ls.setFileChecksum(file.getChecksum());
+		ls.setThresholdApiKey(threshold.getApiKey());
+		return ls;
+	}
+
 	public LabSystemStatus createLabSystemStatusByThresholdNonConformity(ThresholdNonConformity tnc) {
 
 		LabSystemStatus ls = new LabSystemStatus();
@@ -405,6 +418,98 @@ public class ThresholdUtils {
 		ls.setStatus(InstrumentStatus.DANGER);
 		ls.setFileChecksum(f.getChecksum());
 		return ls;
+	}
+
+	/**
+	 * Evaluate a value against threshold bounds. Single source of truth shared by
+	 * ingestion-time evaluation (DataService) and live status recomputation
+	 * (see {@link #computeLiveNonConformityStatus}), so both stay in sync.
+	 */
+	public InstrumentStatus isNonConformity(Float value, Float initialValue, Float stepValue, int steps,
+			Direction direction) {
+		Float upperLimit = initialValue + (stepValue * steps);
+		Float midDownLimit = initialValue - (stepValue * (steps - 1));
+		Float midUpLimit = initialValue + (stepValue * (steps - 1));
+		Float lowerLimit = initialValue - (stepValue * steps);
+		switch (direction) {
+			case DOWN:
+				if (steps == 1) {
+					if (value < lowerLimit) {
+						return InstrumentStatus.DANGER;
+					}
+				} else {
+					if (value < lowerLimit) {
+						return InstrumentStatus.DANGER;
+					} else if (value >= lowerLimit && value < midDownLimit) {
+						return InstrumentStatus.WARNING;
+					}
+				}
+				break;
+			case UPDOWN:
+				if (value < lowerLimit || value > upperLimit) {
+					return InstrumentStatus.DANGER;
+				}
+				break;
+			case UP:
+				if (steps == 1) {
+					if (value > upperLimit) {
+						return InstrumentStatus.DANGER;
+					}
+				} else {
+					if (value > upperLimit) {
+						return InstrumentStatus.DANGER;
+					} else if (value <= upperLimit && value > midUpLimit) {
+						return InstrumentStatus.WARNING;
+					}
+				}
+				break;
+			default:
+				logger.info("Direction not found");
+		}
+		return InstrumentStatus.OK;
+	}
+
+	/**
+	 * Recompute the current non-conformity status of a value against a threshold's live
+	 * configuration, instead of trusting a status stored at ingestion time (which goes
+	 * stale the moment the threshold is edited, or - for guideset-driven thresholds -
+	 * the moment the guideset's automatic window shifts).
+	 *
+	 * HARDLIMIT thresholds already hold live ground truth in {@code tp}'s stored values.
+	 * SIGMA/SIGMALOG2 thresholds need their guideset re-evaluated against the given file,
+	 * since the automatic guideset window moves independently of any manual edit.
+	 */
+	public InstrumentStatus computeLiveNonConformityStatus(Threshold threshold, ThresholdParams tp, File file,
+			Float value) {
+		if (value == null) {
+			return InstrumentStatus.OK;
+		}
+		Float initialValue = tp.getInitialValue();
+		Float stepValue = tp.getStepValue();
+		ThresholdProcessor processor = threshold.getProcessor();
+		if (processor.isGuideSetRequired()) {
+			GuideSet guideSet = generateGuideSetFromWithFile(file, threshold.getParam(), tp.getContextSource());
+			if (guideSet == null) {
+				return InstrumentStatus.OK;
+			}
+			// Use a transient (unmanaged) copy so the recompute can never be flushed back
+			// to the DB as a side effect of reading a status.
+			ThresholdParams liveParams = new ThresholdParams(stepValue, initialValue, tp.getContextSource(), threshold);
+			List<Data> guideSetData = getDataForProcessor(threshold, liveParams, guideSet);
+			if (guideSetData.isEmpty()) {
+				return InstrumentStatus.OK;
+			}
+			processor.setGuideSet(guideSet);
+			processor.setGuideSetData(guideSetData);
+			processor.process(liveParams);
+			initialValue = liveParams.getInitialValue();
+			stepValue = liveParams.getStepValue();
+		}
+		if (initialValue == null || stepValue == null) {
+			return InstrumentStatus.OK;
+		}
+		return isNonConformity(value, initialValue, stepValue, threshold.getSteps(),
+				threshold.getNonConformityDirection());
 	}
 
 }

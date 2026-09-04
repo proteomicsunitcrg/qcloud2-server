@@ -3,7 +3,9 @@ package eu.qcloud.threshold;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -404,25 +406,55 @@ public class ThresholdService {
 		List<withParamsWithoutThreshold> lsThresholds = thresholdRepository.findLabSystemThresholds(labSystem.getId());
 		List<LabSystemStatus> labSystemStatus = new ArrayList<>();
 		Optional<File> file = fileRepository.findTop1ByLabSystemIdOrderByCreationDateDesc(labSystem.getId());
-		if (file.isPresent()) {
-			if (file.get().getCreationDate().before(thresholdUtils.getOfflineDate())) {
-				labSystemStatus.clear();
-				labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
-				return labSystemStatus;
-			}
-			if (lsThresholds.size() == 0) {
-				labSystemStatus.clear();
-				labSystemStatus.add(thresholdUtils.createNoThresholdNonConformity(labSystem));
-				return labSystemStatus;
-			}
-			List<ThresholdNonConformity> tncs = thresholdNonConformityRepository.findByFileId(file.get().getId());
-			tncs.forEach(tnc -> {
-				labSystemStatus.add(thresholdUtils.createLabSystemStatusByThresholdNonConformity(tnc));
-			});
-		} else {
-			labSystemStatus.clear();
+		if (!file.isPresent()) {
 			labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
 			return labSystemStatus;
+		}
+		if (file.get().getCreationDate().before(thresholdUtils.getOfflineDate())) {
+			labSystemStatus.add(thresholdUtils.createOfflineThresholdNonConformity(labSystem));
+			return labSystemStatus;
+		}
+		if (lsThresholds.size() == 0) {
+			labSystemStatus.add(thresholdUtils.createNoThresholdNonConformity(labSystem));
+			return labSystemStatus;
+		}
+		// Evaluate the last file of EVERY actively monitored sample type on this lab system,
+		// not just the single most-recently-arrived one - otherwise a sample type that hasn't
+		// submitted the newest file (e.g. a Hela QC run when the latest file happens to be BSA)
+		// never gets checked at all, even if it's currently out of spec. A sample type whose own
+		// last file is older than the offline window is treated as not currently running, same
+		// threshold as the overall offline check above - see issue #27 "Wrong traffic light".
+		Set<Long> monitoredSampleTypeIds = lsThresholds.stream()
+				.filter(t -> Boolean.TRUE.equals(t.getIsMonitored()))
+				.map(t -> t.getSampleType().getId())
+				.collect(Collectors.toSet());
+		for (Long sampleTypeId : monitoredSampleTypeIds) {
+			File lastFileForSampleType = fileRepository.findTop1ByLabSystemIdAndSampleTypeIdOrderByCreationDateDesc(
+					labSystem.getId(), sampleTypeId);
+			if (lastFileForSampleType == null
+					|| lastFileForSampleType.getCreationDate().before(thresholdUtils.getOfflineDate())) {
+				continue;
+			}
+			List<Data> fileData = datarepository.findByFileId(lastFileForSampleType.getId());
+			fileData.forEach(d -> {
+				Threshold threshold = thresholdRepository.findThresholdByParamIdAndSampleTypeIdAndLabSystemId(
+						d.getParam().getId(), sampleTypeId, labSystem.getId());
+				if (threshold == null || !threshold.isMonitored()) {
+					return;
+				}
+				Optional<ThresholdParams> tp = threshold.getThresholdParams().stream()
+						.filter(p -> p.getContextSource().getId() == d.getContextSource().getId() && p.getIsEnabled())
+						.findFirst();
+				if (!tp.isPresent()) {
+					return;
+				}
+				InstrumentStatus status = thresholdUtils.computeLiveNonConformityStatus(threshold, tp.get(),
+						lastFileForSampleType, d.getCalculatedValue());
+				if (status != InstrumentStatus.OK) {
+					labSystemStatus.add(thresholdUtils.createLabSystemStatus(threshold, d.getContextSource(), status,
+							lastFileForSampleType));
+				}
+			});
 		}
 		return labSystemStatus;
 	}
