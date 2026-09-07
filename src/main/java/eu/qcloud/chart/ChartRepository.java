@@ -33,6 +33,13 @@ public interface ChartRepository extends CrudRepository<Chart, Long> {
 	@Query("select distinct c.sampleType from Chart c where c.cv.id = ?1")
 	List<SampleType> findChartSampleTypesByCvId(Long cvId);
 
+	// A Chart can exist without ever being placed on a view (see charts #443-445,
+	// #446, #440 for bsa_dia/Astral - defined but never added to any layout), so
+	// "does a chart exist" isn't the same as "is this actually shown to the user".
+	@Query("select distinct c.param.id from Chart c join ViewDisplay vd on vd.chart = c "
+			+ "where c.sampleType.id = ?1 and c.cv.id in ?2")
+	List<Long> findDisplayedParamIds(Long sampleTypeId, List<Long> cvIds);
+
 	interface ChartDescription {
 		Long getId();
 

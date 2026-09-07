@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import eu.qcloud.chart.ChartRepository;
 import eu.qcloud.data.Data;
 import eu.qcloud.data.DataRepository;
 import eu.qcloud.file.FileRepository.OnlyChecksum;
@@ -78,6 +80,9 @@ public class FileService {
 
     @Autowired
     private AnnotationRepository annoRepo;
+
+    @Autowired
+    private ChartRepository chartRepository;
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
@@ -271,6 +276,17 @@ public List<Summary> getSummary(String checksum) {
 
     // Get ALL data for the file (globals + peptide-related)
     List<Data> allData = dataRepository.findByFileChecksumOrderByParamIdAsc(checksum);
+
+    // Only keep params that are actually placed on this instrument's charts - a Chart
+    // row existing isn't enough (some are defined but never added to any view, e.g.
+    // "Number of proteins"/"Median FWHM" for bsa_dia on Astral), so this must match
+    // what the user actually sees on the instrument page, not just what's computed.
+    List<Long> cvIds = file.getLabSystem().getDataSources().stream()
+            .map(ds -> ds.getCv().getId())
+            .collect(Collectors.toList());
+    List<Long> displayedParamIds = chartRepository.findDisplayedParamIds(file.getSampleType().getId(), cvIds);
+    allData = allData.stream().filter(d -> displayedParamIds.contains(d.getParam().getId()))
+            .collect(Collectors.toList());
 
     // Group data by contextSource name
     Map<String, List<Data>> dataByContext = new LinkedHashMap<>();
