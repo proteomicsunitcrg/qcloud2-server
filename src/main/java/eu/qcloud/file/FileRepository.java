@@ -200,6 +200,8 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	public Long countByLabSystemApiKeyAndSampleTypeId(UUID lsApiKey, Long sampleTypeId);
 
+	public Long countByLabSystemApiKeyAndSampleTypeIdIn(UUID lsApiKey, List<Long> sampleTypeIds);
+
 	public Long countByLabSystemApiKeyAndSampleTypeIdAndCreationDateBetween(UUID labSystemApiKey, Long sampleTypeId,
 			Date startDate, Date endDate);
 

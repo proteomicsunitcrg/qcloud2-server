@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -19,9 +20,9 @@ import eu.qcloud.chart.ChartRepository;
 import eu.qcloud.file.FileRepository;
 import eu.qcloud.labsystem.LabSystem;
 import eu.qcloud.labsystem.LabSystemRepository;
+import eu.qcloud.sampleType.SampleType;
 import eu.qcloud.sampleTypeCategory.SampleTypeCategory;
 import eu.qcloud.sampleTypeCategory.SampleTypeCategoryRepository;
-import eu.qcloud.sampleTypeCategory.SampleTypeComplexity;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.service.UserService;
 import eu.qcloud.view.UserViewRepository.UserDisplayWithOutViewDisplay;
@@ -128,16 +129,16 @@ public class ViewService {
 		return viewRepository.findByCvCVId(cvId);
 	}
 
-	// Returns the tabs but not the qc3 tab if the ls doesnt has any qc3 file
+	// Only returns tabs the lab system actually has files for, so instruments
+	// don't show empty tabs for sample types they never ran (e.g. QCN1).
 	public List<View> getDefaultViewsByCVAndLsApiKey(String cvId, UUID lsApiKey) {
 		List<View> allViews = viewRepository.findByCvCVId(cvId);
 		for (Iterator<View> i = allViews.iterator(); i.hasNext();) {
 			View view = i.next();
-			if (view.getSampleTypeCategory().getSampleTypeComplexity()
-					.equals(SampleTypeComplexity.HIGHWITHISOTOPOLOGUES)) {
-				if (fileRepo.countByLabSystemApiKeyAndSampleTypeId(lsApiKey, 5l) == 0) {
-					i.remove();
-				}
+			List<Long> sampleTypeIds = view.getSampleTypeCategory().getSampleTypes().stream()
+					.map(SampleType::getId).collect(Collectors.toList());
+			if (fileRepo.countByLabSystemApiKeyAndSampleTypeIdIn(lsApiKey, sampleTypeIds) == 0) {
+				i.remove();
 			}
 		}
 		return allViews;

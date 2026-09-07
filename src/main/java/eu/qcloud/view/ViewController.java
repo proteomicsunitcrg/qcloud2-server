@@ -143,7 +143,8 @@ public class ViewController {
 	}
 
 	/**
-	 * This method returns the views by CV but first checks if the ls has qc3
+	 * Returns the views by CV, but only the ones the lab system actually has
+	 * files for (empty tabs are hidden).
 	 *
 	 * @param cvId
 	 * @return
