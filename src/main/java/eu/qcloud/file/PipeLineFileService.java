@@ -36,20 +36,40 @@ public class PipeLineFileService {
 
 	/**
 	 * Called by trigger.sh as soon as it moves a matched raw file into its run
-	 * folder and launches the pipeline. Idempotent: if a row for this checksum
-	 * already exists (e.g. a retried call), it is returned unchanged rather than
-	 * duplicated or overwritten.
+	 * folder and launches the pipeline. Idempotent on genuine retries: if a row
+	 * for this checksum already exists AND is already fully populated, it is
+	 * returned unchanged rather than duplicated or overwritten.
 	 */
 	public PipeLineFile markReceived(PipeLineFile incoming, String sampleTypeQCCV, UUID labSystemApiKey) {
-		Optional<PipeLineFile> existing = pipeLineFileRepository.findByChecksum(incoming.getChecksum());
-		if (existing.isPresent()) {
-			return existing.get();
-		}
-
 		SampleType st = sampleTypeQCCV == null ? null : sampleTypeService.getSampleTypeByQCCV(sampleTypeQCCV);
 
 		Optional<LabSystem> ls = labSystemApiKey == null ? Optional.empty()
 				: labSystemService.findSystemByApiKey(labSystemApiKey);
+
+		Optional<PipeLineFile> existing = pipeLineFileRepository.findByChecksum(incoming.getChecksum());
+		if (existing.isPresent()) {
+			// markProcessingStarted() can create a bare placeholder row (checksum
+			// only, no labSystem/sampleType/filename) if the pipeline's own inline
+			// "processing started" notification races ahead of this call. Backfill
+			// whatever is still missing instead of returning it untouched, or the
+			// row silently drops off the dashboard forever (getDashboard() filters
+			// by labSystem).
+			PipeLineFile pf = existing.get();
+			boolean changed = false;
+			if (pf.getLabSystem() == null && ls.isPresent()) {
+				pf.setLabSystem(ls.get());
+				changed = true;
+			}
+			if (pf.getSampleType() == null && st != null) {
+				pf.setSampleType(st);
+				changed = true;
+			}
+			if (pf.getFilename() == null && incoming.getFilename() != null) {
+				pf.setFilename(incoming.getFilename());
+				changed = true;
+			}
+			return changed ? pipeLineFileRepository.save(pf) : pf;
+		}
 
 		if (st != null) {
 			incoming.setSampleType(st);
