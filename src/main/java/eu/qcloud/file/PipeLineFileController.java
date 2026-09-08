@@ -42,6 +42,12 @@ public class PipeLineFileController {
 		return pipeLineFileService.markReceived(file, sampleTypeQCCV, labSystemApiKey);
 	}
 
+	@RequestMapping(value = "/api/pipelineFile/processingStarted/{checksum}", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ADMIN')")
+	public PipeLineFile markProcessingStarted(@PathVariable String checksum) {
+		return pipeLineFileService.markProcessingStarted(checksum);
+	}
+
 	@RequestMapping(value = "/api/pipelineFile/processed/{checksum}", method = RequestMethod.POST)
 	@PreAuthorize("hasRole('ADMIN')")
 	public PipeLineFile markProcessed(@PathVariable String checksum, @RequestParam(required = false) String filename) {

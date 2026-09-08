@@ -66,6 +66,15 @@ public class PipeLineFile {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 
+	// Set once, by the pipeline itself right as it starts actually running
+	// this file (not by trigger.sh at receive time) - lets the dashboard show
+	// pure compute duration, excluding any Slurm queue wait between receiving
+	// the file and the pipeline actually starting to process it.
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Column(name = "processing_started_date", columnDefinition = "DATETIME")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date processingStartedDate;
+
 	@Column(name = "sample")
 	private String sample;
 
@@ -152,6 +161,14 @@ public class PipeLineFile {
 
 	public void setUpdatedDate(Date updatedDate) {
 		this.updatedDate = updatedDate;
+	}
+
+	public Date getProcessingStartedDate() {
+		return processingStartedDate;
+	}
+
+	public void setProcessingStartedDate(Date processingStartedDate) {
+		this.processingStartedDate = processingStartedDate;
 	}
 
 	public String getSample() {

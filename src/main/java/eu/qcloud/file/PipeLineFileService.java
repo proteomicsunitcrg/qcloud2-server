@@ -67,6 +67,26 @@ public class PipeLineFileService {
 	}
 
 	/**
+	 * Called by the pipeline itself right as it starts actually running this
+	 * file (not by trigger.sh, which only marks it received). Idempotent -
+	 * only ever sets processingStartedDate once, so a retried/duplicate call
+	 * never resets it.
+	 */
+	public PipeLineFile markProcessingStarted(String checksum) {
+		PipeLineFile pf = pipeLineFileRepository.findByChecksum(checksum).orElseGet(() -> {
+			PipeLineFile fresh = new PipeLineFile();
+			fresh.setChecksum(checksum);
+			fresh.setStatus(PipelineFileStatus.PROCESSING);
+			fresh.setReceivedDate(new Date());
+			return fresh;
+		});
+		if (pf.getProcessingStartedDate() == null) {
+			pf.setProcessingStartedDate(new Date());
+		}
+		return pipeLineFileRepository.save(pf);
+	}
+
+	/**
 	 * Called at the same point report_qcloud.nf inserts the successful, final
 	 * {@link File} row. Creates the tracking row if one is missing (e.g. the
 	 * "received" call never happened for some reason) so PROCESSED files are
