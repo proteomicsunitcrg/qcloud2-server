@@ -119,6 +119,14 @@ public class PipeLineFileService {
 			fresh.setReceivedDate(new Date());
 			return fresh;
 		});
+		// updatedDate must only be stamped on the FIRST transition into ERROR:
+		// the pipeline's own onError hook calls this immediately (accurate
+		// "Time to process"), and atlas_checker.sh's cron calls it again
+		// later with a richer, log-classified reason - that second call must
+		// enrich the diagnostic fields without re-stamping the timestamp,
+		// or every re-classification would silently inflate the duration
+		// shown on the dashboard.
+		boolean firstTimeError = pf.getStatus() != PipelineFileStatus.ERROR;
 		pf.setStatus(PipelineFileStatus.ERROR);
 		pf.setSample(errorInfo.getSample());
 		pf.setQcCode(errorInfo.getQcCode());
@@ -127,7 +135,9 @@ public class PipeLineFileService {
 		pf.setDatabaseName(errorInfo.getDatabaseName());
 		pf.setSizeMb(errorInfo.getSizeMb());
 		pf.setErrorReason(errorInfo.getErrorReason());
-		pf.setUpdatedDate(new Date());
+		if (firstTimeError) {
+			pf.setUpdatedDate(new Date());
+		}
 		return pipeLineFileRepository.save(pf);
 	}
 
