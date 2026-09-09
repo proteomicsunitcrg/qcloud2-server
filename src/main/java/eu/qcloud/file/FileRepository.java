@@ -227,6 +227,16 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
 	public Page<File> findByFilenameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemInOrderByIdDesc(String filename, String sampleTypeId, List<LabSystem> ls,Pageable page);
 
+	// "First250" variants for FileService#getFilesByNodePaged: bounds the
+	// query itself (LIMIT 250) instead of paging over the full 76k+ table,
+	// so the COUNT and fetch stay cheap regardless of how large the real
+	// table grows - the dashboard only ever needs to show recent activity.
+	public List<File> findFirst250BylabSystemInOrderByIdDesc(List<LabSystem> ls);
+
+	public List<File> findFirst250ByFilenameContainingAndLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemInOrderByIdDesc(String filename, UUID labsystemApiKey, String sampleTypeId, List<LabSystem> ls);
+
+	public List<File> findFirst250ByFilenameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemInOrderByIdDesc(String filename, String sampleTypeId, List<LabSystem> ls);
+
 	public List<File> findByCreationDateAfter(Date date);
 
 	public Optional <File> findTopByOrderByIdDesc();

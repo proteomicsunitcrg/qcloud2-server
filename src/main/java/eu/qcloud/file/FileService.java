@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -250,25 +251,28 @@ public class FileService {
         return sample;
     }
 
+    // Dashboard is a "recent activity" view, not a full archive - nobody
+    // actually pages 7,659 deep into it. Bounding the query itself (LIMIT
+    // 250, via the "First250" repository methods) instead of paging over
+    // the full 76k+ table keeps both the fetch and its COUNT cheap
+    // regardless of how large the real table grows.
     public Page<File> getFilesByNodePaged(Node node, Pageable page, String filename, String labsystemApiKey,
             String sampleTypeQCCV) {
         List<LabSystem> ls = labSystemService.findAllByNode(node.getId());
-        // The unfiltered case (all three blank, i.e. every page load and every
-        // "clear filters") is by far the most common call, over 76k+ rows -
-        // the LIKE-based queries below apply `Containing("")`, which becomes
-        // `LIKE '%%'` and can't use an index, forcing a full scan on both the
-        // page fetch and its COUNT query. Route it through the plain,
-        // index-friendly query instead.
+        List<File> capped;
         if (filename.isEmpty() && sampleTypeQCCV.isEmpty() && labsystemApiKey.isEmpty()) {
-            return fileRepository.findBylabSystemInOrderByIdDesc(ls, page);
+            capped = fileRepository.findFirst250BylabSystemInOrderByIdDesc(ls);
         }
-        if (labsystemApiKey.equals("")) {
-            return fileRepository.findByFilenameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemInOrderByIdDesc(filename, sampleTypeQCCV, ls, page);
+        else if (labsystemApiKey.equals("")) {
+            capped = fileRepository.findFirst250ByFilenameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemInOrderByIdDesc(filename, sampleTypeQCCV, ls);
         }
         else {
             UUID caca = UUID.fromString(labsystemApiKey);
-            return fileRepository.findByFilenameContainingAndLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemInOrderByIdDesc(filename, caca, sampleTypeQCCV, ls, page);
+            capped = fileRepository.findFirst250ByFilenameContainingAndLabSystemApiKeyAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemInOrderByIdDesc(filename, caca, sampleTypeQCCV, ls);
         }
+        int start = Math.min((int) page.getOffset(), capped.size());
+        int end = Math.min(start + page.getPageSize(), capped.size());
+        return new PageImpl<>(capped.subList(start, end), page, capped.size());
     }
 
     public boolean getFileStatusByChecksum(String checksum) {
