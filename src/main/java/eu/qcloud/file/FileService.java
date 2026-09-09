@@ -253,6 +253,15 @@ public class FileService {
     public Page<File> getFilesByNodePaged(Node node, Pageable page, String filename, String labsystemApiKey,
             String sampleTypeQCCV) {
         List<LabSystem> ls = labSystemService.findAllByNode(node.getId());
+        // The unfiltered case (all three blank, i.e. every page load and every
+        // "clear filters") is by far the most common call, over 76k+ rows -
+        // the LIKE-based queries below apply `Containing("")`, which becomes
+        // `LIKE '%%'` and can't use an index, forcing a full scan on both the
+        // page fetch and its COUNT query. Route it through the plain,
+        // index-friendly query instead.
+        if (filename.isEmpty() && sampleTypeQCCV.isEmpty() && labsystemApiKey.isEmpty()) {
+            return fileRepository.findBylabSystemInOrderByIdDesc(ls, page);
+        }
         if (labsystemApiKey.equals("")) {
             return fileRepository.findByFilenameContainingAndSampleTypeQualityControlControlledVocabularyContainingAndLabSystemInOrderByIdDesc(filename, sampleTypeQCCV, ls, page);
         }
