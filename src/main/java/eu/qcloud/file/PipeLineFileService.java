@@ -174,4 +174,16 @@ public class PipeLineFileService {
 				.orElseThrow(() -> new DataRetrievalFailureException("Pipeline file not found: " + checksum));
 	}
 
+	/**
+	 * Lets the instrument view show a "pipeline error" banner without the user
+	 * having to visit the Pipeline Status dashboard. Self-clears: once the
+	 * offending file is reprocessed (status moves away from ERROR), this goes
+	 * back to false on its own.
+	 */
+	public boolean hasError(UUID labSystemApiKey) {
+		LabSystem ls = labSystemService.findSystemByApiKey(labSystemApiKey)
+				.orElseThrow(() -> new DataRetrievalFailureException("Lab system not found: " + labSystemApiKey));
+		return pipeLineFileRepository.existsByLabSystemAndStatus(ls, PipelineFileStatus.ERROR);
+	}
+
 }

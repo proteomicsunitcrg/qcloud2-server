@@ -73,6 +73,12 @@ public class PipeLineFileController {
 		return pipeLineFileService.getByChecksum(checksum);
 	}
 
+	@GetMapping(value = "/api/pipelineFile/hasError/{labSystemApiKey}")
+	@PreAuthorize("hasRole('USER')")
+	public boolean hasError(@PathVariable UUID labSystemApiKey) {
+		return pipeLineFileService.hasError(labSystemApiKey);
+	}
+
 	private User getUserFromSecurityContext() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return userService.getUserByUsername(authentication.getName());

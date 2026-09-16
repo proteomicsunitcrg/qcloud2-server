@@ -20,4 +20,6 @@ public interface PipeLineFileRepository extends JpaRepository<PipeLineFile, Long
 	public Page<PipeLineFile> findByFilenameContainingAndLabSystemInOrderByIdDesc(String filename, List<LabSystem> ls,
 			Pageable page);
 
+	public boolean existsByLabSystemAndStatus(LabSystem labSystem, PipelineFileStatus status);
+
 }
