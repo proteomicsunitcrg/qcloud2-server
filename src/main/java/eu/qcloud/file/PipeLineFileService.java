@@ -161,12 +161,25 @@ public class PipeLineFileService {
 		return pipeLineFileRepository.save(pf);
 	}
 
-	public Page<PipeLineFile> getDashboard(Node node, Pageable page, String filename) {
+	public Page<PipeLineFile> getDashboard(Node node, Pageable page, String filename, String labSystemApiKey) {
 		List<LabSystem> ls = labSystemService.findAllByNode(node.getId());
-		if (filename == null || filename.isEmpty()) {
+		boolean hasFilename = filename != null && !filename.isEmpty();
+		boolean hasLabSystem = labSystemApiKey != null && !labSystemApiKey.isEmpty();
+
+		if (!hasFilename && !hasLabSystem) {
 			return pipeLineFileRepository.findByLabSystemInOrderByIdDesc(ls, page);
 		}
-		return pipeLineFileRepository.findByFilenameContainingAndLabSystemInOrderByIdDesc(filename, ls, page);
+		if (!hasLabSystem) {
+			return pipeLineFileRepository.findByFilenameContainingAndLabSystemInOrderByIdDesc(filename, ls, page);
+		}
+		// LabSystemIn keeps this scoped to the caller's own node even if
+		// labSystemApiKey belongs to someone else's lab system.
+		UUID apiKey = UUID.fromString(labSystemApiKey);
+		if (!hasFilename) {
+			return pipeLineFileRepository.findByLabSystemApiKeyAndLabSystemInOrderByIdDesc(apiKey, ls, page);
+		}
+		return pipeLineFileRepository.findByFilenameContainingAndLabSystemApiKeyAndLabSystemInOrderByIdDesc(filename,
+				apiKey, ls, page);
 	}
 
 	public PipeLineFile getByChecksum(String checksum) {

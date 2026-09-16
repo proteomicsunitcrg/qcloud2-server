@@ -2,6 +2,7 @@ package eu.qcloud.file;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,12 @@ public interface PipeLineFileRepository extends JpaRepository<PipeLineFile, Long
 
 	public Page<PipeLineFile> findByFilenameContainingAndLabSystemInOrderByIdDesc(String filename, List<LabSystem> ls,
 			Pageable page);
+
+	public Page<PipeLineFile> findByLabSystemApiKeyAndLabSystemInOrderByIdDesc(UUID labSystemApiKey,
+			List<LabSystem> ls, Pageable page);
+
+	public Page<PipeLineFile> findByFilenameContainingAndLabSystemApiKeyAndLabSystemInOrderByIdDesc(String filename,
+			UUID labSystemApiKey, List<LabSystem> ls, Pageable page);
 
 	public boolean existsByLabSystemAndStatus(LabSystem labSystem, PipelineFileStatus status);
 

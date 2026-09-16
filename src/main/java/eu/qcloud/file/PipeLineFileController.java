@@ -63,8 +63,9 @@ public class PipeLineFileController {
 
 	@GetMapping(value = "/api/pipelineFile/dashboard")
 	@PreAuthorize("hasRole('USER')")
-	public Page<PipeLineFile> getDashboard(Pageable page, String filename) {
-		return pipeLineFileService.getDashboard(getUserFromSecurityContext().getNode(), page, filename);
+	public Page<PipeLineFile> getDashboard(Pageable page, String filename, String labSystemApiKey) {
+		return pipeLineFileService.getDashboard(getUserFromSecurityContext().getNode(), page, filename,
+				labSystemApiKey);
 	}
 
 	@GetMapping(value = "/api/pipelineFile/checksum/{checksum}")
