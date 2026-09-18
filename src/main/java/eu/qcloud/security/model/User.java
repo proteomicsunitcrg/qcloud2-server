@@ -25,6 +25,7 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import eu.qcloud.node.Node;
 import eu.qcloud.userDefaultView.UserDefaultView;
@@ -128,10 +129,12 @@ public class User {
         this.username = username;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
 
+    @JsonProperty("password")
     public void setPassword(String password) {
         this.password = password;
     }
@@ -296,7 +299,7 @@ public class User {
         return "User [apiKey=" + apiKey + ", email=" + email + ", enabled=" + enabled + ", firstname=" + firstname
                 + ", id=" + id + ", lastPasswordResetDate=" + lastPasswordResetDate + ", lastQCloudLoginDate="
                 + lastQCloudLoginDate + ", lastQcrawlerLoginDate=" + lastQcrawlerLoginDate + ", lastname=" + lastname
-                + ", node=" + node + ", password=" + password + ", spam=" + spam + ", telegramChatId=" + telegramChatId
+                + ", node=" + node + ", spam=" + spam + ", telegramChatId=" + telegramChatId
                 + ", telegram_code=" + telegram_code + ", username=" + username + "]";
     }
 

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -230,10 +231,14 @@ public class FileService {
         }
     }
 
-    public void updateFile(String checksum, File file) {
+    public void updateFile(String checksum, File file, User userFromSecurityContext) {
         File f = fileRepository.findByChecksum(checksum);
         if (f == null) {
             throw new DataRetrievalFailureException("File not found");
+        }
+        if (!Objects.equals(f.getLabSystem().getMainDataSource().getNode().getId(),
+                userFromSecurityContext.getNode().getId())) {
+            throw new DataRetrievalFailureException("Not your file");
         }
         f.setIsValidChecksum(file.getIsValidChecksum());
         fileRepository.save(f);

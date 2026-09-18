@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.rest.core.config.Projection;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -153,7 +152,6 @@ public interface FileRepository extends JpaRepository<File, Long> {
 	public List<File> findForAutoPlotExcludeZero(Long paramId, Long contextSourceId, Long labSystemId,
 			Long sampleTypeId);
 
-	@Projection(name = "file_mini", types = File.class)
 	public interface OnlySmalls {
 		String getFilename();
 

@@ -143,8 +143,9 @@ public class FileController {
 	}
 
 	@RequestMapping(value = "/api/file/checksum/qcrawler/{checksum}", method = RequestMethod.PUT)
+	@PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
 	public void updateQCrawlerFile(@PathVariable String checksum, @RequestBody File file) {
-		fileService.updateFile(checksum, file);
+		fileService.updateFile(checksum, file, getUserFromSecurityContext());
 	}
 
 	@RequestMapping(value = "/api/file/sampletypes/{labSystemApiKey}", method = RequestMethod.GET)
