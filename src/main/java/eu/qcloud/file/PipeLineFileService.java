@@ -192,11 +192,16 @@ public class PipeLineFileService {
 	 * having to visit the Pipeline Status dashboard. Self-clears: once the
 	 * offending file is reprocessed (status moves away from ERROR), this goes
 	 * back to false on its own.
+	 *
+	 * Only looks at the 10 most recent files (same window as the first page
+	 * of the Pipeline Status dashboard): an ERROR buried further back in the
+	 * archive - already reprocessed long ago - must not keep the banner up.
 	 */
 	public boolean hasError(UUID labSystemApiKey) {
 		LabSystem ls = labSystemService.findSystemByApiKey(labSystemApiKey)
 				.orElseThrow(() -> new DataRetrievalFailureException("Lab system not found: " + labSystemApiKey));
-		return pipeLineFileRepository.existsByLabSystemAndStatus(ls, PipelineFileStatus.ERROR);
+		List<PipeLineFile> recent = pipeLineFileRepository.findFirst10ByLabSystemOrderByIdDesc(ls);
+		return recent.stream().anyMatch(pf -> pf.getStatus() == PipelineFileStatus.ERROR);
 	}
 
 }

@@ -27,6 +27,11 @@ public interface PipeLineFileRepository extends JpaRepository<PipeLineFile, Long
 	public Page<PipeLineFile> findByFilenameContainingAndLabSystemApiKeyAndLabSystemInOrderByIdDesc(String filename,
 			UUID labSystemApiKey, List<LabSystem> ls, Pageable page);
 
-	public boolean existsByLabSystemAndStatus(LabSystem labSystem, PipelineFileStatus status);
+	// "First10" variant for PipeLineFileService#hasError: bounds the query at
+	// the DB level (LIMIT 10) so the banner reflects only recent activity,
+	// mirroring what the first page of the Pipeline Status dashboard shows.
+	// Without the cap, an old ERROR row would keep the banner alive forever,
+	// even though the offending file was reprocessed long ago.
+	public List<PipeLineFile> findFirst10ByLabSystemOrderByIdDesc(LabSystem labSystem);
 
 }
