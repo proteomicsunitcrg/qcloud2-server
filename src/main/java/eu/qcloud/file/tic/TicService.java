@@ -33,4 +33,20 @@ public class TicService {
 
 	}
 
+	public Tic getTicByChecksum(String checksum) {
+		File file = fileRepository.findByChecksum(checksum);
+
+		if (file == null) {
+			throw new DataRetrievalFailureException("TIC: File not found");
+		}
+
+		Tic tic = ticRepository.findByFile(file);
+
+		if (tic == null) {
+			throw new DataRetrievalFailureException("TIC: No TIC stored for file");
+		}
+
+		return tic;
+	}
+
 }

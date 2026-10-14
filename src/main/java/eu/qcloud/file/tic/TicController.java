@@ -27,6 +27,20 @@ public class TicController {
 		ticService.addFileToTic(checksum, tic);
 	}
 
+	/**
+	 * Get the stored TIC series of a file.
+	 *
+	 * The response body is the raw stored string (currently
+	 * "gz1:" + base64(gzip(JSON array of [rt_ms, msLevel, tic] points)));
+	 * returning the bare string keeps the payload minimal and avoids
+	 * serializing the File relations.
+	 */
+	@RequestMapping(value = "/api/file/tic/{checksum}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('USER')")
+	public String getTicByChecksum(@PathVariable String checksum) {
+		return ticService.getTicByChecksum(checksum).getTic();
+	}
+
 	@ExceptionHandler(DataRetrievalFailureException.class)
 	void handleNonConnection(HttpServletResponse response, Exception e) throws IOException {
 		response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
