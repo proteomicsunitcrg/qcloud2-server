@@ -17,6 +17,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,6 +27,8 @@ import eu.qcloud.data.DataRepository;
 import eu.qcloud.dataSource.DataSourceRepository;
 import eu.qcloud.file.File;
 import eu.qcloud.file.FileRepository;
+import eu.qcloud.file.tic.Tic;
+import eu.qcloud.file.tic.TicRepository;
 import eu.qcloud.node.Node;
 import eu.qcloud.security.model.User;
 import eu.qcloud.security.repository.UserRepository;
@@ -48,6 +52,9 @@ public class IntranetService {
 
     @Autowired
     ThresholdNonConformityRepository nonConformityRepository;
+
+    @Autowired
+    TicRepository ticRepo;
 
     @Value("${qcloud.intranet.pipeline-valid-hours}")
     private int pipelineHours;
@@ -103,6 +110,7 @@ public class IntranetService {
         return fileRepo.findAll(page);
     }
 
+    @Transactional
     public boolean deleteFile(String checksum) {
         try {
             File file = fileRepo.findByChecksum(checksum);
@@ -114,9 +122,14 @@ public class IntranetService {
             if (nonConf.size() != 0) {
                 nonConformityRepository.deleteAll(nonConf);
             }
+            Tic tic = ticRepo.findByFile(file);
+            if (tic != null) {
+                ticRepo.delete(tic);
+            }
             fileRepo.delete(file);
             return true;
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return false;
         }
     }
