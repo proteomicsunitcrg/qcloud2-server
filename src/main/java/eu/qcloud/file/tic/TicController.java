@@ -35,7 +35,8 @@ public class TicController {
 	 * returning the bare string keeps the payload minimal and avoids
 	 * serializing the File relations.
 	 */
-	@RequestMapping(value = "/api/file/tic/{checksum}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/file/tic/{checksum}", method = RequestMethod.GET,
+			produces = "text/plain;charset=UTF-8")
 	@PreAuthorize("hasRole('USER')")
 	public String getTicByChecksum(@PathVariable String checksum) {
 		return ticService.getTicByChecksum(checksum).getTic();
