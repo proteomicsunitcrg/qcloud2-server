@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,13 +34,19 @@ public class TicController {
 	 * The response body is the raw stored string (currently
 	 * "gz1:" + base64(gzip(JSON array of [rt_ms, msLevel, tic] points)));
 	 * returning the bare string keeps the payload minimal and avoids
-	 * serializing the File relations.
+	 * serializing the File relations. Missing files/TICs answer a plain
+	 * 404 (the ResponseEntity keeps the error off the sendError dispatch,
+	 * which misbehaves as 406 on this produces=text/plain mapping).
 	 */
 	@RequestMapping(value = "/api/file/tic/{checksum}", method = RequestMethod.GET,
 			produces = "text/plain;charset=UTF-8")
 	@PreAuthorize("hasRole('USER')")
-	public String getTicByChecksum(@PathVariable String checksum) {
-		return ticService.getTicByChecksum(checksum).getTic();
+	public ResponseEntity<String> getTicByChecksum(@PathVariable String checksum) {
+		Tic tic = ticService.findTicByChecksum(checksum);
+		if (tic == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("TIC: No TIC stored for file");
+		}
+		return ResponseEntity.ok(tic.getTic());
 	}
 
 	@ExceptionHandler(DataRetrievalFailureException.class)

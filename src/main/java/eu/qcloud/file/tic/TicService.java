@@ -33,20 +33,21 @@ public class TicService {
 
 	}
 
-	public Tic getTicByChecksum(String checksum) {
+	/**
+	 * Returns the stored TIC for the file or null when the file (or its TIC)
+	 * does not exist. Null keeps the error path out of the exception handler:
+	 * the GET mapping declares produces=text/plain and a thrown
+	 * DataRetrievalFailureException made the sendError(404) error dispatch
+	 * come back as 406 instead of 404.
+	 */
+	public Tic findTicByChecksum(String checksum) {
 		File file = fileRepository.findByChecksum(checksum);
 
 		if (file == null) {
-			throw new DataRetrievalFailureException("TIC: File not found");
+			return null;
 		}
 
-		Tic tic = ticRepository.findByFile(file);
-
-		if (tic == null) {
-			throw new DataRetrievalFailureException("TIC: No TIC stored for file");
-		}
-
-		return tic;
+		return ticRepository.findByFile(file);
 	}
 
 }
