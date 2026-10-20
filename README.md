@@ -1,4 +1,7 @@
 # QCloud2 Server
+> **Notice (2026-10):** Development of QCloud2 Server has moved to an internal CRG repository (CRG staff only - not accessible from outside).
+> This GitHub repository is **frozen** and kept as a public archive: to download/install a version, see the [Releases](https://github.com/proteomicsunitcrg/qcloud2-server/releases) (clean snapshot per release).
+
 
 Backend REST API for QCloud, a quality control platform for mass spectrometry instruments.
 
